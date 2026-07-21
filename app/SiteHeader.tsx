@@ -5,12 +5,12 @@ import { useEffect, useState, type ReactNode } from "react";
 const navigation = [
   { label: "Services", href: "#services" },
   { label: "Projects", href: "#projects" },
-  { label: "Human Resources", href: "#human-resources" },
+  { label: "Human Resources", href: "/human-resources" },
   { label: "Contact", href: "#contact" },
   { label: "Style", href: "/style" },
 ];
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -29,7 +29,7 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
   return (
     <header className={`site-header${scrolled ? " site-header--scrolled" : ""}${menuOpen ? " site-header--open" : ""}`}>
       <div className="site-container header-inner">
-        <a href={page === "style" ? "/" : "#top"} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
+        <a href={page === "home" ? "#top" : "/"} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
 
         <button
           className="menu-toggle"
@@ -45,7 +45,7 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
         <div className="header-right" id="primary-navigation">
           <nav className="primary-nav" aria-label="Primary navigation">
             {navigation.map((item) => {
-              const href = page === "style" && item.href.startsWith("#") ? `/${item.href}` : item.href;
+              const href = page !== "home" && item.href.startsWith("#") ? `/${item.href}` : item.href;
               return <a key={item.href} href={href} onClick={() => setMenuOpen(false)}>{item.label}</a>;
             })}
           </nav>
