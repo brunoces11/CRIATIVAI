@@ -541,8 +541,8 @@ img {
 .stats-section {
   position: relative;
   z-index: 3;
-  max-height: 250px;
-  height: 250px;
+  max-height: 162px;
+  height: 162px;
   overflow: hidden;
   background: var(--graphite);
   border-top: 1px solid var(--border);
@@ -582,7 +582,7 @@ img {
   line-height: 1.45;
 }
 
-.projects-section { padding-top: 112px; }
+.projects-section { padding-top: 22px; }
 
 .section-heading {
   margin-bottom: 48px;
@@ -878,7 +878,7 @@ img {
 .topic-list li > span { display: block; margin-bottom: 6px; color: var(--dim); font-size: 0.53rem; letter-spacing: 0.12em; }
 .grounding-note { margin: 24px 0 0; color: var(--muted); font-size: 0.76rem; }
 
-.services-section { padding-top: 112px; }
+.services-section { padding-top: 22px; }
 .services-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
 .service-card { display: flex; min-height: 220px; padding: 24px; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(145deg, var(--surface-2), var(--surface)); box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12); transition: border-color 300ms ease, transform 300ms ease; }
 .service-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
@@ -912,7 +912,7 @@ img {
 .expertise-list li::before { position: absolute; top: 0.62em; left: 0; width: 5px; height: 5px; border-radius: 50%; content: ""; background: var(--accent); box-shadow: 0 0 10px rgba(200, 162, 143, 0.28); }
 .expertise-list li:nth-child(3n + 1)::before { background: var(--accent); box-shadow: 0 0 10px rgba(200, 162, 143, 0.28); }
 
-.final-cta { position: relative; padding: 132px 0; overflow: hidden; background: var(--blue-black); border-top: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.final-cta { position: relative; padding: 42px 0 132px; overflow: hidden; background: var(--blue-black); border-top: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .final-cta-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .final-cta h2 { max-width: 900px; margin: 24px auto 22px; font-family: var(--font-display), Impact, sans-serif; font-size: clamp(3.5rem, 7.5vw, 6.6rem); font-weight: 400; letter-spacing: -0.03em; line-height: 0.9; text-transform: uppercase; }
 .final-cta h2 span { display: block; }
@@ -931,9 +931,10 @@ img {
 .footer-links-grid > div { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .footer-links-grid .micro-label { margin-bottom: 10px; }
 .footer-links-grid a, .footer-links-grid span { color: var(--muted); font-size: 0.76rem; transition: color 250ms ease; }
-.footer-links-grid a:hover, .footer-links-grid a:focus-visible { color: var(--white); }
+.footer-links-grid a:hover, .footer-links-grid a:focus-visible { color: var(--accent); }
 .footer-links-grid span { cursor: default; }
 .footer-links-grid .footer-social-link { display: inline-flex; align-items: center; gap: 8px; }
+.footer-links-grid .footer-social-link:hover { color: var(--accent); }
 .footer-links-grid .footer-social-icon {
   display: inline-flex;
   width: 14px;
@@ -1014,7 +1015,7 @@ img {
   .stats-grid { grid-template-columns: 1fr; }
   .stat { min-height: 190px; padding: 28px 20px; border-right: 1px solid rgba(255, 255, 255, 0.12); }
   .stat + .stat { border-top: 1px solid rgba(255, 255, 255, 0.12); }
-  .projects-section, .services-section, .about-section { padding-top: 80px; }
+  .projects-section, .services-section, .about-section { padding-top: 22px; }
   .section-heading { margin-bottom: 34px; }
   .project-card { min-height: 400px; }
   .project-content { right: 20px; bottom: 20px; left: 20px; }
@@ -1030,7 +1031,7 @@ img {
   .about-image-meta { right: 18px; bottom: 18px; left: 18px; }
   .about-lead { font-size: 2.32rem; }
   .expertise-list { grid-template-columns: 1fr; }
-  .final-cta { padding: 96px 0; }
+  .final-cta { padding: 6px 0 96px; }
   .final-cta h2 { font-size: clamp(3rem, 15vw, 4.6rem); }
   .footer { padding-top: 56px; }
   .footer-grid { padding-bottom: 50px; }
