@@ -7,9 +7,10 @@ const navigation = [
   { label: "Projects", href: "#projects" },
   { label: "Human Resources", href: "#human-resources" },
   { label: "Contact", href: "#contact" },
+  { label: "Style", href: "/style" },
 ];
 
-export function SiteHeader({ brand }: { brand: ReactNode }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -28,7 +29,7 @@ export function SiteHeader({ brand }: { brand: ReactNode }) {
   return (
     <header className={`site-header${scrolled ? " site-header--scrolled" : ""}${menuOpen ? " site-header--open" : ""}`}>
       <div className="container header-inner">
-        <a href="#top" className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
+        <a href={page === "style" ? "/" : "#top"} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
 
         <button
           className="menu-toggle"
@@ -43,9 +44,10 @@ export function SiteHeader({ brand }: { brand: ReactNode }) {
 
         <div className="header-right" id="primary-navigation">
           <nav className="primary-nav" aria-label="Primary navigation">
-            {navigation.map((item) => (
-              <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>
-            ))}
+            {navigation.map((item) => {
+              const href = page === "style" && item.href.startsWith("#") ? `/${item.href}` : item.href;
+              return <a key={item.href} href={href} onClick={() => setMenuOpen(false)}>{item.label}</a>;
+            })}
           </nav>
           <div className="language-selector" aria-label="Language selector">
             <button type="button" className="language-option language-option--active" aria-current="true" title="English">
