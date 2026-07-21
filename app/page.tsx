@@ -354,10 +354,10 @@ export default function Home() {
             </div>
             <div>
               <p className="micro-label">Social Media</p>
-              <span>YouTube</span>
-              <span>LinkedIn</span>
-              <span>Behance</span>
-              <span>GitHub</span>
+              <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</span>
+              <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</span>
+              <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</span>
+              <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</span>
             </div>
           </div>
         </div>
