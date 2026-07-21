@@ -338,7 +338,7 @@ img {
 .hero-title {
   margin: 0;
   font-family: var(--font-display), Impact, sans-serif;
-  font-size: clamp(4.25rem, 8.6vw, 8.8rem);
+  font-size: clamp(3.4rem, 6.88vw, 7.04rem);
   font-weight: 400;
   letter-spacing: -0.035em;
   line-height: 0.86;
@@ -354,12 +354,12 @@ img {
 .hero-line--one {
   color: var(--accent);
   font-family: var(--font-condensed), "Roboto Condensed", sans-serif;
-  font-weight: 300;
+  font-weight: 200;
 }
 
 .hero-line--two {
   font-family: var(--font-condensed), "Roboto Condensed", sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   transform: translateX(clamp(14px, 3.1vw, 52px));
 }
 
@@ -912,7 +912,7 @@ img {
 .expertise-list li::before { position: absolute; top: 0.62em; left: 0; width: 5px; height: 5px; border-radius: 50%; content: ""; background: var(--accent); box-shadow: 0 0 10px rgba(200, 162, 143, 0.28); }
 .expertise-list li:nth-child(3n + 1)::before { background: var(--accent); box-shadow: 0 0 10px rgba(200, 162, 143, 0.28); }
 
-.final-cta { position: relative; padding: 42px 0 132px; overflow: hidden; background: var(--blue-black); border-top: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.final-cta { position: relative; padding: 42px 0 92px; overflow: hidden; background: var(--blue-black); border-top: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .final-cta-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .final-cta h2 { max-width: 900px; margin: 24px auto 22px; font-family: var(--font-display), Impact, sans-serif; font-size: clamp(3.5rem, 7.5vw, 6.6rem); font-weight: 400; letter-spacing: -0.03em; line-height: 0.9; text-transform: uppercase; }
 .final-cta h2 span { display: block; }
@@ -924,7 +924,7 @@ img {
 .cta-orbit--two { top: 50%; left: 50%; width: 1060px; height: 420px; transform: translate(-50%, -50%) rotate(-12deg); }
 
 .footer { padding: 70px 0 24px; background: #12171c; }
-.footer-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 48px; padding-bottom: 72px; }
+.footer-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 48px; padding-bottom: 42px; }
 .footer-brand > p { max-width: 380px; margin: 26px 0 50px; color: var(--muted); font-size: 0.8rem; }
 .copyright { color: var(--dim); font-size: 0.64rem; }
 .footer-links-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
@@ -961,7 +961,7 @@ img {
   .primary-nav { gap: 20px; }
   .header-right { gap: 22px; }
   .hero-grid { grid-template-columns: minmax(0, 6.8fr) minmax(320px, 5.2fr); }
-  .hero-title { font-size: clamp(4.2rem, 8.7vw, 7rem); }
+  .hero-title { font-size: clamp(3.36rem, 6.96vw, 5.6rem); }
   .hero-intro { grid-template-columns: 1fr; gap: 24px; }
   .hero-actions { flex-direction: row; align-items: center; }
   .project-card { min-height: 390px; }
@@ -983,7 +983,7 @@ img {
   .hero { min-height: auto; padding-top: 72px; }
   .hero-grid { min-height: auto; padding-top: 60px; grid-template-columns: 1fr; gap: 30px; }
   .hero-copy { padding: 0; }
-  .hero-title { font-size: clamp(4.5rem, 14vw, 7rem); }
+  .hero-title { font-size: clamp(3.6rem, 11.2vw, 5.6rem); }
   .hero-portrait-column { min-height: 690px; }
   .hero-portrait-frame { top: 0; }
   .scroll-cue { display: none; }
@@ -1006,7 +1006,7 @@ img {
   .brand-name { display: none; }
   .hero-grid { padding-top: 42px; }
   .hero-eyebrow { margin-bottom: 20px; font-size: 0.62rem; }
-  .hero-title { font-size: clamp(3.6rem, 18vw, 5.5rem); line-height: 0.86; }
+  .hero-title { font-size: clamp(2.88rem, 14.4vw, 4.4rem); line-height: 0.86; }
   .hero-line--two { transform: translateX(16px); }
   .hero-line--three { transform: none; }
   .hero-intro { margin-top: 30px; }
@@ -1031,10 +1031,10 @@ img {
   .about-image-meta { right: 18px; bottom: 18px; left: 18px; }
   .about-lead { font-size: 2.32rem; }
   .expertise-list { grid-template-columns: 1fr; }
-  .final-cta { padding: 6px 0 96px; }
+  .final-cta { padding: 6px 0 56px; }
   .final-cta h2 { font-size: clamp(3rem, 15vw, 4.6rem); }
   .footer { padding-top: 56px; }
-  .footer-grid { padding-bottom: 50px; }
+  .footer-grid { padding-bottom: 20px; }
   .footer-links-grid { gap: 20px; }
   .footer-bottom { align-items: flex-start; flex-direction: column; gap: 12px; }
 }
