@@ -638,6 +638,13 @@ img {
   transition: transform 320ms ease;
 }
 
+.project-graphic-scale {
+  position: absolute;
+  inset: 0;
+  transform: scaleY(0.5);
+  transform-origin: center;
+}
+
 .project-card:hover .project-visual { transform: scale(1.025); }
 
 .project-overlay {
