@@ -13,6 +13,7 @@ const anton = Anton({
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
 const cormorant = Cormorant_Garamond({

@@ -35,6 +35,7 @@ const fontFamilies = [
     name: "Anton",
     variable: "--font-display",
     sample: "Creative AI Solutions",
+    styles: ["normal"],
     weights: [[400, "Regular"]],
   },
   {
@@ -42,6 +43,7 @@ const fontFamilies = [
     name: "Inter",
     variable: "--font-sans",
     sample: "Intelligence made useful",
+    styles: ["normal", "italic"],
     weights: [[100, "Thin"], [200, "Extra Light"], [300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"], [800, "Extra Bold"], [900, "Black"]],
   },
   {
@@ -49,6 +51,7 @@ const fontFamilies = [
     name: "Cormorant Garamond",
     variable: "--font-serif",
     sample: "Thoughtful systems",
+    styles: ["normal"],
     weights: [[600, "Semibold"], [700, "Bold"]],
   },
 ] as const;
@@ -135,7 +138,16 @@ export default function StyleGuide() {
                 <div className="font-weight-list">
                   {family.weights.map(([weight, label]) => (
                     <div className="font-weight-sample" key={weight} style={{ fontFamily: `var(${family.variable})`, fontWeight: weight }}>
-                      <span>{weight} / {label}</span><strong>{family.sample}</strong>
+                      <span>{weight} / {label}</span>
+                      <div className="font-style-examples">
+                        {family.styles.map((style) => (
+                          <div className="font-case-examples" key={style} style={{ fontStyle: style }}>
+                            {family.styles.length > 1 && <em>{style}</em>}
+                            <strong>{family.sample.toUpperCase()}</strong>
+                            <strong>{family.sample.toLowerCase()}</strong>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
