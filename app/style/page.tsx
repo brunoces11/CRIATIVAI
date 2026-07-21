@@ -29,6 +29,30 @@ const headings = [
   ["H6", "Metadata and labels", "Inter", "0.76rem"],
 ] as const;
 
+const fontFamilies = [
+  {
+    role: "Primary / Display",
+    name: "Anton",
+    variable: "--font-display",
+    sample: "Creative AI Solutions",
+    weights: [[400, "Regular"]],
+  },
+  {
+    role: "Secondary / Interface",
+    name: "Inter",
+    variable: "--font-sans",
+    sample: "Intelligence made useful",
+    weights: [[100, "Thin"], [200, "Extra Light"], [300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"], [800, "Extra Bold"], [900, "Black"]],
+  },
+  {
+    role: "Tertiary / Brand serif",
+    name: "Cormorant Garamond",
+    variable: "--font-serif",
+    sample: "Thoughtful systems",
+    weights: [[600, "Semibold"], [700, "Bold"]],
+  },
+] as const;
+
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
@@ -78,7 +102,7 @@ export default function StyleGuide() {
       <section className="style-section style-section--surface" aria-labelledby="type-title">
         <div className="container">
           <div className="style-section-head">
-            <div><p className="eyebrow">02 / Typography</p><h2 id="type-title">Heading hierarchy</h2></div>
+            <div><p className="eyebrow">02 / Type scale</p><h2 id="type-title">Heading hierarchy</h2></div>
             <p>Anton creates editorial impact. Inter keeps interfaces direct and legible. Cormorant adds a human note to the brand.</p>
           </div>
           <div className="type-list">
@@ -94,10 +118,37 @@ export default function StyleGuide() {
         </div>
       </section>
 
+      <section className="style-section typography-section" aria-labelledby="typography-title">
+        <div className="container">
+          <div className="style-section-head">
+            <div><p className="eyebrow">03 / Font families</p><h2 id="typography-title">Typography</h2></div>
+            <p>Every font loaded by the site, with the exact weights available for product and brand use.</p>
+          </div>
+          <div className="font-family-list">
+            {fontFamilies.map((family) => (
+              <article className="font-family-card" key={family.name}>
+                <div className="font-family-head">
+                  <p className="micro-label">{family.role}</p>
+                  <h3>{family.name}</h3>
+                  <Spec>{family.variable}</Spec>
+                </div>
+                <div className="font-weight-list">
+                  {family.weights.map(([weight, label]) => (
+                    <div className="font-weight-sample" key={weight} style={{ fontFamily: `var(${family.variable})`, fontWeight: weight }}>
+                      <span>{weight} / {label}</span><strong>{family.sample}</strong>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="style-section" aria-labelledby="actions-title">
         <div className="container">
           <div className="style-section-head">
-            <div><p className="eyebrow">03 / Actions</p><h2 id="actions-title">Links & buttons</h2></div>
+            <div><p className="eyebrow">04 / Actions</p><h2 id="actions-title">Links & buttons</h2></div>
             <p>Interactions are quiet by default and respond with the accent color, movement, and clear keyboard focus.</p>
           </div>
           <div className="action-grid">
@@ -111,7 +162,7 @@ export default function StyleGuide() {
       <section className="style-section style-section--surface" aria-labelledby="components-title">
         <div className="container">
           <div className="style-section-head">
-            <div><p className="eyebrow">04 / Components</p><h2 id="components-title">Core building blocks</h2></div>
+            <div><p className="eyebrow">05 / Components</p><h2 id="components-title">Core building blocks</h2></div>
             <p>Reusable surfaces, borders, labels, and feedback patterns used to make the interface feel coherent.</p>
           </div>
           <div className="component-grid">
