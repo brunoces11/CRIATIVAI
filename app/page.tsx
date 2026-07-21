@@ -178,12 +178,8 @@ export default function Home() {
         <div className="container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">Selected work · 2024—2026</p>
               <h2 id="projects-title">Featured Projects</h2>
             </div>
-            <p className="section-intro">
-              Applied intelligence shaped into practical systems for people, teams, and high-stakes decisions.
-            </p>
           </div>
 
           <div className="projects-grid">

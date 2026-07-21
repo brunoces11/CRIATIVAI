@@ -533,6 +533,7 @@ img {
   position: relative;
   z-index: 3;
   max-height: 250px;
+  height: 250px;
   overflow: hidden;
   background: var(--graphite);
   border-top: 1px solid var(--border);
@@ -541,12 +542,14 @@ img {
 
 .stats-grid {
   display: grid;
+  height: 100%;
   grid-template-columns: repeat(4, 1fr);
+  align-items: center;
 }
 
 .stat {
-  min-height: 250px;
-  padding: 20px 28px;
+  min-height: 0;
+  padding: 0 28px;
   border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -658,20 +661,22 @@ img {
 .project-content h3 {
   max-width: 330px;
   margin: 0;
+  color: var(--white);
   font-size: clamp(1.7rem, 2.3vw, 2.2rem);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.02;
+  transition: color 220ms ease;
 }
 
-.project-content h3 {
+.project-card:hover .project-content h3 {
   color: var(--accent);
 }
 
 .project-content h3 span {
   display: block;
   margin-top: 6px;
-  color: inherit;
+  color: var(--white);
   font-size: 0.64em;
   font-weight: 400;
   letter-spacing: -0.01em;
@@ -870,7 +875,8 @@ img {
 .service-topline i::after { transform: rotate(90deg); }
 .service-card--featured .service-topline i { border-color: rgba(200, 162, 143, 0.58); filter: drop-shadow(0 0 8px rgba(200, 162, 143, 0.2)); }
 .service-card--featured .service-topline i::before, .service-card--featured .service-topline i::after { background: var(--accent); }
-.service-card h3 { margin: auto 0 16px; font-size: clamp(1.8rem, 2.5vw, 2.45rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1; }
+.service-card h3 { margin: auto 0 16px; color: var(--white); font-size: clamp(1.8rem, 2.5vw, 2.45rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1; transition: color 220ms ease; }
+.service-card:hover h3 { color: var(--accent); }
 .service-card p { max-width: 510px; margin: 0; color: var(--muted); font-size: 0.82rem; }
 
 .about-section { padding-top: 112px; }
