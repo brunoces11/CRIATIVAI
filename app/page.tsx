@@ -129,9 +129,8 @@ export default function Home() {
           <div className="hero-copy">
             <p className="eyebrow hero-eyebrow"><span /> Design × Engineering × Strategy</p>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">Creative</span>
-              <span className="hero-line hero-line--two">Artificial</span>
-              <span className="hero-line hero-line--three">Intelligence</span>
+              <span className="hero-line hero-line--one">CREATIVE</span>
+              <span className="hero-line hero-line--two">AI SOLUTIONS</span>
             </h1>
             <div className="hero-intro">
               <p>
@@ -140,7 +139,6 @@ export default function Home() {
               </p>
               <div className="hero-actions">
                 <a className="button button--light" href="#contact">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
-                <a className="text-link" href="#projects">View Projects <span aria-hidden="true">↓</span></a>
               </div>
             </div>
           </div>
