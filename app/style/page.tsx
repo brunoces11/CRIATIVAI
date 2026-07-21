@@ -54,6 +54,14 @@ const fontFamilies = [
     styles: ["normal"],
     weights: [[600, "Semibold"], [700, "Bold"]],
   },
+  {
+    role: "Quaternary / Condensed utility",
+    name: "Roboto Condensed",
+    variable: "--font-condensed",
+    sample: "Structured intelligence",
+    styles: ["normal", "italic"],
+    weights: [[100, "Thin"], [200, "Extra Light"], [300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"], [800, "Extra Bold"], [900, "Black"]],
+  },
 ] as const;
 
 function Brand() {

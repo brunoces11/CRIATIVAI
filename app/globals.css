@@ -1067,13 +1067,13 @@ img {
 .font-family-head { padding: 26px; border-right: 1px solid var(--border); background: rgba(0, 0, 0, 0.1); }
 .font-family-head .micro-label { color: var(--accent); }
 .font-family-head h3 { margin: 14px 0 8px; color: var(--white); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; }
-.font-weight-list { display: flex; padding: 12px 24px; flex-wrap: wrap; align-items: center; gap: 0 24px; }
+.font-weight-list { display: flex; padding: 16px 24px; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
 .font-weight-sample { display: grid; min-width: min(100%, 218px); padding: 12px 0; flex: 1 1 29%; gap: 7px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
 .font-weight-sample span { color: var(--dim); font-family: var(--font-sans), Inter, sans-serif; font-size: 0.61rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
 .font-style-examples { display: grid; gap: 9px; }
-.font-case-examples { display: grid; gap: 2px; }
+.font-case-examples { display: grid; gap: 7px; }
 .font-case-examples em { color: var(--accent); font-family: var(--font-sans), Inter, sans-serif; font-size: 0.55rem; font-style: inherit; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
-.font-case-examples strong { overflow: hidden; color: var(--white); font-size: 1.04rem; font-weight: inherit; letter-spacing: -0.025em; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+.font-case-examples strong { overflow: hidden; color: var(--white); font-size: 1.04rem; font-weight: inherit; letter-spacing: -0.025em; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
 .font-case-examples strong + strong { color: #afb2b5; }
 .component-card { min-height: 255px; padding: 28px; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(145deg, var(--surface-2), var(--surface)); box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12); }
 .component-card h3 { margin-top: 46px; font-size: 1.65rem; letter-spacing: -0.03em; }
