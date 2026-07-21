@@ -28,7 +28,7 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
 
   return (
     <header className={`site-header${scrolled ? " site-header--scrolled" : ""}${menuOpen ? " site-header--open" : ""}`}>
-      <div className="container header-inner">
+      <div className="site-container header-inner">
         <a href={page === "style" ? "/" : "#top"} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
 
         <button

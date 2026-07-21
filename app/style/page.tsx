@@ -83,7 +83,7 @@ export default function StyleGuide() {
       <SiteHeader brand={<Brand />} page="style" />
 
       <section className="style-hero">
-        <div className="container">
+        <div className="site-container">
           <p className="eyebrow">CriativAI / System reference</p>
           <h1><span>Style</span> Guide</h1>
           <p>
@@ -94,7 +94,7 @@ export default function StyleGuide() {
       </section>
 
       <section className="style-section" aria-labelledby="colors-title">
-        <div className="container">
+        <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">01 / Foundations</p><h2 id="colors-title">Color system</h2></div>
             <p>Deep graphite surfaces keep the interface focused; warm muted accents guide attention without noise.</p>
@@ -111,7 +111,7 @@ export default function StyleGuide() {
       </section>
 
       <section className="style-section style-section--surface" aria-labelledby="type-title">
-        <div className="container">
+        <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">02 / Type scale</p><h2 id="type-title">Heading hierarchy</h2></div>
             <p>Anton creates editorial impact. Inter keeps interfaces direct and legible. Cormorant adds a human note to the brand.</p>
@@ -130,7 +130,7 @@ export default function StyleGuide() {
       </section>
 
       <section className="style-section typography-section" aria-labelledby="typography-title">
-        <div className="container">
+        <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">03 / Font families</p><h2 id="typography-title">Typography</h2></div>
             <p>Every font loaded by the site, with the exact weights available for product and brand use.</p>
@@ -166,7 +166,7 @@ export default function StyleGuide() {
       </section>
 
       <section className="style-section" aria-labelledby="actions-title">
-        <div className="container">
+        <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">04 / Actions</p><h2 id="actions-title">Links & buttons</h2></div>
             <p>Interactions are quiet by default and respond with the accent color, movement, and clear keyboard focus.</p>
@@ -180,7 +180,7 @@ export default function StyleGuide() {
       </section>
 
       <section className="style-section style-section--surface" aria-labelledby="components-title">
-        <div className="container">
+        <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">05 / Components</p><h2 id="components-title">Core building blocks</h2></div>
             <p>Reusable surfaces, borders, labels, and feedback patterns used to make the interface feel coherent.</p>
@@ -200,7 +200,7 @@ export default function StyleGuide() {
       </section>
 
       <footer className="style-footer">
-        <div className="container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home ↗</a></div>
+        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home ↗</a></div>
       </footer>
     </main>
   );

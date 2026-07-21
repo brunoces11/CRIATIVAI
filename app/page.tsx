@@ -125,7 +125,7 @@ export default function Home() {
 
       <section className="hero" aria-labelledby="hero-title">
         <div className="hero-atmosphere" aria-hidden="true" />
-        <div className="container hero-grid">
+        <div className="site-container hero-grid">
           <div className="hero-copy">
             <p className="eyebrow hero-eyebrow"><span /> Design × Engineering × Strategy</p>
             <h1 id="hero-title" className="hero-title">
@@ -162,7 +162,7 @@ export default function Home() {
       </section>
 
       <section className="stats-section" id="experience" aria-label="Experience and key numbers">
-        <div className="container stats-grid">
+        <div className="site-container stats-grid">
           {stats.map((stat) => (
             <article className="stat" key={stat.value}>
               <strong className="stat-value">{stat.value}</strong>
@@ -173,7 +173,7 @@ export default function Home() {
       </section>
 
       <section className="section projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="container">
+        <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
               <h2 id="projects-title">Featured Projects</h2>
@@ -228,7 +228,7 @@ export default function Home() {
 
       <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
         <div className="grounding-orbit" aria-hidden="true" />
-        <div className="container grounding-grid">
+        <div className="site-container grounding-grid">
           <div className="grounding-copy">
             <p className="eyebrow">Technical foundation</p>
             <h2 id="grounding-title">Knowledge Grounding</h2>
@@ -258,7 +258,7 @@ export default function Home() {
       </section>
 
       <section className="section services-section" id="services" aria-labelledby="services-title">
-        <div className="container">
+        <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
               <p className="eyebrow">What we build</p>
@@ -286,7 +286,7 @@ export default function Home() {
       </section>
 
       <section className="section about-section" id="about" aria-labelledby="about-title">
-        <div className="container about-grid">
+        <div className="site-container about-grid">
           <div className="about-image-wrap">
             <img src="/bruno-portrait.png" alt="Bruno, founder of CriativAI" className="about-image" />
             <div className="about-image-meta">
@@ -318,7 +318,7 @@ export default function Home() {
       <section className="final-cta" id="contact" aria-labelledby="contact-title">
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
-        <div className="container final-cta-inner">
+        <div className="site-container final-cta-inner">
           <p className="eyebrow">Start a conversation</p>
           <h2 id="contact-title">Ready to Build Your Next <span>AI Product?</span></h2>
           <p>
@@ -332,7 +332,7 @@ export default function Home() {
       </section>
 
       <footer className="footer" id="footer">
-        <div className="container footer-grid">
+        <div className="site-container footer-grid">
           <div className="footer-brand">
             <a href="#top" aria-label="CriativAI home"><Brand /></a>
             <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
@@ -355,7 +355,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a href="#top">Back to top ↑</a></div>
       </footer>
     </main>
   );
