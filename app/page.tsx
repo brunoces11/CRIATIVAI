@@ -33,7 +33,7 @@ const services = [
   {
     index: "02",
     title: "Enterprise Knowledge System",
-    text: "Modern websites and high-converting landing pages designed for performance, scalability, and visual impact.",
+    text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
   },
   {
     index: "03",
