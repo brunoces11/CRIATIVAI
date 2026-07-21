@@ -621,7 +621,7 @@ img {
 
 .project-card {
   position: relative;
-  min-height: 560px;
+  min-height: 400px;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -645,7 +645,7 @@ img {
 .project-graphic-scale {
   position: absolute;
   inset: 0;
-  transform: scaleY(0.5);
+  transform: scale(0.72);
   transform-origin: center;
 }
 
@@ -950,7 +950,7 @@ img {
   .hero-title { font-size: clamp(4.2rem, 8.7vw, 7rem); }
   .hero-intro { grid-template-columns: 1fr; gap: 24px; }
   .hero-actions { flex-direction: row; align-items: center; }
-  .project-card { min-height: 520px; }
+  .project-card { min-height: 390px; }
   .project-content { padding-right: 0; }
   .project-content > p:last-child { padding-right: 44px; }
   .about-image-wrap { min-height: 620px; }
@@ -976,7 +976,7 @@ img {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .stat:nth-child(3), .stat:nth-child(4) { border-top: 1px solid rgba(255, 255, 255, 0.12); }
   .projects-grid { grid-template-columns: 1fr; }
-  .project-card { min-height: 600px; }
+  .project-card { min-height: 430px; }
   .section-heading--split, .grounding-grid, .about-grid, .footer-grid { grid-template-columns: 1fr; }
   .section-intro { margin-top: 24px; }
   .grounding-grid { gap: 48px; }
@@ -1003,7 +1003,7 @@ img {
   .stat + .stat { border-top: 1px solid rgba(255, 255, 255, 0.12); }
   .projects-section, .services-section, .about-section { padding-top: 80px; }
   .section-heading { margin-bottom: 34px; }
-  .project-card { min-height: 540px; }
+  .project-card { min-height: 400px; }
   .project-content { right: 20px; bottom: 20px; left: 20px; }
   .project-arrow { right: 18px; bottom: 19px; }
   .grounding-copy h3 { font-size: 2.32rem; }
