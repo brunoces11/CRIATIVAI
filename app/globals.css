@@ -468,20 +468,6 @@ img {
     radial-gradient(circle at center, transparent 52%, rgba(12, 15, 19, 0.24) 100%);
 }
 
-.portrait-caption {
-  position: absolute;
-  right: 24px;
-  bottom: 28px;
-  left: 24px;
-  display: flex;
-  margin: 0;
-  justify-content: space-between;
-  color: rgba(225, 225, 223, 0.62);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .portrait-orbit {
   position: absolute;
   z-index: 2;
@@ -564,27 +550,14 @@ img {
 
 .stat:last-child { border-right: 1px solid rgba(255, 255, 255, 0.12); }
 
-.stat-icon {
-  display: block;
-  height: 34px;
-  margin-bottom: 22px;
-  color: #b8bbc0;
-  font-size: 1.6rem;
-  font-weight: 300;
-  line-height: 1;
-}
-
-.stat-icon--accent {
-  color: var(--accent);
-  filter: drop-shadow(0 0 8px rgba(200, 162, 143, 0.2));
-}
-
 .stat-value {
   display: block;
   font-size: clamp(3rem, 4vw, 3.625rem);
   font-weight: 300;
   letter-spacing: -0.04em;
   line-height: 1;
+  color: var(--accent);
+  filter: drop-shadow(0 0 8px rgba(200, 162, 143, 0.2));
 }
 
 .stat p {
@@ -997,7 +970,6 @@ img {
   .hero-intro { margin-top: 30px; }
   .hero-actions { flex-wrap: wrap; }
   .hero-portrait-column { min-height: 560px; }
-  .portrait-caption { right: 16px; bottom: 18px; left: 16px; }
   .stats-grid { grid-template-columns: 1fr; }
   .stat { min-height: 190px; padding: 28px 20px; border-right: 1px solid rgba(255, 255, 255, 0.12); }
   .stat + .stat { border-top: 1px solid rgba(255, 255, 255, 0.12); }

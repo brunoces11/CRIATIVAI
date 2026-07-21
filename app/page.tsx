@@ -1,11 +1,10 @@
 import { SiteHeader } from "./SiteHeader";
 
 const stats = [
-  { icon: "◇", value: "20+", label: "Years of Experience" },
-  { icon: "⌁", value: "50+", label: "Interactive Projects Delivered" },
-  { icon: "◎", value: "150K+", label: "Followers Across Social Platforms", accent: true },
+  { value: "20+", label: "Years of Experience" },
+  { value: "50+", label: "Interactive Projects Delivered" },
+  { value: "150K+", label: "Followers Across Social Platforms" },
   {
-    icon: "✦",
     value: "5",
     label: "International Prompt Engineering Hackathon Awards",
   },
@@ -33,7 +32,7 @@ const services = [
   },
   {
     index: "02",
-    title: "Web Design",
+    title: "Enterprise Knowledge System",
     text: "Modern websites and high-converting landing pages designed for performance, scalability, and visual impact.",
   },
   {
@@ -156,7 +155,6 @@ export default function Home() {
                 className="hero-portrait"
               />
               <div className="hero-portrait-shade" aria-hidden="true" />
-              <p className="portrait-caption"><span>Founder portrait</span><span>São Paulo · Brazil</span></p>
             </div>
           </div>
         </div>
@@ -169,7 +167,6 @@ export default function Home() {
         <div className="container stats-grid">
           {stats.map((stat) => (
             <article className="stat" key={stat.value}>
-              <span className={`stat-icon${stat.accent ? " stat-icon--accent" : ""}`} aria-hidden="true">{stat.icon}</span>
               <strong className="stat-value">{stat.value}</strong>
               <p>{stat.label}</p>
             </article>
