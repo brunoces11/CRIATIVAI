@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Cormorant_Garamond, Inter } from "next/font/google";
 import { headers } from "next/headers";
+import TargetMode from "@/components/target-mode/TargetMode";
 import "./globals.css";
 
 const anton = Anton({
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body className={`${anton.variable} ${inter.variable} ${cormorant.variable}`}>
         {children}
+        <TargetMode />
       </body>
     </html>
   );
