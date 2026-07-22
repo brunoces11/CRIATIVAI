@@ -1108,7 +1108,8 @@ img {
   .site-container { width: calc(100% - 56px); }
   .header-inner { min-height: 72px; }
   .menu-toggle { display: block; }
-  .header-right { position: fixed; inset: 0; display: flex; padding: 120px 28px 42px; flex-direction: column; align-items: flex-start; justify-content: space-between; visibility: hidden; opacity: 0; background: rgba(21, 26, 32, 0.98); transform: translateY(-10px); transition: opacity 250ms ease, visibility 250ms ease, transform 250ms ease; }
+  .site-header--open { background: #151a20; backdrop-filter: none; }
+  .header-right { position: fixed; z-index: 1; inset: 0; display: flex; padding: 120px 28px 42px; flex-direction: column; align-items: flex-start; justify-content: space-between; visibility: hidden; opacity: 0; background: #151a20; transform: translateY(-10px); transition: opacity 250ms ease, visibility 250ms ease, transform 250ms ease; }
   .site-header--open .header-right { visibility: visible; opacity: 1; transform: translateY(0); }
   .primary-nav { flex-direction: column; align-items: flex-start; gap: 24px; }
   .primary-nav a { color: var(--white); font-family: var(--font-display), Impact, sans-serif; font-size: clamp(2.8rem, 10vw, 4.5rem); letter-spacing: -0.025em; line-height: 0.9; text-transform: uppercase; }
