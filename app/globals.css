@@ -24,6 +24,7 @@
 html {
   scroll-behavior: smooth;
   background: var(--graphite);
+  overflow-x: hidden;
 }
 
 body {
@@ -1105,11 +1106,12 @@ img {
 }
 
 @media (max-width: 860px) {
-  .site-container { width: calc(100% - 56px); }
+  .site-container { width: 80%; }
+  main, section, footer { max-width: 100%; }
   .header-inner { min-height: 72px; }
   .menu-toggle { display: block; }
   .site-header--open { background: #151a20; backdrop-filter: none; }
-  .header-right { position: fixed; z-index: 1; inset: 0; display: flex; padding: 120px 28px 42px; flex-direction: column; align-items: flex-start; justify-content: space-between; visibility: hidden; opacity: 0; background: #151a20; transform: translateY(-10px); transition: opacity 250ms ease, visibility 250ms ease, transform 250ms ease; }
+  .header-right { position: fixed; z-index: 1; inset: 0; display: flex; padding: 120px 28px 42px; flex-direction: column; align-items: flex-start; justify-content: space-between; visibility: hidden; overflow-x: hidden; opacity: 0; background: #151a20; transform: translateY(-10px); transition: opacity 250ms ease, visibility 250ms ease, transform 250ms ease; }
   .site-header--open .header-right { visibility: visible; opacity: 1; transform: translateY(0); }
   .primary-nav { flex-direction: column; align-items: flex-start; gap: 24px; }
   .primary-nav a { color: var(--white); font-family: var(--font-display), Impact, sans-serif; font-size: clamp(2.8rem, 10vw, 4.5rem); letter-spacing: -0.025em; line-height: 0.9; text-transform: uppercase; }
@@ -1136,7 +1138,7 @@ img {
 }
 
 @media (max-width: 560px) {
-  .site-container { width: calc(100% - 40px); }
+  .site-container { width: 80%; }
   .section { padding: 64px 0; }
   .brand-name { display: none; }
   .hero-grid { padding-top: 42px; }
