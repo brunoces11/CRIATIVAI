@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     calendar_max_window_days: int = 14
     calendar_suggestion_count: int = 3
     calendar_add_google_meet: bool = True
+    calendar_event_title: str = "Reunião CriativAI"
+    calendar_event_description: str = "Agendamento realizado via CriativAI."
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -1762,3 +1762,63 @@ Próxima etapa:
 - Etapa 10 - Criação de evento com confirmação e idempotência.
 - Usar Google Meet como padrão.
 - Antes de criar evento, revalidar o slot via FreeBusy e preservar idempotência.
+
+===============================================================================
+14. ETAPA 10 CONCLUÍDA - CRIAÇÃO DE BOOKING NO CALENDAR
+===============================================================================
+
+Escopo implementado:
+
+- Criada função interna calendar_create_event.
+- Não foi criado endpoint público de Calendar nesta etapa.
+- Criação exige confirmação explícita.
+- Criação exige conversa existente.
+- Criação exige e-mail de participante em formato válido.
+- Criação exige idempotency_key validada.
+- Retry com a mesma idempotency_key retorna o booking já confirmado sem chamar
+  novamente o Google Calendar.
+- Antes de criar evento, o backend revalida se o slot ainda está entre os slots
+  oferecidos por calendar_check_availability.
+- Evento Google recebe ID determinístico compatível com as regras documentadas
+  da Calendar API.
+- Evento é criado como opaque para bloquear horário.
+- sendUpdates=all é usado para enviar convite.
+- Google Meet é solicitado por padrão via conferenceDataVersion=1 e
+  conferenceData.createRequest.
+- Título padrão: Reunião CriativAI.
+- Descrição padrão: Agendamento realizado via CriativAI.
+- Google Event ID é persistido apenas no booking interno.
+- Estado da conversa é atualizado para confirmed após criação bem-sucedida.
+
+Testes específicos adicionados:
+
+- Criação persiste booking confirmado.
+- Criação chama Google Calendar com Google Meet.
+- Criação usa sendUpdates=all.
+- Retry idempotente não faz segunda chamada ao Google.
+- Confirmação explícita é obrigatória.
+- Slot não oferecido/indisponível é rejeitado.
+
+Validação da etapa:
+
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 33 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário: PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente. docker info não concluiu dentro
+  do limite de validação nesta rodada.
+
+Correções aplicadas durante a etapa:
+
+- Garantido que conferenceData entra no corpo antes da chamada de insert.
+- Mantido Google Meet como padrão configurável por Settings.
+
+Próxima etapa:
+
+- Etapa 11 - Reagendamento e cancelamento.
+- Continuar preservando propriedade do booking pelo banco interno e nunca aceitar
+  Google Event ID vindo do visitante ou do modelo.
