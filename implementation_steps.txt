@@ -1551,3 +1551,50 @@ Uma etapa só está concluída quando todos os itens abaixo forem verdadeiros:
 [ ] Próximo gate está resolvido ou a execução pausou para o usuário.
 
 Somente depois disso iniciar a próxima etapa.
+
+===============================================================================
+9. REGISTRO DE VALIDAÇÃO - 2026-07-23 - ANTES DA ETAPA 9
+===============================================================================
+
+Status desta rodada:
+
+- Worktree inicial limpo e alinhado com origin/main.
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 25 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário, usando backend/alembic.ini:
+  PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente, pois docker info não respondeu
+  dentro do limite de validação. Este bloqueio já vinha sendo observado e não
+  altera o status funcional do código validado fora do container.
+
+Correções aplicadas nesta rodada:
+
+- Nenhuma correção de código foi necessária.
+- A chamada manual de validação de Alembic foi ajustada para usar o arquivo de
+  configuração correto do projeto: backend/alembic.ini.
+
+Próxima etapa avaliada:
+
+- Etapa 9 - Disponibilidade/FreeBusy.
+
+Gate obrigatório antes de iniciar a Etapa 9:
+
+- G3 continua pendente. Não implementar disponibilidade, criação de horários ou
+  lógica de agendamento sem decisão do usuário sobre:
+  dias da semana, horário inicial/final, duração da reunião, intervalo/buffer,
+  antecedência mínima, janela máxima futura, almoço, feriados, limite diário,
+  quantidade de sugestões, campos obrigatórios do visitante, título/descrição
+  permitidos no evento e uso ou não de Google Meet.
+- OAuth do proprietário precisa estar conectado manualmente via rota/admin antes
+  de qualquer smoke real com Calendar.
+
+Decisão operacional:
+
+- Pausar antes da Etapa 9 até o usuário fornecer as regras críticas de agenda.
+- Não inventar defaults de calendário, para evitar comportamento incorreto em
+  produção.
