@@ -446,6 +446,21 @@ Critérios de aceite:
 - Ausência de variável obrigatória em produção gera erro seguro e sem valor.
 - O .env real continua ignorado e não é staged.
 
+Status da execução:
+
+- CONCLUIDA em 2026-07-23.
+- Escopo implementado: settings seguro, redaction de validação, isolamento de
+  dotenv nos testes, .env.example canonico, remocao de .env.exemple, suite
+  pytest backend e recuperacao do teste vertical.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - npm run test:backend: PASSOU.
+  - git diff --check: PASSOU.
+  - varredura simples de padroes sensiveis: PASSOU, sem valores reais.
+  - commit/push: concluido pelo commit "Etapa 1 - Configuracao segura e baseline".
+
 -------------------------------------------------------------------------------
 ETAPA 2 - CHAT UI BASE
 Timebox: 40 a 50 minutos

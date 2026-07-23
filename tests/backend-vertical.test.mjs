@@ -26,7 +26,17 @@ function findVenvPython() {
 
 function backendEnv() {
   return {
-    ...process.env,
+    PATH: process.env.PATH,
+    Path: process.env.Path,
+    PATHEXT: process.env.PATHEXT,
+    SYSTEMROOT: process.env.SYSTEMROOT,
+    SystemRoot: process.env.SystemRoot,
+    COMSPEC: process.env.COMSPEC,
+    TEMP: process.env.TEMP,
+    TMP: process.env.TMP,
+    PYTHONPATH: root,
+    APP_ENV: "test",
+    CRIATIVAI_LOAD_DOTENV: "0",
     DATABASE_URL: databaseUrl,
     FRONTEND_DIST_DIR: join(root, "dist"),
   };
