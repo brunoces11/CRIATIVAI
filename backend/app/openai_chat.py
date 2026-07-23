@@ -16,7 +16,12 @@ class OpenAIChatUnavailable(RuntimeError):
     pass
 
 
-def stream_openai_text(settings: Settings, history: Sequence[Message], user_message: str) -> Iterator[str]:
+def stream_openai_text(
+    settings: Settings,
+    history: Sequence[Message],
+    user_message: str,
+    summary: str | None = None,
+) -> Iterator[str]:
     if settings.openai_mock_response is not None:
         for token in settings.openai_mock_response.split(" "):
             yield f"{token} "
@@ -33,8 +38,8 @@ def stream_openai_text(settings: Settings, history: Sequence[Message], user_mess
     try:
         with client.responses.stream(
             model=settings.openai_model,
-            instructions=load_sdr_prompt(settings.sdr_prompt_path),
-            input=build_response_input(history, user_message),
+            instructions=build_instructions(settings.sdr_prompt_path, summary),
+            input=build_response_input(history, user_message, settings.chat_context_recent_messages),
             store=False,
         ) as stream:
             for event in stream:
@@ -48,14 +53,21 @@ def stream_openai_text(settings: Settings, history: Sequence[Message], user_mess
         raise OpenAIChatUnavailable(PUBLIC_OPENAI_ERROR) from exc
 
 
-def build_response_input(history: Sequence[Message], user_message: str) -> list[dict[str, str]]:
+def build_response_input(history: Sequence[Message], user_message: str, recent_limit: int = 12) -> list[dict[str, str]]:
     items: list[dict[str, str]] = []
-    for message in history[-12:]:
+    for message in history[-recent_limit:]:
         if message.role not in {"user", "assistant"}:
             continue
         items.append({"role": message.role, "content": message.content})
     items.append({"role": "user", "content": user_message})
     return items
+
+
+def build_instructions(path: Path, summary: str | None) -> str:
+    prompt = load_sdr_prompt(path)
+    if not summary:
+        return prompt
+    return f"{prompt}\n\nCurrent conversation summary for continuity:\n{summary}"
 
 
 def load_sdr_prompt(path: Path) -> str:

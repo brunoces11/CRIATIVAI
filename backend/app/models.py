@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -21,6 +21,8 @@ class Conversation(Base):
     visitor_company: Mapped[str | None] = mapped_column(String(200), nullable=True)
     visitor_country: Mapped[str | None] = mapped_column(String(120), nullable=True)
     visitor_timezone: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    booking_state: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    last_activity_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -33,11 +35,14 @@ class Conversation(Base):
 
 class Message(Base):
     __tablename__ = "messages"
+    __table_args__ = (UniqueConstraint("conversation_id", "turn_id", "role", name="uq_messages_conversation_turn_role"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id", ondelete="CASCADE"), index=True)
     role: Mapped[str] = mapped_column(String(32), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="completed", nullable=False)
+    turn_id: Mapped[str | None] = mapped_column(String(96), nullable=True)
     metadata_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
 

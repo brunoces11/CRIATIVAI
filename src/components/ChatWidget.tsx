@@ -116,6 +116,7 @@ export function ChatWidget() {
     };
 
     const assistantMessageId = crypto.randomUUID();
+    const turnId = crypto.randomUUID();
     setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: "assistant", text: "" }]);
     setDraft("");
     setError("");
@@ -127,7 +128,7 @@ export function ChatWidget() {
 
     try {
       let assistantText = "";
-      await sendChatMessage(message, sessionId, controller.signal, (streamEvent) => {
+      await sendChatMessage(message, sessionId, turnId, controller.signal, (streamEvent) => {
         if (streamEvent.event === "session_start") {
           setSessionId(streamEvent.session_id);
           window.localStorage.setItem(SESSION_STORAGE_KEY, streamEvent.session_id);

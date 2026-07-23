@@ -5,7 +5,7 @@ import pytest
 
 from backend.app.config import Settings
 from backend.app.models import Message
-from backend.app.openai_chat import build_response_input, load_sdr_prompt, stream_openai_text
+from backend.app.openai_chat import build_instructions, build_response_input, load_sdr_prompt, stream_openai_text
 
 
 def test_build_response_input_uses_recent_public_roles() -> None:
@@ -27,6 +27,16 @@ def test_load_sdr_prompt_reads_editable_file(tmp_path: Path) -> None:
     prompt_path.write_text("Default SDR prompt", encoding="utf-8")
 
     assert load_sdr_prompt(prompt_path) == "Default SDR prompt"
+
+
+def test_build_instructions_appends_summary_without_changing_messages(tmp_path: Path) -> None:
+    prompt_path = tmp_path / "prompt.md"
+    prompt_path.write_text("Default SDR prompt", encoding="utf-8")
+
+    instructions = build_instructions(prompt_path, "Visitor asked about automation.")
+
+    assert "Default SDR prompt" in instructions
+    assert "Visitor asked about automation." in instructions
 
 
 def test_stream_openai_text_uses_responses_stream_with_store_false(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

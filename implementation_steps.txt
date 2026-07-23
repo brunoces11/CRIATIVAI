@@ -771,6 +771,31 @@ Critérios de aceite:
 - Contexto enviado à OpenAI é limitado.
 - Rate limit e erros têm resposta pública estável.
 
+Status da execução:
+
+- CONCLUIDA em 2026-07-23.
+- Escopo implementado: migration 0002 com last_activity_at, booking_state,
+  status de mensagem, turn_id, indices e constraint de idempotencia; turn_id no
+  frontend; replay idempotente; bloqueio de stream simultaneo por sessao; rate
+  limit em memoria por sessao; limite configuravel de mensagem; logs com
+  request_id, duracao, categoria e session_id mascarado; contexto recente
+  limitado; sintese deterministica sem apagar historico.
+- Limites assumidos para G2 e configuraveis por ambiente:
+  - CHAT_MESSAGE_MAX_CHARS=2000.
+  - CHAT_RATE_LIMIT_COUNT=8.
+  - CHAT_RATE_LIMIT_WINDOW_SECONDS=60.
+  - CHAT_CONTEXT_RECENT_MESSAGES=12.
+  - OPENAI_TIMEOUT_SECONDS=30.
+  - Sem retry automatico depois que o stream comeca.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - Alembic upgrade 0001_initial -> head em banco temporario: PASSOU.
+  - git diff --check: PASSOU.
+  - commit/push: concluido pelo commit "Etapa 5 - Persistencia e seguranca do chat".
+
 -------------------------------------------------------------------------------
 ETAPA 6 - ADMIN MÍNIMO SOMENTE LEITURA
 Timebox: 40 a 55 minutos

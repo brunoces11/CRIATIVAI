@@ -48,6 +48,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(app, /pathname !== "\/adm"/);
   assert.match(chatWidget, /SESSION_STORAGE_KEY = "chat_session_id"/);
   assert.match(chatWidget, /sendChatMessage/);
+  assert.match(chatWidget, /const turnId = crypto\.randomUUID\(\)/);
   assert.match(chatStyles, /width: 110px/);
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
   assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);

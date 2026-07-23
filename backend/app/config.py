@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     openai_timeout_seconds: float = 30.0
     openai_mock_response: str | None = None
     sdr_prompt_path: Path = Path("backend/app/prompts/sdr_default.md")
+    chat_message_max_chars: int = 2000
+    chat_rate_limit_count: int = 8
+    chat_rate_limit_window_seconds: int = 60
+    chat_context_recent_messages: int = 12
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_redirect_uri: str | None = None

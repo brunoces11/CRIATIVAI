@@ -62,6 +62,7 @@ export async function fetchCurrentConversation(sessionId: string, signal: AbortS
 export async function sendChatMessage(
   message: string,
   sessionId: string | null,
+  turnId: string,
   signal: AbortSignal,
   onEvent: (event: ChatStreamEvent) => void,
 ): Promise<void> {
@@ -72,7 +73,7 @@ export async function sendChatMessage(
       accept: "application/x-ndjson",
       "content-type": "application/json",
     },
-    body: JSON.stringify({ message, session_id: sessionId }),
+    body: JSON.stringify({ message, session_id: sessionId, turn_id: turnId }),
   });
 
   if (!response.ok || !response.body) {
