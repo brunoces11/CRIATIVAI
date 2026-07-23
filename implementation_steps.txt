@@ -1,0 +1,1369 @@
+PLANO DE IMPLEMENTAÇÃO EM ETAPAS
+Chat SDR com OpenAI, Google Calendar, FastAPI, SQLite, Admin e Deploy
+
+Data do baseline: 2026-07-23
+Repositório: CRIATIVAI
+Branch verificada: main
+Commit de referência ao iniciar o planejamento: 2754a46
+
+===============================================================================
+1. OBJETIVO E REGRA DE USO DESTE ARQUIVO
+===============================================================================
+
+Este arquivo é o guia operacional para concluir o escopo do plano anexado sem
+reimplementar a fundação que já existe, sem alterar a landing page fora do
+necessário e sem introduzir arquitetura desnecessária.
+
+A execução deve:
+
+- preservar React + Vite + TypeScript no frontend;
+- preservar FastAPI + Python no runtime;
+- preservar SQLite + SQLAlchemy 2 + Alembic;
+- usar um único container e um único processo Uvicorn com um worker;
+- usar a OpenAI somente no backend;
+- usar a Responses API do SDK oficial da OpenAI, com streaming e tool calling;
+- usar Google OAuth e Google Calendar somente no backend;
+- manter o histórico completo no SQLite;
+- usar o Traefik para proteger /adm e /api/admin/* em produção;
+- manter Node apenas no desenvolvimento e no estágio de build;
+- não adicionar Next, Vinext, Drizzle, D1, Workers, Redis, PostgreSQL, Nginx
+  interno, filas, microsserviços, RAG, embeddings ou banco vetorial;
+- modificar somente o necessário para a etapa em andamento;
+- iniciar automaticamente a etapa seguinte somente após a etapa atual passar
+  por testes, correções, commit e push;
+- pausar quando um gate de decisão humana deste documento ainda não estiver
+  resolvido.
+
+As estimativas são timeboxes para distribuir bem a capacidade de execução.
+Elas não autorizam cortar testes, segurança ou critérios de aceite para cumprir
+um relógio.
+
+===============================================================================
+2. RESULTADO DA ANÁLISE DA CODEBASE ATUAL
+===============================================================================
+
+2.1. Fundação que já existe e deve ser reaproveitada
+
+- Frontend React 19, Vite 8 e TypeScript estrito.
+- Roteamento SPA simples em src/App.tsx, sem biblioteca de router.
+- Três páginas públicas existentes: /, /human-resources e /style.
+- Identidade visual centralizada em src/styles.css, incluindo as variáveis de
+  cor que devem ser reutilizadas pelo chat.
+- Backend mínimo em backend/app.
+- GET /api/health.
+- POST /api/chat com streaming NDJSON fake.
+- GET /api/conversations/current.
+- FastAPI servindo dist/, com fallback de SPA que não captura /api/*.
+- Cache longo para assets com hash e no-store para index.html.
+- SQLAlchemy síncrono, foreign keys e WAL no SQLite.
+- Alembic configurado e migration inicial já versionada.
+- Tabelas iniciais conversations, messages, bookings e oauth_states.
+- Dockerfile.deploy multi-stage com Node no build e Python no runtime.
+- Teste vertical que sobe FastAPI real, aplica migration e valida persistência.
+- .env real ignorado pelo Git e .dockerignore excluindo segredos e dados.
+
+Não recriar essa fundação. Evoluir os arquivos atuais e só separar módulos
+quando a responsabilidade nova justificar a separação.
+
+2.2. Lacunas e conflitos identificados
+
+- Não existe Chat UI.
+- Não existe frontend consumindo o streaming.
+- O backend ainda responde com texto fake.
+- O SDK da OpenAI e as bibliotecas Google ainda não estão instalados.
+- O Settings atual declara apenas banco e dist.
+- O Settings atual rejeita variáveis presentes no .env.
+- Não existem prompt, FAQ e base de conhecimento do SDR.
+- Não existem rate limiting, idempotência de turnos, logs seguros ou timeout
+  explícito.
+- O session_id tem alta entropia na criação, mas a validação e o comportamento
+  para ID inválido/desconhecido ainda precisam ser endurecidos.
+- O schema inicial não possui todos os campos necessários para status de
+  mensagem, última atividade, reagendamento e estado de booking.
+- Não existem APIs ou interface administrativas.
+- Não existem OAuth, FreeBusy ou mutações do Google Calendar.
+- deploy.env ainda classifica o projeto como static, sem runtime Python, porta
+  8000, volume persistente ou arquivo de ambiente do runtime.
+- README ainda descreve deploy estático.
+- .env.example está incompleto.
+- Existe um segundo arquivo .env.exemple, com nome incorreto, sem referência na
+  codebase. Ele deve ser consolidado no arquivo canônico após nova verificação.
+- Existe .openai/hosting.json, que representa um alvo de hosting diferente do
+  VPS Docker + Traefik definido como arquitetura final. Esse conflito deve ser
+  resolvido antes do deploy, sem manter duas fontes de verdade concorrentes.
+
+2.3. Baseline de validação observado
+
+- npm run lint: PASSOU.
+- npm test: PASSOU, com 3 testes.
+- npm run test:vertical: FALHOU antes da migration.
+
+Causa da falha vertical:
+
+- Pydantic Settings tratou as variáveis OpenAI, Google e APP_ENV do .env como
+  campos extras proibidos.
+- A mensagem de ValidationError incluiu os valores recebidos, expondo segredos
+  no log do teste.
+
+Consequência obrigatória:
+
+- A Etapa 1 deve corrigir primeiro a configuração e impedir que entradas
+  sensíveis apareçam em erros.
+- As credenciais que apareceram no log precisam ser rotacionadas pelo usuário
+  antes de qualquer chamada real à OpenAI ou ao Google.
+- Nenhum novo teste que carregue o .env real deve ser executado antes dessa
+  correção.
+
+2.4. Variáveis locais verificadas sem imprimir valores
+
+No momento da análise, o .env local existia e continha valores não vazios para:
+
+- OPENAI_API_KEY
+- OPENAI_MODEL
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+- GOOGLE_REDIRECT_URI
+- GOOGLE_CALENDAR_ID
+
+Essa constatação não substitui a rotação das credenciais expostas nem valida se
+o OAuth, os escopos e os redirect URIs estão corretamente configurados.
+
+===============================================================================
+3. VIABILIDADE, JANELAS DE EXECUÇÃO E CONTINUIDADE AUTOMÁTICA
+===============================================================================
+
+O escopo final completo não deve ser prometido dentro de uma única janela de
+6 horas. Há trabalho suficiente para dois blocos e existem ações externas que
+não podem ser automatizadas com segurança:
+
+- rotação de credenciais;
+- fornecimento do prompt, FAQ e regras comerciais;
+- consentimento OAuth na conta Google do proprietário;
+- criação do usuário/hash administrativo;
+- confirmação do hash imutável do plano de deploy;
+- validação de um evento real e de um convite real no Calendar.
+
+Distribuição recomendada:
+
+BLOCO A - até 6 horas ativas
+
+- Etapa 1: configuração segura e baseline recuperado;
+- Etapa 2: Chat UI base;
+- Etapa 3: integração vertical frontend/backend;
+- Etapa 4: OpenAI real;
+- Etapa 5: persistência, contexto e segurança mínima;
+- Etapa 6: admin somente leitura;
+- Etapa 7: runtime Docker candidato e regressão do bloco.
+
+Entrega do Bloco A:
+
+- chat real com streaming;
+- restauração de sessão;
+- histórico persistido e isolado;
+- síntese comercial;
+- admin de leitura;
+- runtime FastAPI validado em container;
+- sem Calendar ainda;
+- sem deploy público ainda.
+
+BLOCO B - aproximadamente 6 a 7 horas ativas, além das esperas humanas
+
+- Etapa 8: Google OAuth;
+- Etapa 9: disponibilidade e fusos;
+- Etapa 10: criação de evento;
+- Etapa 11: reagendamento e cancelamento;
+- Etapa 12: tool loop completo e fluxo de agendamento no chat;
+- Etapa 13: admin Calendar e proteção Traefik;
+- Etapa 14: deploy transacional;
+- Etapa 15: aceite final, limpeza e documentação.
+
+Continuidade:
+
+- Dentro de cada bloco, iniciar automaticamente a etapa seguinte quando todos
+  os critérios da etapa atual estiverem verdes e o push estiver confirmado.
+- Se um gate estiver pendente, pausar antes da primeira alteração dependente
+  dele, registrar exatamente o que falta e pedir a decisão ao usuário.
+- Não usar placeholders silenciosos em produção.
+- Um placeholder explicitamente marcado só pode existir em desenvolvimento e
+  o startup de produção deve falhar de forma segura se conteúdo obrigatório
+  ainda estiver ausente.
+- Se uma etapa ultrapassar 75 minutos por causa de uma descoberta não prevista,
+  não ampliar silenciosamente o escopo. Dividir em subetapas A/B, mantendo os
+  mesmos critérios de aceite e um commit/push para cada subetapa concluída.
+
+===============================================================================
+4. GATES DE DECISÃO HUMANA
+===============================================================================
+
+GATE G0 - SEGURANÇA DE CREDENCIAIS
+
+Responsável: usuário.
+Necessário antes de: qualquer chamada real OpenAI/Google.
+
+- Rotacionar OPENAI_API_KEY.
+- Rotacionar GOOGLE_CLIENT_SECRET ou recriar o cliente OAuth, conforme a
+  configuração do Google Cloud.
+- Atualizar somente o .env local/arquivo seguro do VPS.
+- Nunca colar os novos valores no chat, no Git, em deploy.env ou em labels.
+
+GATE G1 - CONTEÚDO DO SDR
+
+Responsável: usuário.
+Necessário antes de: Etapa 4.
+
+Fornecer e aprovar:
+
+- nome definitivo do agente;
+- prompt de sistema;
+- serviços e produtos;
+- público-alvo;
+- regras do test drive;
+- entregáveis, prazos, diferenciais e limitações;
+- FAQ;
+- URL do formulário de contato;
+- assuntos que o agente não deve responder;
+- regras de idioma e tom;
+- critérios para identificar interesse comercial.
+
+GATE G2 - LIMITES DO CHAT
+
+Responsável: usuário.
+Necessário antes de: conclusão da Etapa 5.
+
+Proposta técnica a aprovar ou substituir:
+
+- tamanho máximo já existente: 2.000 caracteres por mensagem;
+- somente um envio em andamento por sessão;
+- rate limit por sessão configurável por ambiente;
+- janela e quantidade numéricas não devem ser inventadas;
+- timeout OpenAI e quantidade de retries devem ser definidos e documentados.
+
+GATE G3 - REGRAS DE AGENDA
+
+Responsável: usuário.
+Necessário antes de: Etapa 9.
+
+Fornecer e aprovar:
+
+- dias da semana;
+- horário inicial e final;
+- duração da reunião;
+- intervalo entre reuniões;
+- antecedência mínima;
+- janela máxima no futuro;
+- intervalo de almoço, se houver;
+- tratamento de feriados;
+- limite diário;
+- quantidade de sugestões;
+- campos obrigatórios do visitante;
+- título e descrição permitidos no evento;
+- uso ou não de Google Meet.
+
+GATE G4 - GOOGLE CLOUD/OAUTH
+
+Responsável: usuário.
+Necessário antes de: validação manual da Etapa 8.
+
+- Calendar API habilitada.
+- OAuth consent screen configurada.
+- Conta proprietária e Calendar principal confirmados.
+- Redirect URI local:
+  http://localhost:8000/api/google/oauth/callback
+- Redirect URI de produção:
+  https://criativai.site/api/google/oauth/callback
+- Status Testing/Production conscientemente escolhido.
+- Escopos mínimos aprovados.
+- Consentimento realizado apenas pelo proprietário da agenda.
+
+GATE G5 - ADMIN E DESTINO DE DEPLOY
+
+Responsável: usuário.
+Necessário antes de: Etapa 13.
+
+- Confirmar que o VPS Docker + Traefik é a única fonte de verdade de produção.
+- Autorizar a retirada do marcador .openai/hosting.json se ele não fizer mais
+  parte do fluxo do projeto.
+- Definir o único usuário administrativo.
+- Gerar hash Basic Auth fora do Git.
+- Definir onde o arquivo de usuários do Traefik ficará no VPS, com permissão
+  restrita.
+- Confirmar que o template externo do deploy-full pode receber os routers e o
+  middleware administrativos sem ser sobrescrito no próximo deploy.
+
+GATE G6 - TESTE REAL DE CALENDAR
+
+Responsável: usuário.
+Necessário antes de: aceite da Etapa 12.
+
+- Fornecer um e-mail de teste autorizado.
+- Autorizar a criação e o cancelamento de um evento de teste.
+- Confirmar visualmente o recebimento de convite, atualização e cancelamento.
+
+GATE G7 - DEPLOY
+
+Responsável: usuário.
+Necessário durante: Etapa 14.
+
+- A execução deve primeiro rodar o modo somente leitura do deploy-full.
+- O plano completo e o HASH DO PLANO devem ser apresentados no chat.
+- A execução deve pausar até o usuário confirmar explicitamente esse hash.
+- Depois da confirmação, executar exatamente o comando emitido pelo planejador.
+- Não reconstruir o comando manualmente e não responder prompts interativos.
+
+===============================================================================
+5. PROTOCOLO OBRIGATÓRIO PARA TODAS AS ETAPAS
+===============================================================================
+
+Antes de modificar:
+
+1. Confirmar que a etapa anterior foi enviada ao remoto.
+2. Verificar branch, HEAD e git status.
+3. Não sobrescrever mudanças locais do usuário.
+4. Inspecionar apenas os arquivos envolvidos na etapa.
+5. Confirmar que todos os gates da etapa estão resolvidos.
+6. Registrar no resumo da etapa o escopo exato e os critérios de aceite.
+
+Durante a implementação:
+
+1. Reutilizar componentes, settings, sessão SQLAlchemy, schemas e helpers
+   existentes.
+2. Evitar classes abstratas, repository pattern, unit of work customizada e
+   arquivos de função única sem justificativa.
+3. Não mover a estrutura atual só por preferência arquitetural.
+4. Não alterar conteúdo ou layout da landing page fora dos pontos necessários
+   para anexar o widget.
+5. Nunca imprimir prompts completos, mensagens, tokens, chaves ou credenciais.
+6. Não executar chamadas reais em toda a suíte; usar mocks para OpenAI, Google
+   Calendar e OAuth.
+
+Fechamento obrigatório da etapa:
+
+1. Executar primeiro os testes específicos da etapa.
+2. Executar a regressão definida na própria etapa.
+3. Corrigir todo erro introduzido ou revelado no escopo da etapa.
+4. Reexecutar testes até todos passarem.
+5. Executar git diff --check.
+6. Revisar o diff e confirmar ausência de alteração fora do escopo.
+7. Confirmar, sem exibir conteúdo, que staging não contém:
+   - .env real;
+   - banco SQLite;
+   - arquivos WAL/SHM;
+   - google-token.json;
+   - chaves ou tokens;
+   - credenciais Basic Auth;
+   - conteúdo de /app/data ou data/.
+8. Atualizar neste arquivo o status e as evidências da etapa, quando a execução
+   real começar.
+9. Criar um único commit descritivo da etapa.
+10. Fazer push para origin da branch atual.
+11. Confirmar que o commit remoto corresponde ao commit local.
+12. Não usar force push.
+13. Iniciar automaticamente a próxima etapa se não houver gate pendente.
+
+Se o push falhar:
+
+- não iniciar a etapa seguinte;
+- diagnosticar divergência ou autenticação;
+- nunca usar force push como atalho;
+- pedir decisão do usuário se houver conflito remoto.
+
+===============================================================================
+6. ETAPAS DETALHADAS
+===============================================================================
+
+-------------------------------------------------------------------------------
+ETAPA 0 - PLANO DE IMPLEMENTAÇÃO
+Timebox: esta entrega
+Commit obrigatório: Etapa 0 - Plano de implementação
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Criar somente implementation_steps.txt.
+- Registrar baseline, riscos, gates, etapas, critérios e validações.
+- Não implementar chat, OpenAI, Google, admin ou deploy.
+
+Validação:
+
+- Confirmar que o arquivo está na raiz e em UTF-8.
+- Confirmar que todos os requisitos do plano anexado aparecem em alguma etapa.
+- Confirmar que cada etapa termina com teste, correção, commit e push.
+- Confirmar que git diff contém somente implementation_steps.txt.
+- Executar git diff --check.
+
+Critério de aceite:
+
+- Plano completo, executável, sem decisões comerciais inventadas e alinhado à
+  codebase real.
+
+-------------------------------------------------------------------------------
+ETAPA 1 - CONFIGURAÇÃO SEGURA E BASELINE RECUPERADO
+Timebox: 30 a 45 minutos
+Gate: G0 precisa estar resolvido antes de qualquer teste externo
+Commit obrigatório: Etapa 1 - Configuração segura e baseline
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Evoluir backend/app/config.py, sem criar uma segunda fonte de settings.
+- Declarar configurações de app, banco, frontend, OpenAI, Google, token path,
+  URL base, timezone base e CORS.
+- Usar SecretStr ou proteção equivalente para segredos.
+- Ativar ocultação de input em ValidationError.
+- Definir tratamento consciente para chaves extras do dotenv.
+- Impedir que testes automatizados carreguem o .env real.
+- Manter cache de settings, com forma segura de limpar/override em testes.
+- Completar .env.example apenas com nomes e valores vazios/fictícios.
+- Consolidar .env.exemple no arquivo canônico e remover o arquivo incorreto
+  somente após confirmar novamente que não há referências.
+- Adicionar infraestrutura mínima de testes Python, preferencialmente pytest em
+  requirements de desenvolvimento separado do runtime.
+- Criar teste de regressão com segredos sentinela que confirme que o texto do
+  erro e os logs não revelam os valores sentinela.
+- Fazer o teste vertical usar ambiente isolado e banco temporário.
+- Não modificar a migration inicial já versionada; qualquer evolução futura do
+  schema deve ser uma migration posterior.
+
+Testes específicos:
+
+- Testes de Settings com ambiente válido, ausente e inválido.
+- Teste de redaction/ocultação de entradas.
+- Teste que garante que o .env real não é lido na suíte.
+- Aplicar Alembic em banco temporário limpo.
+
+Regressão obrigatória:
+
+- npm run lint
+- npm test
+- npm run test:vertical
+- suíte backend adicionada nesta etapa
+
+Critérios de aceite:
+
+- O teste vertical volta a passar.
+- Nenhum valor secreto aparece em stdout/stderr.
+- A aplicação inicia com todas as variáveis suportadas.
+- Ausência de variável obrigatória em produção gera erro seguro e sem valor.
+- O .env real continua ignorado e não é staged.
+
+-------------------------------------------------------------------------------
+ETAPA 2 - CHAT UI BASE
+Timebox: 40 a 50 minutos
+Gate: especificação visual já fornecida; usar placeholder apenas para o nome
+Commit obrigatório: Etapa 2 - Chat UI base
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Criar um componente de chat isolado e reaproveitável.
+- Seguir o padrão já existente de componente + CSS específico, sem duplicar as
+  variáveis globais de src/styles.css.
+- Integrar o widget às páginas públicas, mas não ao /adm.
+- Implementar:
+  - botão flutuante 110 x 110 em desktop;
+  - ajuste responsivo seguro para telas pequenas;
+  - cor de acento existente;
+  - ícone branco;
+  - hover e focus visíveis e sutis;
+  - janela expandida;
+  - header com borda/acento;
+  - seta para baixo para recolher;
+  - mensagens do usuário em bubble;
+  - respostas do agente sem bubble;
+  - área rolável;
+  - campo de texto e botão de envio;
+  - estados disabled, loading, erro e indisponível;
+  - foco, aria-labels, navegação por teclado e reduced motion.
+- Manter a landing page intacta fora do widget.
+- Não conectar API nesta etapa.
+- Não inventar nome do agente; usar rótulo neutro claramente temporário se G1
+  ainda não tiver sido entregue.
+
+Testes específicos:
+
+- Renderização fechada e aberta.
+- Abrir e recolher.
+- Estados do input e do botão.
+- Renderização distinta de user/assistant.
+- Acessibilidade básica e foco.
+- Ausência do widget em /adm.
+- Verificação visual desktop e mobile.
+
+Regressão obrigatória:
+
+- npm run lint
+- testes frontend da etapa
+- npm test
+
+Critérios de aceite:
+
+- Aparência corresponde ao briefing.
+- Não há overflow ou sobreposição crítica em mobile.
+- Header, menu e CTAs da landing continuam funcionando.
+- Nenhuma chamada de rede foi adicionada.
+
+-------------------------------------------------------------------------------
+ETAPA 3 - CHAT FRONTEND + BACKEND VERTICAL
+Timebox: 45 a 60 minutos
+Gate: nenhum gate comercial
+Commit obrigatório: Etapa 3 - Chat streaming vertical
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Preservar o endpoint e o streaming fake como vertical de integração.
+- Formalizar o envelope NDJSON existente sem trocar tecnologia.
+- Eventos mínimos:
+  - session/start;
+  - delta;
+  - tool_status;
+  - done;
+  - error.
+- Manter um único nome de campo discriminador em backend, frontend e testes.
+- Implementar no frontend:
+  - chave localStorage chat_session_id;
+  - somente o ID opaco no localStorage;
+  - POST /api/chat;
+  - parser NDJSON que aceite linhas divididas entre chunks;
+  - Unicode;
+  - atualização progressiva da resposta;
+  - GET /api/conversations/current;
+  - restauração ao abrir o chat;
+  - remoção segura de ID local inválido/desconhecido;
+  - loading;
+  - erro recuperável;
+  - retry controlado;
+  - AbortController no unmount;
+  - bloqueio de envio duplicado durante o stream;
+  - scroll para a mensagem mais recente.
+- Validar session_id no backend antes de consultar o banco.
+- ID com formato inválido deve retornar erro de validação.
+- ID bem formado e desconhecido não pode acessar outra conversa nem criar uma
+  conversa silenciosamente durante a recuperação.
+- Garantir que o histórico público retorne apenas role/content permitidos.
+- Restringir CORS apenas à origem local configurada em desenvolvimento.
+
+Testes específicos:
+
+- Parser com JSON dividido em múltiplos chunks.
+- Parser com múltiplas linhas em um chunk.
+- Streaming Unicode.
+- Restauração da sessão.
+- ID inválido, desconhecido e de outra sessão.
+- Erro de rede antes e durante o stream.
+- Duplo clique/envio simultâneo.
+- localStorage sem mensagens, nome, e-mail ou tokens.
+
+Regressão obrigatória:
+
+- npm run lint
+- testes frontend
+- testes backend
+- npm test
+- npm run test:vertical
+
+Critérios de aceite:
+
+- O fake aparece progressivamente no widget.
+- Recarregar a página restaura a conversa correta.
+- Uma sessão não consegue ler outra.
+- Nenhuma mensagem é armazenada no localStorage.
+- APIs continuam retornando JSON e não o fallback SPA.
+
+-------------------------------------------------------------------------------
+ETAPA 4 - OPENAI REAL NO BACKEND
+Timebox: 60 a 75 minutos
+Gates: G0 e G1
+Commit obrigatório: Etapa 4 - Chat OpenAI
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Adicionar e fixar uma versão compatível do SDK oficial openai para Python.
+- Não adicionar Agents SDK.
+- Substituir o fake pela Responses API.
+- Ler OPENAI_API_KEY como segredo e OPENAI_MODEL de um único Settings.
+- Não hardcode de modelo em outros arquivos.
+- Manter prompt e base de conhecimento em arquivo local do backend.
+- Impedir startup de produção com prompt placeholder.
+- Gerenciar contexto a partir do SQLite.
+- Enviar:
+  - instruções do sistema;
+  - síntese acumulada, quando houver;
+  - últimas mensagens necessárias;
+  - estado de booking, quando houver.
+- Usar store=False, pois o SQLite é a fonte de verdade do histórico e não há
+  decisão para retenção remota adicional.
+- Consumir eventos tipados do streaming da Responses API.
+- Converter somente deltas de texto em eventos públicos.
+- Não repassar eventos internos, raciocínio, prompt ou argumentos sensíveis.
+- Persistir a resposta completa somente após conclusão bem-sucedida.
+- Tratar timeout, rate limit, autenticação, indisponibilidade e erro genérico
+  com mensagens públicas seguras.
+- Evitar retry depois que conteúdo já tiver sido transmitido.
+- Usar mocks no teste automatizado.
+- Fazer no máximo um smoke test real curto depois da rotação da chave.
+
+Testes específicos:
+
+- Streaming mockado com múltiplos deltas.
+- Conclusão bem-sucedida salva uma única resposta final.
+- Erro antes do primeiro delta.
+- Erro depois de delta parcial.
+- Timeout.
+- Resposta vazia.
+- Modelo e chave ausentes.
+- Asserção de store=False.
+- Asserção de que prompt/chave nunca entram no NDJSON ou nos logs.
+
+Regressão obrigatória:
+
+- npm run lint
+- testes frontend
+- testes backend
+- npm test
+- npm run test:vertical
+- smoke OpenAI controlado, se G0 estiver concluído
+
+Critérios de aceite:
+
+- Resposta real chega progressivamente.
+- Mensagem final é persistida uma única vez.
+- Resposta parcial não é marcada como concluída.
+- Falha externa não vaza detalhes.
+- Modelo pode ser trocado apenas por OPENAI_MODEL.
+
+-------------------------------------------------------------------------------
+ETAPA 5 - PERSISTÊNCIA, CONTEXTO E SEGURANÇA MÍNIMA DO CHAT
+Timebox: 50 a 65 minutos
+Gate: G2
+Commit obrigatório: Etapa 5 - Persistência e segurança do chat
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Criar migration posterior à 0001 para o mínimo necessário:
+  - conversations.last_activity_at;
+  - estado atual de booking, se necessário e sem nova tabela;
+  - messages.status;
+  - identificador idempotente do turno;
+  - campos de booking ausentes que já são exigidos pelo plano;
+  - índices e constraints realmente usados.
+- Não criar tabela visitors ou summaries.
+- Não editar a migration inicial se ela já puder ter sido aplicada.
+- Gerar um identificador de turno no frontend.
+- Impedir que retry do mesmo turno duplique mensagem user/assistant.
+- Definir comportamento para turno:
+  - pending;
+  - completed;
+  - failed/cancelled somente se necessário.
+- Limitar tamanho de mensagem conforme G2.
+- Implementar rate limit simples em memória por sessão.
+- Manter um único worker.
+- Bloquear mais de um stream simultâneo por sessão.
+- Usar locks locais apenas onde houver risco real de duplicidade.
+- Adicionar request ID, duração, categoria do erro e session ID mascarado.
+- Não logar conteúdo das mensagens ou PII desnecessária.
+- Atualizar last_activity_at em transações curtas.
+- Enviar ao modelo somente síntese + janela recente, não o histórico ilimitado.
+- Atualizar síntese comercial por regra determinística documentada:
+  - ao atingir o limite de contexto;
+  - após mudança comercial relevante;
+  - após booking.
+- Persistir o histórico completo independentemente da síntese.
+- Renderizar mensagens como texto; não inserir HTML retornado pelo modelo.
+
+Testes específicos:
+
+- Limite de caracteres.
+- Rate limit por sessão e isolamento entre sessões.
+- Dois envios simultâneos.
+- Retry do mesmo identificador de turno.
+- Queda do cliente no meio do stream.
+- Status de mensagem após sucesso/falha.
+- Janela de contexto limitada.
+- Síntese sem apagar histórico.
+- Logs sem prompt, conteúdo, e-mail, chave ou token.
+- Upgrade Alembic de 0001 para head e banco novo para head.
+
+Regressão obrigatória:
+
+- npm run lint
+- testes frontend
+- testes backend
+- npm test
+- npm run test:vertical
+
+Critérios de aceite:
+
+- Um turno é salvo no máximo uma vez.
+- Stream incompleto não aparece como resposta concluída.
+- Histórico completo continua recuperável.
+- Contexto enviado à OpenAI é limitado.
+- Rate limit e erros têm resposta pública estável.
+
+-------------------------------------------------------------------------------
+ETAPA 6 - ADMIN MÍNIMO SOMENTE LEITURA
+Timebox: 40 a 55 minutos
+Gate: nenhum; não publicar antes da Etapa 13
+Commit obrigatório: Etapa 6 - Admin somente leitura
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Adicionar /adm ao roteamento SPA simples já existente.
+- Não adicionar biblioteca de router se o roteamento atual continuar suficiente.
+- Criar:
+  - GET /api/admin/conversations;
+  - GET /api/admin/conversations/{conversation_id}.
+- Lista ordenada por last_activity_at decrescente.
+- Retornar no resumo apenas:
+  - ID interno para uso administrativo;
+  - nome/empresa ou visitante anônimo;
+  - última atividade;
+  - status da conversa;
+  - status do booking;
+  - síntese curta permitida.
+- Carregar mensagens completas somente após selecionar uma conversa.
+- Reutilizar apresentação de mensagens do chat.
+- Implementar dropdown/lista, empty state, loading e erro.
+- Manter somente leitura, sem envio manual.
+- Não expor session_id público completo, prompts, tokens, credenciais, metadata
+  interna ou Google Event ID.
+- Documentar claramente que as rotas ainda não podem ser publicadas até o
+  middleware Traefik da Etapa 13 estar validado.
+
+Testes específicos:
+
+- Ordenação por atividade.
+- Lista sem mensagens completas.
+- Detalhe somente após seleção.
+- Conversa inexistente.
+- Campos sensíveis ausentes.
+- UI /adm e seleção.
+- Chat público ausente em /adm.
+
+Regressão obrigatória:
+
+- npm run lint
+- testes frontend
+- testes backend
+- npm test
+- npm run test:vertical
+
+Critérios de aceite:
+
+- Admin lê todas as conversas e detalhes permitidos.
+- Nenhuma mutação existe na UI/admin API.
+- Contrato público de sessão continua isolado.
+- Build SPA serve /adm via fallback correto.
+
+-------------------------------------------------------------------------------
+ETAPA 7 - RUNTIME FASTAPI CANDIDATO E REGRESSÃO DO BLOCO A
+Timebox: 40 a 55 minutos
+Gate: não realizar deploy público nesta etapa
+Commit obrigatório: Etapa 7 - Runtime FastAPI candidato
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Revisar Dockerfile.deploy existente; alterar somente o necessário.
+- Manter build multi-stage.
+- Garantir explicitamente um worker Uvicorn.
+- Executar alembic upgrade head antes do Uvicorn.
+- Servir dist pelo FastAPI.
+- Garantir /app/data gravável e fora do diretório estático.
+- Garantir que a imagem final não contenha runtime Node.
+- Completar .dockerignore sem copiar .env, tokens, data, bancos ou caches.
+- Atualizar deploy.env de static para proposta de runtime Python, mas não
+  aplicar no VPS.
+- Declarar porta interna 8000.
+- Declarar proposta de volume persistente /app/data.
+- Atualizar README com desenvolvimento, migration, testes e runtime atuais.
+- Não incluir segredo em deploy.env.
+- Não retirar .openai/hosting.json antes da decisão G5.
+
+Testes específicos:
+
+- Build limpo da imagem.
+- Subir container candidato com banco/volume temporário.
+- GET /api/health.
+- GET /, /human-resources, /style e /adm.
+- /api/not-found retorna JSON 404.
+- Reiniciar container com o mesmo volume e confirmar persistência.
+- Confirmar que /app/data, backend, .env e Python não são servidos como assets.
+- Confirmar que node não existe na imagem final.
+
+Regressão obrigatória:
+
+- npm run lint
+- testes frontend
+- testes backend
+- npm test
+- npm run test:vertical
+- build e smoke do Dockerfile.deploy
+
+Critérios de aceite:
+
+- Bloco A integralmente verde.
+- Container único responde na porta 8000.
+- Migrations são idempotentes no restart.
+- Dados sobrevivem à recriação do container candidato.
+- Nenhum deploy público foi feito com admin desprotegido.
+
+-------------------------------------------------------------------------------
+ETAPA 8 - GOOGLE OAUTH
+Timebox: 40 a 55 minutos ativos, mais consentimento humano
+Gates: G0 e G4
+Commit obrigatório: Etapa 8 - Google OAuth
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Adicionar somente:
+  - google-api-python-client;
+  - google-auth;
+  - google-auth-oauthlib.
+- Fixar versões compatíveis.
+- Implementar:
+  - GET /api/admin/google/connect;
+  - GET /api/admin/google/status;
+  - GET /api/google/oauth/callback.
+- Usar escopos mínimos suficientes para FreeBusy e mutação de eventos.
+- Solicitar access_type=offline.
+- Gerar state aleatório, não adivinhável, temporário e de uso único.
+- Persistir state no schema já existente.
+- Validar state, expiração e used_at atomicamente.
+- Trocar code por credenciais no backend.
+- Persistir token apenas em GOOGLE_TOKEN_PATH, fora do Git e do frontend.
+- Restringir permissões do arquivo quando suportado.
+- Preservar refresh token ao atualizar access token.
+- Tratar token ausente, revogado ou expirado.
+- Status administrativo deve retornar somente connected/disconnected/error
+  seguro, nunca o token.
+- Callback deve redirecionar para uma URL limpa sem code/state na barra.
+- Nenhum visitante autoriza sua agenda.
+
+Testes específicos:
+
+- Criação de URL com offline access e escopos esperados.
+- State válido, inválido, expirado, reutilizado e concorrente.
+- Callback de sucesso e erro mockados.
+- Token salvo no path configurado.
+- Renovação mockada.
+- Status sem campos de credencial.
+- Logs sem code, token, client secret ou Authorization.
+
+Regressão obrigatória:
+
+- suíte completa do projeto
+- teste manual de consentimento do proprietário
+- restart local e confirmação de status conectado
+
+Critérios de aceite:
+
+- Token sobrevive ao restart.
+- State não pode ser reutilizado.
+- Token nunca aparece em resposta, log, Git ou imagem.
+- A etapa só termina após consentimento manual validado.
+
+-------------------------------------------------------------------------------
+ETAPA 9 - DISPONIBILIDADE E FUSOS
+Timebox: 50 a 65 minutos
+Gates: G3 e OAuth conectado
+Commit obrigatório: Etapa 9 - Disponibilidade do Calendar
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Implementar calendar_check_availability como ferramenta interna.
+- Não criar endpoint público de Calendar.
+- Consultar FreeBusy, não listar detalhes de eventos.
+- Usar GOOGLE_CALENDAR_ID.
+- Combinar períodos busy com as regras comerciais aprovadas em G3.
+- Usar zoneinfo e nomes IANA.
+- Armazenar instantes em UTC e preservar timezone original.
+- Considerar DST por conversão real, nunca offset fixo.
+- Retornar somente slots disponíveis e dados mínimos.
+- Nunca retornar título, descrição, participante ou ID de evento ocupado.
+- Detectar timezone no frontend com
+  Intl.DateTimeFormat().resolvedOptions().timeZone.
+- Não perguntar timezone em conversa comum.
+- Confirmar timezone quando o fluxo entrar em agendamento.
+- Não assumir America/Sao_Paulo como timezone do visitante.
+
+Testes específicos:
+
+- Dias/horários autorizados.
+- Duração, buffer, almoço, antecedência e janela máxima.
+- Limite diário e quantidade de opções.
+- Períodos busy parciais e sobrepostos.
+- Timezone IANA válido e inválido.
+- Conversão UTC.
+- Transições de horário de verão em zonas com DST.
+- Resposta sem detalhes privados.
+- Falhas e timeout do Google mockados.
+
+Regressão obrigatória:
+
+- suíte completa do projeto
+
+Critérios de aceite:
+
+- Slot busy nunca é oferecido.
+- Eventos manuais apenas bloqueiam horário.
+- Nenhum detalhe de evento manual é lido ou exposto.
+- Sugestões aparecem no timezone confirmado do visitante.
+
+-------------------------------------------------------------------------------
+ETAPA 10 - CRIAÇÃO DE EVENTO COM CONFIRMAÇÃO E IDEMPOTÊNCIA
+Timebox: 50 a 65 minutos
+Gates: G3 e OAuth conectado
+Commit obrigatório: Etapa 10 - Criação de booking no Calendar
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Implementar calendar_create_event como ferramenta interna.
+- Antes de criar, validar no backend:
+  - session/conversation válidas;
+  - nome;
+  - e-mail;
+  - timezone confirmado;
+  - slot previamente oferecido;
+  - duração aprovada;
+  - confirmação explícita em turno posterior à oferta;
+  - reconsulta FreeBusy;
+  - ausência de booking duplicado;
+  - idempotency key.
+- Manter estado mínimo do fluxo sem criar tabela desnecessária.
+- Usar lock local somente ao redor da seção crítica.
+- Usar transação curta.
+- Gerar ID de evento Google determinístico compatível com as regras da API para
+  reforçar idempotência.
+- Incluir participante e sendUpdates=all.
+- Persistir Google Event ID somente no booking interno.
+- Não aceitar Google Event ID vindo do visitante ou do modelo.
+- Salvar apenas síntese comercial mínima permitida na descrição.
+- Não copiar conversa completa para o Calendar.
+- Não criar Google Meet se G3 não o autorizou.
+- Se Google criar e SQLite falhar, reconciliar pelo ID determinístico na
+  próxima tentativa e registrar erro seguro.
+
+Testes específicos:
+
+- Campos obrigatórios.
+- Confirmação ausente.
+- Slot não oferecido.
+- FreeBusy mudou entre oferta e confirmação.
+- Dois requests simultâneos.
+- Mesmo idempotency key repetido.
+- Google sucesso + persistência falha + reconciliação.
+- Convite configurado com sendUpdates=all.
+- Descrição sem transcript, prompt ou dado indevido.
+
+Regressão obrigatória:
+
+- suíte completa do projeto
+
+Critérios de aceite:
+
+- Um booking confirmado gera no máximo um evento.
+- Conflito de horário impede criação.
+- Booking contém propriedade e auditoria suficientes.
+- Evento manual nunca é alterado.
+
+-------------------------------------------------------------------------------
+ETAPA 11 - REAGENDAMENTO E CANCELAMENTO
+Timebox: 40 a 55 minutos
+Gate: OAuth conectado
+Commit obrigatório: Etapa 11 - Reagendamento e cancelamento
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Implementar calendar_update_event e calendar_cancel_event.
+- Resolver Google Event ID exclusivamente por booking interno.
+- Validar que o booking:
+  - pertence à conversa;
+  - foi criado pelo sistema;
+  - não está cancelado;
+  - possui estado compatível com a ação.
+- Reagendamento:
+  - oferecer novo slot;
+  - pedir confirmação explícita;
+  - reconsultar FreeBusy;
+  - atualizar o mesmo evento;
+  - usar sendUpdates=all;
+  - atualizar horários UTC, timezone, status e rescheduled_at.
+- Cancelamento:
+  - apresentar data/hora atuais;
+  - pedir confirmação explícita;
+  - deletar/cancelar o evento com sendUpdates=all;
+  - manter booking para auditoria;
+  - preencher status cancelled e cancelled_at.
+- Tornar retry idempotente.
+- Não permitir mutação de evento manual ou booking de outra conversa.
+
+Testes específicos:
+
+- Propriedade de booking.
+- Google Event ID forjado.
+- Reagendamento sem confirmação.
+- Novo slot ocupado.
+- Update mantém o mesmo evento.
+- Cancelamento repetido.
+- Booking de outra sessão.
+- Evento manual.
+- Timestamps e status de auditoria.
+- sendUpdates em update/delete.
+
+Regressão obrigatória:
+
+- suíte completa do projeto
+
+Critérios de aceite:
+
+- Somente bookings do sistema e da conversa atual sofrem mutação.
+- Reagendamento não cria evento duplicado.
+- Cancelamento libera horário e preserva auditoria local.
+
+-------------------------------------------------------------------------------
+ETAPA 12 - TOOL LOOP OPENAI E FLUXO COMPLETO DE AGENDAMENTO
+Timebox: 55 a 75 minutos ativos, mais teste real
+Gates: G3 e G6
+Commit obrigatório: Etapa 12 - Tool calling do Calendar
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Registrar exatamente as quatro ferramentas autorizadas:
+  - calendar_check_availability;
+  - calendar_create_event;
+  - calendar_update_event;
+  - calendar_cancel_event.
+- Usar schemas strict compatíveis com a Responses API.
+- Definir additionalProperties=false e campos required corretos.
+- Validar novamente todos os argumentos com Pydantic no backend.
+- Implementar allowlist; nome de ferramenta desconhecido deve falhar fechado.
+- Executar loop:
+  1. enviar contexto e tools;
+  2. receber texto/tool call;
+  3. validar;
+  4. executar ferramenta;
+  5. devolver function_call_output estruturado;
+  6. continuar até resposta final;
+  7. transmitir texto/status público;
+  8. persistir resultado.
+- Limitar quantidade de iterações/ferramentas por turno.
+- tool_status público deve ser genérico e não conter argumentos internos.
+- Coletar nome/e-mail/timezone somente quando necessário.
+- Exigir confirmação de timezone e confirmação final antes de mutação.
+- Atualizar síntese e estado do booking após cada ação relevante.
+- Testar prompt injection solicitando IDs, tokens ou mutação de evento alheio.
+- Executar o ciclo real autorizado:
+  - consultar;
+  - criar evento de teste;
+  - reagendar;
+  - cancelar;
+  - confirmar os e-mails do Google.
+
+Testes específicos:
+
+- Tool schemas strict.
+- Tool desconhecida.
+- Argumento extra/inválido.
+- Loop texto -> tool -> output -> texto.
+- Limite de iterações.
+- tool_status sanitizado.
+- Prompt injection.
+- Confirmação e propriedade em todos os fluxos.
+- Integração OpenAI/Google totalmente mockada.
+- Smoke real autorizado por G6.
+
+Regressão obrigatória:
+
+- suíte completa do projeto
+
+Critérios de aceite:
+
+- Chat consulta, cria, reagenda e cancela de ponta a ponta.
+- O modelo nunca executa ferramenta fora da allowlist.
+- O backend, não o modelo, aplica propriedade, idempotência e reconsulta.
+- Convite, atualização e cancelamento reais são confirmados.
+
+-------------------------------------------------------------------------------
+ETAPA 13 - ADMIN CALENDAR E PROTEÇÃO TRAEFIK
+Timebox: 40 a 55 minutos
+Gate: G5
+Commit obrigatório: Etapa 13 - Admin e proteção Traefik
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Mostrar no /adm:
+  - status OAuth;
+  - ação de conectar/reconectar;
+  - status do booking;
+  - data/hora/timezone do booking;
+  - sem Google Event ID ou token.
+- Proteger no Traefik:
+  - /adm;
+  - /adm/*;
+  - /api/admin/*.
+- Usar router administrativo com regra e prioridade explícitas sobre o router
+  público.
+- Aplicar middleware Basic Auth.
+- Preferir usersFile externo com permissão restrita a credencial em label.
+- Não proteger o site público nem /api/chat.
+- Callback OAuth permanece fora de /api/admin e protegido por state.
+- Confirmar que a automação deploy-full preservará routers/middleware no deploy
+  seguinte.
+- Se VPS for confirmado como destino único, remover .openai/hosting.json nesta
+  etapa e atualizar a documentação da fonte de verdade.
+- Não fazer deploy ainda.
+
+Testes específicos:
+
+- Validação estática da configuração Traefik/Compose gerada.
+- Router admin tem prioridade superior ao catch-all.
+- Requisição sem credencial recebe 401.
+- Credencial válida chega ao FastAPI.
+- Site e chat públicos continuam sem Basic Auth.
+- /api/admin não possui rota de bypass.
+- Callback OAuth continua acessível somente com state válido.
+
+Regressão obrigatória:
+
+- suíte completa do projeto
+- build da imagem
+- validação do Compose candidato
+
+Critérios de aceite:
+
+- Não existe caminho público para UI ou APIs admin em produção.
+- Credencial/hash não está no Git, chat, deploy.env ou imagem.
+- Fonte de verdade do deploy está documentada e não concorrente.
+
+-------------------------------------------------------------------------------
+ETAPA 14 - DEPLOY TRANSACIONAL NO VPS
+Timebox: 45 a 60 minutos ativos, excluindo espera da confirmação G7
+Gates: G5 e G7
+Commit obrigatório: Etapa 14 - Deploy FastAPI no VPS
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Confirmar repositório limpo e todos os commits anteriores no remoto.
+- Confirmar deploy.env:
+  - DEPLOY_STRATEGY=runtime;
+  - RUNTIME=python ou custom, conforme detecção real;
+  - comando de startup com migration + Uvicorn;
+  - INTERNAL_PORT=8000;
+  - volume persistente para /app/data;
+  - APP_ENV_FILE seguro existente no VPS;
+  - sem secrets no arquivo versionado.
+- Confirmar diretório persistente do projeto, escrita e backup.
+- Confirmar app.db e google-token.json fora do repositório.
+- Executar o planejador somente leitura do deploy-full.
+- Apresentar o plano completo e HASH DO PLANO.
+- Pausar para confirmação explícita do usuário.
+- Executar exatamente o comando confirmado.
+- Deixar o deploy-full:
+  - fixar commit;
+  - validar fingerprint remoto;
+  - construir candidato isolado;
+  - validar HTTP interno;
+  - ativar;
+  - testar DNS/TLS público;
+  - fazer rollback automático se o health público falhar.
+- Após ativação, validar:
+  - https://criativai.site/;
+  - /api/health;
+  - rotas SPA;
+  - chat;
+  - 401 no admin sem credencial;
+  - admin com credencial;
+  - status Google;
+  - volume após restart controlado.
+
+Se houver correção após um deploy falho:
+
+- criar novo commit e push;
+- gerar novo plano/hash;
+- pedir nova confirmação;
+- nunca reutilizar o hash anterior.
+
+Regressão obrigatória:
+
+- smoke público completo após TLS válido
+- inspeção de logs sem segredos
+- confirmação de persistência
+
+Critérios de aceite:
+
+- Produção usa o commit confirmado.
+- FastAPI é o único runtime da aplicação.
+- Porta 8000 não está publicada diretamente.
+- Traefik entrega HTTPS válido.
+- Rollback funciona se a ativação não passar no health público.
+
+-------------------------------------------------------------------------------
+ETAPA 15 - VALIDAÇÃO FINAL, LIMPEZA E DOCUMENTAÇÃO
+Timebox: 30 a 45 minutos
+Gates: todos os anteriores concluídos
+Commit obrigatório: Etapa 15 - Validação final
+-------------------------------------------------------------------------------
+
+Escopo:
+
+- Executar a matriz completa uma última vez.
+- Corrigir somente regressões relacionadas ao escopo implementado.
+- Revisar dependências e remover apenas as comprovadamente não usadas.
+- Revisar arquivos ignorados.
+- Confirmar que não existem .env, tokens, bancos ou hashes rastreados.
+- Confirmar migrations em:
+  - banco vazio -> head;
+  - banco 0001 -> head;
+  - restart com head já aplicado.
+- Confirmar backup e restauração documentados para:
+  - app.db;
+  - google-token.json.
+- Atualizar README com:
+  - setup local;
+  - variáveis por nome;
+  - migration;
+  - testes;
+  - OAuth;
+  - deploy;
+  - backup;
+  - rollback;
+  - limitações do MVP.
+- Atualizar este arquivo com status/evidências das etapas concluídas.
+- Não criar implementation-tasks.md paralelo; este arquivo é o tracker canônico.
+
+Matriz final obrigatória:
+
+- npm run lint
+- testes frontend
+- testes backend
+- npm test
+- npm run test:vertical
+- build Docker limpo
+- smoke do container
+- smoke público
+- fluxo OpenAI real curto
+- restauração de conversa no mesmo navegador
+- isolamento entre duas sessões
+- rate limit e erro
+- lista/detalhe admin
+- OAuth status
+- disponibilidade
+- criar/reagendar/cancelar booking de teste autorizado
+- convite/atualização/cancelamento por e-mail
+- proteção admin sem/com credencial
+- restart com persistência
+
+Critérios finais de aceite:
+
+1. Landing page visualmente preservada.
+2. Chat responsivo, acessível e estável.
+3. Streaming real da OpenAI.
+4. Histórico persistido e restaurado.
+5. Sessões isoladas.
+6. Contexto limitado e síntese preservada.
+7. Sem resposta parcial concluída.
+8. Sem duplicidade em retry.
+9. OAuth offline funcional.
+10. Token persistente e protegido.
+11. FreeBusy sem exposição de detalhes.
+12. Timezone IANA confirmado.
+13. Evento criado com idempotência.
+14. Reagendamento atualiza o mesmo evento.
+15. Cancelamento preserva auditoria.
+16. Eventos manuais nunca sofrem mutação.
+17. Admin somente leitura.
+18. Admin e APIs administrativas protegidos.
+19. Migrations e volume persistente funcionais.
+20. Node ausente do runtime final.
+21. Um container e um worker.
+22. Segredos ausentes do frontend, imagem, Git, logs e respostas.
+23. Deploy público saudável em HTTPS.
+24. Rollback documentado e testável.
+25. Todos os testes e smoke tests verdes.
+
+===============================================================================
+7. REFERÊNCIAS TÉCNICAS VALIDADAS
+===============================================================================
+
+Consultar novamente as versões atuais antes de implementar, sempre priorizando
+documentação oficial:
+
+OpenAI:
+
+- Streaming Responses:
+  https://developers.openai.com/api/docs/guides/streaming-responses
+- Function calling:
+  https://developers.openai.com/api/docs/guides/function-calling
+- Conversation state:
+  https://developers.openai.com/api/docs/guides/conversation-state
+
+Google:
+
+- OAuth 2.0 para web server:
+  https://developers.google.com/identity/protocols/oauth2/web-server
+- Boas práticas OAuth:
+  https://developers.google.com/identity/protocols/oauth2/resources/best-practices
+- FreeBusy:
+  https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query
+- Criar eventos:
+  https://developers.google.com/workspace/calendar/api/guides/create-events
+- Events insert/update/delete:
+  https://developers.google.com/workspace/calendar/api/v3/reference/events/insert
+  https://developers.google.com/workspace/calendar/api/v3/reference/events/update
+  https://developers.google.com/workspace/calendar/api/v3/reference/events/delete
+- Escopos:
+  https://developers.google.com/workspace/calendar/api/auth
+
+FastAPI/Pydantic:
+
+- StreamingResponse:
+  https://fastapi.tiangolo.com/advanced/custom-response/
+- CORS:
+  https://fastapi.tiangolo.com/tutorial/cors/
+- Ocultar inputs em ValidationError:
+  https://docs.pydantic.dev/latest/api/config/
+
+Traefik:
+
+- Basic Auth:
+  https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+- Regras e prioridade:
+  https://doc.traefik.io/traefik/routing/routers/
+
+Deploy do projeto:
+
+- Seguir integralmente o contrato do skill deploy-full:
+  planejamento somente leitura, hash confirmado, commit fixo, candidato
+  isolado, health público e rollback.
+
+===============================================================================
+8. DEFINIÇÃO DE CONCLUSÃO DE UMA ETAPA
+===============================================================================
+
+Uma etapa só está concluída quando todos os itens abaixo forem verdadeiros:
+
+[ ] Escopo implementado sem alterações externas à etapa.
+[ ] Testes específicos passaram.
+[ ] Regressão obrigatória passou.
+[ ] Erros encontrados foram corrigidos e os testes reexecutados.
+[ ] Build relevante passou.
+[ ] Diff foi revisado.
+[ ] Nenhum segredo/dado local foi staged.
+[ ] implementation_steps.txt recebeu status/evidências.
+[ ] Commit descritivo da etapa foi criado.
+[ ] Push foi concluído sem force.
+[ ] Commit local e remoto correspondem.
+[ ] Próximo gate está resolvido ou a execução pausou para o usuário.
+
+Somente depois disso iniciar a próxima etapa.
