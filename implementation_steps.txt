@@ -1876,3 +1876,76 @@ Próxima etapa:
 - Etapa 12 - Tool loop completo e fluxo de agendamento no chat.
 - Integrar as ferramentas internas de disponibilidade, criação, reagendamento e
   cancelamento ao fluxo conversacional com salvaguardas de confirmação.
+
+===============================================================================
+16. ETAPA 12 CONCLUÍDA - TOOL CALLING DO CALENDAR
+===============================================================================
+
+Escopo implementado:
+
+- Registradas exatamente as quatro ferramentas autorizadas:
+  - calendar_check_availability;
+  - calendar_create_event;
+  - calendar_update_event;
+  - calendar_cancel_event.
+- Tool schemas strict com additionalProperties=false.
+- Argumentos das ferramentas são revalidados no backend com Pydantic.
+- Implementada allowlist fechada: ferramenta desconhecida falha com erro 400.
+- Argumento extra/inválido falha fechado.
+- Implementado loop Responses API:
+  1. envia contexto e tools;
+  2. recebe texto/tool call;
+  3. valida argumentos;
+  4. executa ferramenta interna;
+  5. devolve function_call_output estruturado;
+  6. continua até resposta final;
+  7. transmite texto/status público;
+  8. persiste resposta final no fluxo existente do chat.
+- Limite de iterações por turno adicionado via CHAT_TOOL_MAX_ITERATIONS.
+- tool_status público é genérico e não contém argumentos internos.
+- Instruções do modelo reforçadas para:
+  - nunca inventar disponibilidade;
+  - exigir timezone IANA;
+  - exigir confirmação explícita antes de criar, reagendar ou cancelar;
+  - nunca expor Google Event ID, tokens, segredos ou detalhes de eventos busy.
+- Compatibilidade preservada com streaming simples e testes/mocks antigos.
+
+Testes específicos adicionados:
+
+- Schemas strict e allowlist das quatro ferramentas.
+- Ferramenta desconhecida falha fechado.
+- Argumento extra/inválido é rejeitado.
+- Output de disponibilidade expõe somente slots.
+- Loop texto -> tool call -> function_call_output -> texto final.
+- tool_status público sanitizado/gérico durante execução de ferramenta.
+
+Validação da etapa:
+
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 41 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário: PASSOU.
+- Smoke real autorizado de Calendar: BLOQUEADO operacionalmente porque o token
+  OAuth do próprio app não existe em data/google-token.json. O conector Codex
+  está autorizado, mas ele não substitui o OAuth/token usado pelo backend em
+  produção/local.
+- Docker smoke local: BLOQUEADO pelo ambiente. Docker Desktop Linux Engine segue
+  instável/indisponível em docker info.
+
+Correções aplicadas durante a etapa:
+
+- Corrigida ordem de construção das ferramentas no módulo calendar_tools.
+- Mantida compatibilidade com mocks antigos do stream_openai_text.
+- Ajustado status público para mensagem genérica: Working with the calendar...
+- Evitada dependência extra de EmailStr/email-validator; validação simples de
+  e-mail permanece no backend.
+
+Próxima etapa:
+
+- Etapa 13 - Admin Calendar e proteção Traefik.
+- Antes de smoke real completo de Calendar, conectar o OAuth do app via
+  /api/admin/google/connect para gerar data/google-token.json no runtime alvo.

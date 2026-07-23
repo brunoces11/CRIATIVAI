@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     chat_rate_limit_count: int = 8
     chat_rate_limit_window_seconds: int = 60
     chat_context_recent_messages: int = 12
+    chat_tool_max_iterations: int = 4
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_redirect_uri: str | None = None
@@ -92,6 +93,8 @@ class Settings(BaseSettings):
             invalid.append("CALENDAR_MAX_WINDOW_DAYS")
         if self.calendar_suggestion_count <= 0:
             invalid.append("CALENDAR_SUGGESTION_COUNT")
+        if self.chat_tool_max_iterations <= 0:
+            invalid.append("CHAT_TOOL_MAX_ITERATIONS")
 
         if invalid:
             raise ValueError(f"Invalid calendar settings: {', '.join(invalid)}")

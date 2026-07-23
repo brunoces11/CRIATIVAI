@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from backend.app.config import get_settings
 from backend.app.models import Conversation, Message
-from backend.app.openai_chat import OpenAIChatUnavailable, stream_openai_text
+from backend.app.openai_chat import OpenAIChatUnavailable, PublicToolStatus, stream_openai_text
 from backend.app.schemas import ChatRequest
 
 logger = logging.getLogger(__name__)
@@ -75,8 +75,18 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     response = ""
     try:
         recent_history = _recent_completed_messages(history, settings.chat_context_recent_messages)
-        for delta in stream_openai_text(settings, recent_history, request.message, conversation.summary):
+        for delta in _stream_openai_text(
+            settings,
+            recent_history,
+            request.message,
+            conversation.summary,
+            session=session,
+            conversation=conversation,
+        ):
             if not delta:
+                continue
+            if isinstance(delta, PublicToolStatus):
+                yield _event("tool_status", {"message": delta.message})
                 continue
             response += delta
             yield _event("delta", {"text": delta})
@@ -199,3 +209,12 @@ def _log_chat_turn(request_id: str, masked_session: str, started_at: float, cate
         duration_ms,
         category,
     )
+
+
+def _stream_openai_text(settings, history, user_message, summary, *, session: Session, conversation: Conversation):
+    try:
+        return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation)
+    except TypeError as exc:
+        if "unexpected keyword argument" not in str(exc):
+            raise
+        return stream_openai_text(settings, history, user_message, summary)
