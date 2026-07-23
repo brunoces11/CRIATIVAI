@@ -924,6 +924,27 @@ Critérios de aceite:
 - Dados sobrevivem à recriação do container candidato.
 - Nenhum deploy público foi feito com admin desprotegido.
 
+Status da execução:
+
+- PARCIALMENTE IMPLEMENTADA em 2026-07-23.
+- Escopo implementado: Dockerfile.deploy com worker Uvicorn explicito, startup
+  com Alembic, runtime FastAPI em porta 8000, .dockerignore reforcado,
+  deploy.env ajustado como proposta de runtime Python/FastAPI, README e backend
+  README atualizados para desenvolvimento, migrations, testes e runtime atuais.
+- Bloqueio externo: Docker CLI existe, mas o Docker Desktop daemon nao esta
+  acessivel em npipe:////./pipe/dockerDesktopLinuxEngine. A tentativa de iniciar
+  Docker Desktop em segundo plano nao disponibilizou o servidor. Por isso,
+  build da imagem, smoke do container, validacao de volume, ausencia de Node na
+  imagem final e persistencia pos-restart ficam pendentes.
+- Evidencias nao-Docker:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU.
+  - npm run test:vertical: PASSOU apos ampliar a janela de readiness do teste.
+  - docker info: FALHOU por daemon indisponivel.
+  - git diff --check: PASSOU.
+  - commit/push: concluido pelo commit "Etapa 7 - Runtime FastAPI candidato".
+
 -------------------------------------------------------------------------------
 ETAPA 8 - GOOGLE OAUTH
 Timebox: 40 a 55 minutos ativos, mais consentimento humano

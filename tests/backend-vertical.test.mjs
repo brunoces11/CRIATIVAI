@@ -54,7 +54,7 @@ function runPython(args) {
 
 async function waitForHealth(getLogs) {
   let lastError = "";
-  for (let attempt = 0; attempt < 80; attempt += 1) {
+  for (let attempt = 0; attempt < 240; attempt += 1) {
     try {
       const response = await fetch(`${baseUrl}/api/health`);
       if (response.ok) return;

@@ -3,6 +3,10 @@
 node_modules
 dist
 data
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.openai
 .env
 .env.*
 !.env.example
@@ -10,6 +14,9 @@ data
 *.db-shm
 *.db-wal
 google-token.json
+*.key
+*.crt
+*.sqlite
 __pycache__
 *.pyc
 .codex-dev.*
