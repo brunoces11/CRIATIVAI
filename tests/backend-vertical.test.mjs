@@ -113,7 +113,7 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
       .trim()
       .split("\n")
       .map((line) => JSON.parse(line));
-    const session = events.find((event) => event.event === "session");
+    const session = events.find((event) => event.event === "session_start");
     assert.ok(session?.session_id);
     assert.ok(events.some((event) => event.event === "delta"));
     assert.ok(events.some((event) => event.event === "done"));
@@ -125,6 +125,9 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
     assert.equal(conversation.messages.length, 2);
     assert.equal(conversation.messages[0].role, "user");
     assert.equal(conversation.messages[1].role, "assistant");
+
+    const invalidSession = await fetch(`${baseUrl}/api/conversations/current?session_id=invalid session`);
+    assert.equal(invalidSession.status, 422);
   } finally {
     server.kill();
   }

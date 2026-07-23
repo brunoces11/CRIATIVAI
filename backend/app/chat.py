@@ -27,7 +27,7 @@ def stream_fake_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     session.add(Message(conversation_id=conversation.id, role="user", content=request.message))
     session.commit()
 
-    yield _event("session", {"session_id": conversation.session_id})
+    yield _event("session_start", {"session_id": conversation.session_id})
 
     response = (
         "Vertical test online. The backend received your message, stored it in SQLite, "

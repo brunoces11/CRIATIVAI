@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { fetchCurrentConversation, sendChatMessage } from "../lib/chatStream";
 import "./ChatWidget.css";
 
 type Message = {
@@ -6,6 +7,8 @@ type Message = {
   role: "user" | "assistant";
   text: string;
 };
+
+const SESSION_STORAGE_KEY = "chat_session_id";
 
 const initialMessages: Message[] = [
   {
@@ -20,9 +23,14 @@ export function ChatWidget() {
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [toolStatus, setToolStatus] = useState("");
   const [error, setError] = useState("");
+  const [sessionId, setSessionId] = useState<string | null>(() => window.localStorage.getItem(SESSION_STORAGE_KEY));
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const restoredRef = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -30,14 +38,54 @@ export function ChatWidget() {
   }, [open]);
 
   useEffect(() => {
+    if (!open || restoredRef.current || !sessionId) return;
+
+    const controller = new AbortController();
+    restoredRef.current = true;
+    setRestoring(true);
+    setError("");
+
+    fetchCurrentConversation(sessionId, controller.signal)
+      .then((conversation) => {
+        if (!conversation) {
+          window.localStorage.removeItem(SESSION_STORAGE_KEY);
+          setSessionId(null);
+          setMessages(initialMessages);
+          return;
+        }
+
+        setMessages(
+          conversation.messages.map((message, index) => ({
+            id: `${message.role}-${index}-${message.content.length}`,
+            role: message.role,
+            text: message.content,
+          })),
+        );
+      })
+      .catch((restoreError: unknown) => {
+        if (controller.signal.aborted) return;
+        setError(restoreError instanceof Error ? restoreError.message : "Unable to restore the conversation.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRestoring(false);
+      });
+
+    return () => controller.abort();
+  }, [open, sessionId]);
+
+  useEffect(() => {
+    return () => abortRef.current?.abort();
+  }, []);
+
+  useEffect(() => {
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior });
   }, [messages, loading]);
 
-  function submitMessage(event: FormEvent<HTMLFormElement>) {
+  async function submitMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const message = draft.trim();
-    if (!message || loading) return;
+    if (!message || loading || restoring) return;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -45,22 +93,55 @@ export function ChatWidget() {
       text: message,
     };
 
-    setMessages((current) => [...current, userMessage]);
+    const assistantMessageId = crypto.randomUUID();
+    setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: "assistant", text: "" }]);
     setDraft("");
     setError("");
+    setToolStatus("");
     setLoading(true);
 
-    window.setTimeout(() => {
-      setMessages((current) => [
-        ...current,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          text: "The assistant is almost ready. API connection comes in the next implementation step.",
-        },
-      ]);
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      let assistantText = "";
+      await sendChatMessage(message, sessionId, controller.signal, (streamEvent) => {
+        if (streamEvent.event === "session_start") {
+          setSessionId(streamEvent.session_id);
+          window.localStorage.setItem(SESSION_STORAGE_KEY, streamEvent.session_id);
+          return;
+        }
+
+        if (streamEvent.event === "delta") {
+          assistantText += streamEvent.text;
+          setMessages((current) => current.map((item) => (item.id === assistantMessageId ? { ...item, text: assistantText } : item)));
+          return;
+        }
+
+        if (streamEvent.event === "tool_status") {
+          setToolStatus(streamEvent.status);
+          return;
+        }
+
+        if (streamEvent.event === "error") {
+          throw new Error(streamEvent.message);
+        }
+
+        if (streamEvent.event === "done" && streamEvent.session_id) {
+          setSessionId(streamEvent.session_id);
+          window.localStorage.setItem(SESSION_STORAGE_KEY, streamEvent.session_id);
+        }
+      });
+    } catch (sendError: unknown) {
+      if (!controller.signal.aborted) {
+        setError(sendError instanceof Error ? sendError.message : "Unable to reach the assistant.");
+        setMessages((current) => current.filter((item) => item.id !== assistantMessageId || item.text));
+      }
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
+      setToolStatus("");
       setLoading(false);
-    }, 520);
+    }
   }
 
   return (
@@ -78,6 +159,7 @@ export function ChatWidget() {
           </header>
 
           <div className="chat-panel__messages" ref={transcriptRef} aria-live="polite">
+            {restoring ? <p className="chat-panel__status">Restoring conversation...</p> : null}
             {messages.map((message) => (
               <article key={message.id} className={`chat-message chat-message--${message.role}`}>
                 <p>{message.text}</p>
@@ -92,6 +174,7 @@ export function ChatWidget() {
             ) : null}
           </div>
 
+          {toolStatus ? <p className="chat-panel__status">{toolStatus}</p> : null}
           {error ? <p className="chat-panel__error">{error}</p> : null}
 
           <form className="chat-panel__form" onSubmit={submitMessage}>
@@ -103,7 +186,7 @@ export function ChatWidget() {
               rows={2}
               maxLength={2000}
               placeholder="Type your message"
-              disabled={loading}
+              disabled={loading || restoring}
               onChange={(event) => {
                 setDraft(event.target.value);
                 if (error) setError("");
@@ -115,7 +198,7 @@ export function ChatWidget() {
                 }
               }}
             />
-            <button type="submit" disabled={!draft.trim() || loading} aria-label="Send message" title="Send message">
+            <button type="submit" disabled={!draft.trim() || loading || restoring} aria-label="Send message" title="Send message">
               <SendIcon />
             </button>
           </form>

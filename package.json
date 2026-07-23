@@ -12,7 +12,7 @@
     "backend:migrate": "python -m alembic -c backend/alembic.ini upgrade head",
     "start": "npx serve@latest dist",
     "test:backend": "node tests/backend-tests.mjs",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "test": "npm run build && node --test tests/rendered-html.test.mjs tests/chat-stream-parser.test.mjs",
     "test:vertical": "npm run build && node --test tests/backend-vertical.test.mjs",
     "lint": "tsc --noEmit"
   },

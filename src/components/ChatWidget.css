@@ -172,11 +172,19 @@
   animation-delay: 240ms;
 }
 
+.chat-panel__status,
 .chat-panel__error {
   margin: 0 22px 14px;
-  color: #f0b9aa;
   font-size: 0.76rem;
   line-height: 1.4;
+}
+
+.chat-panel__status {
+  color: var(--muted);
+}
+
+.chat-panel__error {
+  color: #f0b9aa;
 }
 
 .chat-panel__form {

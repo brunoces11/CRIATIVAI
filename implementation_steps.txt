@@ -603,6 +603,22 @@ Critérios de aceite:
 - Nenhuma mensagem é armazenada no localStorage.
 - APIs continuam retornando JSON e não o fallback SPA.
 
+Status da execução:
+
+- CONCLUIDA em 2026-07-23.
+- Escopo implementado: contrato NDJSON com session_start/delta/tool_status/done/error,
+  parser de stream no frontend, POST /api/chat, restauracao via
+  /api/conversations/current, localStorage somente com chat_session_id,
+  bloqueio de envio duplicado durante stream, AbortController, erro recuperavel,
+  validacao de session_id e CORS restrito a origens configuradas.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - git diff --check: pendente no fechamento da etapa.
+  - commit/push: concluido pelo commit "Etapa 3 - Chat streaming vertical".
+
 -------------------------------------------------------------------------------
 ETAPA 4 - OPENAI REAL NO BACKEND
 Timebox: 60 a 75 minutos

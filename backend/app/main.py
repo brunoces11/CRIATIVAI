@@ -1,6 +1,8 @@
 from pathlib import Path
+import re
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -10,9 +12,19 @@ from backend.app.chat import stream_fake_chat
 from backend.app.config import get_settings
 from backend.app.db import get_session, ping_database
 from backend.app.models import Conversation
-from backend.app.schemas import ChatRequest, ConversationMessage, ConversationResponse, HealthResponse
+from backend.app.schemas import SESSION_ID_PATTERN, ChatRequest, ConversationMessage, ConversationResponse, HealthResponse
 
+settings = get_settings()
 app = FastAPI(title="CriativAI API")
+
+if settings.cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_methods=["GET", "POST"],
+        allow_headers=["content-type"],
+        allow_credentials=False,
+    )
 
 
 @app.get("/api/health", response_model=HealthResponse)
@@ -36,6 +48,9 @@ def chat(request: ChatRequest, session: Session = Depends(get_session)) -> Strea
 
 @app.get("/api/conversations/current", response_model=ConversationResponse)
 def current_conversation(session_id: str, session: Session = Depends(get_session)) -> ConversationResponse:
+    if not re.fullmatch(SESSION_ID_PATTERN, session_id):
+        raise HTTPException(status_code=422, detail="Invalid session_id")
+
     conversation = session.scalar(
         select(Conversation)
         .where(Conversation.session_id == session_id)
