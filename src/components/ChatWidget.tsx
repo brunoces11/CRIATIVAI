@@ -31,16 +31,24 @@ export function ChatWidget() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
   const restoredRef = useRef(false);
 
   function openChat() {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
     setRenderPanel(true);
     window.requestAnimationFrame(() => setOpen(true));
   }
 
   function closeChat() {
     setOpen(false);
-    window.setTimeout(() => setRenderPanel(false), 220);
+    closeTimerRef.current = window.setTimeout(() => {
+      setRenderPanel(false);
+      closeTimerRef.current = null;
+    }, 220);
   }
 
   useEffect(() => {
@@ -85,7 +93,10 @@ export function ChatWidget() {
   }, [open, sessionId]);
 
   useEffect(() => {
-    return () => abortRef.current?.abort();
+    return () => {
+      abortRef.current?.abort();
+      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+    };
   }, []);
 
   useEffect(() => {

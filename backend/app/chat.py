@@ -27,8 +27,6 @@ def get_or_create_conversation(session: Session, session_id: str | None) -> Conv
 def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     conversation = get_or_create_conversation_with_messages(session, request.session_id)
     history = list(conversation.messages)
-    session.add(Message(conversation_id=conversation.id, role="user", content=request.message))
-    session.commit()
 
     yield _event("session_start", {"session_id": conversation.session_id})
 
@@ -47,6 +45,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         yield _event("error", {"message": "The assistant returned an empty response. Please try again."})
         return
 
+    session.add(Message(conversation_id=conversation.id, role="user", content=request.message))
     session.add(Message(conversation_id=conversation.id, role="assistant", content=response))
     session.commit()
     yield _event("done", {"session_id": conversation.session_id})
