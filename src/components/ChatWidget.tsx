@@ -142,7 +142,7 @@ export function ChatWidget() {
         }
 
         if (streamEvent.event === "tool_status") {
-          setToolStatus(streamEvent.status);
+          setToolStatus(streamEvent.message);
           return;
         }
 
@@ -172,9 +172,12 @@ export function ChatWidget() {
       {renderPanel ? (
         <section className="chat-panel" aria-label="Chat conversation">
           <header className="chat-panel__header">
-            <div>
-              <p className="chat-panel__eyebrow">AI assistant</p>
-              <h2>Talk with CriativAI</h2>
+            <div className="chat-panel__identity">
+              <img className="chat-panel__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
+              <div className="chat-panel__identity-copy">
+                <p className="chat-panel__eyebrow">AI assistant</p>
+                <h2>Talk with CriativAI</h2>
+              </div>
             </div>
             <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>
               <ChevronDownIcon />
@@ -197,8 +200,12 @@ export function ChatWidget() {
             ) : null}
           </div>
 
-          {toolStatus ? <p className="chat-panel__status">{toolStatus}</p> : null}
-          {error ? <p className="chat-panel__error">{error}</p> : null}
+          {toolStatus || error ? (
+            <div className="chat-panel__feedback">
+              {toolStatus ? <p className="chat-panel__status">{toolStatus}</p> : null}
+              {error ? <p className="chat-panel__error">{error}</p> : null}
+            </div>
+          ) : null}
 
           <form className="chat-panel__form" onSubmit={submitMessage}>
             <label className="sr-only" htmlFor="chat-message">Message</label>

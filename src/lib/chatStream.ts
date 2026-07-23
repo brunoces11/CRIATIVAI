@@ -6,7 +6,7 @@ export type ChatMessage = {
 export type ChatStreamEvent =
   | { event: "session_start"; session_id: string }
   | { event: "delta"; text: string }
-  | { event: "tool_status"; status: string }
+  | { event: "tool_status"; message: string }
   | { event: "done"; session_id?: string }
   | { event: "error"; message: string };
 
@@ -101,8 +101,8 @@ function parseEventLine(line: string): ChatStreamEvent | null {
   if (event.event === "delta" && typeof event.text === "string") {
     return { event: "delta", text: event.text };
   }
-  if (event.event === "tool_status" && typeof event.status === "string") {
-    return { event: "tool_status", status: event.status };
+  if (event.event === "tool_status" && typeof event.message === "string") {
+    return { event: "tool_status", message: event.message };
   }
   if (event.event === "done") {
     return typeof event.session_id === "string" ? { event: "done", session_id: event.session_id } : { event: "done" };

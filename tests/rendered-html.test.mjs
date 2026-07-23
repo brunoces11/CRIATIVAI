@@ -46,6 +46,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   const app = await read("src/App.tsx");
   const chatWidget = await read("src/components/ChatWidget.tsx");
   const chatStyles = await read("src/components/ChatWidget.css");
+  const chatStream = await read("src/lib/chatStream.ts");
 
   assert.match(app, /<ChatWidget \/>/);
   assert.match(app, /pathname !== "\/adm"/);
@@ -56,7 +57,13 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
   assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);
   assert.match(chatStyles, /\.chat-panel__header[\s\S]*background: var\(--accent\)/);
+  assert.match(chatWidget, /className="chat-panel__avatar"/);
+  assert.match(chatWidget, /src="\/bruno-portrait\.png"/);
+  assert.match(chatStyles, /\.chat-panel__avatar[\s\S]*transform: scaleX\(-1\)/);
   assert.match(chatStyles, /\.chat-panel__messages[\s\S]*background: #fff/);
+  assert.match(chatStyles, /\.chat-panel__form[\s\S]*background: #fff/);
+  assert.match(chatStyles, /\.chat-panel__feedback[\s\S]*align-items: center/);
+  assert.match(chatStream, /tool_status"; message: string/);
   assert.match(chatStyles, /min-height: 37px/);
   assert.match(chatStyles, /chat-message--user/);
   assert.match(chatStyles, /chat-message--assistant/);

@@ -1949,3 +1949,71 @@ Próxima etapa:
 - Etapa 13 - Admin Calendar e proteção Traefik.
 - Antes de smoke real completo de Calendar, conectar o OAuth do app via
   /api/admin/google/connect para gerar data/google-token.json no runtime alvo.
+
+===============================================================================
+17. REVALIDAÇÃO DE USO REAL DO CHAT E AJUSTES VISUAIS - 2026-07-23
+===============================================================================
+
+Escopo executado nesta rodada:
+
+- Ajustado o painel do chat para manter fundo branco em todo o corpo do chat,
+  exceto o header, que permanece na cor de acento.
+- Formulário/input do chat agora usa fundo branco.
+- Área de feedback/erro do chat usa fundo branco e centralização vertical.
+- Corrigida compatibilidade do evento frontend tool_status com o payload real
+  emitido pelo backend: campo message.
+- Adicionado avatar do Bruno Cesar no header do chat usando public/bruno-portrait.png.
+- Avatar do header usa flip horizontal para olhar para a direita.
+- Avatar tem a mesma altura visual da área de identidade do header.
+
+Validação de chat, OpenAI e persistência:
+
+- .env local existe: SIM.
+- OPENAI_API_KEY presente: SIM, sem imprimir valor.
+- OPENAI_MODEL presente: SIM, sem imprimir valor.
+- GOOGLE_TOKEN_PATH/data/google-token.json presente: NÃO.
+- DATABASE_URL usa SQLite: SIM.
+- Teste controlado de persistência SQLite: PASSOU.
+  - conversa criada;
+  - 2 mensagens persistidas;
+  - roles persistidas: user, assistant;
+  - stream finalizou com done.
+- Teste real controlado com OpenAI: PASSOU.
+  - backend chamou OpenAI com as variáveis locais;
+  - stream finalizou com done;
+  - resposta de assistant foi gerada;
+  - user + assistant foram persistidos em SQLite temporário.
+
+Validação automatizada:
+
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 41 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário: PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente. Docker Desktop Linux Engine
+  retornou erro 500 em docker info.
+
+Status consolidado das etapas:
+
+- Etapas 0 a 12: concluídas e validadas.
+- Etapa 13: parcialmente pendente.
+  - Ainda falta UI/admin Calendar mais completa e proteção Traefik.
+  - Parte real do Google Calendar fica adiada até o OAuth do app ser conectado.
+- Etapa 14: pendente.
+  - Deploy transacional no VPS.
+  - Depende de Docker/ambiente de deploy estável e decisões finais de proteção.
+- Etapa 15: pendente.
+  - Validação final, limpeza e documentação.
+
+Decisão operacional:
+
+- Google Agenda real/OAuth do app será concluído em rodada posterior.
+- Para completar a integração real de Calendar, acessar /api/admin/google/connect
+  no runtime/local correto e concluir o consentimento Google para gerar
+  data/google-token.json fora do Git.
+- Até lá, o chat real com OpenAI e SQLite já está pronto para testes reais de
+  uso e persistência sem depender da agenda.
