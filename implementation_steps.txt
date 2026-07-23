@@ -1628,3 +1628,34 @@ Próxima etapa:
   produto/configuração.
 - Não avançar com lógica de agenda até o usuário definir as regras operacionais
   e confirmar o OAuth do proprietário conectado.
+
+===============================================================================
+11. REGISTRO DE REVALIDAÇÃO - 2026-07-23 - BLOQUEIO DA ETAPA 9 CONFIRMADO
+===============================================================================
+
+Status desta rodada:
+
+- Worktree inicial limpo e alinhado com origin/main.
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 25 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário, usando backend/alembic.ini:
+  PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente, pois docker info não respondeu
+  dentro do limite de validação.
+
+Correções aplicadas nesta rodada:
+
+- Nenhuma correção de código foi necessária.
+
+Conclusão:
+
+- A implementação atual permanece validada fora do smoke Docker local.
+- A Etapa 9 continua bloqueada por falta das regras críticas de agenda e da
+  confirmação operacional do OAuth proprietário conectado.
+- Como esta é uma decisão de produto/agenda, não criar defaults automáticos nem
+  implementar disponibilidade/FreeBusy até o usuário fornecer esses dados.
