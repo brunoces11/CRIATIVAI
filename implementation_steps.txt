@@ -1598,3 +1598,33 @@ Decisão operacional:
 - Pausar antes da Etapa 9 até o usuário fornecer as regras críticas de agenda.
 - Não inventar defaults de calendário, para evitar comportamento incorreto em
   produção.
+
+===============================================================================
+10. REGISTRO DE REVALIDAÇÃO - 2026-07-23 - GATE DA ETAPA 9 AINDA PENDENTE
+===============================================================================
+
+Status desta rodada:
+
+- Worktree inicial limpo e alinhado com origin/main.
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 25 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário, usando backend/alembic.ini:
+  PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente, pois docker info não respondeu
+  dentro do limite de validação.
+
+Correções aplicadas nesta rodada:
+
+- Nenhuma correção de código foi necessária.
+
+Próxima etapa:
+
+- Etapa 9 - Disponibilidade/FreeBusy permanece bloqueada por decisão crítica de
+  produto/configuração.
+- Não avançar com lógica de agenda até o usuário definir as regras operacionais
+  e confirmar o OAuth do proprietário conectado.
