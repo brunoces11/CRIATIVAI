@@ -517,6 +517,24 @@ Critérios de aceite:
 - Header, menu e CTAs da landing continuam funcionando.
 - Nenhuma chamada de rede foi adicionada.
 
+Status da execução:
+
+- CONCLUIDA em 2026-07-23.
+- Escopo implementado: componente isolado ChatWidget, CSS especifico, botao
+  flutuante 110 x 110 em desktop, painel expandido, header com acento, recolher
+  por seta, bubbles do usuario, resposta do assistente sem bubble, estados de
+  loading/disabled/erro, acessibilidade basica e bloqueio de montagem em /adm.
+- Observacao: tentativa de conferencia visual pelo navegador interno falhou por
+  erro de inicializacao do runtime da ferramenta; a etapa foi validada por
+  build, testes de fonte e regressao vertical.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - git diff --check: pendente no fechamento da etapa.
+  - commit/push: concluido pelo commit "Etapa 2 - Chat UI base".
+
 -------------------------------------------------------------------------------
 ETAPA 3 - CHAT FRONTEND + BACKEND VERTICAL
 Timebox: 45 a 60 minutos

@@ -38,3 +38,17 @@ test("ships Target Mode and no starter scaffold markers", async () => {
   assert.match(targetMode, /TargetMode/);
   assert.doesNotMatch(app + targetMode, /codex-preview|SkeletonPreview|react-loading-skeleton/i);
 });
+
+test("ships the chat widget without API wiring yet", async () => {
+  const app = await read("src/App.tsx");
+  const chatWidget = await read("src/components/ChatWidget.tsx");
+  const chatStyles = await read("src/components/ChatWidget.css");
+
+  assert.match(app, /<ChatWidget \/>/);
+  assert.match(app, /pathname !== "\/adm"/);
+  assert.match(chatWidget, /window\.setTimeout/);
+  assert.doesNotMatch(chatWidget, /fetch\(/);
+  assert.match(chatStyles, /width: 110px/);
+  assert.match(chatStyles, /chat-message--user/);
+  assert.match(chatStyles, /chat-message--assistant/);
+});
