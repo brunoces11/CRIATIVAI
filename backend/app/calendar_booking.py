@@ -88,6 +88,62 @@ def calendar_create_event(
     return booking_result(booking, event=event)
 
 
+def calendar_update_event(
+    session: Session,
+    *,
+    conversation_id: int,
+    booking_id: int,
+    visitor_timezone: str,
+    new_starts_at: datetime,
+    confirmed: bool,
+    settings: Settings | None = None,
+) -> CalendarBookingResult:
+    resolved_settings = settings or get_settings()
+    if not confirmed:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Reschedule confirmation is required")
+
+    booking = load_owned_confirmed_booking(session, conversation_id, booking_id)
+    visitor_tz = load_timezone(visitor_timezone)
+    requested_start = normalize_start(new_starts_at, visitor_tz)
+    requested_end = requested_start + timedelta(minutes=resolved_settings.calendar_slot_minutes)
+    ensure_slot_was_offered(requested_start, visitor_timezone, resolved_settings)
+    event = patch_google_event(
+        google_event_id=booking.google_event_id or "",
+        starts_at=requested_start,
+        ends_at=requested_end,
+        timezone=visitor_timezone,
+        settings=resolved_settings,
+    )
+
+    booking.starts_at_utc = requested_start.astimezone(UTC)
+    booking.ends_at_utc = requested_end.astimezone(UTC)
+    booking.timezone = visitor_timezone
+    session.commit()
+    session.refresh(booking)
+    return booking_result(booking, event=event)
+
+
+def calendar_cancel_event(
+    session: Session,
+    *,
+    conversation_id: int,
+    booking_id: int,
+    confirmed: bool,
+    settings: Settings | None = None,
+) -> CalendarBookingResult:
+    resolved_settings = settings or get_settings()
+    if not confirmed:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Cancellation confirmation is required")
+
+    booking = load_owned_confirmed_booking(session, conversation_id, booking_id)
+    delete_google_event(google_event_id=booking.google_event_id or "", settings=resolved_settings)
+    booking.status = "cancelled"
+    booking.cancelled_at = datetime.now(UTC)
+    session.commit()
+    session.refresh(booking)
+    return booking_result(booking)
+
+
 def validate_booking_request(participant_email: str, idempotency_key: str, confirmed: bool) -> None:
     if not confirmed:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Booking confirmation is required")
@@ -142,10 +198,69 @@ def insert_google_event(
         raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail="Calendar event could not be created") from exc
 
 
+def patch_google_event(
+    *,
+    google_event_id: str,
+    starts_at: datetime,
+    ends_at: datetime,
+    timezone: str,
+    settings: Settings,
+) -> dict:
+    if not google_event_id:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking has no Calendar event")
+
+    service = build_calendar_service(settings)
+    body = {
+        "start": {"dateTime": to_rfc3339(starts_at), "timeZone": timezone},
+        "end": {"dateTime": to_rfc3339(ends_at), "timeZone": timezone},
+    }
+    try:
+        return service.events().patch(
+            calendarId=settings.google_calendar_id,
+            eventId=google_event_id,
+            body=body,
+            sendUpdates="all",
+            conferenceDataVersion=1 if settings.calendar_add_google_meet else 0,
+        ).execute()
+    except HttpError as exc:
+        raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail="Calendar event could not be updated") from exc
+
+
+def delete_google_event(*, google_event_id: str, settings: Settings) -> None:
+    if not google_event_id:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking has no Calendar event")
+
+    service = build_calendar_service(settings)
+    try:
+        service.events().delete(
+            calendarId=settings.google_calendar_id,
+            eventId=google_event_id,
+            sendUpdates="all",
+        ).execute()
+    except HttpError as exc:
+        raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail="Calendar event could not be cancelled") from exc
+
+
 def deterministic_google_event_id(idempotency_key: str) -> str:
     digest = hashlib.sha256(idempotency_key.encode("utf-8")).digest()
     encoded = base64.b32hexencode(digest).decode("ascii").lower().rstrip("=")
     return f"cai{encoded[:40]}"
+
+
+def load_owned_confirmed_booking(session: Session, conversation_id: int, booking_id: int) -> Booking:
+    booking = session.scalar(
+        select(Booking).where(
+            Booking.id == booking_id,
+            Booking.conversation_id == conversation_id,
+        )
+    )
+    if booking is None:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Booking not found")
+    if booking.status != "confirmed":
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking is not confirmed")
+    if not booking.google_event_id:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking has no Calendar event")
+    return booking
 
 
 def idempotency_key_fingerprint(value: str) -> str:

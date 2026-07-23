@@ -1822,3 +1822,57 @@ Próxima etapa:
 - Etapa 11 - Reagendamento e cancelamento.
 - Continuar preservando propriedade do booking pelo banco interno e nunca aceitar
   Google Event ID vindo do visitante ou do modelo.
+
+===============================================================================
+15. ETAPA 11 CONCLUÍDA - REAGENDAMENTO E CANCELAMENTO
+===============================================================================
+
+Escopo implementado:
+
+- Criada função interna calendar_update_event para reagendamento.
+- Criada função interna calendar_cancel_event para cancelamento.
+- Nenhum endpoint público de Calendar foi criado nesta etapa.
+- Reagendamento e cancelamento exigem confirmação explícita.
+- Reagendamento e cancelamento resolvem o Google Event ID exclusivamente pelo
+  booking interno.
+- Chamadas aceitam conversation_id e booking_id, nunca Google Event ID vindo do
+  visitante ou do modelo.
+- Booking de outra conversa é rejeitado.
+- Booking não confirmado é rejeitado.
+- Booking sem Google Event ID é rejeitado.
+- Reagendamento revalida o novo slot via calendar_check_availability antes de
+  atualizar o evento.
+- Reagendamento usa patch no Google Calendar com sendUpdates=all.
+- Cancelamento chama delete no Google Calendar com sendUpdates=all.
+- Cancelamento preserva o booking interno para auditoria, marcando status
+  cancelled e cancelled_at.
+
+Testes específicos adicionados:
+
+- Reagendamento usa booking interno e faz patch do evento correto.
+- Reagendamento rejeita booking pertencente a outra conversa.
+- Cancelamento apaga o evento Google correto e preserva auditoria local.
+- Confirmações explícitas permanecem obrigatórias por contrato.
+
+Validação da etapa:
+
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 36 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário: PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente. docker info retornou dados do
+  client, mas o Docker Desktop Linux Engine retornou erro 500/timeout.
+
+Correções aplicadas durante a etapa:
+
+- Nenhuma correção pós-validação foi necessária.
+
+Próxima etapa:
+
+- Etapa 12 - Tool loop completo e fluxo de agendamento no chat.
+- Integrar as ferramentas internas de disponibilidade, criação, reagendamento e
+  cancelamento ao fluxo conversacional com salvaguardas de confirmação.
