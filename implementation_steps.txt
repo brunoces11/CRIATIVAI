@@ -944,6 +944,16 @@ Status da execução:
   - docker info: FALHOU por daemon indisponivel.
   - git diff --check: PASSOU.
   - commit/push: concluido pelo commit "Etapa 7 - Runtime FastAPI candidato".
+- Rodada de revalidacao em 2026-07-23:
+  - git status: LIMPO em main...origin/main antes da validacao.
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU, 18 testes.
+  - npm run test:vertical: PASSOU.
+  - Alembic upgrade 0001_initial -> head em banco temporario: PASSOU.
+  - Docker Desktop service: permaneceu Stopped.
+  - docker info: nao concluiu dentro do timeout porque o daemon continua
+    indisponivel.
 
 -------------------------------------------------------------------------------
 ETAPA 8 - GOOGLE OAUTH
