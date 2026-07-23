@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { SiteHeader } from "../SiteHeader";
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ const fontFamilies = [
     role: "Primary / Display",
     name: "Anton",
     variable: "--font-display",
+    stack: "Anton, with Impact and sans-serif fallbacks",
     sample: "Creative AI Solutions",
     styles: ["normal"],
     weights: [[400, "Regular"]],
@@ -42,6 +44,7 @@ const fontFamilies = [
     role: "Secondary / Interface",
     name: "Inter",
     variable: "--font-sans",
+    stack: "Inter",
     sample: "Intelligence made useful",
     styles: ["normal", "italic"],
     weights: [[100, "Thin"], [200, "Extra Light"], [300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"], [800, "Extra Bold"], [900, "Black"]],
@@ -50,6 +53,7 @@ const fontFamilies = [
     role: "Tertiary / Brand serif",
     name: "Cormorant Garamond",
     variable: "--font-serif",
+    stack: "Cormorant Garamond",
     sample: "Thoughtful systems",
     styles: ["normal"],
     weights: [[600, "Semibold"], [700, "Bold"]],
@@ -58,7 +62,8 @@ const fontFamilies = [
     role: "Quaternary / Condensed utility",
     name: "Roboto Condensed",
     variable: "--font-condensed",
-    sample: "Structured intelligence",
+    stack: "Roboto Condensed, with sans-serif fallback",
+    sample: "Condensed interface sample",
     styles: ["normal", "italic"],
     weights: [[100, "Thin"], [200, "Extra Light"], [300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"], [800, "Extra Bold"], [900, "Black"]],
   },
@@ -114,7 +119,7 @@ export default function StyleGuide() {
         <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">02 / Type scale</p><h2 id="type-title">Heading hierarchy</h2></div>
-            <p>Anton creates editorial impact. Inter keeps interfaces direct and legible. Cormorant adds a human note to the brand.</p>
+            <p>Anton powers the display headings through the shared font stack. Inter keeps interfaces direct and legible. Cormorant adds a human note to the brand.</p>
           </div>
           <div className="type-list">
             {headings.map(([tag, text, font, size]) => (
@@ -133,15 +138,15 @@ export default function StyleGuide() {
         <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">03 / Font families</p><h2 id="typography-title">Typography</h2></div>
-            <p>Every font loaded by the site, with the exact weights available for product and brand use.</p>
+            <p>Every font loaded by the site, with the exact weights and stack behavior available for product and brand use.</p>
           </div>
           <div className="font-family-list">
             {fontFamilies.map((family) => (
               <article className="font-family-card" key={family.name}>
                 <div className="font-family-head">
                   <p className="micro-label">{family.role}</p>
-                  <h3>{family.name}</h3>
-                  <Spec>{family.variable}</Spec>
+                  <h3 style={{ fontFamily: `var(${family.variable})` }}>{family.name}</h3>
+                  <Spec>{family.variable} · {family.stack}</Spec>
                 </div>
                 <div className="font-weight-list">
                   {family.weights.map(([weight, label]) => (
@@ -200,13 +205,20 @@ export default function StyleGuide() {
       </section>
 
       <footer className="style-footer">
-        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home ↗</a></div>
+        <div className="site-container"><span>CRIATIVAI / Style guide</span><Link href="/">Return to home ↗</Link></div>
       </footer>
     </main>
   );
 }
 
-function HeadingSample({ tag, text, font, size }: (typeof headings)[number]) {
+type HeadingSampleProps = {
+  tag: (typeof headings)[number][0];
+  text: (typeof headings)[number][1];
+  font: (typeof headings)[number][2];
+  size: (typeof headings)[number][3];
+};
+
+function HeadingSample({ tag, text, font, size }: HeadingSampleProps) {
   const Tag = tag.toLowerCase() as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   return (
     <article className="type-row">
