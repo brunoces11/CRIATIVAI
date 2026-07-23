@@ -1689,3 +1689,76 @@ Próximo movimento autorizado:
   OAuth proprietário conectado, iniciar a Etapa 9 - Disponibilidade/FreeBusy.
 - Até lá, manter a execução pausada neste gate para evitar decisões automáticas
   incorretas sobre disponibilidade, duração, limites e criação de eventos.
+
+===============================================================================
+13. ETAPA 9 CONCLUÍDA - DISPONIBILIDADE DO CALENDAR
+===============================================================================
+
+Decisões de agenda aprovadas pelo usuário:
+
+- Segunda-feira: 08:00 até 15:00, horário de Brasília.
+- Terça-feira: 08:00 até 19:00, horário de Brasília.
+- Quarta-feira: 08:00 até 15:00, horário de Brasília.
+- Quinta-feira: 08:00 até 19:00, horário de Brasília.
+- Sexta-feira: 08:00 até 15:00, horário de Brasília.
+- Sábado: 08:00 até 19:00, horário de Brasília.
+- Domingo: sem disponibilidade.
+- Reuniões de 30 minutos, mantendo o default previamente proposto e não
+  alterado pelo usuário.
+- Buffer dinâmico de 15 minutos vinculado a eventos/agendamentos ocupados já
+  existentes, sem criar blocos fixos de buffer no calendário.
+- Até 3 sugestões de horário.
+- Google Meet definido como padrão para a futura criação de eventos.
+- Sem bloqueio fixo de almoço, pois o usuário não definiu pausa de almoço.
+- Antecedência mínima de 24 horas e janela futura de 14 dias, mantendo os
+  defaults previamente propostos e não alterados pelo usuário.
+
+Escopo implementado:
+
+- Criado módulo interno calendar_check_availability.
+- Não foi criado endpoint público de Calendar nesta etapa.
+- Disponibilidade é calculada a partir das regras comerciais aprovadas.
+- Google Calendar FreeBusy é usado apenas para bloquear conflitos ocupados.
+- Nenhum detalhe de eventos ocupados é exposto: título, descrição, participante
+  e ID de evento não entram na resposta dos slots.
+- Timezones usam nomes IANA com zoneinfo.
+- Instantes são calculados em UTC internamente e retornados no timezone do
+  visitante.
+- Configurações de slot, buffer, antecedência, janela futura, quantidade de
+  sugestões e Google Meet padrão foram adicionadas ao Settings.
+- Adicionado tzdata ao runtime Python para garantir suporte IANA em Windows e
+  ambientes sem banco de timezone do sistema.
+
+Testes específicos adicionados:
+
+- Dias/horários autorizados.
+- Limite de 3 sugestões.
+- Buffer dinâmico ao redor de evento ocupado.
+- Timezone inválido rejeitado.
+- Conversão para timezone do visitante.
+- Resposta sem detalhes privados de eventos ocupados.
+
+Validação da etapa:
+
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 29 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário: PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente. docker info retornou erro 500 do
+  Docker Desktop Linux Engine.
+
+Correções aplicadas durante a etapa:
+
+- Adicionado tzdata após falha legítima de zoneinfo em Windows.
+- Corrigido teste de conversão real entre America/Sao_Paulo e America/New_York.
+- Adicionada validação para não construir client Google com credenciais inválidas.
+
+Próxima etapa:
+
+- Etapa 10 - Criação de evento com confirmação e idempotência.
+- Usar Google Meet como padrão.
+- Antes de criar evento, revalidar o slot via FreeBusy e preservar idempotência.

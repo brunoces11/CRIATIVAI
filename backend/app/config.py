@@ -36,6 +36,12 @@ class Settings(BaseSettings):
         "https://www.googleapis.com/auth/calendar.freebusy",
         "https://www.googleapis.com/auth/calendar.events",
     ]
+    calendar_slot_minutes: int = 30
+    calendar_buffer_minutes: int = 15
+    calendar_min_notice_hours: int = 24
+    calendar_max_window_days: int = 14
+    calendar_suggestion_count: int = 3
+    calendar_add_google_meet: bool = True
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -48,7 +54,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
         if self.app_env.lower() != "production":
-            return self
+            return self.validate_calendar_settings()
 
         missing = []
         if self.openai_api_key is None:
@@ -69,6 +75,24 @@ class Settings(BaseSettings):
         if missing:
             joined = ", ".join(missing)
             raise ValueError(f"Missing required production settings: {joined}")
+
+        return self.validate_calendar_settings()
+
+    def validate_calendar_settings(self) -> "Settings":
+        invalid = []
+        if self.calendar_slot_minutes <= 0:
+            invalid.append("CALENDAR_SLOT_MINUTES")
+        if self.calendar_buffer_minutes < 0:
+            invalid.append("CALENDAR_BUFFER_MINUTES")
+        if self.calendar_min_notice_hours < 0:
+            invalid.append("CALENDAR_MIN_NOTICE_HOURS")
+        if self.calendar_max_window_days <= 0:
+            invalid.append("CALENDAR_MAX_WINDOW_DAYS")
+        if self.calendar_suggestion_count <= 0:
+            invalid.append("CALENDAR_SUGGESTION_COUNT")
+
+        if invalid:
+            raise ValueError(f"Invalid calendar settings: {', '.join(invalid)}")
 
         return self
 
