@@ -1041,6 +1041,15 @@ Status da execução:
   - Alembic upgrade 0001_initial -> head em banco temporario: PASSOU.
   - docker info: nao concluiu dentro do timeout; smoke de container segue
     bloqueado pelo daemon Docker Desktop local.
+- Rodada de revalidacao adicional em 2026-07-23:
+  - git status: LIMPO em main...origin/main antes da validacao.
+  - npm run test:backend: PASSOU, 25 testes.
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - Alembic upgrade 0001_initial -> head em banco temporario: PASSOU.
+  - docker info: nao concluiu dentro do timeout; smoke de container segue
+    bloqueado pelo daemon Docker Desktop local.
 
 -------------------------------------------------------------------------------
 ETAPA 9 - DISPONIBILIDADE E FUSOS
