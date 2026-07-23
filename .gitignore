@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.venv
 /.pnp
 .pnp.*
 .yarn/*
@@ -38,3 +39,6 @@ yarn-error.log*
 # generated output
 /outputs/
 /work/
+/data/
+__pycache__/
+*.pyc

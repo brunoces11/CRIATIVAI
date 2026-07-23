@@ -8,8 +8,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "backend": "python -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000",
+    "backend:migrate": "python -m alembic -c backend/alembic.ini upgrade head",
     "start": "npx serve@latest dist",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "test:vertical": "npm run build && node --test tests/backend-vertical.test.mjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

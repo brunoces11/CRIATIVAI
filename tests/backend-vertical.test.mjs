@@ -1,0 +1,121 @@
+import assert from "node:assert/strict";
+import { spawn, spawnSync } from "node:child_process";
+import { existsSync, rmSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { join, resolve } from "node:path";
+import test from "node:test";
+
+const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
+const python = process.env.PYTHON ?? findVenvPython();
+const port = 8010;
+const baseUrl = `http://127.0.0.1:${port}`;
+const databasePath = join(root, "data", "vertical-test.db");
+const databaseUrl = `sqlite:///${databasePath.replaceAll("\\", "/")}`;
+
+function findVenvPython() {
+  const candidates = [
+    join(root, ".venv", "Scripts", "python.exe"),
+    join(root, ".venv", "bin", "python"),
+  ];
+  const match = candidates.find((candidate) => existsSync(candidate));
+  if (!match) {
+    throw new Error("Python virtual environment not found. Create .venv and install backend/requirements.txt first.");
+  }
+  return match;
+}
+
+function backendEnv() {
+  return {
+    ...process.env,
+    DATABASE_URL: databaseUrl,
+    FRONTEND_DIST_DIR: join(root, "dist"),
+  };
+}
+
+function runPython(args) {
+  const result = spawnSync(python, args, {
+    cwd: root,
+    env: backendEnv(),
+    encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+}
+
+async function waitForHealth(getLogs) {
+  let lastError = "";
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    try {
+      const response = await fetch(`${baseUrl}/api/health`);
+      if (response.ok) return;
+      lastError = `HTTP ${response.status}`;
+    } catch {
+      lastError = "connection refused";
+      await new Promise((resolveWait) => setTimeout(resolveWait, 250));
+    }
+  }
+  throw new Error(`FastAPI vertical server did not become ready: ${lastError}\n${getLogs()}`);
+}
+
+test("FastAPI serves the Vite build, API routes, streaming, and SQLite persistence", async () => {
+  for (const suffix of ["", "-wal", "-shm"]) {
+    rmSync(`${databasePath}${suffix}`, { force: true });
+  }
+
+  runPython(["-m", "alembic", "-c", "backend/alembic.ini", "upgrade", "head"]);
+
+  const serverLogs = [];
+  const server = spawn(
+    python,
+    ["-m", "uvicorn", "backend.app.main:app", "--host", "127.0.0.1", "--port", String(port)],
+    {
+      cwd: root,
+      env: backendEnv(),
+      stdio: "pipe",
+    },
+  );
+  server.stdout.on("data", (chunk) => serverLogs.push(chunk.toString()));
+  server.stderr.on("data", (chunk) => serverLogs.push(chunk.toString()));
+
+  try {
+    await waitForHealth(() => serverLogs.join(""));
+
+    const health = await fetch(`${baseUrl}/api/health`);
+    assert.equal(health.status, 200);
+    assert.deepEqual(await health.json(), { ok: true, database: true, frontend: true });
+
+    for (const path of ["/", "/human-resources", "/style"]) {
+      const response = await fetch(`${baseUrl}${path}`);
+      assert.equal(response.status, 200);
+      assert.match(await response.text(), /<div id="root"><\/div>/);
+    }
+
+    const missingApi = await fetch(`${baseUrl}/api/not-found`);
+    assert.equal(missingApi.status, 404);
+
+    const chat = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message: "Hello vertical test" }),
+    });
+    assert.equal(chat.status, 200);
+
+    const events = (await chat.text())
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+    const session = events.find((event) => event.event === "session");
+    assert.ok(session?.session_id);
+    assert.ok(events.some((event) => event.event === "delta"));
+    assert.ok(events.some((event) => event.event === "done"));
+
+    const current = await fetch(`${baseUrl}/api/conversations/current?session_id=${session.session_id}`);
+    assert.equal(current.status, 200);
+    const conversation = await current.json();
+    assert.equal(conversation.session_id, session.session_id);
+    assert.equal(conversation.messages.length, 2);
+    assert.equal(conversation.messages[0].role, "user");
+    assert.equal(conversation.messages[1].role, "assistant");
+  } finally {
+    server.kill();
+  }
+});
