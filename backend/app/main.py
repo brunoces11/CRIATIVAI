@@ -12,6 +12,7 @@ from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
 from backend.app.config import get_settings
 from backend.app.db import get_session, ping_database
+from backend.app.forms import router as forms_router
 from backend.app.google_oauth import admin_router as google_admin_router
 from backend.app.google_oauth import callback_router as google_callback_router
 from backend.app.models import Conversation
@@ -22,6 +23,7 @@ app = FastAPI(title="CriativAI API")
 app.include_router(admin_router)
 app.include_router(google_admin_router)
 app.include_router(google_callback_router)
+app.include_router(forms_router)
 
 if settings.cors_origins:
     app.add_middleware(

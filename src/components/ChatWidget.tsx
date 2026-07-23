@@ -188,14 +188,24 @@ export function ChatWidget() {
             {restoring ? <p className="chat-panel__status">Restoring conversation...</p> : null}
             {messages.map((message) => (
               <article key={message.id} className={`chat-message chat-message--${message.role}`}>
-                <p>{message.text}</p>
+                {message.role === "assistant" ? (
+                  <>
+                    <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
+                    <p>{message.text}</p>
+                  </>
+                ) : (
+                  <p>{message.text}</p>
+                )}
               </article>
             ))}
             {loading ? (
               <div className="chat-message chat-message--assistant chat-message--loading" aria-label="Assistant is preparing a response">
+                <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
+                <div className="chat-message__loading-dots">
                 <span />
                 <span />
                 <span />
+                </div>
               </div>
             ) : null}
           </div>

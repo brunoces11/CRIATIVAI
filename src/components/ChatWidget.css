@@ -1,7 +1,7 @@
 .chat-widget {
   position: fixed;
-  right: 32px;
-  bottom: 28px;
+  right: 12px;
+  bottom: 8px;
   z-index: 90;
   color: var(--white);
   font-family: var(--font-sans), Inter, Arial, sans-serif;
@@ -53,7 +53,7 @@
 .chat-panel {
   display: grid;
   width: min(410px, calc(100vw - 32px));
-  max-height: min(680px, calc(100vh - 56px));
+  max-height: min(600px, calc(100vh - 136px));
   grid-template-rows: auto minmax(230px, 1fr) auto auto;
   overflow: hidden;
   border: 1px solid var(--border-strong);
@@ -178,17 +178,39 @@
 }
 
 .chat-message--assistant {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
   align-self: flex-start;
   color: #34383f;
 }
 
+.chat-message__avatar {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border: 1px solid rgba(200, 162, 143, 0.28);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  transform: scaleX(-1);
+}
+
 .chat-message--loading {
+  display: grid;
+  width: auto;
+}
+
+.chat-message__loading-dots {
   display: inline-flex;
   width: auto;
   gap: 7px;
+  align-items: center;
+  min-height: 46px;
 }
 
-.chat-message--loading span {
+.chat-message__loading-dots span {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -197,11 +219,11 @@
   animation: chat-pulse 900ms ease-in-out infinite;
 }
 
-.chat-message--loading span:nth-child(2) {
+.chat-message__loading-dots span:nth-child(2) {
   animation-delay: 120ms;
 }
 
-.chat-message--loading span:nth-child(3) {
+.chat-message__loading-dots span:nth-child(3) {
   animation-delay: 240ms;
 }
 
@@ -243,7 +265,7 @@
   min-height: 37px;
   resize: vertical;
   padding: 9px 11px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   outline: 0;
   background: #fff;
@@ -307,8 +329,8 @@
 
 @media (max-width: 560px) {
   .chat-widget {
-    right: 16px;
-    bottom: 16px;
+    right: 12px;
+    bottom: 8px;
     left: 16px;
   }
 
@@ -325,7 +347,7 @@
 
   .chat-panel {
     width: 100%;
-    max-height: calc(100vh - 32px);
+    max-height: calc(100vh - 112px);
   }
 
   .chat-panel__messages {
@@ -338,7 +360,7 @@
     scroll-behavior: auto;
   }
 
-  .chat-message--loading span {
+  .chat-message__loading-dots span {
     animation: none;
   }
 

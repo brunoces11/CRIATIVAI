@@ -37,6 +37,17 @@ class Settings(BaseSettings):
         "https://www.googleapis.com/auth/calendar.freebusy",
         "https://www.googleapis.com/auth/calendar.events",
     ]
+    smtp_host: str = "in-v3.mailjet.com"
+    smtp_port: int = 587
+    smtp_username: str | None = None
+    smtp_password: SecretStr | None = None
+    smtp_use_starttls: bool = True
+    smtp_use_ssl: bool = False
+    smtp_timeout_seconds: float = 20.0
+    smtp_sender_name: str = "CriativAI"
+    smtp_sender_email: str | None = None
+    smtp_reply_to: str | None = None
+    forms_notification_email: str = "bruno@criativai.site"
     calendar_slot_minutes: int = 30
     calendar_buffer_minutes: int = 15
     calendar_min_notice_hours: int = 24
@@ -57,7 +68,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
         if self.app_env.lower() != "production":
-            return self.validate_calendar_settings()
+            return self.validate_calendar_settings().validate_smtp_settings()
 
         missing = []
         if self.openai_api_key is None:
@@ -79,7 +90,7 @@ class Settings(BaseSettings):
             joined = ", ".join(missing)
             raise ValueError(f"Missing required production settings: {joined}")
 
-        return self.validate_calendar_settings()
+        return self.validate_calendar_settings().validate_smtp_settings()
 
     def validate_calendar_settings(self) -> "Settings":
         invalid = []
@@ -98,6 +109,27 @@ class Settings(BaseSettings):
 
         if invalid:
             raise ValueError(f"Invalid calendar settings: {', '.join(invalid)}")
+
+        return self
+
+    def validate_smtp_settings(self) -> "Settings":
+        if self.smtp_port <= 0:
+            raise ValueError("Invalid SMTP settings: SMTP_PORT")
+        if self.smtp_timeout_seconds <= 0:
+            raise ValueError("Invalid SMTP settings: SMTP_TIMEOUT_SECONDS")
+        if self.smtp_use_ssl and self.smtp_use_starttls:
+            raise ValueError("Invalid SMTP settings: SMTP_USE_SSL and SMTP_USE_STARTTLS cannot both be enabled")
+
+        configured_values = [
+            self.smtp_sender_email,
+            self.smtp_username,
+            self.smtp_password.get_secret_value() if self.smtp_password else None,
+        ]
+        partially_configured = any(configured_values) and not all(configured_values)
+        if partially_configured:
+            raise ValueError(
+                "Incomplete SMTP settings: SMTP_SENDER_EMAIL, SMTP_USERNAME, and SMTP_PASSWORD must be provided together"
+            )
 
         return self
 

@@ -75,3 +75,54 @@ class OAuthState(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class TalentPreviewRequest(Base):
+    __tablename__ = "talent_preview_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    requester_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    requester_email: Mapped[str] = mapped_column(String(320), index=True, nullable=False)
+    job_title: Mapped[str] = mapped_column(String(200), nullable=False)
+    search_criteria_1: Mapped[str] = mapped_column(String(220), nullable=False)
+    search_criteria_2: Mapped[str] = mapped_column(String(220), nullable=False)
+    search_criteria_3: Mapped[str] = mapped_column(String(220), nullable=False)
+    search_criteria_4: Mapped[str] = mapped_column(String(220), nullable=False)
+    exclusion_criteria: Mapped[str] = mapped_column(String(220), nullable=False)
+    differentiator: Mapped[str] = mapped_column(String(220), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="new", nullable=False)
+    notification_email_status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
+    confirmation_email_status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
+    email_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_ip: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    user_agent: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    notification_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    confirmation_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
+    )
+
+
+class ContactSubmission(Base):
+    __tablename__ = "contact_submissions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(160), nullable=False)
+    email: Mapped[str] = mapped_column(String(320), index=True, nullable=False)
+    subject: Mapped[str] = mapped_column(String(220), nullable=False)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="new", nullable=False)
+    notification_email_status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
+    email_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_ip: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    user_agent: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    notification_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
+    )

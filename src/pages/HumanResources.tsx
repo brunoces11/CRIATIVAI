@@ -41,7 +41,7 @@ function HrFooter() {
         <div className="footer-links-grid">
           <div>
             <p className="micro-label">Navigation</p>
-            <a href="#how-it-works">How it works</a><a href="#included">What&apos;s included</a><a href="#custom">Custom automations</a><a href="#demo">Request a demo</a>
+            <a href="#how-it-works">How it works</a><a href="#included">What&apos;s included</a><a href="#custom">Custom automations</a><a href="/contact">Contact</a>
           </div>
           <div>
             <p className="micro-label">Social Media</p>

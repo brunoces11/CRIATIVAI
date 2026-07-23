@@ -197,6 +197,32 @@ export default function StyleGuide() {
         </div>
       </section>
 
+      <section className="style-section" aria-labelledby="live-pages-title">
+        <div className="site-container">
+          <div className="style-section-head">
+            <div><p className="eyebrow">06 / Live examples</p><h2 id="live-pages-title">Page links</h2></div>
+            <p>Live routes that apply this system in practice, including the new recruitment intake landing page.</p>
+          </div>
+          <div className="style-page-links">
+            <a className="style-page-link" href="/human-resources">
+              <span className="micro-label">Recruitment offer</span>
+              <strong>Human Resources</strong>
+              <em>Open the service page ↗</em>
+            </a>
+            <a className="style-page-link style-page-link--featured" href="/talent-preview">
+              <span className="micro-label">Free shortlist request</span>
+              <strong>Talent Preview</strong>
+              <em>Open the promotional intake page ↗</em>
+            </a>
+            <a className="style-page-link" href="/contact">
+              <span className="micro-label">Direct inquiry</span>
+              <strong>Contact</strong>
+              <em>Open the contact form ↗</em>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <footer className="style-footer">
         <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home ↗</a></div>
       </footer>

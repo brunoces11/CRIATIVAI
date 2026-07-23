@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 SESSION_ID_PATTERN = r"^[A-Za-z0-9_-]{16,64}$"
 TURN_ID_PATTERN = r"^[A-Za-z0-9_-]{16,96}$"
+EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
 
 class HealthResponse(BaseModel):
@@ -52,3 +53,65 @@ class GoogleOAuthStatus(BaseModel):
     status: str
     calendar_id: str | None = None
     scopes: list[str] = []
+
+
+class TalentPreviewSubmissionCreate(BaseModel):
+    requester_name: str = Field(min_length=2, max_length=160)
+    requester_email: str = Field(min_length=3, max_length=320, pattern=EMAIL_PATTERN)
+    job_title: str = Field(min_length=2, max_length=200)
+    search_criteria_1: str = Field(min_length=2, max_length=220)
+    search_criteria_2: str = Field(min_length=2, max_length=220)
+    search_criteria_3: str = Field(min_length=2, max_length=220)
+    search_criteria_4: str = Field(min_length=2, max_length=220)
+    exclusion_criteria: str = Field(min_length=2, max_length=220)
+    differentiator: str = Field(min_length=2, max_length=220)
+    honeypot: str = Field(default="", max_length=200)
+
+    @field_validator(
+        "requester_name",
+        "requester_email",
+        "job_title",
+        "search_criteria_1",
+        "search_criteria_2",
+        "search_criteria_3",
+        "search_criteria_4",
+        "exclusion_criteria",
+        "differentiator",
+        "honeypot",
+        mode="before",
+    )
+    @classmethod
+    def strip_text(cls, value: str) -> str:
+        return value.strip() if isinstance(value, str) else value
+
+    @model_validator(mode="after")
+    def validate_honeypot(self) -> "TalentPreviewSubmissionCreate":
+        if self.honeypot:
+            raise ValueError("Invalid submission")
+        return self
+
+
+class ContactSubmissionCreate(BaseModel):
+    name: str = Field(min_length=2, max_length=160)
+    email: str = Field(min_length=3, max_length=320, pattern=EMAIL_PATTERN)
+    subject: str = Field(min_length=2, max_length=220)
+    message: str = Field(min_length=10, max_length=5000)
+    honeypot: str = Field(default="", max_length=200)
+
+    @field_validator("name", "email", "subject", "message", "honeypot", mode="before")
+    @classmethod
+    def strip_text(cls, value: str) -> str:
+        return value.strip() if isinstance(value, str) else value
+
+    @model_validator(mode="after")
+    def validate_honeypot(self) -> "ContactSubmissionCreate":
+        if self.honeypot:
+            raise ValueError("Invalid submission")
+        return self
+
+
+class FormSubmissionResponse(BaseModel):
+    ok: bool = True
+    reference_id: int
+    notification_email_status: str
+    confirmation_email_status: str | None = None

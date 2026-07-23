@@ -17,19 +17,25 @@ test("builds a static Vite app shell", async () => {
   assert.ok(assets.some((asset) => asset.endsWith(".css")));
 });
 
-test("keeps the three public pages in the client router", async () => {
+test("keeps the public pages in the client router", async () => {
   const app = await read("src/App.tsx");
   const home = await read("src/pages/Home.tsx");
   const humanResources = await read("src/pages/HumanResources.tsx");
   const style = await read("src/pages/StyleGuide.tsx");
+  const talentPreview = await read("src/pages/TalentPreview.tsx");
+  const contact = await read("src/pages/Contact.tsx");
   const admin = await read("src/pages/Admin.tsx");
 
   assert.match(app, /pathname === "\/human-resources"/);
   assert.match(app, /pathname === "\/style"/);
+  assert.match(app, /pathname === "\/talent-preview"/);
+  assert.match(app, /pathname === "\/contact"/);
   assert.match(app, /pathname === "\/adm"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
   assert.match(humanResources, /Executive search intelligence/i);
   assert.match(style, /Style Guide/i);
+  assert.match(talentPreview, /Talent[\s\S]*Preview/i);
+  assert.match(contact, /Start a[\s\S]*conversation/i);
   assert.match(admin, /\/api\/admin\/conversations/);
 });
 

@@ -94,7 +94,7 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
     assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), { ok: true, database: true, frontend: true });
 
-    for (const path of ["/", "/human-resources", "/style"]) {
+    for (const path of ["/", "/human-resources", "/style", "/talent-preview", "/contact"]) {
       const response = await fetch(`${baseUrl}${path}`);
       assert.equal(response.status, 200);
       assert.match(await response.text(), /<div id="root"><\/div>/);
@@ -156,6 +156,43 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
 
     const invalidSession = await fetch(`${baseUrl}/api/conversations/current?session_id=invalid session`);
     assert.equal(invalidSession.status, 422);
+
+    const talentPreview = await fetch(`${baseUrl}/api/forms/talent-preview`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        requester_name: "Taylor Recruiter",
+        requester_email: "taylor@example.com",
+        job_title: "VP of AI Product",
+        search_criteria_1: "B2B SaaS leadership",
+        search_criteria_2: "AI product strategy",
+        search_criteria_3: "Global team management",
+        search_criteria_4: "English fluency",
+        exclusion_criteria: "No executive ownership",
+        differentiator: "Experience launching AI copilots",
+        honeypot: "",
+      }),
+    });
+    assert.equal(talentPreview.status, 201);
+    const talentPreviewPayload = await talentPreview.json();
+    assert.equal(talentPreviewPayload.ok, true);
+    assert.ok(talentPreviewPayload.reference_id >= 1);
+
+    const contact = await fetch(`${baseUrl}/api/forms/contact`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: "Jordan Builder",
+        email: "jordan@example.com",
+        subject: "Automation project",
+        message: "We want to discuss a custom workflow automation project for our team.",
+        honeypot: "",
+      }),
+    });
+    assert.equal(contact.status, 201);
+    const contactPayload = await contact.json();
+    assert.equal(contactPayload.ok, true);
+    assert.ok(contactPayload.reference_id >= 1);
   } finally {
     server.kill();
   }

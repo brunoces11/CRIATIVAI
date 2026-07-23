@@ -144,7 +144,7 @@ export default function Home() {
                 engineering, and business strategy to solve real-world challenges.
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="#contact">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
+                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
               </div>
             </div>
           </div>
@@ -331,7 +331,7 @@ export default function Home() {
             Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
             business challenges.
           </p>
-          <a className="button button--accent" href="mailto:hello@criativai.com?subject=Start%20a%20Project">
+          <a className="button button--accent" href="/contact">
             Start a Project <span aria-hidden="true">↗</span>
           </a>
         </div>
@@ -350,7 +350,7 @@ export default function Home() {
               <a href="#services">Services</a>
               <a href="#projects">Projects</a>
               <a href="/human-resources">Human Resources</a>
-              <a href="#contact">Contact</a>
+              <a href="/contact">Contact</a>
             </div>
             <div>
               <p className="micro-label">Social Media</p>
