@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 from starlette.status import HTTP_404_NOT_FOUND
 
+from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
 from backend.app.config import get_settings
 from backend.app.db import get_session, ping_database
@@ -16,6 +17,7 @@ from backend.app.schemas import SESSION_ID_PATTERN, ChatRequest, ConversationMes
 
 settings = get_settings()
 app = FastAPI(title="CriativAI API")
+app.include_router(admin_router)
 
 if settings.cors_origins:
     app.add_middleware(

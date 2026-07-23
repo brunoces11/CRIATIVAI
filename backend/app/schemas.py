@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 SESSION_ID_PATTERN = r"^[A-Za-z0-9_-]{16,64}$"
@@ -24,3 +26,23 @@ class ConversationMessage(BaseModel):
 class ConversationResponse(BaseModel):
     session_id: str
     messages: list[ConversationMessage]
+
+
+class AdminConversationSummary(BaseModel):
+    id: int
+    visitor_label: str
+    last_activity_at: datetime | None
+    status: str
+    booking_state: str | None
+    summary: str | None
+
+
+class AdminConversationMessage(BaseModel):
+    role: str
+    content: str
+    status: str
+    created_at: datetime | None
+
+
+class AdminConversationDetail(AdminConversationSummary):
+    messages: list[AdminConversationMessage]

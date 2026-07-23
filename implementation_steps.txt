@@ -852,6 +852,25 @@ Critérios de aceite:
 - Contrato público de sessão continua isolado.
 - Build SPA serve /adm via fallback correto.
 
+Status da execução:
+
+- CONCLUIDA em 2026-07-23.
+- Escopo implementado: rota SPA /adm, pagina admin somente leitura, lista de
+  conversas, detalhe sob selecao, APIs GET /api/admin/conversations e
+  GET /api/admin/conversations/{conversation_id}, ordenacao por atividade,
+  ausencia do chat publico em /adm e omissao de session_id, turn_id, metadata,
+  prompts, tokens e Google Event ID nas respostas admin.
+- Observacao: as rotas admin continuam sem autenticacao propria por desenho
+  desta etapa e dependem da protecao Traefik planejada na Etapa 13 antes de
+  publicacao.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - git diff --check: PASSOU.
+  - commit/push: concluido pelo commit "Etapa 6 - Admin somente leitura".
+
 -------------------------------------------------------------------------------
 ETAPA 7 - RUNTIME FASTAPI CANDIDATO E REGRESSÃO DO BLOCO A
 Timebox: 40 a 55 minutos

@@ -22,12 +22,15 @@ test("keeps the three public pages in the client router", async () => {
   const home = await read("src/pages/Home.tsx");
   const humanResources = await read("src/pages/HumanResources.tsx");
   const style = await read("src/pages/StyleGuide.tsx");
+  const admin = await read("src/pages/Admin.tsx");
 
   assert.match(app, /pathname === "\/human-resources"/);
   assert.match(app, /pathname === "\/style"/);
+  assert.match(app, /pathname === "\/adm"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
   assert.match(humanResources, /Executive search intelligence/i);
   assert.match(style, /Style Guide/i);
+  assert.match(admin, /\/api\/admin\/conversations/);
 });
 
 test("ships Target Mode and no starter scaffold markers", async () => {

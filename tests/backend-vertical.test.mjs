@@ -127,6 +127,24 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
     assert.equal(conversation.messages[0].role, "user");
     assert.equal(conversation.messages[1].role, "assistant");
 
+    const adminList = await fetch(`${baseUrl}/api/admin/conversations`);
+    assert.equal(adminList.status, 200);
+    const adminConversations = await adminList.json();
+    assert.equal(adminConversations.length, 1);
+    assert.equal(adminConversations[0].visitor_label, "Anonymous visitor");
+    assert.equal("messages" in adminConversations[0], false);
+    assert.equal("session_id" in adminConversations[0], false);
+
+    const adminDetail = await fetch(`${baseUrl}/api/admin/conversations/${adminConversations[0].id}`);
+    assert.equal(adminDetail.status, 200);
+    const adminConversation = await adminDetail.json();
+    assert.equal(adminConversation.messages.length, 2);
+    assert.equal("session_id" in adminConversation, false);
+
+    const adminPage = await fetch(`${baseUrl}/adm`);
+    assert.equal(adminPage.status, 200);
+    assert.match(await adminPage.text(), /<div id="root"><\/div>/);
+
     const invalidSession = await fetch(`${baseUrl}/api/conversations/current?session_id=invalid session`);
     assert.equal(invalidSession.status, 422);
   } finally {
