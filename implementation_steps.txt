@@ -2017,3 +2017,62 @@ Decisão operacional:
   data/google-token.json fora do Git.
 - Até lá, o chat real com OpenAI e SQLite já está pronto para testes reais de
   uso e persistência sem depender da agenda.
+
+===============================================================================
+18. CORREÇÃO LOCALHOST DO CHAT - 2026-07-23
+===============================================================================
+
+Problema reportado:
+
+- Ao testar em localhost, enviar mensagem no chat mostrava:
+  "Unable to reach the assistant."
+
+Causa identificada:
+
+- O Vite em localhost:5173 não tinha proxy local para /api.
+- Com isso, o frontend tentava resolver /api/chat no próprio servidor Vite em
+  vez de encaminhar para o FastAPI em 127.0.0.1:8000.
+- Se o FastAPI não estiver rodando, o mesmo erro também aparece.
+
+Correção aplicada:
+
+- Adicionado proxy no vite.config.ts:
+  - /api -> http://127.0.0.1:8000
+- Atualizado teste de renderização para garantir que o proxy local continue
+  configurado.
+
+Validação local real:
+
+- Backend FastAPI iniciado em 127.0.0.1:8000.
+- Vite iniciado em 127.0.0.1:5173.
+- GET /api/health no FastAPI: PASSOU.
+- POST http://127.0.0.1:5173/api/chat via proxy Vite: PASSOU.
+  - Eventos recebidos: session_start, delta, done.
+  - Sem evento error.
+- Persistência SQLite local: PASSOU.
+  - Banco local continha conversas e mensagens.
+  - Última gravação validada com roles user, assistant.
+
+Validação automatizada:
+
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU.
+
+Como testar localmente:
+
+1. Em um terminal, rodar:
+   npm run backend
+2. Em outro terminal, rodar:
+   npm run dev
+3. Abrir:
+   http://127.0.0.1:5173
+
+Observação:
+
+- Abrir somente o Vite sem o backend não basta para o chat real.
+- Abrir o runtime FastAPI em http://127.0.0.1:8000 também funciona após build,
+  pois o FastAPI serve o dist e as APIs no mesmo host.

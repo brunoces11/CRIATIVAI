@@ -47,6 +47,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   const chatWidget = await read("src/components/ChatWidget.tsx");
   const chatStyles = await read("src/components/ChatWidget.css");
   const chatStream = await read("src/lib/chatStream.ts");
+  const viteConfig = await read("vite.config.ts");
 
   assert.match(app, /<ChatWidget \/>/);
   assert.match(app, /pathname !== "\/adm"/);
@@ -64,6 +65,8 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatStyles, /\.chat-panel__form[\s\S]*background: #fff/);
   assert.match(chatStyles, /\.chat-panel__feedback[\s\S]*align-items: center/);
   assert.match(chatStream, /tool_status"; message: string/);
+  assert.match(viteConfig, /proxy/);
+  assert.match(viteConfig, /127\.0\.0\.1:8000/);
   assert.match(chatStyles, /min-height: 37px/);
   assert.match(chatStyles, /chat-message--user/);
   assert.match(chatStyles, /chat-message--assistant/);
