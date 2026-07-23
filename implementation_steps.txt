@@ -1659,3 +1659,33 @@ Conclusão:
   confirmação operacional do OAuth proprietário conectado.
 - Como esta é uma decisão de produto/agenda, não criar defaults automáticos nem
   implementar disponibilidade/FreeBusy até o usuário fornecer esses dados.
+
+===============================================================================
+12. REGISTRO DE REVALIDAÇÃO - 2026-07-23 - AGUARDANDO REGRAS DA AGENDA
+===============================================================================
+
+Status desta rodada:
+
+- Worktree inicial limpo e alinhado com origin/main.
+- npm run lint: PASSOU.
+- npm test: PASSOU.
+- npm run test:backend: PASSOU, 25 testes backend.
+- npm run test:vertical: PASSOU.
+- git diff --check: PASSOU.
+- Varredura local por padrões comuns de segredos: PASSOU, sem achados nos
+  caminhos rastreáveis do projeto.
+- Alembic upgrade head em banco SQLite temporário, usando backend/alembic.ini:
+  PASSOU.
+- Docker smoke local: BLOQUEADO pelo ambiente, pois docker info não respondeu
+  dentro do limite de validação.
+
+Correções aplicadas nesta rodada:
+
+- Nenhuma correção de código foi necessária.
+
+Próximo movimento autorizado:
+
+- Assim que o usuário fornecer as regras operacionais de agenda e confirmar o
+  OAuth proprietário conectado, iniciar a Etapa 9 - Disponibilidade/FreeBusy.
+- Até lá, manter a execução pausada neste gate para evitar decisões automáticas
+  incorretas sobre disponibilidade, duração, limites e criação de eventos.
