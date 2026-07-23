@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     base_timezone: str = "America/Sao_Paulo"
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-5-mini"
+    openai_timeout_seconds: float = 30.0
+    openai_mock_response: str | None = None
+    sdr_prompt_path: Path = Path("backend/app/prompts/sdr_default.md")
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_redirect_uri: str | None = None
@@ -49,6 +52,8 @@ class Settings(BaseSettings):
             missing.append("GOOGLE_REDIRECT_URI")
         if not self.google_calendar_id:
             missing.append("GOOGLE_CALENDAR_ID")
+        if self.openai_mock_response:
+            missing.append("OPENAI_MOCK_RESPONSE must be empty")
 
         if missing:
             joined = ", ".join(missing)

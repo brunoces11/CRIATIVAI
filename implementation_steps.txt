@@ -532,7 +532,7 @@ Status da execução:
   - npm test: PASSOU.
   - npm run test:backend: PASSOU.
   - npm run test:vertical: PASSOU.
-  - git diff --check: pendente no fechamento da etapa.
+  - git diff --check: PASSOU.
   - commit/push: concluido pelo commit "Etapa 2 - Chat UI base".
 
 -------------------------------------------------------------------------------
@@ -616,7 +616,7 @@ Status da execução:
   - npm test: PASSOU.
   - npm run test:backend: PASSOU.
   - npm run test:vertical: PASSOU.
-  - git diff --check: pendente no fechamento da etapa.
+  - git diff --check: PASSOU.
   - commit/push: concluido pelo commit "Etapa 3 - Chat streaming vertical".
 
 -------------------------------------------------------------------------------
@@ -681,6 +681,26 @@ Critérios de aceite:
 - Resposta parcial não é marcada como concluída.
 - Falha externa não vaza detalhes.
 - Modelo pode ser trocado apenas por OPENAI_MODEL.
+
+Status da execução:
+
+- CONCLUIDA em 2026-07-23.
+- Escopo implementado: SDK oficial OpenAI fixado, Responses API com streaming
+  no backend, prompt SDR padrao editavel em arquivo local, store=False,
+  conversao segura de deltas para NDJSON publico, persistencia apenas da
+  resposta final concluida, mock explicito para testes automatizados e smoke
+  real curto sem imprimir conteudo ou segredos.
+- Ajustes visuais solicitados no chat: header com preenchimento na cor de
+  acento, area de mensagens com preenchimento branco, area de input 20% menor e
+  abertura/fechamento com escala vertical.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU.
+  - npm run test:vertical: PASSOU.
+  - smoke OpenAI controlado: PASSOU.
+  - git diff --check: PASSOU.
+  - commit/push: concluido pelo commit "Etapa 4 - Chat OpenAI".
 
 -------------------------------------------------------------------------------
 ETAPA 5 - PERSISTÊNCIA, CONTEXTO E SEGURANÇA MÍNIMA DO CHAT

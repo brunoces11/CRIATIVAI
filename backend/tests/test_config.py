@@ -53,10 +53,11 @@ def test_validation_errors_hide_input_values(tmp_path: Path) -> None:
 
 def test_production_missing_required_settings_reports_names_only() -> None:
     with pytest.raises(ValidationError) as exc_info:
-        Settings(app_env="production", _env_file=None)
+        Settings(app_env="production", openai_mock_response="test only", _env_file=None)
 
     error_text = str(exc_info.value)
 
     assert "OPENAI_API_KEY" in error_text
     assert "GOOGLE_CLIENT_SECRET" in error_text
+    assert "OPENAI_MOCK_RESPONSE must be empty" in error_text
     assert "input_value" not in error_text

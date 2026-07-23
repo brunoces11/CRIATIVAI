@@ -20,6 +20,7 @@ const initialMessages: Message[] = [
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [renderPanel, setRenderPanel] = useState(false);
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,16 @@ export function ChatWidget() {
   const transcriptRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const restoredRef = useRef(false);
+
+  function openChat() {
+    setRenderPanel(true);
+    window.requestAnimationFrame(() => setOpen(true));
+  }
+
+  function closeChat() {
+    setOpen(false);
+    window.setTimeout(() => setRenderPanel(false), 220);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -146,14 +157,14 @@ export function ChatWidget() {
 
   return (
     <aside className={`chat-widget${open ? " chat-widget--open" : ""}`} aria-label="AI chat assistant">
-      {open ? (
+      {renderPanel ? (
         <section className="chat-panel" aria-label="Chat conversation">
           <header className="chat-panel__header">
             <div>
               <p className="chat-panel__eyebrow">AI assistant</p>
               <h2>Talk with CriativAI</h2>
             </div>
-            <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={() => setOpen(false)}>
+            <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>
               <ChevronDownIcon />
             </button>
           </header>
@@ -204,7 +215,7 @@ export function ChatWidget() {
           </form>
         </section>
       ) : (
-        <button className="chat-launcher" type="button" aria-label="Open AI chat" title="Open AI chat" onClick={() => setOpen(true)}>
+        <button className="chat-launcher" type="button" aria-label="Open AI chat" title="Open AI chat" onClick={openChat}>
           <ChatIcon />
         </button>
       )}

@@ -37,6 +37,7 @@ function backendEnv() {
     PYTHONPATH: root,
     APP_ENV: "test",
     CRIATIVAI_LOAD_DOTENV: "0",
+    OPENAI_MOCK_RESPONSE: "Vertical test online. The backend received your message, stored it in SQLite, and streamed this response from FastAPI.",
     DATABASE_URL: databaseUrl,
     FRONTEND_DIST_DIR: join(root, "dist"),
   };

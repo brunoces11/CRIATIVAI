@@ -49,6 +49,11 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /SESSION_STORAGE_KEY = "chat_session_id"/);
   assert.match(chatWidget, /sendChatMessage/);
   assert.match(chatStyles, /width: 110px/);
+  assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
+  assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);
+  assert.match(chatStyles, /\.chat-panel__header[\s\S]*background: var\(--accent\)/);
+  assert.match(chatStyles, /\.chat-panel__messages[\s\S]*background: #fff/);
+  assert.match(chatStyles, /min-height: 37px/);
   assert.match(chatStyles, /chat-message--user/);
   assert.match(chatStyles, /chat-message--assistant/);
 });

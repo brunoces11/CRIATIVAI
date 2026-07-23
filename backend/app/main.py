@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 from starlette.status import HTTP_404_NOT_FOUND
 
-from backend.app.chat import stream_fake_chat
+from backend.app.chat import stream_chat
 from backend.app.config import get_settings
 from backend.app.db import get_session, ping_database
 from backend.app.models import Conversation
@@ -40,7 +40,7 @@ def health() -> HealthResponse:
 @app.post("/api/chat")
 def chat(request: ChatRequest, session: Session = Depends(get_session)) -> StreamingResponse:
     return StreamingResponse(
-        stream_fake_chat(session, request),
+        stream_chat(session, request),
         media_type="application/x-ndjson",
         headers={"Cache-Control": "no-store"},
     )
