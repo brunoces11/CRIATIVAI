@@ -1,4 +1,4 @@
-import { SiteHeader } from "../SiteHeader";
+import { SiteHeader } from "../components/SiteHeader";
 
 const workflow = [
   ["01", "Job Requirement Structuring", "We translate each brief into mandatory requirements, preferred qualifications, exclusion criteria, and priority competencies."],

@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:5173`.
 
 ## Validation
 
@@ -17,12 +17,12 @@ Open `http://localhost:3000`.
 npm test
 ```
 
-The validation command creates the production build and verifies the rendered page structure, core content, metadata, and accessibility markers.
+The validation command creates the production build and verifies the static app shell, routing source, core content, metadata, and Target Mode wiring.
 
 ## Deployment
 
 This repository is aligned with the `deploy-full` flow as the default deployment method.
 
-- The current app is still a static frontend, so it deploys with `DEPLOY_STRATEGY=static`.
+- The current app is a Vite static frontend, so it deploys with `DEPLOY_STRATEGY=static`.
 - The canonical deploy state lives in the local `deploy.env` file.
 - `deploy-static` is now treated as legacy during the transition to the unified deployment flow.

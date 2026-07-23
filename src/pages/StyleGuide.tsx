@@ -1,12 +1,5 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import Link from "next/link";
-import { SiteHeader } from "../SiteHeader";
-
-export const metadata: Metadata = {
-  title: "Style Guide | CriativAI",
-  description: "The visual system and component reference for CriativAI.",
-};
+import { SiteHeader } from "../components/SiteHeader";
 
 const colors = [
   ["Graphite", "--graphite", "#181D23"],
@@ -205,7 +198,7 @@ export default function StyleGuide() {
       </section>
 
       <footer className="style-footer">
-        <div className="site-container"><span>CRIATIVAI / Style guide</span><Link href="/">Return to home ↗</Link></div>
+        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home ↗</a></div>
       </footer>
     </main>
   );

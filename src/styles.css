@@ -1,6 +1,8 @@
-@import "tailwindcss";
-
 :root {
+  --font-display: "Anton";
+  --font-sans: "Inter";
+  --font-serif: "Cormorant Garamond";
+  --font-condensed: "Roboto Condensed";
   --graphite: #181d23;
   --blue-black: #151a20;
   --surface: #22272d;

@@ -1,4 +1,4 @@
-import { SiteHeader } from "./SiteHeader";
+import { SiteHeader } from "../components/SiteHeader";
 
 const stats = [
   { value: "20+", label: "Years of Experience" },
