@@ -46,3 +46,9 @@ class AdminConversationMessage(BaseModel):
 
 class AdminConversationDetail(AdminConversationSummary):
     messages: list[AdminConversationMessage]
+
+
+class GoogleOAuthStatus(BaseModel):
+    status: str
+    calendar_id: str | None = None
+    scopes: list[str] = []

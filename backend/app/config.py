@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     google_redirect_uri: str | None = None
     google_calendar_id: str = "primary"
     google_token_path: Path = Path("data/google-token.json")
+    google_oauth_state_ttl_seconds: int = 600
+    google_oauth_success_path: str = "/adm?google=connected"
+    google_oauth_error_path: str = "/adm?google=error"
+    google_oauth_scopes: list[str] = [
+        "https://www.googleapis.com/auth/calendar.freebusy",
+        "https://www.googleapis.com/auth/calendar.events",
+    ]
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -1011,6 +1011,28 @@ Critérios de aceite:
 - Token nunca aparece em resposta, log, Git ou imagem.
 - A etapa só termina após consentimento manual validado.
 
+Status da execução:
+
+- IMPLEMENTADA TECNICAMENTE em 2026-07-23; consentimento manual G4 ainda
+  pendente.
+- Escopo implementado: bibliotecas Google fixadas, endpoints
+  GET /api/admin/google/connect, GET /api/admin/google/status e
+  GET /api/google/oauth/callback, access_type=offline, prompt=consent,
+  escopos Calendar freebusy/events, state aleatorio temporario e de uso unico,
+  persistencia do state em oauth_states, callback com code/state tratados no
+  backend, token salvo apenas em GOOGLE_TOKEN_PATH, chmod restritivo quando
+  suportado, status seguro sem token e redirect limpo para /adm.
+- Validacao manual nao executada: depende de Google Cloud/OAuth/consentimento
+  do proprietario conforme Gate G4. Nenhum visitante autoriza agenda.
+- Evidencias:
+  - npm run lint: PASSOU.
+  - npm test: PASSOU.
+  - npm run test:backend: PASSOU, 25 testes.
+  - npm run test:vertical: PASSOU.
+  - Alembic upgrade head em banco temporario: PASSOU.
+  - git diff --check: PASSOU.
+  - commit/push: concluido pelo commit "Etapa 8 - Google OAuth".
+
 -------------------------------------------------------------------------------
 ETAPA 9 - DISPONIBILIDADE E FUSOS
 Timebox: 50 a 65 minutos

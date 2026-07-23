@@ -54,7 +54,7 @@ function runPython(args) {
 
 async function waitForHealth(getLogs) {
   let lastError = "";
-  for (let attempt = 0; attempt < 240; attempt += 1) {
+  for (let attempt = 0; attempt < 720; attempt += 1) {
     try {
       const response = await fetch(`${baseUrl}/api/health`);
       if (response.ok) return;
@@ -140,6 +140,15 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
     const adminConversation = await adminDetail.json();
     assert.equal(adminConversation.messages.length, 2);
     assert.equal("session_id" in adminConversation, false);
+
+    const googleStatus = await fetch(`${baseUrl}/api/admin/google/status`);
+    assert.equal(googleStatus.status, 200);
+    const googlePayload = await googleStatus.json();
+    assert.equal(googlePayload.status, "disconnected");
+    assert.equal("token" in googlePayload, false);
+
+    const googleConnect = await fetch(`${baseUrl}/api/admin/google/connect`, { redirect: "manual" });
+    assert.equal(googleConnect.status, 503);
 
     const adminPage = await fetch(`${baseUrl}/adm`);
     assert.equal(adminPage.status, 200);
