@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 const navigation = [
   { label: "Services", href: "#services" },
@@ -11,11 +11,11 @@ const navigation = [
 ];
 
 export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" }) {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
+    const onScroll = () => setScrollProgress(Math.min(window.scrollY / 300, 1));
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -26,8 +26,14 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
+  const headerStyle = useMemo(() => ({
+    "--header-background-opacity": String(0.2 + scrollProgress * 0.6),
+    "--header-blur": `${1 + scrollProgress * 4}px`,
+    "--header-border-opacity": String(0.03 + scrollProgress * 0.06),
+  }) as CSSProperties, [scrollProgress]);
+
   return (
-    <header className={`site-header${scrolled ? " site-header--scrolled" : ""}${menuOpen ? " site-header--open" : ""}`}>
+    <header className={`site-header${menuOpen ? " site-header--open" : ""}`} style={headerStyle}>
       <div className="site-container header-inner">
         <a href={page === "home" ? "#top" : "/"} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
 
