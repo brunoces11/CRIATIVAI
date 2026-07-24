@@ -34,6 +34,9 @@ test("keeps the public pages in the client router", async () => {
   assert.match(app, /pathname === "\/adm"/);
   assert.match(app, /pathname === "\/privacy" \|\| pathname === "\/terms"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
+  assert.match(home, /project-human-resources\.svg/);
+  assert.match(home, /project-trading\.svg/);
+  assert.match(home, /project-dante\.svg/);
   assert.match(humanResources, /AI for recruitment companies/i);
   assert.match(humanResources, /The era of hyper-personalization/i);
   assert.match(humanResources, /Recruitment Intelligence/i);
@@ -87,6 +90,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   const chatStream = await read("src/lib/chatStream.ts");
   const viteConfig = await read("vite.config.ts");
   const icons = await readdir(new URL("../public/icons", import.meta.url));
+  const projectVisuals = await readdir(new URL("../public/project-visuals", import.meta.url));
 
   assert.match(app, /<ChatWidget \/>/);
   assert.match(app, /pathname !== "\/adm"/);
@@ -101,7 +105,9 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /src="\/icons\/chat-send\.svg"/);
   assert.match(siteHeader, /src="\/icons\/flag-uk\.svg"/);
   assert.match(siteHeader, /src="\/icons\/flag-brazil\.svg"/);
-  assert.match(chatStyles, /width: 110px/);
+  assert.match(chatStyles, /width: 88px/);
+  assert.match(chatStyles, /min-width: 450px/);
+  assert.match(chatStyles, /resize: horizontal/);
   assert.match(chatStyles, /\.chat-markdown/);
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
   assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);
@@ -112,7 +118,13 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatStyles, /\.chat-panel__messages[\s\S]*background: #fff/);
   assert.match(chatStyles, /\.chat-panel__form[\s\S]*background: #fff/);
   assert.match(chatStyles, /\.chat-panel__feedback[\s\S]*align-items: center/);
+  assert.match(chatStyles, /\.chat-launcher__icon/);
+  assert.match(chatStyles, /\.chat-panel__collapse-icon/);
+  assert.match(chatStyles, /\.chat-panel__form-icon/);
   assert.match(siteStyles, /\.language-option__icon/);
+  assert.ok(projectVisuals.includes("project-human-resources.svg"));
+  assert.ok(projectVisuals.includes("project-trading.svg"));
+  assert.ok(projectVisuals.includes("project-dante.svg"));
   assert.ok(icons.includes("chat-launcher.svg"));
   assert.ok(icons.includes("chat-collapse.svg"));
   assert.ok(icons.includes("chat-send.svg"));

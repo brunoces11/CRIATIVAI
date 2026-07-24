@@ -73,20 +73,18 @@ function Brand() {
 }
 
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
+  const src =
+    type === "hr"
+      ? "/project-visuals/project-human-resources.svg"
+      : type === "trading"
+        ? "/project-visuals/project-trading.svg"
+        : "/project-visuals/project-dante.svg";
+
   if (type === "hr") {
     return (
       <div className="project-visual project-visual--hr" aria-hidden="true">
         <div className="project-graphic-scale">
-          <div className="mock-window">
-            <div className="mock-topline"><span /><span /><span /></div>
-            {["94", "87", "82"].map((score, index) => (
-              <div className="candidate-row" key={score}>
-                <span className={`candidate-avatar candidate-avatar--${index + 1}`} />
-                <span className="candidate-lines"><i /><i /></span>
-                <strong>{score}</strong>
-              </div>
-            ))}
-          </div>
+          <img className="project-visual-image" src={src} alt="" aria-hidden="true" />
         </div>
       </div>
     );
@@ -96,13 +94,7 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
     return (
       <div className="project-visual project-visual--trading" aria-hidden="true">
         <div className="project-graphic-scale">
-          <div className="trading-metric"><span>MARKET SIGNAL</span><strong>+18.42%</strong></div>
-          <div className="chart-grid">
-            {[26, 38, 32, 55, 48, 72, 64, 82, 78, 92].map((height, index) => (
-              <span key={index} style={{ height: `${height}%` }} />
-            ))}
-          </div>
-          <div className="signal-line"><i /><i /><i /><i /><i /></div>
+          <img className="project-visual-image" src={src} alt="" aria-hidden="true" />
         </div>
       </div>
     );
@@ -111,14 +103,7 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
   return (
     <div className="project-visual project-visual--dante" aria-hidden="true">
       <div className="project-graphic-scale">
-        <div className="knowledge-orbit knowledge-orbit--one" />
-        <div className="knowledge-orbit knowledge-orbit--two" />
-        <span className="knowledge-node knowledge-node--main">D</span>
-        <span className="knowledge-node knowledge-node--one" />
-        <span className="knowledge-node knowledge-node--two" />
-        <span className="knowledge-node knowledge-node--three" />
-        <span className="knowledge-node knowledge-node--four" />
-        <div className="legal-query"><i /><i /><i /></div>
+        <img className="project-visual-image" src={src} alt="" aria-hidden="true" />
       </div>
     </div>
   );

@@ -19,8 +19,8 @@
 }
 
 .chat-launcher {
-  width: 110px;
-  height: 110px;
+  width: 88px;
+  height: 88px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   background: var(--accent);
@@ -36,8 +36,8 @@
 }
 
 .chat-launcher__icon {
-  width: 44px;
-  height: 44px;
+  width: 51px;
+  height: 51px;
   display: block;
 }
 
@@ -49,10 +49,13 @@
 
 .chat-panel {
   display: grid;
-  width: min(410px, calc(100vw - 32px));
+  width: min(450px, calc(100vw - 32px));
+  min-width: 450px;
+  max-width: min(760px, calc(100vw - 32px));
   max-height: min(600px, calc(100vh - 136px));
   grid-template-rows: auto minmax(230px, 1fr) auto auto;
   overflow: hidden;
+  resize: horizontal;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   background: #fff;
@@ -394,18 +397,20 @@
   }
 
   .chat-launcher {
-    width: 84px;
-    height: 84px;
+    width: 70px;
+    height: 70px;
     margin-left: auto;
   }
 
   .chat-launcher__icon {
-    width: 35px;
-    height: 35px;
+    width: 41px;
+    height: 41px;
   }
 
   .chat-panel {
     width: 100%;
+    min-width: 0;
+    max-width: none;
     max-height: calc(100vh - 112px);
   }
 

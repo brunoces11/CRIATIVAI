@@ -679,6 +679,13 @@ img {
   transform-origin: top center;
 }
 
+.project-visual-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .project-card:hover .project-visual { transform: scale(1.025); }
 
 .project-overlay {
