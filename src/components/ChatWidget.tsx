@@ -180,7 +180,7 @@ export function ChatWidget() {
               </div>
             </div>
             <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>
-              <ChevronDownIcon />
+              <img className="chat-panel__collapse-icon" src="/icons/chat-collapse.svg" alt="" aria-hidden="true" />
             </button>
           </header>
 
@@ -239,13 +239,13 @@ export function ChatWidget() {
               }}
             />
             <button type="submit" disabled={!draft.trim() || loading || restoring} aria-label="Send message" title="Send message">
-              <SendIcon />
+              <img className="chat-panel__form-icon" src="/icons/chat-send.svg" alt="" aria-hidden="true" />
             </button>
           </form>
         </section>
       ) : (
         <button className="chat-launcher" type="button" aria-label="Open AI chat" title="Open AI chat" onClick={openChat}>
-          <ChatIcon />
+          <img className="chat-launcher__icon" src="/icons/chat-launcher.svg" alt="" aria-hidden="true" />
         </button>
       )}
     </aside>
@@ -400,30 +400,4 @@ function renderInlineMarkdown(text: string): ReactNode[] {
 
   if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
   return nodes.map((node, index) => <Fragment key={index}>{node}</Fragment>);
-}
-
-function ChatIcon() {
-  return (
-    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <path d="M7.8 23.1c-2.1-1.8-3.3-4.2-3.3-7C4.5 10.7 9.6 6.3 16 6.3s11.5 4.4 11.5 9.8S22.4 26 16 26c-1.5 0-3-.2-4.3-.7L6 26.6z" />
-      <path d="M10.8 14.3h10.4M10.8 18.1h6.5" />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function SendIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="m4 12 16-8-5.4 16-3.1-6.1z" />
-      <path d="m11.5 13.9 8.5-9.9" />
-    </svg>
-  );
 }

@@ -78,45 +78,16 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
           </nav>
           <div className="language-selector" aria-label="Language selector">
             <button type="button" className="language-option language-option--active" aria-current="true" title="English">
-              <span aria-hidden="true"><EnglandFlag /></span><span className="sr-only">English</span>
+              <img className="language-option__icon" src="/icons/flag-uk.svg" alt="" aria-hidden="true" width="18" height="18" />
+              <span className="sr-only">English</span>
             </button>
             <button type="button" className="language-option" disabled title="Portuguese — coming soon">
-              <span aria-hidden="true"><BrazilFlag /></span><span className="sr-only">Portuguese — coming soon</span>
+              <img className="language-option__icon" src="/icons/flag-brazil.svg" alt="" aria-hidden="true" width="18" height="18" />
+              <span className="sr-only">Portuguese — coming soon</span>
             </button>
           </div>
         </div>
       </div>
     </header>
-  );
-}
-
-function EnglandFlag() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-      <rect width="24" height="24" rx="3" fill="#f4f4f1" />
-      <g clipPath="url(#england-flag-clip)">
-        <rect x="2" y="4" width="20" height="16" fill="#fff" />
-        <rect x="10" y="4" width="4" height="16" fill="#cf2030" />
-        <rect x="2" y="10" width="20" height="4" fill="#cf2030" />
-      </g>
-      <rect width="24" height="24" rx="3" fill="none" stroke="rgba(0,0,0,0.12)" />
-      <defs>
-        <clipPath id="england-flag-clip">
-          <rect x="2" y="4" width="20" height="16" rx="1.2" />
-        </clipPath>
-      </defs>
-    </svg>
-  );
-}
-
-function BrazilFlag() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-      <rect width="24" height="24" rx="3" fill="#1f8f47" />
-      <path d="M12 4 20 12 12 20 4 12Z" fill="#f2c230" />
-      <circle cx="12" cy="12" r="4.4" fill="#1b4fa3" />
-      <path d="M7.8 11.2c1.4-.8 3-.9 4.6-.6 1.3.2 2.5.7 3.8 1.2" fill="none" stroke="#fff" strokeWidth="1" strokeLinecap="round" />
-      <rect width="24" height="24" rx="3" fill="none" stroke="rgba(0,0,0,0.12)" />
-    </svg>
   );
 }

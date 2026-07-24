@@ -82,8 +82,11 @@ test("ships the chat widget wired to the backend stream", async () => {
   const app = await read("src/App.tsx");
   const chatWidget = await read("src/components/ChatWidget.tsx");
   const chatStyles = await read("src/components/ChatWidget.css");
+  const siteHeader = await read("src/components/SiteHeader.tsx");
+  const siteStyles = await read("src/styles.css");
   const chatStream = await read("src/lib/chatStream.ts");
   const viteConfig = await read("vite.config.ts");
+  const icons = await readdir(new URL("../public/icons", import.meta.url));
 
   assert.match(app, /<ChatWidget \/>/);
   assert.match(app, /pathname !== "\/adm"/);
@@ -93,6 +96,11 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /<MarkdownText text=\{message\.text\} \/>/);
   assert.match(chatWidget, /function parseMarkdownBlocks/);
   assert.match(chatWidget, /target="_blank" rel="noreferrer noopener"/);
+  assert.match(chatWidget, /src="\/icons\/chat-launcher\.svg"/);
+  assert.match(chatWidget, /src="\/icons\/chat-collapse\.svg"/);
+  assert.match(chatWidget, /src="\/icons\/chat-send\.svg"/);
+  assert.match(siteHeader, /src="\/icons\/flag-uk\.svg"/);
+  assert.match(siteHeader, /src="\/icons\/flag-brazil\.svg"/);
   assert.match(chatStyles, /width: 110px/);
   assert.match(chatStyles, /\.chat-markdown/);
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
@@ -104,6 +112,12 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatStyles, /\.chat-panel__messages[\s\S]*background: #fff/);
   assert.match(chatStyles, /\.chat-panel__form[\s\S]*background: #fff/);
   assert.match(chatStyles, /\.chat-panel__feedback[\s\S]*align-items: center/);
+  assert.match(siteStyles, /\.language-option__icon/);
+  assert.ok(icons.includes("chat-launcher.svg"));
+  assert.ok(icons.includes("chat-collapse.svg"));
+  assert.ok(icons.includes("chat-send.svg"));
+  assert.ok(icons.includes("flag-uk.svg"));
+  assert.ok(icons.includes("flag-brazil.svg"));
   assert.match(chatStream, /tool_status"; message: string/);
   assert.match(viteConfig, /proxy/);
   assert.match(viteConfig, /127\.0\.0\.1:8000/);

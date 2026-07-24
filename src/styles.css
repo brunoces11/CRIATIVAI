@@ -233,6 +233,12 @@ img {
   filter: grayscale(0.5);
 }
 
+.language-option__icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
 .language-option--active {
   border-color: var(--border);
   opacity: 1;

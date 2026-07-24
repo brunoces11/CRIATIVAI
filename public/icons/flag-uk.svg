@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true">
+  <rect width="24" height="24" rx="3" fill="#012169"/>
+  <g clip-path="url(#uk-clip)">
+    <path d="M0 0h24v24H0Z" fill="#012169"/>
+    <path d="M0 0h9l15 15v9h-9L0 9Z" fill="#fff"/>
+    <path d="M24 0v9L9 24H0v-9L15 0Z" fill="#fff"/>
+    <path d="M0 1.5 1.5 0 24 22.5 22.5 24Z" fill="#C8102E"/>
+    <path d="M22.5 0 24 1.5 1.5 24 0 22.5Z" fill="#C8102E"/>
+    <rect x="10" y="0" width="4" height="24" fill="#fff"/>
+    <rect x="0" y="10" width="24" height="4" fill="#fff"/>
+    <rect x="11" y="0" width="2" height="24" fill="#C8102E"/>
+    <rect x="0" y="11" width="24" height="2" fill="#C8102E"/>
+  </g>
+  <rect width="24" height="24" rx="3" fill="none" stroke="rgba(0,0,0,0.12)"/>
+  <defs>
+    <clipPath id="uk-clip">
+      <rect width="24" height="24" rx="3"/>
+    </clipPath>
+  </defs>
+</svg>
