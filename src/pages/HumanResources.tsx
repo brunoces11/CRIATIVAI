@@ -1,32 +1,61 @@
 import { SiteHeader } from "../components/SiteHeader";
 
-const workflow = [
-  ["01", "Job Requirement Structuring", "We translate each brief into mandatory requirements, preferred qualifications, exclusion criteria, and priority competencies."],
-  ["02", "Search Strategy", "Equivalent titles, relevant keywords, target companies, related competencies, and candidate sources are mapped before the search begins."],
-  ["03", "Multi-Source Research", "Profiles are identified across authorized public sources, consolidated, and organized in one research environment."],
-  ["04", "Candidate Fit Analysis", "Every profile receives an explainable assessment of strengths, gaps, unconfirmed information, and supporting evidence."],
-  ["05", "Shortlist and Reports", "Recruiters receive a prioritized shortlist with individual reports, validation questions, and personalized outreach messages."],
-];
-
-const included = [
-  "Structured job-requirement intake form", "Role requirement interpretation and organization", "Automated search strategy generation", "Research across authorized public sources", "Profile consolidation and duplicate removal", "Candidate classification by level of fit", "Supporting evidence for every classification", "Gaps and missing-information identification", "Prioritized shortlist for human review", "Individual candidate reports", "Personalized outreach messages", "Recommended interview questions", "Structured spreadsheet and executive report delivery",
-];
-
-const benefits = [
-  ["Time savings", "Automate research, information organization, initial analysis, and report production."],
-  ["Greater speed", "Respond to new assignments faster and present qualified candidates before competitors."],
-  ["Improved accuracy", "Compare every professional against predefined criteria supported by verifiable evidence."],
-  ["More capacity", "Allow every recruiter to manage more assignments without growing the team proportionally."],
-  ["Consistent process", "Apply the same research, evaluation, and documentation standard to every assignment."],
-  ["Human control", "No candidate is automatically approved or rejected. Your team makes every final decision."],
-];
-
-const audiences = ["Executive search firms", "Specialized recruitment consultancies", "Independent headhunters", "Boutique recruitment agencies", "Technology and AI talent specialists", "C-level and strategic role recruiters", "International talent research teams"];
-
-const customizations = ["Integrate with your ATS, CRM, or talent database", "Monitor candidate movements and enrich existing profiles", "Generate reports in your company standard", "Create personalized messages in multiple languages", "Update clients on the progress of each search", "Prepare materials for meetings and interviews", "Organize recruiter and hiring-manager feedback", "Automate recurring administrative tasks", "Create workflows by industry, position, or country"];
+const pillars = [
+  {
+    id: "recruitment-intelligence",
+    number: "01",
+    title: "Recruitment Intelligence",
+    intro:
+      "Turn hours of manual research into a recruitment process shaped around your own methodology, criteria, and critical roles.",
+    items: [
+      "Search for professionals across multiple public and specialized sources.",
+      "Pre-qualify and rank professionals by level of fit.",
+      "Create evidence-based shortlists ready for recruiter review.",
+      "Build custom qualification tests for specific roles and skills.",
+      "Run standardized assessments at scale using your own evaluation criteria.",
+      "Create personalized outreach messages and screening questions.",
+    ],
+  },
+  {
+    id: "digital-operations",
+    number: "02",
+    title: "Digital Operations",
+    intro:
+      "Replace fragmented tools and repetitive workflows with systems designed around your operation.",
+    items: [
+      "Automate repetitive administrative and operational processes.",
+      "Deploy AI agents to support recruiters, clients, and candidates.",
+      "Build custom management systems for your workflows and business rules.",
+      "Create dashboards to monitor roles, talent, teams, and performance.",
+      "Develop custom tools for specific operational challenges.",
+      "Integrate ATS, CRM, spreadsheets, forms, and calendars.",
+    ],
+  },
+  {
+    id: "business-discovery",
+    number: "03",
+    title: "Business Discovery & Outbound",
+    intro:
+      "Find the right companies, reach the right people, and turn market research into new business opportunities.",
+    items: [
+      "Discover and qualify companies by market, industry, and potential.",
+      "Identify relevant decision-makers and professional contacts.",
+      "Enrich leads with verified data, context, and sources.",
+      "Create personalized messages based on real business evidence.",
+      "Automate campaigns, follow-ups, and sales tracking.",
+      "Deploy AI SDR agents to engage and qualify leads.",
+      "Integrate calendars for direct meeting scheduling.",
+    ],
+  },
+] as const;
 
 function Brand() {
-  return <span className="brand-lockup" aria-label="CriativAI"><span className="brand-monogram" aria-hidden="true">CA</span><span className="brand-name">CRIATIVAI</span></span>;
+  return (
+    <span className="brand-lockup" aria-label="CriativAI">
+      <span className="brand-monogram" aria-hidden="true">CA</span>
+      <span className="brand-name">CRIATIVAI</span>
+    </span>
+  );
 }
 
 function HrFooter() {
@@ -35,24 +64,27 @@ function HrFooter() {
       <div className="site-container footer-grid">
         <div className="footer-brand">
           <a href="#top" aria-label="CriativAI Human Resources home"><Brand /></a>
-          <p>Intelligent systems for research, organization, and more reliable recruiting decisions.</p>
-          <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+          <p>AI systems for recruitment companies that want more precision, more capacity, and more control.</p>
+          <span className="copyright">Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
         </div>
         <div className="footer-links-grid">
           <div>
             <p className="micro-label">Navigation</p>
-            <a href="#how-it-works">How it works</a><a href="#included">What&apos;s included</a><a href="#custom">Custom automations</a><a href="/contact">Contact</a>
+            <a href="#overview">Overview</a>
+            <a href="#recruitment-intelligence">Recruitment intelligence</a>
+            <a href="#digital-operations">Digital operations</a>
+            <a href="#business-discovery">Business discovery</a>
           </div>
           <div>
             <p className="micro-label">Social Media</p>
-            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</a>
+            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">â–¶</span>YouTube</a>
             <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</a>
+            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">BÄ“</span>Behance</a>
             <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
           </div>
         </div>
       </div>
-      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a href="#top">Back to top ↑</a></div>
+      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a href="#top">Back to top â†‘</a></div>
     </footer>
   );
 }
@@ -66,52 +98,110 @@ export default function HumanResourcesPage() {
         <div className="hr-hero-glow" aria-hidden="true" />
         <div className="site-container hr-hero-grid">
           <div className="hr-hero-copy">
-            <p className="eyebrow"><span /> Executive search intelligence</p>
-            <h1 id="hr-hero-title">Find the right professionals <span>faster.</span></h1>
-            <p className="hr-hero-lead">Intelligent automation for executive recruitment firms specializing in leaders, executives, and Artificial Intelligence professionals.</p>
-            <p className="hr-hero-detail">Transform job requirements into a structured search, identify candidates across multiple sources, and deliver a documented shortlist ready for recruiter validation and outreach.</p>
+            <p className="eyebrow"><span /> AI for recruitment companies</p>
+            <h1 id="hr-hero-title">
+              Find talent, streamline operations, and win new clients with AI
+              <span> built around your company.</span>
+            </h1>
+            <p className="hr-hero-lead">
+              Your methods. Your criteria. Your tools.
+            </p>
+            <p className="hr-hero-detail">
+              We design AI workflows, assessments, dashboards, and management systems around the way your recruitment company already works.
+            </p>
             <div className="hero-actions">
-              <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">Request a Demo <span aria-hidden="true">↗</span></a>
-              <a className="hr-text-link" href="#how-it-works">See How It Works <span aria-hidden="true">↓</span></a>
+              <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
+                Request a Demo <span aria-hidden="true">â†—</span>
+              </a>
+              <a className="hr-text-link" href="#overview">
+                Explore the overview <span aria-hidden="true">â†“</span>
+              </a>
             </div>
           </div>
-          <div className="hr-console" aria-label="Illustration of a recruiter-approved candidate shortlist">
-            <div className="hr-console-head"><span>SEARCH / VP AI PRODUCT</span><i>LIVE</i></div>
-            <div className="hr-console-criteria"><span>Required criteria</span><strong>Leadership · AI Strategy · Product</strong></div>
-            {[{ name: "Avery S.", score: "94", note: "Strong match" }, { name: "Jordan M.", score: "87", note: "Review source" }, { name: "Morgan K.", score: "82", note: "Validate scope" }].map((candidate) => (
-              <div className="hr-candidate" key={candidate.name}><span className="hr-avatar" /><div><strong>{candidate.name}</strong><small>{candidate.note}</small></div><b>{candidate.score}</b></div>
+
+          <div className="hr-console" aria-label="Illustration of AI opportunities for recruitment companies">
+            <div className="hr-console-head"><span>AI / RECRUITMENT</span><i>CUSTOM</i></div>
+            <div className="hr-console-criteria"><span>Three strategic areas</span><strong>Talent · Operations · Business growth</strong></div>
+            {[
+              { name: "Recruitment Intelligence", note: "Search, qualify, shortlist" },
+              { name: "Digital Operations", note: "Systems, dashboards, agents" },
+              { name: "Business Discovery", note: "Leads, outreach, meetings" },
+            ].map((item) => (
+              <div className="hr-candidate" key={item.name}>
+                <span className="hr-avatar" />
+                <div>
+                  <strong>{item.name}</strong>
+                  <small>{item.note}</small>
+                </div>
+                <b>AI</b>
+              </div>
             ))}
-            <div className="hr-console-footer"><span>SHORTLIST READY</span><strong>Recruiter review required</strong></div>
+            <div className="hr-console-footer"><span>MACRO VIEW</span><strong>Adapted to your process</strong></div>
           </div>
         </div>
       </section>
 
-      <section className="section hr-value-section" aria-labelledby="value-title">
+      <section className="section hr-value-section" id="overview" aria-labelledby="value-title">
         <div className="site-container hr-value-grid">
-          <div><p className="eyebrow">The advantage</p><h2 id="value-title">More efficient research. <span>More confidence in every decision.</span></h2></div>
-          <div className="hr-value-copy"><p>Finding executives and highly specialized professionals requires extensive research, careful analysis, and many hours of manual work.</p><p>Our system automates the most repetitive stages, so your team can focus on relationships with candidates, clients, and decision-makers.</p><strong>AI researches, organizes, and recommends. Recruiters review, validate, and decide.</strong></div>
+          <div>
+            <p className="eyebrow">The era of hyper-personalization</p>
+            <h2 id="value-title">
+              AI now enables recruitment companies to design fully customized workflows,
+              <span> assessments, dashboards, and management systems.</span>
+            </h2>
+          </div>
+          <div className="hr-value-copy">
+            <p>
+              This is no longer about a one-size-fits-all tool. It is about building precise systems around your methodology,
+              business rules, and operating reality.
+            </p>
+            <strong>What matters is not generic automation. What matters is a stack that fits your company.</strong>
+          </div>
         </div>
       </section>
 
-      <section className="section hr-workflow-section" id="how-it-works" aria-labelledby="workflow-title">
-        <div className="site-container"><div className="hr-section-head"><p className="eyebrow">How it works</p><h2 id="workflow-title">From a job brief to a <span>qualified shortlist.</span></h2></div><div className="hr-workflow-grid">{workflow.map(([number, title, text]) => <article className="hr-workflow-card" key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}</div></div>
+      {pillars.map((pillar) => (
+        <section className="section hr-workflow-section" id={pillar.id} aria-labelledby={`${pillar.id}-title`} key={pillar.id}>
+          <div className="site-container">
+            <div className="hr-section-head">
+              <p className="eyebrow">{pillar.number}</p>
+              <h2 id={`${pillar.id}-title`}>{pillar.title}</h2>
+              <p className="section-intro">{pillar.intro}</p>
+            </div>
+            <div className="hr-benefits-grid">
+              {pillar.items.map((item) => (
+                <article key={item}>
+                  <i aria-hidden="true" />
+                  <p>{item}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
+
+      <section className="final-cta hr-final-cta" aria-labelledby="demo-title">
+        <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
+        <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
+        <div className="site-container final-cta-inner">
+          <p className="eyebrow">A broader, more strategic view</p>
+          <h2 id="demo-title">
+            Build the recruitment company <span>you want to run.</span>
+          </h2>
+          <p>
+            From talent intelligence to operations and outbound growth, we can shape AI around the way your team actually works.
+          </p>
+          <div className="hero-actions">
+            <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
+              Request a Demo <span aria-hidden="true">â†—</span>
+            </a>
+            <a className="hr-text-link" href="mailto:hello@criativai.com?subject=Talk%20about%20AI%20for%20Recruitment">
+              Talk about your use case <span aria-hidden="true">â†—</span>
+            </a>
+          </div>
+        </div>
       </section>
 
-      <section className="section hr-included-section" id="included" aria-labelledby="included-title">
-        <div className="site-container hr-included-grid"><div className="hr-included-copy"><p className="eyebrow">What&apos;s included</p><h2 id="included-title">A streamlined package, designed to create results <span>quickly.</span></h2><p>Everything needed to turn a complex executive search into a documented, review-ready process.</p></div><ol className="hr-included-list">{included.map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, "0")}</span>{item}</li>)}</ol></div>
-      </section>
-
-      <section className="section hr-benefits-section" aria-labelledby="benefits-title"><div className="site-container"><div className="hr-section-head"><p className="eyebrow">Benefits &amp; ROI</p><h2 id="benefits-title">Reduce operational work without <span>compromising quality.</span></h2></div><div className="hr-benefits-grid">{benefits.map(([title, text]) => <article key={title}><i aria-hidden="true" /><h3>{title}</h3><p>{text}</p></article>)}</div></div></section>
-
-      <section className="section hr-reliability-section" aria-labelledby="reliability-title"><div className="site-container hr-reliability-grid"><div><p className="eyebrow">Transparency &amp; reliability</p><h2 id="reliability-title">Artificial Intelligence with <span>human oversight.</span></h2><p>The system delivers more than a generic candidate score. Each recommendation can be reviewed before it ever reaches a client or candidate.</p></div><div className="hr-evidence-panel"><p className="micro-label">Every recommendation includes</p>{["Criteria used in the assessment", "Evidence supporting the recommendation", "Sources consulted", "Areas of strong alignment", "Potential limitations", "Information that requires confirmation"].map((item) => <div key={item}><span>✓</span>{item}</div>)}<strong>Explainable by default</strong></div></div></section>
-
-      <section className="section hr-audience-section" aria-labelledby="audience-title"><div className="site-container hr-audience-grid"><div><p className="eyebrow">Designed for specialized recruitment</p><h2 id="audience-title">Built for teams that place <span>high-impact talent.</span></h2></div><ul>{audiences.map((audience) => <li key={audience}>{audience}<span aria-hidden="true">↗</span></li>)}</ul></div></section>
-
-      <section className="section hr-custom-section" id="custom" aria-labelledby="custom-title"><div className="site-container hr-custom-grid"><div className="hr-custom-copy"><p className="eyebrow">Custom agent automations</p><h2 id="custom-title">Your recruitment process stays <span>yours.</span></h2><p>Beyond the entry package, we build agents and automations around your company&apos;s processes and operational needs.</p><a className="button button--light" href="mailto:hello@criativai.com?subject=Custom%20Recruitment%20Automation">Discuss a Custom Automation <span aria-hidden="true">↗</span></a></div><ul>{customizations.map((item) => <li key={item}>{item}</li>)}</ul></div></section>
-
-      <section className="section hr-implementation-section" aria-labelledby="implementation-title"><div className="site-container"><div className="hr-section-head"><p className="eyebrow">Implementation</p><h2 id="implementation-title">Start simple. Expand with <span>evidence.</span></h2></div><ol className="hr-implementation-list">{["Analyze your current recruitment workflow", "Configure criteria and delivery formats", "Run a pilot assignment", "Validate the results with your team", "Refine the process and expand gradually"].map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>)}</ol><p className="hr-implementation-note">There is no need to replace your current tools or rebuild your entire operation at once.</p></div></section>
-
-      <section className="final-cta hr-final-cta" id="demo" aria-labelledby="demo-title"><div className="cta-orbit cta-orbit--one" aria-hidden="true" /><div className="cta-orbit cta-orbit--two" aria-hidden="true" /><div className="site-container final-cta-inner"><p className="eyebrow">Executive search, accelerated</p><h2 id="demo-title">Less time researching. <span>More time recruiting.</span></h2><p>Accelerate the identification of executives and AI specialists, increase operational capacity, and deliver more consistent shortlists to clients.</p><div className="hero-actions"><a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">Request a Demo <span aria-hidden="true">↗</span></a><a className="hr-text-link" href="mailto:hello@criativai.com?subject=Pilot%20Assignment">Start a Pilot Assignment <span aria-hidden="true">↗</span></a></div></div></section>
       <HrFooter />
     </main>
   );

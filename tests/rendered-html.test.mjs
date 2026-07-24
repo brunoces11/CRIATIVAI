@@ -32,7 +32,12 @@ test("keeps the public pages in the client router", async () => {
   assert.match(app, /pathname === "\/contact"/);
   assert.match(app, /pathname === "\/adm"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
-  assert.match(humanResources, /Executive search intelligence/i);
+  assert.match(humanResources, /AI for recruitment companies/i);
+  assert.match(humanResources, /The era of hyper-personalization/i);
+  assert.match(humanResources, /Recruitment Intelligence/i);
+  assert.match(humanResources, /Digital Operations/i);
+  assert.match(humanResources, /Business Discovery & Outbound/i);
+  assert.doesNotMatch(humanResources, /What&apos;s included|How it works|Transparency &amp; reliability|Implementation/i);
   assert.match(style, /Style Guide/i);
   assert.match(talentPreview, /Talent[\s\S]*Preview/i);
   assert.match(talentPreview, /<textarea[\s\S]*name="search_criteria_1"/);
