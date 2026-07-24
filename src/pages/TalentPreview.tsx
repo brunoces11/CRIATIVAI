@@ -36,8 +36,7 @@ const benefits = [
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
-      <span className="brand-monogram" aria-hidden="true">CA</span>
-      <span className="brand-name">CRIATIV<span className="brand-name-accent">AI</span></span>
+      <img className="brand-logo" src="/logo.svg" alt="" aria-hidden="true" />
     </span>
   );
 }

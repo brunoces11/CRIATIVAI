@@ -34,6 +34,7 @@ test("keeps the public pages in the client router", async () => {
   assert.match(app, /pathname === "\/adm"/);
   assert.match(app, /pathname === "\/privacy" \|\| pathname === "\/terms"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
+  assert.match(home, /src="\/logo\.svg"/);
   assert.match(home, /project-human-resources\.svg/);
   assert.match(home, /project-trading\.svg/);
   assert.match(home, /project-dante\.svg/);
@@ -83,6 +84,7 @@ test("ships Target Mode and no starter scaffold markers", async () => {
 
 test("ships the chat widget wired to the backend stream", async () => {
   const app = await read("src/App.tsx");
+  const home = await read("src/pages/Home.tsx");
   const chatWidget = await read("src/components/ChatWidget.tsx");
   const chatStyles = await read("src/components/ChatWidget.css");
   const siteHeader = await read("src/components/SiteHeader.tsx");
@@ -91,6 +93,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   const viteConfig = await read("vite.config.ts");
   const icons = await readdir(new URL("../public/icons", import.meta.url));
   const projectVisuals = await readdir(new URL("../public/project-visuals", import.meta.url));
+  const brandAssets = await readdir(new URL("../public", import.meta.url));
 
   assert.match(app, /<ChatWidget \/>/);
   assert.match(app, /pathname !== "\/adm"/);
@@ -103,6 +106,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /src="\/icons\/chat-launcher\.svg"/);
   assert.match(chatWidget, /src="\/icons\/chat-collapse\.svg"/);
   assert.match(chatWidget, /src="\/icons\/chat-send\.svg"/);
+  assert.match(home, /src="\/logo\.svg"/);
   assert.match(siteHeader, /src="\/icons\/flag-uk\.svg"/);
   assert.match(siteHeader, /src="\/icons\/flag-brazil\.svg"/);
   assert.match(chatStyles, /width: 88px/);
@@ -125,6 +129,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.ok(projectVisuals.includes("project-human-resources.svg"));
   assert.ok(projectVisuals.includes("project-trading.svg"));
   assert.ok(projectVisuals.includes("project-dante.svg"));
+  assert.ok(brandAssets.includes("logo.svg"));
   assert.ok(icons.includes("chat-launcher.svg"));
   assert.ok(icons.includes("chat-collapse.svg"));
   assert.ok(icons.includes("chat-send.svg"));
