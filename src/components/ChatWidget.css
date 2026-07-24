@@ -167,6 +167,73 @@
   line-height: 1.55;
 }
 
+.chat-markdown {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.91rem;
+  line-height: 1.55;
+}
+
+.chat-markdown > * {
+  margin: 0;
+}
+
+.chat-markdown > * + * {
+  margin-top: 10px;
+}
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3 {
+  color: #23272d;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-left: 18px;
+}
+
+.chat-markdown li + li {
+  margin-top: 6px;
+}
+
+.chat-markdown strong {
+  color: #24282e;
+  font-weight: 700;
+}
+
+.chat-markdown a {
+  color: #8f604e;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.chat-markdown code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(21, 26, 32, 0.08);
+  color: #23272d;
+  font-size: 0.84em;
+}
+
+.chat-markdown pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px;
+  border: 1px solid rgba(21, 26, 32, 0.1);
+  border-radius: 6px;
+  background: rgba(21, 26, 32, 0.05);
+}
+
+.chat-markdown pre code {
+  padding: 0;
+  background: transparent;
+}
+
 .chat-message--user {
   align-self: flex-end;
   padding: 12px 14px;

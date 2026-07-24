@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from fastapi import HTTPException
 from openai import APIConnectionError, APIStatusError, APITimeoutError, AuthenticationError, OpenAI, RateLimitError
 from sqlalchemy.orm import Session
 
@@ -108,13 +109,7 @@ def stream_openai_text_with_calendar_tools(
 
         for tool_call in tool_calls:
             yield PublicToolStatus()
-            output = execute_calendar_tool(
-                tool_call["name"],
-                tool_call["arguments"],
-                session=session,
-                conversation=conversation,
-                settings=settings,
-            )
+            output = execute_calendar_tool_safely(tool_call, session=session, conversation=conversation, settings=settings)
             response_input.append(tool_call)
             response_input.append(
                 {
@@ -125,6 +120,32 @@ def stream_openai_text_with_calendar_tools(
             )
 
     raise OpenAIChatUnavailable("Calendar tool iteration limit reached.")
+
+
+def execute_calendar_tool_safely(
+    tool_call: dict[str, Any],
+    *,
+    session: Session,
+    conversation: Conversation,
+    settings: Settings,
+) -> dict[str, Any]:
+    try:
+        return execute_calendar_tool(
+            tool_call["name"],
+            tool_call["arguments"],
+            session=session,
+            conversation=conversation,
+            settings=settings,
+        )
+    except HTTPException as exc:
+        detail = exc.detail if isinstance(exc.detail, str) else "Calendar request could not be completed"
+        logger.info("Calendar tool failed safely: name=%s status_code=%s", tool_call["name"], exc.status_code)
+        return {
+            "error": {
+                "message": detail,
+                "status_code": exc.status_code,
+            }
+        }
 
 
 def extract_function_calls(response) -> list[dict[str, Any]]:

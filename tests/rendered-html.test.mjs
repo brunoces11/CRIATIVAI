@@ -90,7 +90,11 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /SESSION_STORAGE_KEY = "chat_session_id"/);
   assert.match(chatWidget, /sendChatMessage/);
   assert.match(chatWidget, /const turnId = crypto\.randomUUID\(\)/);
+  assert.match(chatWidget, /<MarkdownText text=\{message\.text\} \/>/);
+  assert.match(chatWidget, /function parseMarkdownBlocks/);
+  assert.match(chatWidget, /target="_blank" rel="noreferrer noopener"/);
   assert.match(chatStyles, /width: 110px/);
+  assert.match(chatStyles, /\.chat-markdown/);
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
   assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);
   assert.match(chatStyles, /\.chat-panel__header[\s\S]*background: var\(--accent\)/);

@@ -1,6 +1,7 @@
 import json
 from types import SimpleNamespace
 
+from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -69,3 +70,31 @@ def test_openai_tool_loop_runs_tool_and_continues(monkeypatch, tmp_path) -> None
     assert second_input[-2]["type"] == "function_call"
     assert second_input[-1]["type"] == "function_call_output"
     assert second_input[-1]["call_id"] == "call_1"
+
+
+def test_openai_tool_loop_returns_calendar_errors_to_model(monkeypatch, tmp_path) -> None:
+    session = make_session()
+    conversation = Conversation(session_id="session_1234567890abcdef")
+    session.add(conversation)
+    session.commit()
+    settings = Settings(
+        openai_mock_response=None,
+        openai_api_key="test-key",
+        sdr_prompt_path=tmp_path / "prompt.md",
+        _env_file=None,
+    )
+    settings.sdr_prompt_path.write_text("You are helpful.", encoding="utf-8")
+
+    def fail_calendar_tool(*_args, **_kwargs):
+        raise HTTPException(status_code=503, detail="Google Calendar is not connected")
+
+    monkeypatch.setattr("backend.app.openai_chat.execute_calendar_tool", fail_calendar_tool)
+    client = FakeClient()
+
+    events = list(stream_openai_text_with_calendar_tools(client, settings, session, conversation, [], "Quero agendar", None))
+
+    assert any(isinstance(event, PublicToolStatus) for event in events)
+    assert events[-1] == "Tenho 3 horários disponíveis."
+    tool_output = json.loads(client.responses.calls[1]["input"][-1]["output"])
+    assert tool_output["error"]["message"] == "Google Calendar is not connected"
+    assert tool_output["error"]["status_code"] == 503

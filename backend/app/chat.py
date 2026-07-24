@@ -53,6 +53,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         _log_chat_turn(request_id, masked_session, started_at, "message_too_long")
         return
 
+    turn_id = request.turn_id or secrets.token_urlsafe(18)
     if request.turn_id:
         replay = _find_completed_turn(history, request.turn_id)
         if replay is not None:
@@ -73,6 +74,15 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         return
 
     response = ""
+    user_record = _find_turn_message(history, turn_id, "user")
+    if user_record is None:
+        user_record = Message(conversation_id=conversation.id, role="user", content=request.message, status="completed", turn_id=turn_id)
+        session.add(user_record)
+        now = datetime.now(UTC)
+        conversation.last_activity_at = now
+        conversation.updated_at = now
+        session.commit()
+        session.refresh(user_record)
     try:
         recent_history = _recent_completed_messages(history, settings.chat_context_recent_messages)
         for delta in _stream_openai_text(
@@ -110,11 +120,8 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         _log_chat_turn(request_id, masked_session, started_at, error_category)
         return
 
-    turn_id = request.turn_id or secrets.token_urlsafe(18)
     now = datetime.now(UTC)
-    user_record = Message(conversation_id=conversation.id, role="user", content=request.message, status="completed", turn_id=turn_id)
     assistant_record = Message(conversation_id=conversation.id, role="assistant", content=response, status="completed", turn_id=turn_id)
-    session.add(user_record)
     session.add(assistant_record)
     conversation.last_activity_at = now
     conversation.updated_at = now
@@ -144,6 +151,10 @@ def _event(event: str, payload: dict[str, str]) -> str:
 def _find_completed_turn(messages: list[Message], turn_id: str) -> Message | None:
     matches = [message for message in messages if message.turn_id == turn_id and message.status == "completed"]
     return next((message for message in matches if message.role == "assistant"), None)
+
+
+def _find_turn_message(messages: list[Message], turn_id: str, role: str) -> Message | None:
+    return next((message for message in messages if message.turn_id == turn_id and message.role == role), None)
 
 
 def _recent_completed_messages(messages: list[Message], limit: int) -> list[Message]:

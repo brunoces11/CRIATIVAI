@@ -34,7 +34,7 @@ def test_stream_chat_persists_user_and_assistant_only_after_success(monkeypatch)
     ]
 
 
-def test_stream_chat_does_not_persist_incomplete_turn_after_error(monkeypatch) -> None:
+def test_stream_chat_keeps_user_message_when_assistant_fails(monkeypatch) -> None:
     session = make_session()
     monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="unused", _env_file=None))
 
@@ -48,7 +48,29 @@ def test_stream_chat_does_not_persist_incomplete_turn_after_error(monkeypatch) -
 
     assert any('"event": "error"' in event for event in events)
     assert session.scalar(select(Conversation)) is not None
-    assert session.scalars(select(Message)).all() == []
+    messages = session.scalars(select(Message).order_by(Message.id)).all()
+    assert [(message.role, message.content) for message in messages] == [("user", "Hi")]
+
+
+def test_stream_chat_retries_failed_turn_without_duplicate_user_message(monkeypatch) -> None:
+    session = make_session()
+    monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="unused", _env_file=None))
+    request = ChatRequest(message="Hi", turn_id="turn_123456789012")
+
+    def fail_after_delta(*_args):
+        yield "partial"
+        raise chat_module.OpenAIChatUnavailable("boom")
+
+    monkeypatch.setattr(chat_module, "stream_openai_text", fail_after_delta)
+    first_events = [json_event(event) for event in chat_module.stream_chat(session, request)]
+    session_id = next(event["session_id"] for event in first_events if event["event"] == "session_start")
+
+    monkeypatch.setattr(chat_module, "stream_openai_text", lambda *_args: iter(["hello"]))
+    second_events = [json_event(event) for event in chat_module.stream_chat(session, ChatRequest(message="Hi", session_id=session_id, turn_id=request.turn_id))]
+
+    assert any(event["event"] == "done" for event in second_events)
+    messages = session.scalars(select(Message).order_by(Message.id)).all()
+    assert [(message.role, message.content) for message in messages] == [("user", "Hi"), ("assistant", "hello")]
 
 
 def test_stream_chat_replays_completed_turn_without_duplicate_messages(monkeypatch) -> None:
