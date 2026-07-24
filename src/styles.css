@@ -151,7 +151,7 @@ img {
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  border: 1px solid var(--accent);
   color: var(--white);
   font-family: var(--font-serif), Georgia, serif;
   font-size: 1.05rem;
@@ -164,6 +164,10 @@ img {
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.2em;
+}
+
+.brand-name-accent {
+  color: var(--accent);
 }
 
 .header-right,
