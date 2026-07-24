@@ -152,6 +152,7 @@ img {
   height: 34px;
   place-items: center;
   border: 1px solid var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
   color: var(--white);
   font-family: var(--font-serif), Georgia, serif;
   font-size: 1.05rem;
@@ -161,13 +162,14 @@ img {
 }
 
 .brand-name {
+  color: var(--white);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.2em;
 }
 
 .brand-name-accent {
-  color: var(--accent);
+  color: var(--accent) !important;
 }
 
 .header-right,
@@ -229,10 +231,11 @@ img {
   height: 34px;
   padding: 0;
   place-items: center;
-  border: 1px solid transparent;
+  border: 0;
   border-radius: 3px;
   opacity: 0.38;
   background: transparent;
+  box-shadow: none;
   cursor: not-allowed;
   filter: grayscale(0.5);
 }
@@ -241,10 +244,11 @@ img {
   display: block;
   width: 18px;
   height: 18px;
+  border: 0;
 }
 
 .language-option--active {
-  border-color: var(--border);
+  border: 0;
   opacity: 1;
   cursor: default;
   filter: none;
