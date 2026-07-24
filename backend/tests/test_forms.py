@@ -37,11 +37,6 @@ def talent_payload(*, started_at_ms: int | None = None) -> dict[str, str | int]:
         "requester_email": "bruno@example.com",
         "job_title": "Head of AI",
         "search_criteria_1": "Leadership",
-        "search_criteria_2": "AI product",
-        "search_criteria_3": "Enterprise",
-        "search_criteria_4": "Brazil",
-        "exclusion_criteria": "No management experience",
-        "differentiator": "Marketplace background",
         "started_at_ms": started_at_ms if started_at_ms is not None else int(time() * 1000) - 5000,
         "honeypot": "",
     }
@@ -134,5 +129,44 @@ def test_form_rate_limit_blocks_repeated_requests(tmp_path) -> None:
         assert first.status_code == 201
         assert second.status_code == 429
         assert "Too many form submissions" in second.json()["detail"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_talent_preview_submission_accepts_optional_fields_as_blank(tmp_path) -> None:
+    session = make_session()
+
+    def override_session():
+        try:
+            yield session
+        finally:
+            pass
+
+    def override_settings():
+        return Settings(
+            database_url=f"sqlite:///{tmp_path / 'forms-optional.db'}",
+            frontend_dist_dir=tmp_path / "dist",
+            forms_notification_email="bruno@criativai.site",
+            _env_file=None,
+        )
+
+    app.dependency_overrides[forms_module.get_session] = override_session
+    app.dependency_overrides[forms_module.get_settings] = override_settings
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/forms/talent-preview",
+            json={
+                "requester_name": "Bruno",
+                "requester_email": "bruno@example.com",
+                "job_title": "Head of AI",
+                "search_criteria_1": "Leadership across product and delivery",
+                "started_at_ms": int(time() * 1000) - 5000,
+                "honeypot": "",
+            },
+        )
+        assert response.status_code == 201
+        assert response.json()["notification_email_status"] == "pending_config"
     finally:
         app.dependency_overrides.clear()

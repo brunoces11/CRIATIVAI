@@ -35,6 +35,10 @@ test("keeps the public pages in the client router", async () => {
   assert.match(humanResources, /Executive search intelligence/i);
   assert.match(style, /Style Guide/i);
   assert.match(talentPreview, /Talent[\s\S]*Preview/i);
+  assert.match(talentPreview, /<textarea[\s\S]*name="search_criteria_1"/);
+  assert.doesNotMatch(talentPreview, /search_criteria_2/);
+  assert.doesNotMatch(talentPreview, /search_criteria_3/);
+  assert.doesNotMatch(talentPreview, /search_criteria_4/);
   assert.match(contact, /Start a[\s\S]*conversation/i);
   assert.match(admin, /\/api\/admin\/conversations/);
   assert.match(admin, /\/api\/admin\/prompt/);

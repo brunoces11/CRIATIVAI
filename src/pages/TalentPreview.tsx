@@ -8,9 +8,6 @@ type TalentPreviewState = {
   requester_email: string;
   job_title: string;
   search_criteria_1: string;
-  search_criteria_2: string;
-  search_criteria_3: string;
-  search_criteria_4: string;
   exclusion_criteria: string;
   differentiator: string;
   started_at_ms: number;
@@ -23,9 +20,6 @@ function createInitialState(): TalentPreviewState {
     requester_email: "",
     job_title: "",
     search_criteria_1: "",
-    search_criteria_2: "",
-    search_criteria_3: "",
-    search_criteria_4: "",
     exclusion_criteria: "",
     differentiator: "",
     started_at_ms: Date.now(),
@@ -60,12 +54,7 @@ export default function TalentPreviewPage() {
       emailOk &&
       form.requester_name.trim().length >= 2 &&
       form.job_title.trim().length >= 2 &&
-      form.search_criteria_1.trim().length >= 2 &&
-      form.search_criteria_2.trim().length >= 2 &&
-      form.search_criteria_3.trim().length >= 2 &&
-      form.search_criteria_4.trim().length >= 2 &&
-      form.exclusion_criteria.trim().length >= 2 &&
-      form.differentiator.trim().length >= 2
+      form.search_criteria_1.trim().length >= 2
     );
   }, [form]);
 
@@ -125,8 +114,8 @@ export default function TalentPreviewPage() {
             <div className="form-visual-card__metric"><strong>24h</strong><span>turnaround target</span></div>
             <ul className="form-visual-card__list">
               <li><span>01</span><strong>Role title and search intent</strong></li>
-              <li><span>02</span><strong>Four decisive qualification criteria</strong></li>
-              <li><span>03</span><strong>One exclusion rule and one differentiator</strong></li>
+              <li><span>02</span><strong>One primary search brief in multiline format</strong></li>
+              <li><span>03</span><strong>Optional exclusion and differentiator signals</strong></li>
             </ul>
             <div className="form-visual-card__footer"><span>OUTPUT</span><strong>Up to 20 aligned candidate profiles</strong></div>
           </div>
@@ -162,8 +151,8 @@ export default function TalentPreviewPage() {
             <p className="eyebrow">Free request form</p>
             <h2 id="talent-preview-form-title">Describe the role. We structure the search.</h2>
             <p>
-              Give us the live vacancy, the most important signals to search for, what should disqualify a candidate,
-              and one differentiator that would make the shortlist stronger.
+              Give us the live vacancy and the main search signal. You can also add an exclusion characteristic
+              and one differentiator if they help sharpen the shortlist.
             </p>
             <strong>We review the brief and respond to the requester by email within 24 hours.</strong>
           </div>
@@ -185,33 +174,26 @@ export default function TalentPreviewPage() {
               <input name="job_title" value={form.job_title} onChange={onChange} placeholder="Example: VP of AI Product" required />
             </label>
 
-            <div className="form-grid form-grid--two">
-              <label className="form-field">
-                <span>Relevant search criterion 01</span>
-                <input name="search_criteria_1" value={form.search_criteria_1} onChange={onChange} placeholder="Must-have leadership scope" required />
-              </label>
-              <label className="form-field">
-                <span>Relevant search criterion 02</span>
-                <input name="search_criteria_2" value={form.search_criteria_2} onChange={onChange} placeholder="Domain expertise" required />
-              </label>
-              <label className="form-field">
-                <span>Relevant search criterion 03</span>
-                <input name="search_criteria_3" value={form.search_criteria_3} onChange={onChange} placeholder="Operational context" required />
-              </label>
-              <label className="form-field">
-                <span>Relevant search criterion 04</span>
-                <input name="search_criteria_4" value={form.search_criteria_4} onChange={onChange} placeholder="Geography, language, or seniority" required />
-              </label>
-            </div>
+            <label className="form-field">
+              <span>Relevant search criterion 01</span>
+              <textarea
+                name="search_criteria_1"
+                value={form.search_criteria_1}
+                onChange={onChange}
+                placeholder="Describe the single main search signal, in multiline form if needed."
+                rows={6}
+                required
+              />
+            </label>
 
             <label className="form-field">
               <span>Exclusion characteristic</span>
-              <input name="exclusion_criteria" value={form.exclusion_criteria} onChange={onChange} placeholder="Example: no experience scaling teams above 50 people" required />
+              <input name="exclusion_criteria" value={form.exclusion_criteria} onChange={onChange} placeholder="Optional: example of what should disqualify a profile" />
             </label>
 
             <label className="form-field">
               <span>Differentiator</span>
-              <input name="differentiator" value={form.differentiator} onChange={onChange} placeholder="A strong plus that would elevate the shortlist" required />
+              <input name="differentiator" value={form.differentiator} onChange={onChange} placeholder="Optional: a strong plus that would elevate the shortlist" />
             </label>
 
             <label className="form-honeypot" aria-hidden="true">

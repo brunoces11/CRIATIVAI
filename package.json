@@ -6,9 +6,10 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.mjs",
+    "dev:frontend": "vite",
     "build": "tsc --noEmit && vite build",
-    "backend": "python -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000",
+    "backend": "node scripts/backend.mjs",
     "backend:migrate": "python -m alembic -c backend/alembic.ini upgrade head",
     "start": "npx serve@latest dist",
     "test:backend": "node tests/backend-tests.mjs",

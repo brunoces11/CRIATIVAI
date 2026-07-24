@@ -12,18 +12,20 @@ npm run build
 python -m venv .venv
 .venv\Scripts\python -m pip install -r backend\requirements-dev.txt
 .venv\Scripts\python -m alembic -c backend\alembic.ini upgrade head
-npm run backend
+npm run dev
 ```
 
 For frontend-only work:
 
 ```bash
-npm run dev
+npm run dev:frontend
 ```
 
 Open `http://localhost:5173`.
 
-For the FastAPI runtime, open `http://127.0.0.1:8000` after `npm run backend`.
+The default `npm run dev` command now starts both the Vite frontend and the FastAPI backend, so the contact and Talent Preview forms can talk to SQLite locally without any extra manual step.
+
+For the FastAPI runtime on its own, open `http://127.0.0.1:8000` after `npm run backend`.
 
 ## Validation
 

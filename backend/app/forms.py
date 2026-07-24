@@ -180,46 +180,59 @@ def _merge_errors(*errors: str | None) -> str | None:
 
 
 def _talent_preview_internal_text(submission: TalentPreviewRequest) -> str:
-    return f"""New Talent Preview request
+    sections = [
+        "New Talent Preview request",
+        "",
+        f"Reference: #{submission.id}",
+        f"Requester: {submission.requester_name}",
+        f"Email: {submission.requester_email}",
+        f"Job title: {submission.job_title}",
+        "",
+        "Relevant search criterion 01:",
+        submission.search_criteria_1,
+    ]
 
-Reference: #{submission.id}
-Requester: {submission.requester_name}
-Email: {submission.requester_email}
-Job title: {submission.job_title}
+    optional_search_criteria = [submission.search_criteria_2, submission.search_criteria_3, submission.search_criteria_4]
+    if any(optional_search_criteria):
+        sections.extend(["", "Additional search criteria:"])
+        for index, value in enumerate(optional_search_criteria, start=2):
+            if value:
+                sections.append(f"{index}. {value}")
 
-Top search criteria:
-1. {submission.search_criteria_1}
-2. {submission.search_criteria_2}
-3. {submission.search_criteria_3}
-4. {submission.search_criteria_4}
+    if submission.exclusion_criteria:
+        sections.extend(["", "Exclusion characteristic:", submission.exclusion_criteria])
 
-Exclusion criteria:
-{submission.exclusion_criteria}
+    if submission.differentiator:
+        sections.extend(["", "Differentiator:", submission.differentiator])
 
-Differentiator:
-{submission.differentiator}
-
-Source IP: {submission.source_ip or "n/a"}
-User-Agent: {submission.user_agent or "n/a"}
-"""
+    sections.extend([
+        "",
+        f"Source IP: {submission.source_ip or 'n/a'}",
+        f"User-Agent: {submission.user_agent or 'n/a'}",
+    ])
+    return "\n".join(sections)
 
 
 def _talent_preview_internal_html(submission: TalentPreviewRequest) -> str:
+    optional_search_criteria = [submission.search_criteria_2, submission.search_criteria_3, submission.search_criteria_4]
+    additional_criteria = ""
+    if any(optional_search_criteria):
+        items = "".join(f"<li>{value}</li>" for value in optional_search_criteria if value)
+        additional_criteria = f"<h2>Additional search criteria</h2><ol>{items}</ol>"
+
+    exclusion = f"<p><strong>Exclusion characteristic:</strong><br />{submission.exclusion_criteria}</p>" if submission.exclusion_criteria else ""
+    differentiator = f"<p><strong>Differentiator:</strong><br />{submission.differentiator}</p>" if submission.differentiator else ""
+
     return f"""
     <h1>New Talent Preview request</h1>
     <p><strong>Reference:</strong> #{submission.id}</p>
     <p><strong>Requester:</strong> {submission.requester_name}<br />
     <strong>Email:</strong> {submission.requester_email}<br />
     <strong>Job title:</strong> {submission.job_title}</p>
-    <h2>Top search criteria</h2>
-    <ol>
-      <li>{submission.search_criteria_1}</li>
-      <li>{submission.search_criteria_2}</li>
-      <li>{submission.search_criteria_3}</li>
-      <li>{submission.search_criteria_4}</li>
-    </ol>
-    <p><strong>Exclusion criteria:</strong><br />{submission.exclusion_criteria}</p>
-    <p><strong>Differentiator:</strong><br />{submission.differentiator}</p>
+    <p><strong>Relevant search criterion 01:</strong><br />{submission.search_criteria_1}</p>
+    {additional_criteria}
+    {exclusion}
+    {differentiator}
     <p><strong>Source IP:</strong> {submission.source_ip or "n/a"}<br />
     <strong>User-Agent:</strong> {submission.user_agent or "n/a"}</p>
     """

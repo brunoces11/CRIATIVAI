@@ -164,12 +164,8 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
         requester_name: "Taylor Recruiter",
         requester_email: "taylor@example.com",
         job_title: "VP of AI Product",
-        search_criteria_1: "B2B SaaS leadership",
-        search_criteria_2: "AI product strategy",
-        search_criteria_3: "Global team management",
-        search_criteria_4: "English fluency",
-        exclusion_criteria: "No executive ownership",
-        differentiator: "Experience launching AI copilots",
+        search_criteria_1: "B2B SaaS leadership with AI product strategy",
+        started_at_ms: Date.now() - 5000,
         honeypot: "",
       }),
     });
@@ -186,6 +182,7 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
         email: "jordan@example.com",
         subject: "Automation project",
         message: "We want to discuss a custom workflow automation project for our team.",
+        started_at_ms: Date.now() - 5000,
         honeypot: "",
       }),
     });

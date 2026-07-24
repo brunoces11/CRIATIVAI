@@ -3,11 +3,11 @@ export type TalentPreviewPayload = {
   requester_email: string;
   job_title: string;
   search_criteria_1: string;
-  search_criteria_2: string;
-  search_criteria_3: string;
-  search_criteria_4: string;
-  exclusion_criteria: string;
-  differentiator: string;
+  search_criteria_2?: string;
+  search_criteria_3?: string;
+  search_criteria_4?: string;
+  exclusion_criteria?: string;
+  differentiator?: string;
   started_at_ms: number;
   honeypot?: string;
 };

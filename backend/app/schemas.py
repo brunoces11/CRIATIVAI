@@ -72,12 +72,12 @@ class TalentPreviewSubmissionCreate(BaseModel):
     requester_name: str = Field(min_length=2, max_length=160)
     requester_email: str = Field(min_length=3, max_length=320, pattern=EMAIL_PATTERN)
     job_title: str = Field(min_length=2, max_length=200)
-    search_criteria_1: str = Field(min_length=2, max_length=220)
-    search_criteria_2: str = Field(min_length=2, max_length=220)
-    search_criteria_3: str = Field(min_length=2, max_length=220)
-    search_criteria_4: str = Field(min_length=2, max_length=220)
-    exclusion_criteria: str = Field(min_length=2, max_length=220)
-    differentiator: str = Field(min_length=2, max_length=220)
+    search_criteria_1: str = Field(min_length=2, max_length=2000)
+    search_criteria_2: str | None = Field(default=None, max_length=220)
+    search_criteria_3: str | None = Field(default=None, max_length=220)
+    search_criteria_4: str | None = Field(default=None, max_length=220)
+    exclusion_criteria: str | None = Field(default=None, max_length=220)
+    differentiator: str | None = Field(default=None, max_length=220)
     started_at_ms: int = Field(gt=0)
     honeypot: str = Field(default="", max_length=200)
 
@@ -102,6 +102,11 @@ class TalentPreviewSubmissionCreate(BaseModel):
     def validate_honeypot(self) -> "TalentPreviewSubmissionCreate":
         if self.honeypot:
             raise ValueError("Invalid submission")
+        self.search_criteria_2 = self.search_criteria_2.strip() if isinstance(self.search_criteria_2, str) else ""
+        self.search_criteria_3 = self.search_criteria_3.strip() if isinstance(self.search_criteria_3, str) else ""
+        self.search_criteria_4 = self.search_criteria_4.strip() if isinstance(self.search_criteria_4, str) else ""
+        self.exclusion_criteria = self.exclusion_criteria.strip() if isinstance(self.exclusion_criteria, str) else ""
+        self.differentiator = self.differentiator.strip() if isinstance(self.differentiator, str) else ""
         return self
 
 
