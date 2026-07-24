@@ -48,8 +48,8 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
   }, [menuOpen]);
 
   const headerStyle = useMemo(() => ({
-    "--header-background-opacity": String(0.2 + scrollProgress * 0.6),
-    "--header-blur": `${1 + scrollProgress * 4}px`,
+    "--header-background-opacity": String(0.2 + scrollProgress * 0.62),
+    "--header-blur": `${1 + scrollProgress * 5}px`,
     "--header-border-opacity": String(0.03 + scrollProgress * 0.06),
   }) as CSSProperties, [scrollProgress]);
 
@@ -93,10 +93,18 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
 function EnglandFlag() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-      <rect width="24" height="24" rx="3" fill="#fff" />
-      <rect x="9" width="6" height="24" fill="#cf2030" />
-      <rect y="9" width="24" height="6" fill="#cf2030" />
+      <rect width="24" height="24" rx="3" fill="#f4f4f1" />
+      <g clipPath="url(#england-flag-clip)">
+        <rect x="2" y="4" width="20" height="16" fill="#fff" />
+        <rect x="10" y="4" width="4" height="16" fill="#cf2030" />
+        <rect x="2" y="10" width="20" height="4" fill="#cf2030" />
+      </g>
       <rect width="24" height="24" rx="3" fill="none" stroke="rgba(0,0,0,0.12)" />
+      <defs>
+        <clipPath id="england-flag-clip">
+          <rect x="2" y="4" width="20" height="16" rx="1.2" />
+        </clipPath>
+      </defs>
     </svg>
   );
 }
