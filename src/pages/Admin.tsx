@@ -25,6 +25,10 @@ type GoogleCalendarStatus = {
   scopes: string[];
 };
 
+type AdminPromptResponse = {
+  content: string;
+};
+
 export default function AdminPage() {
   const [conversations, setConversations] = useState<AdminConversationSummary[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -35,6 +39,12 @@ export default function AdminPage() {
   const [googleStatus, setGoogleStatus] = useState<GoogleCalendarStatus | null>(null);
   const [googleLoading, setGoogleLoading] = useState(true);
   const [googleError, setGoogleError] = useState("");
+  const [promptOpen, setPromptOpen] = useState(false);
+  const [promptDraft, setPromptDraft] = useState("");
+  const [promptLoading, setPromptLoading] = useState(false);
+  const [promptSaving, setPromptSaving] = useState(false);
+  const [promptError, setPromptError] = useState("");
+  const [promptStatus, setPromptStatus] = useState("");
   const googleFeedback = new URLSearchParams(window.location.search).get("google");
 
   useEffect(() => {
@@ -109,6 +119,52 @@ export default function AdminPage() {
     return () => controller.abort();
   }, [selectedId]);
 
+  async function openPromptEditor() {
+    setPromptOpen(true);
+    setPromptLoading(true);
+    setPromptError("");
+    setPromptStatus("");
+
+    try {
+      const response = await fetch("/api/admin/prompt", { headers: { accept: "application/json" } });
+      if (!response.ok) throw new Error("Unable to load the current prompt.");
+      const payload = (await response.json()) as AdminPromptResponse;
+      setPromptDraft(payload.content);
+    } catch (loadError: unknown) {
+      setPromptError(loadError instanceof Error ? loadError.message : "Unable to load the current prompt.");
+    } finally {
+      setPromptLoading(false);
+    }
+  }
+
+  async function savePrompt() {
+    const content = promptDraft.trim();
+    if (!content || promptSaving) return;
+
+    setPromptSaving(true);
+    setPromptError("");
+    setPromptStatus("");
+
+    try {
+      const response = await fetch("/api/admin/prompt", {
+        method: "PUT",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      });
+      if (!response.ok) throw new Error("Unable to save the prompt.");
+      const payload = (await response.json()) as AdminPromptResponse;
+      setPromptDraft(payload.content);
+      setPromptStatus("Prompt updated successfully.");
+    } catch (saveError: unknown) {
+      setPromptError(saveError instanceof Error ? saveError.message : "Unable to save the prompt.");
+    } finally {
+      setPromptSaving(false);
+    }
+  }
+
   return (
     <main className="admin-page">
       <section className="admin-shell" aria-label="Admin conversations">
@@ -117,11 +173,73 @@ export default function AdminPage() {
             <p className="admin-kicker">Admin console</p>
             <h1>Conversations</h1>
           </div>
-          <p>Browse previous chats and manage the Google Calendar connection used by the assistant.</p>
+          <div className="admin-header__actions">
+            <p>Browse previous chats, manage the Google Calendar connection, and update the live chat agent prompt.</p>
+            <button className="button button--ghost admin-header__button" type="button" onClick={openPromptEditor}>
+              Configure prompt
+            </button>
+          </div>
         </header>
 
         {error ? <p className="admin-error">{error}</p> : null}
         {googleError ? <p className="admin-error">{googleError}</p> : null}
+        {promptError ? <p className="admin-error">{promptError}</p> : null}
+
+        {promptOpen ? (
+          <section className="admin-prompt" aria-label="Agent prompt editor">
+            <div className="admin-prompt__head">
+              <div>
+                <p className="admin-kicker">Chat agent prompt</p>
+                <h2>Configure the live prompt</h2>
+              </div>
+              <button
+                className="admin-prompt__close"
+                type="button"
+                onClick={() => {
+                  setPromptOpen(false);
+                  setPromptError("");
+                  setPromptStatus("");
+                }}
+              >
+                Close
+              </button>
+            </div>
+
+            <p className="admin-prompt__intro">
+              Changes saved here affect the prompt file currently used by the assistant in the chat runtime.
+            </p>
+
+            {promptStatus ? <p className="admin-notice admin-notice--success">{promptStatus}</p> : null}
+
+            <label className="sr-only" htmlFor="admin-agent-prompt">
+              Agent prompt
+            </label>
+            <textarea
+              id="admin-agent-prompt"
+              value={promptDraft}
+              placeholder={promptLoading ? "Loading current prompt..." : "Write the prompt used by the chat agent"}
+              disabled={promptLoading || promptSaving}
+              onChange={(event) => {
+                setPromptDraft(event.target.value);
+                if (promptStatus) setPromptStatus("");
+              }}
+            />
+
+            <div className="admin-prompt__actions">
+              <button
+                className="button button--ghost"
+                type="button"
+                disabled={promptLoading || promptSaving}
+                onClick={openPromptEditor}
+              >
+                Reload prompt
+              </button>
+              <button className="button button--light" type="button" disabled={!promptDraft.trim() || promptLoading || promptSaving} onClick={savePrompt}>
+                {promptSaving ? "Saving..." : "Save prompt"}
+              </button>
+            </div>
+          </section>
+        ) : null}
 
         <section className="admin-google" aria-label="Google Calendar admin">
           <div className="admin-google__copy">

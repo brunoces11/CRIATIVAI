@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -6,6 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app import admin as admin_module
+from backend.app.config import Settings
 from backend.app.main import app
 from backend.app.models import Base, Conversation, Message
 
@@ -66,5 +68,36 @@ def test_admin_list_and_detail_hide_sensitive_fields() -> None:
 
         missing_response = client.get("/api/admin/conversations/9999")
         assert missing_response.status_code == 404
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_admin_prompt_can_be_read_and_updated(tmp_path: Path) -> None:
+    session = make_session()
+    prompt_path = tmp_path / "prompt.md"
+    prompt_path.write_text("Original prompt", encoding="utf-8")
+
+    def override_session():
+        try:
+            yield session
+        finally:
+            pass
+
+    def override_settings():
+        return Settings(sdr_prompt_path=prompt_path, _env_file=None)
+
+    app.dependency_overrides[admin_module.get_session] = override_session
+    app.dependency_overrides[admin_module.get_settings] = override_settings
+    client = TestClient(app)
+
+    try:
+        get_response = client.get("/api/admin/prompt")
+        assert get_response.status_code == 200
+        assert get_response.json() == {"content": "Original prompt"}
+
+        update_response = client.put("/api/admin/prompt", json={"content": "Updated prompt for the agent"})
+        assert update_response.status_code == 200
+        assert update_response.json() == {"content": "Updated prompt for the agent"}
+        assert prompt_path.read_text(encoding="utf-8").strip() == "Updated prompt for the agent"
     finally:
         app.dependency_overrides.clear()

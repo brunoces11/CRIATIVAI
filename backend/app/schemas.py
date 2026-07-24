@@ -55,6 +55,19 @@ class GoogleOAuthStatus(BaseModel):
     scopes: list[str] = []
 
 
+class AdminPromptResponse(BaseModel):
+    content: str
+
+
+class AdminPromptUpdate(BaseModel):
+    content: str = Field(min_length=1, max_length=40000)
+
+    @field_validator("content", mode="before")
+    @classmethod
+    def strip_content(cls, value: str) -> str:
+        return value.strip() if isinstance(value, str) else value
+
+
 class TalentPreviewSubmissionCreate(BaseModel):
     requester_name: str = Field(min_length=2, max_length=160)
     requester_email: str = Field(min_length=3, max_length=320, pattern=EMAIL_PATTERN)
@@ -65,6 +78,7 @@ class TalentPreviewSubmissionCreate(BaseModel):
     search_criteria_4: str = Field(min_length=2, max_length=220)
     exclusion_criteria: str = Field(min_length=2, max_length=220)
     differentiator: str = Field(min_length=2, max_length=220)
+    started_at_ms: int = Field(gt=0)
     honeypot: str = Field(default="", max_length=200)
 
     @field_validator(
@@ -96,6 +110,7 @@ class ContactSubmissionCreate(BaseModel):
     email: str = Field(min_length=3, max_length=320, pattern=EMAIL_PATTERN)
     subject: str = Field(min_length=2, max_length=220)
     message: str = Field(min_length=10, max_length=5000)
+    started_at_ms: int = Field(gt=0)
     honeypot: str = Field(default="", max_length=200)
 
     @field_validator("name", "email", "subject", "message", "honeypot", mode="before")

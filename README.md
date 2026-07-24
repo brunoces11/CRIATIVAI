@@ -38,6 +38,37 @@ The validation commands create the production build, verify the SPA routes,
 exercise backend contracts, apply Alembic migrations in a temporary database,
 and test the FastAPI vertical path with SQLite persistence.
 
+## Form email activation
+
+The forms already use Python's standard SMTP stack, so no extra email library is required.
+
+To activate live sending, configure these environment variables in `.env`:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USERNAME`
+- `SMTP_PASSWORD`
+- `SMTP_SENDER_EMAIL`
+- `SMTP_SENDER_NAME`
+- `SMTP_REPLY_TO` (optional)
+- `FORMS_NOTIFICATION_EMAIL`
+
+For Mailjet SMTP, the typical base is:
+
+- `SMTP_HOST=in-v3.mailjet.com`
+- `SMTP_PORT=587`
+- `SMTP_USE_STARTTLS=true`
+- `SMTP_USE_SSL=false`
+
+The current form protection strategy is intentionally lightweight:
+
+- hidden honeypot field
+- minimum form fill time
+- session expiration for stale forms
+- rate limiting per IP and per form route
+
+This keeps the UX clean while stopping a large share of low-quality automated spam, but it does not eliminate targeted or manual abuse completely.
+
 ## Deployment
 
 This repository is aligned with the `deploy-full` flow as the default deployment method.

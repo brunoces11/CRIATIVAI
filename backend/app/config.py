@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     smtp_sender_email: str | None = None
     smtp_reply_to: str | None = None
     forms_notification_email: str = "bruno@criativai.site"
+    form_rate_limit_count: int = 3
+    form_rate_limit_window_seconds: int = 900
+    form_min_fill_seconds: int = 4
+    form_max_fill_seconds: int = 21600
     calendar_slot_minutes: int = 30
     calendar_buffer_minutes: int = 15
     calendar_min_notice_hours: int = 24
@@ -119,6 +123,16 @@ class Settings(BaseSettings):
             raise ValueError("Invalid SMTP settings: SMTP_TIMEOUT_SECONDS")
         if self.smtp_use_ssl and self.smtp_use_starttls:
             raise ValueError("Invalid SMTP settings: SMTP_USE_SSL and SMTP_USE_STARTTLS cannot both be enabled")
+        if self.form_rate_limit_count <= 0:
+            raise ValueError("Invalid form settings: FORM_RATE_LIMIT_COUNT")
+        if self.form_rate_limit_window_seconds <= 0:
+            raise ValueError("Invalid form settings: FORM_RATE_LIMIT_WINDOW_SECONDS")
+        if self.form_min_fill_seconds < 0:
+            raise ValueError("Invalid form settings: FORM_MIN_FILL_SECONDS")
+        if self.form_max_fill_seconds <= 0:
+            raise ValueError("Invalid form settings: FORM_MAX_FILL_SECONDS")
+        if self.form_max_fill_seconds <= self.form_min_fill_seconds:
+            raise ValueError("Invalid form settings: FORM_MAX_FILL_SECONDS must be greater than FORM_MIN_FILL_SECONDS")
 
         configured_values = [
             self.smtp_sender_email,

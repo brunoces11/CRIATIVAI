@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from collections import defaultdict, deque
 from datetime import datetime, timezone
+import threading
+from time import monotonic, time
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_429_TOO_MANY_REQUESTS, HTTP_422_UNPROCESSABLE_CONTENT
 
 from backend.app.config import Settings, get_settings
 from backend.app.db import get_session
@@ -12,6 +16,8 @@ from backend.app.models import ContactSubmission, TalentPreviewRequest
 from backend.app.schemas import ContactSubmissionCreate, FormSubmissionResponse, TalentPreviewSubmissionCreate
 
 router = APIRouter(prefix="/api/forms", tags=["forms"])
+_form_hits: dict[str, deque[float]] = defaultdict(deque)
+_form_lock = threading.Lock()
 
 
 @router.post("/talent-preview", response_model=FormSubmissionResponse, status_code=status.HTTP_201_CREATED)
@@ -21,6 +27,8 @@ def submit_talent_preview(
     session: Session = Depends(get_session),
     settings: Settings = Depends(get_settings),
 ) -> FormSubmissionResponse:
+    _validate_form_request(request, payload.started_at_ms, settings, scope="talent-preview")
+
     submission = TalentPreviewRequest(
         requester_name=payload.requester_name,
         requester_email=payload.requester_email,
@@ -76,6 +84,8 @@ def submit_contact(
     session: Session = Depends(get_session),
     settings: Settings = Depends(get_settings),
 ) -> FormSubmissionResponse:
+    _validate_form_request(request, payload.started_at_ms, settings, scope="contact")
+
     submission = ContactSubmission(
         name=payload.name,
         email=payload.email,
@@ -122,6 +132,46 @@ def _sent_at(email_status: str) -> datetime | None:
     if email_status != "sent":
         return None
     return datetime.now(timezone.utc)
+
+
+def _validate_form_request(request: Request, started_at_ms: int, settings: Settings, *, scope: str) -> None:
+    _validate_form_timing(started_at_ms, settings)
+    if not _allow_form_rate_limit(_rate_limit_key(request, scope), settings):
+        raise HTTPException(
+            status_code=HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many form submissions in a short period. Please wait a few minutes and try again.",
+        )
+
+
+def _validate_form_timing(started_at_ms: int, settings: Settings) -> None:
+    elapsed_seconds = (time() * 1000 - started_at_ms) / 1000
+    if elapsed_seconds < settings.form_min_fill_seconds:
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="Please review the form and try again.",
+        )
+    if elapsed_seconds > settings.form_max_fill_seconds:
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="This form session expired. Please reload the page and submit again.",
+        )
+
+
+def _rate_limit_key(request: Request, scope: str) -> str:
+    client_ip = request.client.host if request.client else "unknown"
+    return f"{scope}:{client_ip}"
+
+
+def _allow_form_rate_limit(key: str, settings: Settings) -> bool:
+    now = monotonic()
+    with _form_lock:
+        hits = _form_hits[key]
+        while hits and now - hits[0] > settings.form_rate_limit_window_seconds:
+            hits.popleft()
+        if len(hits) >= settings.form_rate_limit_count:
+            return False
+        hits.append(now)
+        return True
 
 
 def _merge_errors(*errors: str | None) -> str | None:

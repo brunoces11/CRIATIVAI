@@ -8,16 +8,20 @@ type ContactState = {
   email: string;
   subject: string;
   message: string;
+  started_at_ms: number;
   honeypot: string;
 };
 
-const initialState: ContactState = {
-  name: "",
-  email: "",
-  subject: "",
-  message: "",
-  honeypot: "",
-};
+function createInitialState(): ContactState {
+  return {
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+    started_at_ms: Date.now(),
+    honeypot: "",
+  };
+}
 
 function Brand() {
   return (
@@ -29,7 +33,7 @@ function Brand() {
 }
 
 export default function ContactPage() {
-  const [form, setForm] = useState<ContactState>(initialState);
+  const [form, setForm] = useState<ContactState>(() => createInitialState());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successOpen, setSuccessOpen] = useState(false);
@@ -45,7 +49,7 @@ export default function ContactPage() {
   };
 
   const onReset = () => {
-    setForm(initialState);
+    setForm(createInitialState());
     setError("");
   };
 
@@ -58,7 +62,7 @@ export default function ContactPage() {
 
     try {
       await submitContact(form);
-      setForm(initialState);
+      setForm(createInitialState());
       setSuccessOpen(true);
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Unable to send your message right now.");
@@ -73,9 +77,8 @@ export default function ContactPage() {
 
       <section className="form-hero contact-hero" aria-labelledby="contact-page-title">
         <div className="form-hero-glow" aria-hidden="true" />
-        <div className="site-container form-hero-grid">
-          <div className="form-hero-copy">
-            <p className="eyebrow"><span /> Contact CriativAI</p>
+        <div className="site-container form-hero-grid contact-hero-grid">
+          <div className="form-hero-copy contact-hero-copy">
             <h1 id="contact-page-title">Start a <span>conversation.</span></h1>
             <p className="form-hero-lead">
               Tell us what you are building, automating, or exploring—and we will get back to you directly.
@@ -85,30 +88,7 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="form-visual-card form-visual-card--compact" aria-label="Contact response expectations">
-            <div className="form-visual-card__head"><span>CONTACT FLOW</span><i>OPEN</i></div>
-            <div className="form-visual-card__metric"><strong>1</strong><span>direct inbox destination</span></div>
-            <ul className="form-visual-card__list">
-              <li><span>01</span><strong>Name and email</strong></li>
-              <li><span>02</span><strong>Subject and message</strong></li>
-              <li><span>03</span><strong>Saved and forwarded for follow-up</strong></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="section form-section-shell" aria-labelledby="contact-form-title">
-        <div className="site-container form-shell-grid">
-          <div className="form-shell-copy">
-            <p className="eyebrow">Direct contact form</p>
-            <h2 id="contact-form-title">A clear path to the right next step.</h2>
-            <p>
-              Use this space for project inquiries, automation requests, partnership opportunities, or any business question that deserves a thoughtful response.
-            </p>
-            <strong>All fields are required so the reply can be relevant from the first exchange.</strong>
-          </div>
-
-          <form className="form-panel" onSubmit={onSubmit} onReset={onReset} noValidate>
+          <form className="form-panel contact-form-panel" onSubmit={onSubmit} onReset={onReset} noValidate>
             <div className="form-grid form-grid--two">
               <label className="form-field">
                 <span>Name</span>
@@ -134,6 +114,8 @@ export default function ContactPage() {
               <span>Leave this field empty</span>
               <input name="honeypot" value={form.honeypot} onChange={onChange} tabIndex={-1} autoComplete="off" />
             </label>
+
+            <input type="hidden" name="started_at_ms" value={form.started_at_ms} />
 
             {error ? <p className="form-feedback form-feedback--error">{error}</p> : null}
 

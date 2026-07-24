@@ -5,9 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 from starlette.status import HTTP_404_NOT_FOUND
 
+from backend.app.config import Settings, get_settings
 from backend.app.db import get_session
 from backend.app.models import Conversation
-from backend.app.schemas import AdminConversationDetail, AdminConversationMessage, AdminConversationSummary
+from backend.app.schemas import AdminConversationDetail, AdminConversationMessage, AdminConversationSummary, AdminPromptResponse, AdminPromptUpdate
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -47,6 +48,27 @@ def admin_conversation_detail(conversation_id: int, session: Session = Depends(g
             if message.role in {"user", "assistant"}
         ],
     )
+
+
+@router.get("/prompt", response_model=AdminPromptResponse)
+def admin_prompt(settings: Settings = Depends(get_settings)) -> AdminPromptResponse:
+    prompt_path = settings.sdr_prompt_path
+    if not prompt_path.is_file():
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Prompt file not found")
+
+    content = prompt_path.read_text(encoding="utf-8").strip()
+    if not content:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Prompt file is empty")
+
+    return AdminPromptResponse(content=content)
+
+
+@router.put("/prompt", response_model=AdminPromptResponse)
+def update_admin_prompt(payload: AdminPromptUpdate, settings: Settings = Depends(get_settings)) -> AdminPromptResponse:
+    prompt_path = settings.sdr_prompt_path
+    prompt_path.parent.mkdir(parents=True, exist_ok=True)
+    prompt_path.write_text(f"{payload.content}\n", encoding="utf-8")
+    return AdminPromptResponse(content=payload.content)
 
 
 def conversation_summary(conversation: Conversation) -> AdminConversationSummary:

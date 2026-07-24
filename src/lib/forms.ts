@@ -8,6 +8,7 @@ export type TalentPreviewPayload = {
   search_criteria_4: string;
   exclusion_criteria: string;
   differentiator: string;
+  started_at_ms: number;
   honeypot?: string;
 };
 
@@ -16,6 +17,7 @@ export type ContactPayload = {
   email: string;
   subject: string;
   message: string;
+  started_at_ms: number;
   honeypot?: string;
 };
 
@@ -34,7 +36,7 @@ export async function submitContact(payload: ContactPayload): Promise<FormSubmis
   return postForm("/api/forms/contact", payload);
 }
 
-async function postForm(url: string, payload: Record<string, string | undefined>): Promise<FormSubmissionResult> {
+async function postForm(url: string, payload: Record<string, string | number | undefined>): Promise<FormSubmissionResult> {
   const response = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },

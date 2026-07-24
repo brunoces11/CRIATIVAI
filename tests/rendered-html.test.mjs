@@ -37,6 +37,8 @@ test("keeps the public pages in the client router", async () => {
   assert.match(talentPreview, /Talent[\s\S]*Preview/i);
   assert.match(contact, /Start a[\s\S]*conversation/i);
   assert.match(admin, /\/api\/admin\/conversations/);
+  assert.match(admin, /\/api\/admin\/prompt/);
+  assert.match(admin, /Configure prompt/);
 });
 
 test("ships Target Mode and no starter scaffold markers", async () => {

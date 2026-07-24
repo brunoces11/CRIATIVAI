@@ -1582,6 +1582,42 @@ img {
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
 }
 
+.contact-hero {
+  min-height: calc(100vh - 24px);
+  padding: 172px 0 84px;
+}
+
+.contact-hero-grid {
+  grid-template-columns: minmax(0, 5.4fr) minmax(420px, 6.6fr);
+  align-items: start;
+}
+
+.contact-hero-copy {
+  max-width: 520px;
+  padding-top: 10px;
+}
+
+.contact-hero-copy h1 {
+  font-size: clamp(3.2rem, 6.3vw, 6.1rem);
+}
+
+.contact-hero-copy .form-hero-lead {
+  max-width: 470px;
+  margin-top: 26px;
+  font-size: 0.96rem;
+}
+
+.contact-hero-copy .form-hero-detail {
+  max-width: 450px;
+  font-size: 0.85rem;
+}
+
+.contact-form-panel {
+  align-self: start;
+  min-height: 0;
+  margin-top: 6px;
+}
+
 .form-grid {
   display: grid;
   gap: 16px;
@@ -1742,6 +1778,21 @@ img {
   .form-grid--two {
     grid-template-columns: 1fr;
   }
+
+  .contact-hero {
+    min-height: auto;
+    padding: 148px 0 72px;
+  }
+
+  .contact-hero-copy {
+    max-width: none;
+    padding-top: 0;
+  }
+
+  .contact-hero-copy .form-hero-lead,
+  .contact-hero-copy .form-hero-detail {
+    max-width: none;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1751,4 +1802,12 @@ img {
   .form-panel { padding: 22px; }
   .form-actions > * { width: 100%; }
   .form-modal__panel { padding: 26px; }
+
+  .contact-hero {
+    padding: 132px 0 64px;
+  }
+
+  .contact-hero-copy h1 {
+    font-size: clamp(2.9rem, 14.5vw, 4.7rem);
+  }
 }

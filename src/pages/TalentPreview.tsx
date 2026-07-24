@@ -13,21 +13,25 @@ type TalentPreviewState = {
   search_criteria_4: string;
   exclusion_criteria: string;
   differentiator: string;
+  started_at_ms: number;
   honeypot: string;
 };
 
-const initialState: TalentPreviewState = {
-  requester_name: "",
-  requester_email: "",
-  job_title: "",
-  search_criteria_1: "",
-  search_criteria_2: "",
-  search_criteria_3: "",
-  search_criteria_4: "",
-  exclusion_criteria: "",
-  differentiator: "",
-  honeypot: "",
-};
+function createInitialState(): TalentPreviewState {
+  return {
+    requester_name: "",
+    requester_email: "",
+    job_title: "",
+    search_criteria_1: "",
+    search_criteria_2: "",
+    search_criteria_3: "",
+    search_criteria_4: "",
+    exclusion_criteria: "",
+    differentiator: "",
+    started_at_ms: Date.now(),
+    honeypot: "",
+  };
+}
 
 const benefits = [
   ["Up to 20 aligned profiles", "A shortlist that helps you evaluate search quality quickly before committing to a broader rollout."],
@@ -45,7 +49,7 @@ function Brand() {
 }
 
 export default function TalentPreviewPage() {
-  const [form, setForm] = useState<TalentPreviewState>(initialState);
+  const [form, setForm] = useState<TalentPreviewState>(() => createInitialState());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successOpen, setSuccessOpen] = useState(false);
@@ -71,7 +75,7 @@ export default function TalentPreviewPage() {
   };
 
   const onReset = () => {
-    setForm(initialState);
+    setForm(createInitialState());
     setError("");
   };
 
@@ -84,7 +88,7 @@ export default function TalentPreviewPage() {
 
     try {
       await submitTalentPreview(form);
-      setForm(initialState);
+      setForm(createInitialState());
       setSuccessOpen(true);
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Unable to send your request right now.");
@@ -214,6 +218,8 @@ export default function TalentPreviewPage() {
               <span>Leave this field empty</span>
               <input name="honeypot" value={form.honeypot} onChange={onChange} tabIndex={-1} autoComplete="off" />
             </label>
+
+            <input type="hidden" name="started_at_ms" value={form.started_at_ms} />
 
             {error ? <p className="form-feedback form-feedback--error">{error}</p> : null}
 
