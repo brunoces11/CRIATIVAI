@@ -170,3 +170,32 @@ def test_talent_preview_submission_accepts_optional_fields_as_blank(tmp_path) ->
         assert response.json()["notification_email_status"] == "pending_config"
     finally:
         app.dependency_overrides.clear()
+
+
+def test_form_tables_are_created_on_startup(tmp_path) -> None:
+    def override_settings():
+        return Settings(
+            database_url=f"sqlite:///{tmp_path / 'forms-startup.db'}",
+            frontend_dist_dir=tmp_path / "dist",
+            forms_notification_email="bruno@criativai.site",
+            _env_file=None,
+        )
+
+    app.dependency_overrides[forms_module.get_settings] = override_settings
+
+    try:
+        with TestClient(app) as client:
+            response = client.post(
+                "/api/forms/contact",
+                json={
+                    "name": "Bruno",
+                    "email": "bruno@example.com",
+                    "subject": "Project inquiry",
+                    "message": "I want to discuss an AI automation project.",
+                    "started_at_ms": int(time() * 1000) - 5000,
+                    "honeypot": "",
+                },
+            )
+            assert response.status_code == 201
+    finally:
+        app.dependency_overrides.clear()

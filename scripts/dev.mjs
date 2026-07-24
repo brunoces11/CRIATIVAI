@@ -3,11 +3,19 @@ import { spawn } from "node:child_process";
 const backend = spawn("npm", ["run", "backend"], {
   stdio: "inherit",
   shell: process.platform === "win32",
+  env: {
+    ...process.env,
+    CRIATIVAI_DISABLE_VITE_BACKEND_AUTOSTART: "1",
+  },
 });
 
 const frontend = spawn("npm", ["run", "dev:frontend"], {
   stdio: "inherit",
   shell: process.platform === "win32",
+  env: {
+    ...process.env,
+    CRIATIVAI_DISABLE_VITE_BACKEND_AUTOSTART: "1",
+  },
 });
 
 const children = [backend, frontend];

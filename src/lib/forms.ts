@@ -37,18 +37,25 @@ export async function submitContact(payload: ContactPayload): Promise<FormSubmis
 }
 
 async function postForm(url: string, payload: Record<string, string | number | undefined>): Promise<FormSubmissionResult> {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  const data = await response.json().catch(() => null);
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data) ?? "Something went wrong while sending your request.");
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(getErrorMessage(data) ?? "Something went wrong while sending your request.");
+    }
+
+    return data as FormSubmissionResult;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error("The local backend is unavailable. Start the full dev stack with npm run dev, then try again.");
+    }
+    throw error;
   }
-
-  return data as FormSubmissionResult;
 }
 
 function getErrorMessage(payload: unknown): string | null {

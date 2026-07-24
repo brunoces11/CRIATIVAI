@@ -4,6 +4,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.config import ensure_sqlite_parent, get_settings
+from backend.app.models import Base
 
 
 settings = get_settings()
@@ -24,6 +25,10 @@ def set_sqlite_pragmas(dbapi_connection, _connection_record) -> None:
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+
+def initialize_database() -> None:
+    Base.metadata.create_all(bind=engine)
 
 
 def get_session() -> Generator[Session, None, None]:
