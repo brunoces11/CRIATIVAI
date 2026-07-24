@@ -40,6 +40,16 @@ test("keeps the public pages in the client router", async () => {
   assert.doesNotMatch(talentPreview, /search_criteria_3/);
   assert.doesNotMatch(talentPreview, /search_criteria_4/);
   assert.match(contact, /Start a[\s\S]*conversation/i);
+  assert.match(home, /https:\/\/www\.youtube\.com\/@tutorialmasterbrasil/);
+  assert.match(home, /https:\/\/github\.com\/brunoces11/);
+  assert.match(home, /https:\/\/www\.linkedin\.com\/in\/brunoalecrim/);
+  assert.match(home, /https:\/\/www\.behance\.net\/brunoalecrim/);
+  assert.match(home, /target="_blank"/);
+  assert.match(humanResources, /https:\/\/www\.youtube\.com\/@tutorialmasterbrasil/);
+  assert.match(humanResources, /https:\/\/github\.com\/brunoces11/);
+  assert.match(humanResources, /https:\/\/www\.linkedin\.com\/in\/brunoalecrim/);
+  assert.match(humanResources, /https:\/\/www\.behance\.net\/brunoalecrim/);
+  assert.match(humanResources, /target="_blank"/);
   assert.match(admin, /\/api\/admin\/conversations/);
   assert.match(admin, /\/api\/admin\/prompt/);
   assert.match(admin, /Configure prompt/);

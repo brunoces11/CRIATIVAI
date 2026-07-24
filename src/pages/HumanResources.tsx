@@ -45,10 +45,10 @@ function HrFooter() {
           </div>
           <div>
             <p className="micro-label">Social Media</p>
-            <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</span>
-            <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</span>
-            <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</span>
-            <span className="footer-social-link"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</span>
+            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</a>
+            <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
+            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</a>
+            <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
           </div>
         </div>
       </div>
