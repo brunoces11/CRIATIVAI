@@ -15,10 +15,31 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrollProgress(Math.min(window.scrollY / 300, 1));
+    let frameId = 0;
+    let lastProgress = -1;
+
+    const updateProgress = () => {
+      frameId = 0;
+      const nextProgress = Math.min(window.scrollY / 300, 1);
+      const roundedProgress = Math.round(nextProgress * 100) / 100;
+
+      if (roundedProgress !== lastProgress) {
+        lastProgress = roundedProgress;
+        setScrollProgress(roundedProgress);
+      }
+    };
+
+    const onScroll = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(updateProgress);
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   useEffect(() => {
@@ -57,14 +78,37 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
           </nav>
           <div className="language-selector" aria-label="Language selector">
             <button type="button" className="language-option language-option--active" aria-current="true" title="English">
-              <span aria-hidden="true">🇺🇸</span><span className="sr-only">English</span>
+              <span aria-hidden="true"><EnglandFlag /></span><span className="sr-only">English</span>
             </button>
             <button type="button" className="language-option" disabled title="Portuguese — coming soon">
-              <span aria-hidden="true">🇧🇷</span><span className="sr-only">Portuguese — coming soon</span>
+              <span aria-hidden="true"><BrazilFlag /></span><span className="sr-only">Portuguese — coming soon</span>
             </button>
           </div>
         </div>
       </div>
     </header>
+  );
+}
+
+function EnglandFlag() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+      <rect width="24" height="24" rx="3" fill="#fff" />
+      <rect x="9" width="6" height="24" fill="#cf2030" />
+      <rect y="9" width="24" height="6" fill="#cf2030" />
+      <rect width="24" height="24" rx="3" fill="none" stroke="rgba(0,0,0,0.12)" />
+    </svg>
+  );
+}
+
+function BrazilFlag() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+      <rect width="24" height="24" rx="3" fill="#1f8f47" />
+      <path d="M12 4 20 12 12 20 4 12Z" fill="#f2c230" />
+      <circle cx="12" cy="12" r="4.4" fill="#1b4fa3" />
+      <path d="M7.8 11.2c1.4-.8 3-.9 4.6-.6 1.3.2 2.5.7 3.8 1.2" fill="none" stroke="#fff" strokeWidth="1" strokeLinecap="round" />
+      <rect width="24" height="24" rx="3" fill="none" stroke="rgba(0,0,0,0.12)" />
+    </svg>
   );
 }

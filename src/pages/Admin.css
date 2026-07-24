@@ -10,7 +10,7 @@
   max-width: 1320px;
   min-height: calc(100vh - 68px);
   margin: 0 auto;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto auto 1fr;
   gap: 18px;
 }
 
@@ -59,6 +59,110 @@
   min-height: 0;
   grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
   gap: 18px;
+}
+
+.admin-google {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-google__copy h2 {
+  margin: 0 0 14px;
+  color: var(--white);
+  font-size: clamp(1.55rem, 2.6vw, 2.3rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+.admin-google__copy > p:not(.admin-kicker) {
+  max-width: 620px;
+  margin: 0;
+  color: #c6c8ca;
+  font-size: 0.9rem;
+}
+
+.admin-google__meta {
+  display: grid;
+  margin-top: 14px;
+  gap: 4px;
+}
+
+.admin-google__meta span,
+.admin-conversation-meta span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-google__meta strong,
+.admin-conversation-meta strong {
+  color: var(--white);
+  font-size: 0.82rem;
+  font-weight: 550;
+}
+
+.admin-google__actions {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 14px;
+}
+
+.admin-google__button {
+  min-width: 188px;
+}
+
+.admin-badge {
+  display: inline-flex;
+  min-height: 34px;
+  padding: 0 14px;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-badge--connected {
+  border-color: rgba(108, 205, 147, 0.28);
+  color: #9be0b3;
+  background: rgba(62, 138, 92, 0.14);
+}
+
+.admin-badge--disconnected {
+  border-color: rgba(200, 162, 143, 0.24);
+  color: var(--accent);
+  background: rgba(200, 162, 143, 0.08);
+}
+
+.admin-badge--error {
+  border-color: rgba(240, 185, 170, 0.28);
+  color: #f0b9aa;
+  background: rgba(240, 185, 170, 0.08);
+}
+
+.admin-notice {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.admin-notice--success {
+  color: #9be0b3;
+}
+
+.admin-notice--error {
+  color: #f0b9aa;
 }
 
 .admin-list,
@@ -113,13 +217,86 @@
 .admin-detail {
   display: grid;
   padding: 22px;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
   overflow: hidden;
+}
+
+.admin-chat-head {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: -22px -22px 22px;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(21, 26, 32, 0.18);
+  background: var(--accent);
+}
+
+.admin-chat-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-chat-avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border: 1px solid rgba(21, 26, 32, 0.22);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  transform: scaleX(-1);
+}
+
+.admin-chat-head .admin-kicker {
+  margin-bottom: 6px;
+  color: rgba(21, 26, 32, 0.72);
+}
+
+.admin-chat-head h2 {
+  margin: 0;
+  color: var(--blue-black);
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.admin-chat-select-wrap {
+  min-width: min(100%, 320px);
+}
+
+.admin-chat-select-wrap select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid rgba(21, 26, 32, 0.24);
+  border-radius: 6px;
+  outline: 0;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--blue-black);
+  font: inherit;
+  font-size: 0.86rem;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.admin-chat-select-wrap select:focus {
+  border-color: rgba(21, 26, 32, 0.44);
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .admin-detail-head {
   padding-bottom: 18px;
   border-bottom: 1px solid var(--border);
+}
+
+.admin-conversation-meta {
+  display: grid;
+  padding: 16px 0 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
 }
 
 .admin-summary {
@@ -195,7 +372,25 @@
     grid-template-columns: 1fr;
   }
 
+  .admin-google {
+    grid-template-columns: 1fr;
+  }
+
   .admin-list {
     max-height: 320px;
+  }
+
+  .admin-chat-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-chat-select-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-conversation-meta {
+    grid-template-columns: 1fr;
   }
 }
