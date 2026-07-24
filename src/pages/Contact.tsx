@@ -150,7 +150,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Direct contact, with context preserved.</span><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Direct contact, with context preserved.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
       </footer>
 
       <FormSuccessModal

@@ -971,9 +971,20 @@ img {
   letter-spacing: -0.05em;
   line-height: 1;
 }
-.footer-bottom { display: flex; padding-top: 20px; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.09); color: var(--dim); font-size: 0.59rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.footer-bottom { display: flex; padding-top: 20px; align-items: center; justify-content: space-between; gap: 18px; border-top: 1px solid rgba(255, 255, 255, 0.09); color: var(--dim); font-size: 0.59rem; letter-spacing: 0.1em; text-transform: uppercase; }
 .footer-bottom a { transition: color 250ms ease; }
 .footer-bottom a:hover, .footer-bottom a:focus-visible { color: var(--white); }
+.footer-legal-link { margin-left: auto; opacity: 0.72; }
+
+.policy-page { min-height: 100vh; background: var(--graphite); }
+.policy-section { padding: 150px 0 90px; }
+.policy-container { max-width: 860px; }
+.policy-container h1 { max-width: 760px; margin: 18px 0 10px; color: var(--white); font-family: var(--font-display), Impact, sans-serif; font-size: clamp(3.3rem, 7vw, 6rem); font-weight: 400; line-height: 0.9; text-transform: uppercase; }
+.policy-updated { margin: 0 0 42px; color: var(--dim); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.policy-content { display: grid; gap: 34px; }
+.policy-content section { padding-top: 28px; border-top: 1px solid var(--border); }
+.policy-content h2 { margin: 0 0 16px; color: var(--accent); font-family: var(--font-display), Impact, sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; line-height: 0.95; text-transform: uppercase; }
+.policy-content p { max-width: 760px; margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
 
 /* Human Resources landing page */
 .hr-page { background: var(--graphite); }

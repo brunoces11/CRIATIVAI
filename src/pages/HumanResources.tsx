@@ -84,7 +84,7 @@ function HrFooter() {
           </div>
         </div>
       </div>
-      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a href="#top">Back to top â†‘</a></div>
+      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top â†‘</a></div>
     </footer>
   );
 }

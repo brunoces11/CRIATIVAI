@@ -25,12 +25,14 @@ test("keeps the public pages in the client router", async () => {
   const talentPreview = await read("src/pages/TalentPreview.tsx");
   const contact = await read("src/pages/Contact.tsx");
   const admin = await read("src/pages/Admin.tsx");
+  const privacyTerms = await read("src/pages/PrivacyTerms.tsx");
 
   assert.match(app, /pathname === "\/human-resources"/);
   assert.match(app, /pathname === "\/style"/);
   assert.match(app, /pathname === "\/talent-preview"/);
   assert.match(app, /pathname === "\/contact"/);
   assert.match(app, /pathname === "\/adm"/);
+  assert.match(app, /pathname === "\/privacy" \|\| pathname === "\/terms"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
   assert.match(humanResources, /AI for recruitment companies/i);
   assert.match(humanResources, /The era of hyper-personalization/i);
@@ -45,6 +47,13 @@ test("keeps the public pages in the client router", async () => {
   assert.doesNotMatch(talentPreview, /search_criteria_3/);
   assert.doesNotMatch(talentPreview, /search_criteria_4/);
   assert.match(contact, /Start a[\s\S]*conversation/i);
+  assert.match(home, /href="\/privacy"/);
+  assert.match(humanResources, /href="\/privacy"/);
+  assert.match(contact, /href="\/privacy"/);
+  assert.match(talentPreview, /href="\/privacy"/);
+  assert.match(privacyTerms, /CriativAI Privacy &amp; Terms/);
+  assert.match(privacyTerms, /Google Calendar/);
+  assert.match(privacyTerms, /create, update, or cancel calendar events/);
   assert.match(home, /https:\/\/www\.youtube\.com\/@tutorialmasterbrasil/);
   assert.match(home, /https:\/\/github\.com\/brunoces11/);
   assert.match(home, /https:\/\/www\.linkedin\.com\/in\/brunoalecrim/);

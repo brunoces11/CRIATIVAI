@@ -237,7 +237,7 @@ export default function TalentPreviewPage() {
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Recruitment intelligence, grounded in clear criteria.</span><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Recruitment intelligence, grounded in clear criteria.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
       </footer>
 
       <FormSuccessModal
