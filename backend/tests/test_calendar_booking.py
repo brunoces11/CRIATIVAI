@@ -49,11 +49,31 @@ class FakeDelete:
         return {}
 
 
+class FakeGet:
+    def __init__(self, payload: dict):
+        self.payload = payload
+
+    def execute(self) -> dict:
+        return self.payload
+
+
+class FakeList:
+    def __init__(self, payload: dict):
+        self.payload = payload
+
+    def execute(self) -> dict:
+        return self.payload
+
+
 class FakeEvents:
     def __init__(self):
         self.insert_calls: list[dict] = []
         self.patch_calls: list[dict] = []
         self.delete_calls: list[dict] = []
+        self.get_calls: list[dict] = []
+        self.list_calls: list[dict] = []
+        self.events_by_id: dict[str, dict] = {}
+        self.list_items: list[dict] = []
 
     def insert(self, **kwargs):
         self.insert_calls.append(kwargs)
@@ -66,6 +86,15 @@ class FakeEvents:
     def delete(self, **kwargs):
         self.delete_calls.append(kwargs)
         return FakeDelete()
+
+    def get(self, **kwargs):
+        self.get_calls.append(kwargs)
+        event_id = kwargs["eventId"]
+        return FakeGet(self.events_by_id.get(event_id, {"id": event_id, "status": "confirmed"}))
+
+    def list(self, **kwargs):
+        self.list_calls.append(kwargs)
+        return FakeList({"items": self.list_items})
 
 
 class FakeService:
@@ -246,7 +275,7 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
     assert patch_call["sendUpdates"] == "all"
 
 
-def test_update_event_rejects_ambiguous_email_matches(tmp_path) -> None:
+def test_update_event_rejects_ambiguous_email_matches(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     session = make_session()
     first_conversation = Conversation(session_id="session_1234567890abcdef")
     second_conversation = Conversation(session_id="session_abcdef1234567890")
@@ -276,6 +305,8 @@ def test_update_event_rejects_ambiguous_email_matches(tmp_path) -> None:
     )
     session.add_all([first_booking, second_booking])
     session.commit()
+    fake_service = FakeService()
+    monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
 
     with pytest.raises(HTTPException) as exc_info:
         calendar_update_event(
@@ -293,7 +324,46 @@ def test_update_event_rejects_ambiguous_email_matches(tmp_path) -> None:
     assert len(exc_info.value.detail["candidates"]) == 2
 
 
-def test_lookup_bookings_returns_only_confirmed_bookings_for_email() -> None:
+def test_update_event_can_patch_single_live_google_booking_without_local_row(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    session = make_session()
+    new_slot = AvailabilitySlot(
+        start=datetime(2026, 7, 27, 16, 0, tzinfo=UTC),
+        end=datetime(2026, 7, 27, 16, 30, tzinfo=UTC),
+        timezone="America/Sao_Paulo",
+    )
+    fake_service = FakeService()
+    fake_service.events_resource.list_items = [
+        {
+            "id": "google-live-event",
+            "status": "confirmed",
+            "start": {"dateTime": "2026-07-27T09:00:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "end": {"dateTime": "2026-07-27T09:30:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "attendees": [{"email": "cliente@example.com", "displayName": "Cliente Vivo"}],
+            "hangoutLink": "https://meet.google.com/live-event",
+        }
+    ]
+    monkeypatch.setattr("backend.app.calendar_booking.calendar_check_availability", lambda *_args, **_kwargs: [new_slot])
+    monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
+
+    result = calendar_update_event(
+        session,
+        participant_email="cliente@example.com",
+        booking_id=None,
+        visitor_timezone="America/Sao_Paulo",
+        new_starts_at=new_slot.start,
+        confirmed=True,
+        settings=booking_settings(tmp_path),
+    )
+
+    assert result.booking_id is None
+    assert result.google_event_id == "google-live-event"
+    assert result.starts_at_utc == datetime(2026, 7, 27, 16, 0, tzinfo=UTC)
+    patch_call = fake_service.events_resource.patch_calls[0]
+    assert patch_call["eventId"] == "google-live-event"
+    assert patch_call["sendUpdates"] == "all"
+
+
+def test_lookup_bookings_reads_google_calendar_and_ignores_cancelled_local_rows(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     session = make_session()
     conversation = Conversation(session_id="session_1234567890abcdef")
     session.add(conversation)
@@ -324,12 +394,49 @@ def test_lookup_bookings_returns_only_confirmed_bookings_for_email() -> None:
         ]
     )
     session.commit()
+    fake_service = FakeService()
+    fake_service.events_resource.list_items = [
+        {
+            "id": "cai12345",
+            "status": "cancelled",
+            "start": {"dateTime": "2026-07-27T08:00:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "end": {"dateTime": "2026-07-27T08:30:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "attendees": [{"email": "cliente@example.com", "displayName": "Bruno Cliente"}],
+        },
+        {
+            "id": "google-live-event",
+            "status": "confirmed",
+            "start": {"dateTime": "2026-07-29T09:00:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "end": {"dateTime": "2026-07-29T09:30:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "attendees": [{"email": "cliente@example.com", "displayName": "Cliente Vivo"}],
+            "hangoutLink": "https://meet.google.com/live-event",
+        },
+        {
+            "id": "other-attendee",
+            "status": "confirmed",
+            "start": {"dateTime": "2026-07-30T09:00:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "end": {"dateTime": "2026-07-30T09:30:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "attendees": [{"email": "outra@example.com"}],
+        },
+    ]
+    monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
 
-    result = calendar_lookup_bookings(session, participant_email="cliente@example.com")
+    result = calendar_lookup_bookings(
+        session,
+        participant_email="cliente@example.com",
+        settings=booking_settings(tmp_path),
+        now=datetime(2026, 7, 24, 12, 0, tzinfo=UTC),
+    )
 
     assert len(result) == 1
-    assert result[0].google_event_id == "cai12345"
+    assert result[0].booking_id is None
+    assert result[0].google_event_id == "google-live-event"
     assert result[0].participant_email == "cliente@example.com"
+    assert result[0].participant_name == "Cliente Vivo"
+    assert result[0].meet_link == "https://meet.google.com/live-event"
+    list_call = fake_service.events_resource.list_calls[0]
+    assert list_call["showDeleted"] is False
+    assert list_call["singleEvents"] is True
 
 
 def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -366,4 +473,35 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
     assert session.get(Booking, booking.id).cancelled_at is not None
     delete_call = fake_service.events_resource.delete_calls[0]
     assert delete_call["eventId"] == "cai12345"
+    assert delete_call["sendUpdates"] == "all"
+
+
+def test_cancel_event_can_delete_single_live_google_booking_without_local_row(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    session = make_session()
+    fake_service = FakeService()
+    fake_service.events_resource.list_items = [
+        {
+            "id": "google-live-event",
+            "status": "confirmed",
+            "start": {"dateTime": "2026-07-27T09:00:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "end": {"dateTime": "2026-07-27T09:30:00-03:00", "timeZone": "America/Sao_Paulo"},
+            "attendees": [{"email": "cliente@example.com", "displayName": "Cliente Vivo"}],
+            "hangoutLink": "https://meet.google.com/live-event",
+        }
+    ]
+    monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
+
+    result = calendar_cancel_event(
+        session,
+        participant_email="cliente@example.com",
+        booking_id=None,
+        confirmed=True,
+        settings=booking_settings(tmp_path),
+    )
+
+    assert result.booking_id is None
+    assert result.google_event_id == "google-live-event"
+    assert result.status == "cancelled"
+    delete_call = fake_service.events_resource.delete_calls[0]
+    assert delete_call["eventId"] == "google-live-event"
     assert delete_call["sendUpdates"] == "all"

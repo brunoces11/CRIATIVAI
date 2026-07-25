@@ -93,7 +93,7 @@ CALENDAR_TOOLS: list[dict[str, Any]] = [
     ),
     function_tool(
         name="calendar_lookup_bookings",
-        description="Read confirmed CriativAI bookings for one participant email. Use this before asking for a new time when the visitor wants to check, change, or cancel an existing booking. It never changes a booking.",
+        description="Search live Google Calendar events for one participant email and return every non-cancelled matching event. Use this before asking for a new time when the visitor wants to check, change, or cancel an existing booking. It never changes a booking.",
         model=CalendarLookupBookingsArgs,
     ),
     function_tool(
@@ -153,6 +153,7 @@ def execute_calendar_tool(
             "bookings": [serialize_booking(booking) for booking in calendar_lookup_bookings(
                 session,
                 participant_email=parsed.participant_email,  # type: ignore[attr-defined]
+                settings=settings,
             )]
         },
         "calendar_update_event": lambda parsed: serialize_booking(

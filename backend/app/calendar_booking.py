@@ -24,7 +24,7 @@ IDEMPOTENCY_PATTERN = re.compile(r"^[A-Za-z0-9_-]{16,128}$")
 
 @dataclass(frozen=True)
 class CalendarBookingResult:
-    booking_id: int
+    booking_id: int | None
     google_event_id: str
     starts_at_utc: datetime
     ends_at_utc: datetime
@@ -121,11 +121,34 @@ def calendar_update_event(
     if not confirmed:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Reschedule confirmation is required")
 
-    booking = load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id)
+    booking = try_load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id, settings=resolved_settings)
     visitor_tz = load_timezone(visitor_timezone)
     requested_start = normalize_start(new_starts_at, visitor_tz)
     requested_end = requested_start + timedelta(minutes=resolved_settings.calendar_slot_minutes)
     ensure_slot_was_offered(requested_start, visitor_timezone, resolved_settings)
+
+    if booking is None:
+        google_booking = load_single_google_booking_for_management(session, participant_email=participant_email, settings=resolved_settings)
+        event = patch_google_event(
+            google_event_id=google_booking.google_event_id,
+            starts_at=requested_start,
+            ends_at=requested_end,
+            timezone=visitor_timezone,
+            settings=resolved_settings,
+        )
+        return CalendarBookingResult(
+            booking_id=google_booking.booking_id,
+            google_event_id=google_booking.google_event_id,
+            starts_at_utc=requested_start.astimezone(UTC),
+            ends_at_utc=requested_end.astimezone(UTC),
+            timezone=visitor_timezone,
+            status="confirmed",
+            participant_name=google_booking.participant_name,
+            participant_email=google_booking.participant_email,
+            conversation_summary=google_booking.conversation_summary,
+            meet_link=event.get("hangoutLink") or google_booking.meet_link,
+        )
+
     event = patch_google_event(
         google_event_id=booking.google_event_id or "",
         starts_at=requested_start,
@@ -154,7 +177,23 @@ def calendar_cancel_event(
     if not confirmed:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Cancellation confirmation is required")
 
-    booking = load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id)
+    booking = try_load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id, settings=resolved_settings)
+    if booking is None:
+        google_booking = load_single_google_booking_for_management(session, participant_email=participant_email, settings=resolved_settings)
+        delete_google_event(google_event_id=google_booking.google_event_id, settings=resolved_settings)
+        return CalendarBookingResult(
+            booking_id=google_booking.booking_id,
+            google_event_id=google_booking.google_event_id,
+            starts_at_utc=google_booking.starts_at_utc,
+            ends_at_utc=google_booking.ends_at_utc,
+            timezone=google_booking.timezone,
+            status="cancelled",
+            participant_name=google_booking.participant_name,
+            participant_email=google_booking.participant_email,
+            conversation_summary=google_booking.conversation_summary,
+            meet_link=google_booking.meet_link,
+        )
+
     delete_google_event(google_event_id=booking.google_event_id or "", settings=resolved_settings)
     booking.status = "cancelled"
     booking.cancelled_at = datetime.now(UTC)
@@ -163,21 +202,43 @@ def calendar_cancel_event(
     return booking_result(booking)
 
 
-def calendar_lookup_bookings(session: Session, *, participant_email: str) -> list[CalendarBookingResult]:
+def calendar_lookup_bookings(
+    session: Session,
+    *,
+    participant_email: str,
+    settings: Settings | None = None,
+    now: datetime | None = None,
+) -> list[CalendarBookingResult]:
+    resolved_settings = settings or get_settings()
     normalized_email = participant_email.strip().lower()
     if not EMAIL_PATTERN.fullmatch(normalized_email):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Valid participant email is required")
 
-    bookings = session.scalars(
-        select(Booking)
-        .where(
-            func.lower(Booking.participant_email) == normalized_email,
-            Booking.status == "confirmed",
-            Booking.google_event_id.is_not(None),
+    events = fetch_google_events_for_participant(
+        participant_email=normalized_email,
+        settings=resolved_settings,
+        now=now,
+    )
+    local_bookings_by_event_id = {
+        booking.google_event_id: booking
+        for booking in session.scalars(
+            select(Booking).where(
+                func.lower(Booking.participant_email) == normalized_email,
+                Booking.google_event_id.is_not(None),
+            )
         )
-        .order_by(Booking.starts_at_utc.asc(), Booking.id.asc())
-    ).all()
-    return [booking_result(booking) for booking in bookings]
+        if booking.google_event_id
+    }
+
+    results = [
+        booking_result_from_google_event(
+            event,
+            participant_email=normalized_email,
+            local_booking=local_bookings_by_event_id.get(event.get("id")),
+        )
+        for event in events
+    ]
+    return sorted(results, key=lambda booking: booking.starts_at_utc)
 
 
 def validate_booking_request(participant_email: str, idempotency_key: str, confirmed: bool) -> None:
@@ -305,6 +366,7 @@ def load_booking_for_management(
     *,
     participant_email: str,
     booking_id: int | None,
+    settings: Settings,
 ) -> Booking:
     normalized_email = participant_email.strip().lower()
     if not normalized_email:
@@ -320,8 +382,12 @@ def load_booking_for_management(
             raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking is not confirmed")
         if not booking.google_event_id:
             raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking has no Calendar event")
+        if not google_event_is_confirmed(booking.google_event_id, settings=settings or get_settings()):
+            mark_booking_cancelled(session, booking)
+            raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking is no longer active in Google Calendar")
         return booking
 
+    resolved_settings = settings or get_settings()
     matches = session.scalars(
         select(Booking)
         .where(
@@ -331,6 +397,7 @@ def load_booking_for_management(
         )
         .order_by(Booking.starts_at_utc.asc(), Booking.id.asc())
     ).all()
+    matches = filter_live_google_bookings(session, matches, settings=resolved_settings)
 
     if not matches:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="No confirmed booking found for this email")
@@ -342,6 +409,42 @@ def load_booking_for_management(
         detail={
             "message": "Multiple confirmed bookings found for this email.",
             "candidates": [booking_candidate(booking) for booking in matches],
+        },
+    )
+
+
+def try_load_booking_for_management(
+    session: Session,
+    *,
+    participant_email: str,
+    booking_id: int | None,
+    settings: Settings,
+) -> Booking | None:
+    try:
+        return load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id, settings=settings)
+    except HTTPException as exc:
+        if booking_id is None and exc.status_code == HTTP_404_NOT_FOUND:
+            return None
+        raise
+
+
+def load_single_google_booking_for_management(
+    session: Session,
+    *,
+    participant_email: str,
+    settings: Settings,
+) -> CalendarBookingResult:
+    matches = calendar_lookup_bookings(session, participant_email=participant_email, settings=settings)
+    if not matches:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="No confirmed booking found for this email")
+    if len(matches) == 1:
+        return matches[0]
+
+    raise HTTPException(
+        status_code=HTTP_409_CONFLICT,
+        detail={
+            "message": "Multiple confirmed bookings found for this email.",
+            "candidates": [booking_result_candidate(booking) for booking in matches],
         },
     )
 
@@ -362,6 +465,134 @@ def booking_candidate(booking: Booking) -> dict[str, str | int | None]:
         "timezone": booking.timezone,
         "status": booking.status,
     }
+
+
+def booking_result_candidate(booking: CalendarBookingResult) -> dict[str, str | int | None]:
+    starts_at = ensure_aware_utc(booking.starts_at_utc).astimezone(load_timezone(booking.timezone))
+    ends_at = ensure_aware_utc(booking.ends_at_utc).astimezone(load_timezone(booking.timezone))
+    return {
+        "booking_id": booking.booking_id,
+        "participant_name": booking.participant_name,
+        "participant_email": booking.participant_email,
+        "starts_at": starts_at.isoformat(),
+        "ends_at": ends_at.isoformat(),
+        "timezone": booking.timezone,
+        "status": booking.status,
+    }
+
+
+def fetch_google_events_for_participant(
+    *,
+    participant_email: str,
+    settings: Settings,
+    now: datetime | None = None,
+) -> list[dict]:
+    service = build_calendar_service(settings)
+    search_start = (now or datetime.now(UTC)).astimezone(UTC)
+    search_end = search_start + timedelta(days=settings.calendar_lookup_window_days)
+    events: list[dict] = []
+    page_token: str | None = None
+
+    try:
+        while True:
+            response = service.events().list(
+                calendarId=settings.google_calendar_id,
+                timeMin=to_rfc3339(search_start),
+                timeMax=to_rfc3339(search_end),
+                singleEvents=True,
+                showDeleted=False,
+                orderBy="startTime",
+                maxResults=2500,
+                pageToken=page_token,
+            ).execute()
+            for event in response.get("items", []):
+                if event.get("status") == "cancelled":
+                    continue
+                if event_has_attendee_email(event, participant_email):
+                    events.append(event)
+            page_token = response.get("nextPageToken")
+            if not page_token:
+                return events
+    except HttpError as exc:
+        raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail="Calendar events could not be searched") from exc
+
+
+def event_has_attendee_email(event: dict, participant_email: str) -> bool:
+    return any(
+        str(attendee.get("email", "")).strip().lower() == participant_email
+        for attendee in event.get("attendees", []) or []
+    )
+
+
+def booking_result_from_google_event(
+    event: dict,
+    *,
+    participant_email: str,
+    local_booking: Booking | None = None,
+) -> CalendarBookingResult:
+    starts_at, timezone = parse_google_event_datetime(event.get("start", {}))
+    ends_at, _end_timezone = parse_google_event_datetime(event.get("end", {}), fallback_timezone=timezone)
+    attendee = matching_attendee(event, participant_email)
+    return CalendarBookingResult(
+        booking_id=local_booking.id if local_booking else None,
+        google_event_id=event.get("id", ""),
+        starts_at_utc=starts_at.astimezone(UTC),
+        ends_at_utc=ends_at.astimezone(UTC),
+        timezone=timezone,
+        status=event.get("status") or "confirmed",
+        participant_name=attendee.get("displayName") or (local_booking.participant_name if local_booking else None),
+        participant_email=participant_email,
+        conversation_summary=local_booking.conversation_summary if local_booking else event.get("description"),
+        meet_link=event.get("hangoutLink"),
+    )
+
+
+def matching_attendee(event: dict, participant_email: str) -> dict:
+    for attendee in event.get("attendees", []) or []:
+        if str(attendee.get("email", "")).strip().lower() == participant_email:
+            return attendee
+    return {}
+
+
+def parse_google_event_datetime(value: dict, *, fallback_timezone: str | None = None) -> tuple[datetime, str]:
+    date_time = value.get("dateTime")
+    timezone = value.get("timeZone") or fallback_timezone or "UTC"
+    if not date_time:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Calendar event has no timed start/end")
+    parsed = datetime.fromisoformat(str(date_time).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=load_timezone(timezone))
+    return parsed, timezone
+
+
+def filter_live_google_bookings(session: Session, bookings: list[Booking], *, settings: Settings) -> list[Booking]:
+    live_bookings: list[Booking] = []
+    for booking in bookings:
+        if not booking.google_event_id:
+            continue
+        if google_event_is_confirmed(booking.google_event_id, settings=settings):
+            live_bookings.append(booking)
+        else:
+            mark_booking_cancelled(session, booking)
+    return live_bookings
+
+
+def google_event_is_confirmed(google_event_id: str, *, settings: Settings) -> bool:
+    service = build_calendar_service(settings)
+    try:
+        event = service.events().get(calendarId=settings.google_calendar_id, eventId=google_event_id).execute()
+    except HttpError as exc:
+        if getattr(exc.resp, "status", None) == 404:
+            return False
+        raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail="Calendar event could not be verified") from exc
+    return event.get("status") != "cancelled"
+
+
+def mark_booking_cancelled(session: Session, booking: Booking) -> None:
+    booking.status = "cancelled"
+    booking.cancelled_at = booking.cancelled_at or datetime.now(UTC)
+    session.add(booking)
+    session.commit()
 
 
 def build_booking_summary(
