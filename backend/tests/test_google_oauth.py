@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi import HTTPException
 import pytest
@@ -14,8 +15,10 @@ from backend.app.google_oauth import (
     consume_oauth_state,
     create_oauth_state,
     ensure_google_oauth_config,
+    google_connect,
     google_oauth_callback,
     google_status,
+    oauth_error_redirect,
     save_credentials,
 )
 from backend.app.models import Base, OAuthState
@@ -104,12 +107,35 @@ def test_build_flow_uses_official_calendar_scopes(tmp_path: Path) -> None:
     assert flow.redirect_uri == settings.google_redirect_uri
     assert "https://www.googleapis.com/auth/calendar.freebusy" in flow.oauth2session.scope
     assert "https://www.googleapis.com/auth/calendar.events" in flow.oauth2session.scope
+    assert "https://www.googleapis.com/auth/calendar.calendarlist" in flow.oauth2session.scope
+
+
+def test_google_connect_persists_pkce_code_verifier(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    session = make_session()
+    settings = oauth_settings(tmp_path)
+
+    class FakeFlow:
+        code_verifier = "stored-code-verifier"
+
+        def authorization_url(self, **_kwargs: object) -> tuple[str, str]:
+            return "https://accounts.google.com/o/oauth2/auth", "ignored"
+
+    monkeypatch.setattr("backend.app.google_oauth.build_flow", lambda _settings, _state: FakeFlow())
+
+    response = google_connect(session=session, settings=settings)
+
+    stored_state = session.scalar(select(OAuthState))
+    assert response.status_code == 302
+    assert stored_state is not None
+    assert stored_state.code_verifier == "stored-code-verifier"
 
 
 def test_callback_saves_token_and_redirects_cleanly(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     session = make_session()
     settings = oauth_settings(tmp_path)
     state = create_oauth_state(session, settings)
+    state.code_verifier = "stored-code-verifier"
+    session.commit()
 
     class FakeFlow:
         credentials = SimpleNamespace(to_json=lambda: json.dumps({"refresh" + "_token": "saved-refresh-token"}))
@@ -117,7 +143,12 @@ def test_callback_saves_token_and_redirects_cleanly(monkeypatch: pytest.MonkeyPa
         def fetch_token(self, code: str) -> None:
             assert code == "auth-code"
 
-    monkeypatch.setattr("backend.app.google_oauth.build_flow", lambda _settings, _state: FakeFlow())
+    def fake_build_flow(_settings: Settings, _state: str, code_verifier: str | None = None) -> FakeFlow:
+        assert code_verifier == "stored-code-verifier"
+        return FakeFlow()
+
+    monkeypatch.setattr("backend.app.google_oauth.build_flow", fake_build_flow)
+    monkeypatch.setattr("backend.app.calendar_notifications.enable_calendar_notifications", lambda _settings: None)
 
     response = google_oauth_callback(code="auth-code", state=state.state, session=session, settings=settings)
 
@@ -127,6 +158,38 @@ def test_callback_saves_token_and_redirects_cleanly(monkeypatch: pytest.MonkeyPa
     assert "auth-code" not in response.headers["location"]
     assert "state" not in response.headers["location"]
     assert session.scalar(select(OAuthState).where(OAuthState.state == state.state)).used_at is not None
+
+
+def test_callback_redirects_with_safe_google_error_detail(tmp_path: Path) -> None:
+    session = make_session()
+    settings = oauth_settings(tmp_path)
+
+    response = google_oauth_callback(
+        error="access_denied",
+        error_description="User denied access",
+        session=session,
+        settings=settings,
+    )
+
+    parsed = urlsplit(response.headers["location"])
+    params = parse_qs(parsed.query)
+    assert response.status_code == 303
+    assert parsed.path == "/adm"
+    assert params["google"] == ["error"]
+    assert params["reason"] == ["access_denied"]
+    assert params["detail"] == ["User denied access"]
+
+
+def test_callback_failure_redirect_redacts_sensitive_details(tmp_path: Path) -> None:
+    settings = oauth_settings(tmp_path)
+
+    response = oauth_error_redirect(settings, "invalid_grant", "bad code=abc&state=secret")
+
+    location = response.headers["location"]
+    assert "invalid_grant" in location
+    assert "abc" not in location
+    assert "state%3Dsecret" not in location
+    assert "redacted" in location
 
 
 def test_save_credentials_creates_private_token_file_when_supported(tmp_path: Path) -> None:

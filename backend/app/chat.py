@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from backend.app.config import get_settings
+from backend.app.chat_tracing import ChatTraceContext, create_chat_trace_sink
 from backend.app.models import Conversation, Message
 from backend.app.openai_chat import OpenAIChatUnavailable, PublicToolStatus, stream_openai_text
 from backend.app.schemas import ChatRequest
@@ -42,33 +43,54 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     started_at = monotonic()
     error_category = "none"
     conversation = get_or_create_conversation_with_messages(session, request.session_id)
+    persist_client_temporal_context(conversation, request)
     history = list(conversation.messages)
     masked_session = _mask_session_id(conversation.session_id)
+    turn_id = request.turn_id or secrets.token_urlsafe(18)
+    trace = create_chat_trace_sink(
+        get_settings(),
+        ChatTraceContext(
+            request_id=request_id,
+            conversation_id=conversation.id,
+            session_id=conversation.session_id,
+            turn_id=turn_id,
+            mode="calendar",
+        ),
+    )
 
     yield _event("session_start", {"session_id": conversation.session_id})
+    trace.log(
+        "turn_start",
+        user_message=request.message,
+        history_count=len(history),
+        summary_present=bool(conversation.summary),
+    )
 
     settings = get_settings()
     if len(request.message) > settings.chat_message_max_chars:
+        trace.log("turn_rejected", reason="message_too_long", max_chars=settings.chat_message_max_chars)
         yield _event("error", {"message": f"Message is too long. Please keep it under {settings.chat_message_max_chars} characters."})
         _log_chat_turn(request_id, masked_session, started_at, "message_too_long")
         return
 
-    turn_id = request.turn_id or secrets.token_urlsafe(18)
     if request.turn_id:
         replay = _find_completed_turn(history, request.turn_id)
         if replay is not None:
+            trace.log("turn_replayed", turn_id=request.turn_id)
             yield _event("delta", {"text": replay.content})
             yield _event("done", {"session_id": conversation.session_id})
             _log_chat_turn(request_id, masked_session, started_at, "replayed")
             return
 
     if not _try_start_turn(conversation.session_id):
+        trace.log("turn_rejected", reason="busy")
         yield _event("error", {"message": PUBLIC_BUSY_ERROR})
         _log_chat_turn(request_id, masked_session, started_at, "busy")
         return
 
     if not _allow_rate_limit(conversation.session_id):
         _finish_turn(conversation.session_id)
+        trace.log("turn_rejected", reason="rate_limited")
         yield _event("error", {"message": PUBLIC_RATE_LIMIT_ERROR})
         _log_chat_turn(request_id, masked_session, started_at, "rate_limited")
         return
@@ -83,6 +105,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         conversation.updated_at = now
         session.commit()
         session.refresh(user_record)
+        trace.log("user_message_persisted", message=request.message)
     try:
         recent_history = _recent_completed_messages(history, settings.chat_context_recent_messages)
         for delta in _stream_openai_text(
@@ -92,21 +115,26 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
             conversation.summary,
             session=session,
             conversation=conversation,
+            trace=trace,
         ):
             if not delta:
                 continue
             if isinstance(delta, PublicToolStatus):
                 yield _event("tool_status", {"message": delta.message})
+                trace.log("tool_status", message=delta.message)
                 continue
             response += delta
             yield _event("delta", {"text": delta})
-    except OpenAIChatUnavailable:
+            trace.log("assistant_delta", text=delta)
+    except OpenAIChatUnavailable as exc:
         error_category = "openai_unavailable"
+        trace.log("turn_error", category=error_category, message=str(exc))
         yield _event("error", {"message": "The assistant is temporarily unavailable. Please try again in a moment."})
         return
-    except Exception:
+    except Exception as exc:
         error_category = "unexpected"
         logger.exception("Chat turn failed unexpectedly")
+        trace.log("turn_error", category=error_category, message=str(exc))
         yield _event("error", {"message": "The assistant is temporarily unavailable. Please try again in a moment."})
         return
     finally:
@@ -116,6 +144,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
 
     if not response.strip():
         error_category = "empty_response"
+        trace.log("turn_error", category=error_category, message="Model returned an empty response")
         yield _event("error", {"message": "The assistant returned an empty response. Please try again."})
         _log_chat_turn(request_id, masked_session, started_at, error_category)
         return
@@ -127,6 +156,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     conversation.updated_at = now
     _update_summary_if_needed(conversation, [*history, user_record, assistant_record], get_settings().chat_context_recent_messages)
     session.commit()
+    trace.log("turn_completed", assistant_message=response)
     yield _event("done", {"session_id": conversation.session_id})
     _log_chat_turn(request_id, masked_session, started_at, "completed")
 
@@ -205,6 +235,14 @@ def _update_summary_if_needed(conversation: Conversation, messages: list[Message
     conversation.summary = "\n".join(lines)[-1600:]
 
 
+def persist_client_temporal_context(conversation: Conversation, request: ChatRequest) -> None:
+    if request.client_timezone:
+        conversation.visitor_timezone = request.client_timezone
+        conversation.visitor_timezone_source = "browser"
+    if request.client_locale:
+        conversation.visitor_locale = request.client_locale
+
+
 def _mask_session_id(session_id: str) -> str:
     if len(session_id) <= 8:
         return "***"
@@ -222,10 +260,24 @@ def _log_chat_turn(request_id: str, masked_session: str, started_at: float, cate
     )
 
 
-def _stream_openai_text(settings, history, user_message, summary, *, session: Session, conversation: Conversation):
+def _stream_openai_text(
+    settings,
+    history,
+    user_message,
+    summary,
+    *,
+    session: Session,
+    conversation: Conversation,
+    trace=None,
+):
     try:
-        return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation)
+        return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation, trace=trace)
     except TypeError as exc:
         if "unexpected keyword argument" not in str(exc):
             raise
-        return stream_openai_text(settings, history, user_message, summary)
+        try:
+            return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation)
+        except TypeError as inner_exc:
+            if "unexpected keyword argument" not in str(inner_exc):
+                raise
+            return stream_openai_text(settings, history, user_message, summary)

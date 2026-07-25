@@ -41,6 +41,7 @@ class BusyWindow:
 def calendar_check_availability(
     visitor_timezone: str,
     *,
+    requested_start: datetime | None = None,
     now: datetime | None = None,
     settings: Settings | None = None,
 ) -> list[AvailabilitySlot]:
@@ -56,6 +57,26 @@ def calendar_check_availability(
         search_end,
         settings=resolved_settings,
     )
+    if requested_start is not None:
+        requested_start_utc = ensure_aware_utc(requested_start)
+        requested_end_utc = requested_start_utc + timedelta(minutes=resolved_settings.calendar_slot_minutes)
+        if is_available_slot(
+            requested_start_utc,
+            requested_end_utc,
+            search_start=search_start,
+            search_end=search_end,
+            business_tz=business_tz,
+            busy_windows=busy_windows,
+            buffer_minutes=resolved_settings.calendar_buffer_minutes,
+        ):
+            return [
+                AvailabilitySlot(
+                    start=requested_start_utc.astimezone(visitor_tz),
+                    end=requested_end_utc.astimezone(visitor_tz),
+                    timezone=visitor_tz.key,
+                )
+            ]
+        return []
     return build_available_slots(
         search_start=search_start,
         search_end=search_end,
@@ -107,6 +128,33 @@ def build_available_slots(
         cursor_day = cursor_day + timedelta(days=1)
 
     return slots
+
+
+def is_available_slot(
+    slot_start: datetime,
+    slot_end: datetime,
+    *,
+    search_start: datetime,
+    search_end: datetime,
+    business_tz: ZoneInfo,
+    busy_windows: list[BusyWindow],
+    buffer_minutes: int,
+) -> bool:
+    if slot_start < search_start or slot_end > search_end:
+        return False
+    local_start = slot_start.astimezone(business_tz)
+    local_end = slot_end.astimezone(business_tz)
+    window = WEEKLY_AVAILABILITY.get(local_start.weekday())
+    if window is None or local_start.date() != local_end.date():
+        return False
+    business_start = datetime.combine(local_start.date(), window[0], tzinfo=business_tz)
+    business_end = datetime.combine(local_start.date(), window[1], tzinfo=business_tz)
+    return business_start <= local_start and local_end <= business_end and not overlaps_busy(
+        slot_start,
+        slot_end,
+        busy_windows,
+        buffer_minutes,
+    )
 
 
 def fetch_busy_windows(search_start: datetime, search_end: datetime, *, settings: Settings) -> list[BusyWindow]:

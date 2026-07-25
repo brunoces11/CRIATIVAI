@@ -5,10 +5,11 @@ from datetime import UTC, datetime, timedelta
 import base64
 import hashlib
 import re
+from textwrap import shorten
 
 from fastapi import HTTPException
 from googleapiclient.errors import HttpError
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_503_SERVICE_UNAVAILABLE
 
@@ -29,6 +30,9 @@ class CalendarBookingResult:
     ends_at_utc: datetime
     timezone: str
     status: str
+    participant_name: str | None = None
+    participant_email: str | None = None
+    conversation_summary: str | None = None
     meet_link: str | None = None
 
 
@@ -41,6 +45,7 @@ def calendar_create_event(
     visitor_timezone: str,
     starts_at: datetime,
     idempotency_key: str,
+    meeting_summary: str,
     confirmed: bool,
     settings: Settings | None = None,
 ) -> CalendarBookingResult:
@@ -59,6 +64,17 @@ def calendar_create_event(
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Conversation not found")
 
     ensure_slot_was_offered(requested_start, visitor_timezone, resolved_settings)
+    conversation.visitor_name = participant_name.strip() or conversation.visitor_name
+    conversation.visitor_email = participant_email
+    conversation.visitor_timezone = visitor_timezone
+    booking_summary = build_booking_summary(
+        participant_name=participant_name,
+        participant_email=participant_email,
+        requested_start=requested_start,
+        requested_end=requested_end,
+        timezone=visitor_timezone,
+        meeting_summary=meeting_summary,
+    )
     google_event_id = deterministic_google_event_id(idempotency_key)
     event = insert_google_event(
         google_event_id=google_event_id,
@@ -67,18 +83,21 @@ def calendar_create_event(
         starts_at=requested_start,
         ends_at=requested_end,
         timezone=visitor_timezone,
+        description=build_event_description(resolved_settings.calendar_event_description, booking_summary),
         settings=resolved_settings,
     )
 
     booking = Booking(
         conversation_id=conversation.id,
         google_event_id=google_event_id,
+        participant_name=participant_name.strip() or None,
         participant_email=participant_email,
         starts_at_utc=requested_start.astimezone(UTC),
         ends_at_utc=requested_end.astimezone(UTC),
         timezone=visitor_timezone,
         status="confirmed",
         idempotency_key=idempotency_key,
+        conversation_summary=booking_summary,
         confirmed_at=datetime.now(UTC),
     )
     conversation.booking_state = "confirmed"
@@ -91,8 +110,8 @@ def calendar_create_event(
 def calendar_update_event(
     session: Session,
     *,
-    conversation_id: int,
-    booking_id: int,
+    participant_email: str,
+    booking_id: int | None,
     visitor_timezone: str,
     new_starts_at: datetime,
     confirmed: bool,
@@ -102,7 +121,7 @@ def calendar_update_event(
     if not confirmed:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Reschedule confirmation is required")
 
-    booking = load_owned_confirmed_booking(session, conversation_id, booking_id)
+    booking = load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id)
     visitor_tz = load_timezone(visitor_timezone)
     requested_start = normalize_start(new_starts_at, visitor_tz)
     requested_end = requested_start + timedelta(minutes=resolved_settings.calendar_slot_minutes)
@@ -126,8 +145,8 @@ def calendar_update_event(
 def calendar_cancel_event(
     session: Session,
     *,
-    conversation_id: int,
-    booking_id: int,
+    participant_email: str,
+    booking_id: int | None,
     confirmed: bool,
     settings: Settings | None = None,
 ) -> CalendarBookingResult:
@@ -135,13 +154,30 @@ def calendar_cancel_event(
     if not confirmed:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Cancellation confirmation is required")
 
-    booking = load_owned_confirmed_booking(session, conversation_id, booking_id)
+    booking = load_booking_for_management(session, participant_email=participant_email, booking_id=booking_id)
     delete_google_event(google_event_id=booking.google_event_id or "", settings=resolved_settings)
     booking.status = "cancelled"
     booking.cancelled_at = datetime.now(UTC)
     session.commit()
     session.refresh(booking)
     return booking_result(booking)
+
+
+def calendar_lookup_bookings(session: Session, *, participant_email: str) -> list[CalendarBookingResult]:
+    normalized_email = participant_email.strip().lower()
+    if not EMAIL_PATTERN.fullmatch(normalized_email):
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Valid participant email is required")
+
+    bookings = session.scalars(
+        select(Booking)
+        .where(
+            func.lower(Booking.participant_email) == normalized_email,
+            Booking.status == "confirmed",
+            Booking.google_event_id.is_not(None),
+        )
+        .order_by(Booking.starts_at_utc.asc(), Booking.id.asc())
+    ).all()
+    return [booking_result(booking) for booking in bookings]
 
 
 def validate_booking_request(participant_email: str, idempotency_key: str, confirmed: bool) -> None:
@@ -168,13 +204,14 @@ def insert_google_event(
     starts_at: datetime,
     ends_at: datetime,
     timezone: str,
+    description: str,
     settings: Settings,
 ) -> dict:
     service = build_calendar_service(settings)
     body = {
         "id": google_event_id,
         "summary": settings.calendar_event_title,
-        "description": settings.calendar_event_description,
+        "description": description,
         "start": {"dateTime": to_rfc3339(starts_at), "timeZone": timezone},
         "end": {"dateTime": to_rfc3339(ends_at), "timeZone": timezone},
         "attendees": [{"email": participant_email, "displayName": participant_name.strip() or participant_email}],
@@ -263,8 +300,107 @@ def load_owned_confirmed_booking(session: Session, conversation_id: int, booking
     return booking
 
 
+def load_booking_for_management(
+    session: Session,
+    *,
+    participant_email: str,
+    booking_id: int | None,
+) -> Booking:
+    normalized_email = participant_email.strip().lower()
+    if not normalized_email:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Participant email is required")
+
+    if booking_id is not None:
+        booking = session.get(Booking, booking_id)
+        if booking is None:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Booking not found")
+        if booking.participant_email.strip().lower() != normalized_email:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Booking not found for this email")
+        if booking.status != "confirmed":
+            raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking is not confirmed")
+        if not booking.google_event_id:
+            raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Booking has no Calendar event")
+        return booking
+
+    matches = session.scalars(
+        select(Booking)
+        .where(
+            func.lower(Booking.participant_email) == normalized_email,
+            Booking.status == "confirmed",
+            Booking.google_event_id.is_not(None),
+        )
+        .order_by(Booking.starts_at_utc.asc(), Booking.id.asc())
+    ).all()
+
+    if not matches:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="No confirmed booking found for this email")
+    if len(matches) == 1:
+        return matches[0]
+
+    raise HTTPException(
+        status_code=HTTP_409_CONFLICT,
+        detail={
+            "message": "Multiple confirmed bookings found for this email.",
+            "candidates": [booking_candidate(booking) for booking in matches],
+        },
+    )
+
+
 def idempotency_key_fingerprint(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
+
+
+def booking_candidate(booking: Booking) -> dict[str, str | int | None]:
+    starts_at = ensure_aware_utc(booking.starts_at_utc).astimezone(load_timezone(booking.timezone))
+    ends_at = ensure_aware_utc(booking.ends_at_utc).astimezone(load_timezone(booking.timezone))
+    return {
+        "booking_id": booking.id,
+        "participant_name": booking.participant_name,
+        "participant_email": booking.participant_email,
+        "starts_at": starts_at.isoformat(),
+        "ends_at": ends_at.isoformat(),
+        "timezone": booking.timezone,
+        "status": booking.status,
+    }
+
+
+def build_booking_summary(
+    *,
+    participant_name: str,
+    participant_email: str,
+    requested_start: datetime,
+    requested_end: datetime,
+    timezone: str,
+    meeting_summary: str,
+) -> str:
+    visitor_tz = load_timezone(timezone)
+    start_local = ensure_aware_utc(requested_start).astimezone(visitor_tz)
+    end_local = ensure_aware_utc(requested_end).astimezone(visitor_tz)
+    summary_excerpt = compact_summary_excerpt(meeting_summary)
+    name = participant_name.strip() or participant_email
+
+    return "\n".join(
+        [
+            f"Participante: {name} ({participant_email})",
+            f"Horário: {start_local:%d/%m/%Y %H:%M} - {end_local:%H:%M} ({timezone})",
+            f"Resumo da conversa: {summary_excerpt}",
+        ]
+    )
+
+
+def build_event_description(prefix: str, booking_summary: str) -> str:
+    prefix_text = prefix.strip()
+    if prefix_text:
+        return f"{prefix_text}\n\n{booking_summary}"
+    return booking_summary
+
+
+def compact_summary_excerpt(summary: str | None) -> str:
+    if not summary:
+        return "Conversa curta focada em agendamento e confirmação de horário."
+
+    flattened = " ".join(part.strip() for part in summary.splitlines() if part.strip())
+    return shorten(flattened, width=220, placeholder="…")
 
 
 def normalize_start(starts_at: datetime, visitor_tz) -> datetime:
@@ -281,5 +417,8 @@ def booking_result(booking: Booking, *, event: dict | None = None) -> CalendarBo
         ends_at_utc=ensure_aware_utc(booking.ends_at_utc),
         timezone=booking.timezone,
         status=booking.status,
+        participant_name=booking.participant_name,
+        participant_email=booking.participant_email,
+        conversation_summary=booking.conversation_summary,
         meet_link=(event or {}).get("hangoutLink"),
     )

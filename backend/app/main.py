@@ -13,6 +13,7 @@ from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
 from backend.app.config import get_settings
 from backend.app.db import get_session, initialize_database, ping_database
+from backend.app.chat_tracing import router as chat_tracing_router
 from backend.app.forms import router as forms_router
 from backend.app.google_oauth import admin_router as google_admin_router
 from backend.app.google_oauth import callback_router as google_callback_router
@@ -30,6 +31,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="CriativAI API", lifespan=lifespan)
 app.include_router(admin_router)
+app.include_router(chat_tracing_router)
 app.include_router(google_admin_router)
 app.include_router(google_callback_router)
 app.include_router(forms_router)

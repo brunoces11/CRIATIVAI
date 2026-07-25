@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     chat_rate_limit_window_seconds: int = 60
     chat_context_recent_messages: int = 12
     chat_tool_max_iterations: int = 4
+    chat_tracing_log_path: Path = Path("chat-tracing-log.txt")
+    chat_tracing_state_path: Path = Path("chat-tracing-enabled.txt")
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_redirect_uri: str | None = None
@@ -36,6 +38,7 @@ class Settings(BaseSettings):
     google_oauth_scopes: list[str] = [
         "https://www.googleapis.com/auth/calendar.freebusy",
         "https://www.googleapis.com/auth/calendar.events",
+        "https://www.googleapis.com/auth/calendar.calendarlist",
     ]
     smtp_host: str = "in-v3.mailjet.com"
     smtp_port: int = 587

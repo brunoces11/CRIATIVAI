@@ -23,6 +23,7 @@ def test_calendar_tools_are_strict_and_closed() -> None:
     assert {tool["name"] for tool in CALENDAR_TOOLS} == {
         "calendar_check_availability",
         "calendar_create_event",
+        "calendar_lookup_bookings",
         "calendar_update_event",
         "calendar_cancel_event",
     }
@@ -30,7 +31,12 @@ def test_calendar_tools_are_strict_and_closed() -> None:
         assert tool["type"] == "function"
         assert tool["strict"] is True
         assert tool["parameters"]["additionalProperties"] is False
-        assert set(tool["parameters"]["required"]) == set(tool["parameters"]["properties"])
+        required = set(tool["parameters"]["required"])
+        properties = set(tool["parameters"]["properties"])
+        assert required == properties
+        if tool["name"] in {"calendar_update_event", "calendar_cancel_event"}:
+            assert "booking_id" in required
+            assert "participant_email" in required
 
 
 def test_unknown_calendar_tool_fails_closed(tmp_path) -> None:
@@ -60,7 +66,7 @@ def test_extra_tool_argument_is_rejected(monkeypatch: pytest.MonkeyPatch, tmp_pa
     with pytest.raises(HTTPException) as exc_info:
         execute_calendar_tool(
             "calendar_check_availability",
-            json.dumps({"visitor_timezone": "America/Sao_Paulo", "google_event_id": "secret"}),
+            json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None, "google_event_id": "secret"}),
             session=session,
             conversation=conversation,
             settings=Settings(_env_file=None, google_token_path=tmp_path / "token.json"),
@@ -87,7 +93,7 @@ def test_calendar_check_availability_output_exposes_only_slots(monkeypatch: pyte
 
     result = execute_calendar_tool(
         "calendar_check_availability",
-        json.dumps({"visitor_timezone": "America/Sao_Paulo"}),
+        json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None}),
         session=session,
         conversation=conversation,
         settings=Settings(_env_file=None, google_token_path=tmp_path / "token.json"),

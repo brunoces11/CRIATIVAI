@@ -3,6 +3,7 @@ import logging
 import os
 from pathlib import Path
 import secrets
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
@@ -41,6 +42,8 @@ def google_connect(
         include_granted_scopes="true",
         prompt="consent",
     )
+    state.code_verifier = flow.code_verifier
+    session.commit()
     return RedirectResponse(authorization_url, status_code=302)
 
 
@@ -62,23 +65,32 @@ def google_status(settings: Settings = Depends(get_settings)) -> GoogleOAuthStat
 def google_oauth_callback(
     code: str | None = None,
     state: str | None = None,
+    error: str | None = None,
+    error_description: str | None = None,
     session: Session = Depends(get_session),
     settings: Settings = Depends(get_settings),
 ) -> RedirectResponse:
+    if error:
+        return oauth_error_redirect(settings, error, error_description)
+
     if not code or not state:
-        return RedirectResponse(settings.google_oauth_error_path, status_code=303)
+        return oauth_error_redirect(settings, "missing_callback_params", "Google callback did not include code and state.")
 
     oauth_state = consume_oauth_state(session, state)
     if oauth_state is None:
-        return RedirectResponse(settings.google_oauth_error_path, status_code=303)
+        return oauth_error_redirect(settings, "invalid_state", "OAuth state is missing, expired, or already used.")
 
     try:
-        flow = build_flow(settings, state)
+        flow = build_flow(settings, state, oauth_state.code_verifier)
         flow.fetch_token(code=code)
         save_credentials(flow.credentials, settings.google_token_path)
+        from backend.app.calendar_notifications import enable_calendar_notifications
+
+        enable_calendar_notifications(settings)
     except Exception as exc:
-        logger.warning("Google OAuth callback failed: %s", exc.__class__.__name__)
-        return RedirectResponse(settings.google_oauth_error_path, status_code=303)
+        reason, detail = classify_oauth_exception(exc)
+        logger.warning("Google OAuth callback failed: %s - %s", reason, detail)
+        return oauth_error_redirect(settings, reason, detail)
 
     return RedirectResponse(settings.google_oauth_success_path, status_code=303)
 
@@ -119,7 +131,7 @@ def consume_oauth_state(session: Session, state: str) -> OAuthState | None:
     return oauth_state
 
 
-def build_flow(settings: Settings, state: str) -> Flow:
+def build_flow(settings: Settings, state: str, code_verifier: str | None = None) -> Flow:
     ensure_google_oauth_config(settings)
     return Flow.from_client_config(
         {
@@ -134,6 +146,7 @@ def build_flow(settings: Settings, state: str) -> Flow:
         scopes=settings.google_oauth_scopes,
         state=state,
         redirect_uri=settings.google_redirect_uri,
+        code_verifier=code_verifier,
     )
 
 
@@ -144,3 +157,38 @@ def save_credentials(credentials: Credentials, token_path: Path) -> None:
         os.chmod(token_path, 0o600)
     except OSError:
         pass
+
+
+def oauth_error_redirect(settings: Settings, reason: str, detail: str | None = None) -> RedirectResponse:
+    parsed = urlsplit(settings.google_oauth_error_path)
+    params = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    params["google"] = "error"
+    params["reason"] = sanitize_oauth_message(reason)
+    safe_detail = sanitize_oauth_message(detail)
+    if safe_detail:
+        params["detail"] = safe_detail
+
+    location = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(params), parsed.fragment))
+    return RedirectResponse(location, status_code=303)
+
+
+def classify_oauth_exception(exc: Exception) -> tuple[str, str]:
+    reason = getattr(exc, "error", None) or exc.__class__.__name__
+    description = getattr(exc, "description", None) or str(exc) or exc.__class__.__name__
+    return sanitize_oauth_message(reason), sanitize_oauth_message(description)
+
+
+def sanitize_oauth_message(value: object | None) -> str:
+    if value is None:
+        return ""
+
+    text = str(value).replace("\r", " ").replace("\n", " ").strip()
+    if not text:
+        return ""
+
+    sensitive_markers = ("client_secret", "refresh_token", "access_token", "id_token", "authorization_code", "code=", "state=")
+    lowered = text.lower()
+    if any(marker in lowered for marker in sensitive_markers):
+        return "Sensitive OAuth details were redacted. Check server logs only after removing secrets."
+
+    return text[:240]

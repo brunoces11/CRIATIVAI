@@ -56,6 +56,27 @@ def test_dynamic_buffer_blocks_slots_around_existing_busy_windows() -> None:
     assert "13:30" in offered
 
 
+def test_checks_an_exact_requested_slot(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    settings = Settings(
+        google_client_id="client-id",
+        google_client_secret="client-secret",
+        google_redirect_uri="http://localhost/callback",
+        google_token_path=tmp_path / "token.json",
+        _env_file=None,
+    )
+    monkeypatch.setattr("backend.app.calendar_availability.fetch_busy_windows", lambda *_args, **_kwargs: [])
+    requested_start = datetime(2026, 7, 27, 11, 0, tzinfo=UTC)
+
+    slots = calendar_check_availability(
+        "America/Sao_Paulo",
+        requested_start=requested_start,
+        now=datetime(2026, 7, 24, 8, 0, tzinfo=UTC),
+        settings=settings,
+    )
+
+    assert [slot.start.isoformat() for slot in slots] == ["2026-07-27T08:00:00-03:00"]
+
+
 def test_rejects_invalid_visitor_timezone(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     settings = Settings(
         google_client_id="client-id",

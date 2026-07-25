@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.calendar_availability import AvailabilitySlot
-from backend.app.calendar_booking import calendar_cancel_event, calendar_create_event, calendar_update_event, deterministic_google_event_id
+from backend.app.calendar_booking import calendar_cancel_event, calendar_create_event, calendar_lookup_bookings, calendar_update_event, deterministic_google_event_id
 from backend.app.config import Settings
 from backend.app.models import Base, Booking, Conversation
 
@@ -100,6 +100,7 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
         visitor_timezone="America/Sao_Paulo",
         starts_at=slot.start,
         idempotency_key="booking_1234567890abcdef",
+        meeting_summary="O visitante quer conhecer a CriativAI.\nBusca apoio para automacao comercial.\nDeseja entender os proximos passos.",
         confirmed=True,
         settings=settings,
     )
@@ -107,8 +108,13 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
     booking = session.scalar(select(Booking).where(Booking.id == result.booking_id))
     assert booking is not None
     assert booking.status == "confirmed"
+    assert booking.participant_name == "Bruno Cliente"
+    assert booking.participant_email == "cliente@example.com"
+    assert booking.conversation_summary is not None
     assert booking.google_event_id == deterministic_google_event_id("booking_1234567890abcdef")
     assert result.meet_link == "https://meet.google.com/abc-defg-hij"
+    assert conversation.visitor_name == "Bruno Cliente"
+    assert conversation.visitor_email == "cliente@example.com"
     insert_call = fake_service.events_resource.insert_calls[0]
     assert insert_call["conferenceDataVersion"] == 1
     assert insert_call["sendUpdates"] == "all"
@@ -144,6 +150,7 @@ def test_create_event_is_idempotent_without_second_google_insert(monkeypatch: py
         visitor_timezone="America/Sao_Paulo",
         starts_at=datetime(2026, 7, 27, 8, 0, tzinfo=UTC),
         idempotency_key="booking_1234567890abcdef",
+        meeting_summary="O visitante quer conhecer a CriativAI.\nBusca apoio para automacao comercial.\nDeseja entender os proximos passos.",
         confirmed=True,
         settings=booking_settings(tmp_path),
     )
@@ -162,6 +169,7 @@ def test_create_event_requires_explicit_confirmation(tmp_path) -> None:
             visitor_timezone="America/Sao_Paulo",
             starts_at=datetime(2026, 7, 27, 8, 0, tzinfo=UTC),
             idempotency_key="booking_1234567890abcdef",
+            meeting_summary="O visitante quer conhecer a CriativAI.\nBusca apoio para automacao comercial.\nDeseja entender os proximos passos.",
             confirmed=False,
             settings=booking_settings(tmp_path),
         )
@@ -185,6 +193,7 @@ def test_create_event_rejects_slot_not_currently_offered(monkeypatch: pytest.Mon
             visitor_timezone="America/Sao_Paulo",
             starts_at=datetime(2026, 7, 27, 8, 0, tzinfo=UTC),
             idempotency_key="booking_1234567890abcdef",
+            meeting_summary="O visitante quer conhecer a CriativAI.\nBusca apoio para automacao comercial.\nDeseja entender os proximos passos.",
             confirmed=True,
             settings=booking_settings(tmp_path),
         )
@@ -200,6 +209,7 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
     booking = Booking(
         conversation_id=conversation.id,
         google_event_id="cai12345",
+        participant_name="Bruno Cliente",
         participant_email="cliente@example.com",
         starts_at_utc=datetime(2026, 7, 27, 11, 0, tzinfo=UTC),
         ends_at_utc=datetime(2026, 7, 27, 11, 30, tzinfo=UTC),
@@ -221,8 +231,8 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
 
     result = calendar_update_event(
         session,
-        conversation_id=conversation.id,
-        booking_id=booking.id,
+        participant_email="cliente@example.com",
+        booking_id=None,
         visitor_timezone="America/Sao_Paulo",
         new_starts_at=new_slot.start,
         confirmed=True,
@@ -236,15 +246,16 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
     assert patch_call["sendUpdates"] == "all"
 
 
-def test_update_event_rejects_booking_from_other_conversation(tmp_path) -> None:
+def test_update_event_rejects_ambiguous_email_matches(tmp_path) -> None:
     session = make_session()
-    conversation = Conversation(session_id="session_1234567890abcdef")
-    other = Conversation(session_id="session_abcdef1234567890")
-    session.add_all([conversation, other])
+    first_conversation = Conversation(session_id="session_1234567890abcdef")
+    second_conversation = Conversation(session_id="session_abcdef1234567890")
+    session.add_all([first_conversation, second_conversation])
     session.commit()
-    booking = Booking(
-        conversation_id=other.id,
+    first_booking = Booking(
+        conversation_id=first_conversation.id,
         google_event_id="cai12345",
+        participant_name="Cliente 1",
         participant_email="cliente@example.com",
         starts_at_utc=datetime(2026, 7, 27, 11, 0, tzinfo=UTC),
         ends_at_utc=datetime(2026, 7, 27, 11, 30, tzinfo=UTC),
@@ -252,21 +263,73 @@ def test_update_event_rejects_booking_from_other_conversation(tmp_path) -> None:
         status="confirmed",
         idempotency_key="booking_1234567890abcdef",
     )
-    session.add(booking)
+    second_booking = Booking(
+        conversation_id=second_conversation.id,
+        google_event_id="cai12346",
+        participant_name="Cliente 2",
+        participant_email="cliente@example.com",
+        starts_at_utc=datetime(2026, 7, 28, 11, 0, tzinfo=UTC),
+        ends_at_utc=datetime(2026, 7, 28, 11, 30, tzinfo=UTC),
+        timezone="America/Sao_Paulo",
+        status="confirmed",
+        idempotency_key="booking_abcdef1234567890",
+    )
+    session.add_all([first_booking, second_booking])
     session.commit()
 
     with pytest.raises(HTTPException) as exc_info:
         calendar_update_event(
             session,
-            conversation_id=conversation.id,
-            booking_id=booking.id,
+            participant_email="cliente@example.com",
+            booking_id=None,
             visitor_timezone="America/Sao_Paulo",
             new_starts_at=datetime(2026, 7, 28, 12, 0, tzinfo=UTC),
             confirmed=True,
             settings=booking_settings(tmp_path),
         )
 
-    assert exc_info.value.status_code == 404
+    assert exc_info.value.status_code == 409
+    assert isinstance(exc_info.value.detail, dict)
+    assert len(exc_info.value.detail["candidates"]) == 2
+
+
+def test_lookup_bookings_returns_only_confirmed_bookings_for_email() -> None:
+    session = make_session()
+    conversation = Conversation(session_id="session_1234567890abcdef")
+    session.add(conversation)
+    session.commit()
+    session.add_all(
+        [
+            Booking(
+                conversation_id=conversation.id,
+                google_event_id="cai12345",
+                participant_name="Bruno Cliente",
+                participant_email="cliente@example.com",
+                starts_at_utc=datetime(2026, 7, 27, 11, 0, tzinfo=UTC),
+                ends_at_utc=datetime(2026, 7, 27, 11, 30, tzinfo=UTC),
+                timezone="America/Sao_Paulo",
+                status="confirmed",
+                idempotency_key="booking_1234567890abcdef",
+            ),
+            Booking(
+                conversation_id=conversation.id,
+                google_event_id="cai12346",
+                participant_email="cliente@example.com",
+                starts_at_utc=datetime(2026, 7, 28, 11, 0, tzinfo=UTC),
+                ends_at_utc=datetime(2026, 7, 28, 11, 30, tzinfo=UTC),
+                timezone="America/Sao_Paulo",
+                status="cancelled",
+                idempotency_key="booking_abcdef1234567890",
+            ),
+        ]
+    )
+    session.commit()
+
+    result = calendar_lookup_bookings(session, participant_email="cliente@example.com")
+
+    assert len(result) == 1
+    assert result[0].google_event_id == "cai12345"
+    assert result[0].participant_email == "cliente@example.com"
 
 
 def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -277,6 +340,7 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
     booking = Booking(
         conversation_id=conversation.id,
         google_event_id="cai12345",
+        participant_name="Bruno Cliente",
         participant_email="cliente@example.com",
         starts_at_utc=datetime(2026, 7, 27, 11, 0, tzinfo=UTC),
         ends_at_utc=datetime(2026, 7, 27, 11, 30, tzinfo=UTC),
@@ -292,8 +356,8 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
 
     result = calendar_cancel_event(
         session,
-        conversation_id=conversation.id,
-        booking_id=booking.id,
+        participant_email="cliente@example.com",
+        booking_id=None,
         confirmed=True,
         settings=booking_settings(tmp_path),
     )

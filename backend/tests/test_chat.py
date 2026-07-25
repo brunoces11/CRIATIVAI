@@ -154,6 +154,28 @@ def test_stream_chat_limits_context_and_updates_summary(monkeypatch) -> None:
     assert session.query(Message).count() == 8
 
 
+def test_stream_chat_persists_browser_temporal_context(monkeypatch) -> None:
+    session = make_session()
+    monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="hello", _env_file=None))
+    monkeypatch.setattr(chat_module, "stream_openai_text", lambda *_args, **_kwargs: iter(["hello"]))
+
+    events = [json_event(event) for event in chat_module.stream_chat(
+        session,
+        ChatRequest(
+            message="Hi",
+            client_timezone="Europe/Oslo",
+            client_locale="nb-NO",
+        ),
+    )]
+    session_id = next(event["session_id"] for event in events if event["event"] == "session_start")
+    conversation = session.scalar(select(Conversation).where(Conversation.session_id == session_id))
+
+    assert conversation is not None
+    assert conversation.visitor_timezone == "Europe/Oslo"
+    assert conversation.visitor_locale == "nb-NO"
+    assert conversation.visitor_timezone_source == "browser"
+
+
 def test_stream_chat_logs_metadata_without_message_content(monkeypatch, caplog) -> None:
     session = make_session()
     message = "contact me at person@example.com"
@@ -169,6 +191,25 @@ def test_stream_chat_logs_metadata_without_message_content(monkeypatch, caplog) 
     assert "completed" in logs
     assert "person@example.com" not in logs
     assert message not in logs
+
+
+def test_stream_chat_writes_chat_tracing_log(monkeypatch, tmp_path) -> None:
+    session = make_session()
+    settings = Settings(
+        openai_mock_response="hello",
+        chat_tracing_log_path=tmp_path / "chat-tracing-log.txt",
+        chat_tracing_state_path=tmp_path / "chat-tracing-enabled.txt",
+        _env_file=None,
+    )
+    monkeypatch.setattr(chat_module, "get_settings", lambda: settings)
+    monkeypatch.setattr(chat_module, "stream_openai_text", lambda *_args, **_kwargs: iter(["hello"]))
+
+    list(chat_module.stream_chat(session, ChatRequest(message="Book a meeting")))
+
+    log_lines = settings.chat_tracing_log_path.read_text(encoding="utf-8").splitlines()
+    assert any('"event":"turn_start"' in line for line in log_lines)
+    assert any('"event":"assistant_delta"' in line for line in log_lines)
+    assert any('"event":"turn_completed"' in line for line in log_lines)
 
 
 def json_event(line: str) -> dict:

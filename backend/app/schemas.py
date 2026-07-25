@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -17,6 +18,25 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
     session_id: str | None = Field(default=None, min_length=16, max_length=64, pattern=SESSION_ID_PATTERN)
     turn_id: str | None = Field(default=None, min_length=16, max_length=96, pattern=TURN_ID_PATTERN)
+    client_timezone: str | None = Field(default=None, min_length=1, max_length=80)
+    client_locale: str | None = Field(default=None, min_length=2, max_length=40)
+
+    @field_validator("client_timezone")
+    @classmethod
+    def validate_client_timezone(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        timezone_name = value.strip()
+        try:
+            ZoneInfo(timezone_name)
+        except ZoneInfoNotFoundError as exc:
+            raise ValueError("Invalid client timezone") from exc
+        return timezone_name
+
+    @field_validator("client_locale")
+    @classmethod
+    def normalize_client_locale(cls, value: str | None) -> str | None:
+        return value.strip() if value else None
 
 
 class ConversationMessage(BaseModel):

@@ -4,8 +4,10 @@ from types import SimpleNamespace
 import pytest
 
 from backend.app.config import Settings
-from backend.app.models import Message
-from backend.app.openai_chat import build_instructions, build_response_input, load_sdr_prompt, stream_openai_text
+from datetime import UTC, datetime
+
+from backend.app.models import Conversation, Message
+from backend.app.openai_chat import build_calendar_instructions, build_client_temporal_context, build_instructions, build_response_input, load_sdr_prompt, stream_openai_text
 
 
 def test_build_response_input_uses_recent_public_roles() -> None:
@@ -20,6 +22,51 @@ def test_build_response_input_uses_recent_public_roles() -> None:
         {"role": "assistant", "content": "two"},
         {"role": "user", "content": "three"},
     ]
+
+
+def test_calendar_instructions_require_confirmation_of_reused_email(tmp_path: Path) -> None:
+    prompt_path = tmp_path / "prompt.md"
+    prompt_path.write_text("Default SDR prompt", encoding="utf-8")
+
+    instructions = build_calendar_instructions(
+        prompt_path,
+        None,
+        recent_visitor_email="cliente@example.com",
+    )
+
+    assert "cliente@example.com" in instructions
+    assert "ask the visitor to confirm it" in instructions
+
+
+def test_client_temporal_context_uses_iana_timezone_and_server_time() -> None:
+    conversation = Conversation(
+        session_id="session_1234567890abcdef",
+        visitor_timezone="Europe/Helsinki",
+        visitor_locale="fi-FI",
+    )
+
+    context = build_client_temporal_context(
+        conversation,
+        Settings(_env_file=None),
+        now=datetime(2026, 7, 24, 17, 0, tzinfo=UTC),
+    )
+
+    assert "CLIENT_TIMEZONE: Europe/Helsinki" in context
+    assert "CLIENT_CURRENT_DATETIME: 2026-07-24T20:00:00+03:00" in context
+    assert "CLIENT_LOCALE: fi-FI" in context
+    assert "CALENDAR_OWNER_TIMEZONE: America/Sao_Paulo" in context
+
+
+def test_client_temporal_context_handles_dst_with_zoneinfo() -> None:
+    conversation = Conversation(session_id="session_1234567890abcdef", visitor_timezone="Europe/Helsinki")
+
+    context = build_client_temporal_context(
+        conversation,
+        Settings(_env_file=None),
+        now=datetime(2026, 1, 24, 17, 0, tzinfo=UTC),
+    )
+
+    assert "CLIENT_CURRENT_DATETIME: 2026-01-24T19:00:00+02:00" in context
 
 
 def test_load_sdr_prompt_reads_editable_file(tmp_path: Path) -> None:

@@ -66,6 +66,8 @@ export async function sendChatMessage(
   signal: AbortSignal,
   onEvent: (event: ChatStreamEvent) => void,
 ): Promise<void> {
+  const clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+  const clientLocale = Intl.DateTimeFormat().resolvedOptions().locale || null;
   const response = await fetch("/api/chat", {
     method: "POST",
     signal,
@@ -73,7 +75,13 @@ export async function sendChatMessage(
       accept: "application/x-ndjson",
       "content-type": "application/json",
     },
-    body: JSON.stringify({ message, session_id: sessionId, turn_id: turnId }),
+    body: JSON.stringify({
+      message,
+      session_id: sessionId,
+      turn_id: turnId,
+      client_timezone: clientTimezone,
+      client_locale: clientLocale,
+    }),
   });
 
   if (!response.ok || !response.body) {
