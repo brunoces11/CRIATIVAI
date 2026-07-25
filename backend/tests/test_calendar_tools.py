@@ -66,7 +66,7 @@ def test_extra_tool_argument_is_rejected(monkeypatch: pytest.MonkeyPatch, tmp_pa
     with pytest.raises(HTTPException) as exc_info:
         execute_calendar_tool(
             "calendar_check_availability",
-            json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None, "google_event_id": "secret"}),
+            json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None, "requested_date": None, "google_event_id": "secret"}),
             session=session,
             conversation=conversation,
             settings=Settings(_env_file=None, google_token_path=tmp_path / "token.json"),
@@ -93,7 +93,7 @@ def test_calendar_check_availability_output_exposes_only_slots(monkeypatch: pyte
 
     result = execute_calendar_tool(
         "calendar_check_availability",
-        json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None}),
+        json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None, "requested_date": None}),
         session=session,
         conversation=conversation,
         settings=Settings(_env_file=None, google_token_path=tmp_path / "token.json"),

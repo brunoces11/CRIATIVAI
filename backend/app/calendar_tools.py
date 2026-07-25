@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 import json
 from typing import Any, Callable
 
@@ -20,6 +20,7 @@ class CalendarCheckAvailabilityArgs(BaseModel):
 
     visitor_timezone: str = Field(min_length=1, max_length=80)
     requested_start: datetime | None = None
+    requested_date: date | None = None
 
 
 class CalendarCreateEventArgs(BaseModel):
@@ -83,7 +84,7 @@ TOOL_ARGUMENT_MODELS: dict[str, type[BaseModel]] = {
 CALENDAR_TOOLS: list[dict[str, Any]] = [
     function_tool(
         name="calendar_check_availability",
-        description="Check available CriativAI meeting slots. Set requested_start to an exact visitor-requested time, or null to return suggested slots. Returns only available slots, never busy event details.",
+        description="Check available CriativAI meeting slots. Set requested_start for an exact requested time, requested_date for a day-only request, or both null to return suggested slots. Returns only available slots, never busy event details.",
         model=CalendarCheckAvailabilityArgs,
     ),
     function_tool(
@@ -132,6 +133,7 @@ def execute_calendar_tool(
             calendar_check_availability(
                 parsed.visitor_timezone,  # type: ignore[attr-defined]
                 requested_start=parsed.requested_start,  # type: ignore[attr-defined]
+                requested_date=parsed.requested_date,  # type: ignore[attr-defined]
                 settings=settings,
             )
         ),

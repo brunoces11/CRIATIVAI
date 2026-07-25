@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import HTTPException
@@ -42,6 +42,7 @@ def calendar_check_availability(
     visitor_timezone: str,
     *,
     requested_start: datetime | None = None,
+    requested_date: date | None = None,
     now: datetime | None = None,
     settings: Settings | None = None,
 ) -> list[AvailabilitySlot]:
@@ -57,6 +58,20 @@ def calendar_check_availability(
         search_end,
         settings=resolved_settings,
     )
+    if requested_date is not None and requested_start is None:
+        day_start = datetime.combine(requested_date, time.min, tzinfo=business_tz).astimezone(UTC)
+        day_end = datetime.combine(requested_date + timedelta(days=1), time.min, tzinfo=business_tz).astimezone(UTC)
+        return build_available_slots(
+            search_start=max(search_start, day_start),
+            search_end=min(search_end, day_end),
+            business_tz=business_tz,
+            visitor_tz=visitor_tz,
+            busy_windows=busy_windows,
+            slot_minutes=resolved_settings.calendar_slot_minutes,
+            buffer_minutes=resolved_settings.calendar_buffer_minutes,
+            limit=resolved_settings.calendar_suggestion_count,
+        )
+
     if requested_start is not None:
         requested_start_utc = ensure_aware_utc(requested_start)
         requested_end_utc = requested_start_utc + timedelta(minutes=resolved_settings.calendar_slot_minutes)

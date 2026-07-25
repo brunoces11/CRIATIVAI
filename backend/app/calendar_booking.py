@@ -252,7 +252,7 @@ def validate_booking_request(participant_email: str, idempotency_key: str, confi
 
 def ensure_slot_was_offered(requested_start: datetime, visitor_timezone: str, settings: Settings) -> None:
     requested_start_utc = ensure_aware_utc(requested_start)
-    slots = calendar_check_availability(visitor_timezone, settings=settings)
+    slots = calendar_check_availability(visitor_timezone, requested_start=requested_start, settings=settings)
     if not any(ensure_aware_utc(slot.start) == requested_start_utc for slot in slots):
         raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Requested slot is no longer available")
 
