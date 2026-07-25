@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     smtp_sender_email: str | None = None
     smtp_reply_to: str | None = None
     forms_notification_email: str = "bruno@criativai.site"
+    calendar_notification_email: str = "bruno@criativaai.site"
     form_rate_limit_count: int = 3
     form_rate_limit_window_seconds: int = 900
     form_min_fill_seconds: int = 4

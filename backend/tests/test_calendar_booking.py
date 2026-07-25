@@ -24,6 +24,7 @@ def booking_settings(tmp_path) -> Settings:
         google_client_secret="client-secret",
         google_redirect_uri="http://localhost/callback",
         google_token_path=tmp_path / "token.json",
+        calendar_notification_email="bruno@criativaai.site",
         _env_file=None,
     )
 
@@ -118,8 +119,10 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
         timezone="America/Sao_Paulo",
     )
     fake_service = FakeService()
+    email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.calendar_booking.calendar_check_availability", lambda *_args, **_kwargs: [slot])
     monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
+    monkeypatch.setattr("backend.app.calendar_booking.send_email", lambda **kwargs: email_calls.append(kwargs))
 
     result = calendar_create_event(
         session,
@@ -149,6 +152,12 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
     assert insert_call["sendUpdates"] == "all"
     assert insert_call["body"]["conferenceData"]["createRequest"]["requestId"] == booking.google_event_id
     assert insert_call["body"]["summary"] == "Reunião CriativAI"
+    assert len(email_calls) == 1
+    assert email_calls[0]["to_email"] == "bruno@criativaai.site"
+    assert email_calls[0]["reply_to"] == "cliente@example.com"
+    assert "Event created" in email_calls[0]["subject"]
+    assert "Client name: Bruno Cliente" in email_calls[0]["text_body"]
+    assert "Link: https://meet.google.com/abc-defg-hij" in email_calls[0]["text_body"]
 
 
 def test_create_event_is_idempotent_without_second_google_insert(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -255,8 +264,10 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
         timezone="America/Sao_Paulo",
     )
     fake_service = FakeService()
+    email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.calendar_booking.calendar_check_availability", lambda *_args, **_kwargs: [new_slot])
     monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
+    monkeypatch.setattr("backend.app.calendar_booking.send_email", lambda **kwargs: email_calls.append(kwargs))
 
     result = calendar_update_event(
         session,
@@ -273,6 +284,10 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
     patch_call = fake_service.events_resource.patch_calls[0]
     assert patch_call["eventId"] == "cai12345"
     assert patch_call["sendUpdates"] == "all"
+    assert len(email_calls) == 1
+    assert email_calls[0]["to_email"] == "bruno@criativaai.site"
+    assert "Event updated" in email_calls[0]["subject"]
+    assert "Date: 28/07/2026" in email_calls[0]["text_body"]
 
 
 def test_update_event_rejects_ambiguous_email_matches(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -459,7 +474,9 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
     session.commit()
     session.refresh(booking)
     fake_service = FakeService()
+    email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
+    monkeypatch.setattr("backend.app.calendar_booking.send_email", lambda **kwargs: email_calls.append(kwargs))
 
     result = calendar_cancel_event(
         session,
@@ -474,6 +491,10 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
     delete_call = fake_service.events_resource.delete_calls[0]
     assert delete_call["eventId"] == "cai12345"
     assert delete_call["sendUpdates"] == "all"
+    assert len(email_calls) == 1
+    assert email_calls[0]["to_email"] == "bruno@criativaai.site"
+    assert "Event cancelled" in email_calls[0]["subject"]
+    assert "Client email: cliente@example.com" in email_calls[0]["text_body"]
 
 
 def test_cancel_event_can_delete_single_live_google_booking_without_local_row(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:

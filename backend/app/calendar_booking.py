@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 import base64
 import hashlib
+from html import escape
 import re
 from textwrap import shorten
 
@@ -16,6 +17,7 @@ from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_
 from backend.app.calendar_availability import calendar_check_availability, ensure_aware_utc, load_timezone, to_rfc3339
 from backend.app.calendar_availability import build_calendar_service
 from backend.app.config import Settings, get_settings
+from backend.app.emailer import send_email
 from backend.app.models import Booking, Conversation
 
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -104,7 +106,9 @@ def calendar_create_event(
     session.add(booking)
     session.commit()
     session.refresh(booking)
-    return booking_result(booking, event=event)
+    result = booking_result(booking, event=event)
+    send_calendar_owner_notification(settings=resolved_settings, action="created", booking=result)
+    return result
 
 
 def calendar_update_event(
@@ -136,7 +140,7 @@ def calendar_update_event(
             timezone=visitor_timezone,
             settings=resolved_settings,
         )
-        return CalendarBookingResult(
+        result = CalendarBookingResult(
             booking_id=google_booking.booking_id,
             google_event_id=google_booking.google_event_id,
             starts_at_utc=requested_start.astimezone(UTC),
@@ -148,6 +152,8 @@ def calendar_update_event(
             conversation_summary=google_booking.conversation_summary,
             meet_link=event.get("hangoutLink") or google_booking.meet_link,
         )
+        send_calendar_owner_notification(settings=resolved_settings, action="updated", booking=result)
+        return result
 
     event = patch_google_event(
         google_event_id=booking.google_event_id or "",
@@ -162,7 +168,9 @@ def calendar_update_event(
     booking.timezone = visitor_timezone
     session.commit()
     session.refresh(booking)
-    return booking_result(booking, event=event)
+    result = booking_result(booking, event=event)
+    send_calendar_owner_notification(settings=resolved_settings, action="updated", booking=result)
+    return result
 
 
 def calendar_cancel_event(
@@ -181,7 +189,7 @@ def calendar_cancel_event(
     if booking is None:
         google_booking = load_single_google_booking_for_management(session, participant_email=participant_email, settings=resolved_settings)
         delete_google_event(google_event_id=google_booking.google_event_id, settings=resolved_settings)
-        return CalendarBookingResult(
+        result = CalendarBookingResult(
             booking_id=google_booking.booking_id,
             google_event_id=google_booking.google_event_id,
             starts_at_utc=google_booking.starts_at_utc,
@@ -193,13 +201,17 @@ def calendar_cancel_event(
             conversation_summary=google_booking.conversation_summary,
             meet_link=google_booking.meet_link,
         )
+        send_calendar_owner_notification(settings=resolved_settings, action="cancelled", booking=result)
+        return result
 
     delete_google_event(google_event_id=booking.google_event_id or "", settings=resolved_settings)
     booking.status = "cancelled"
     booking.cancelled_at = datetime.now(UTC)
     session.commit()
     session.refresh(booking)
-    return booking_result(booking)
+    result = booking_result(booking)
+    send_calendar_owner_notification(settings=resolved_settings, action="cancelled", booking=result)
+    return result
 
 
 def calendar_lookup_bookings(
@@ -652,4 +664,98 @@ def booking_result(booking: Booking, *, event: dict | None = None) -> CalendarBo
         participant_email=booking.participant_email,
         conversation_summary=booking.conversation_summary,
         meet_link=(event or {}).get("hangoutLink"),
+    )
+
+
+def send_calendar_owner_notification(
+    *,
+    settings: Settings,
+    action: str,
+    booking: CalendarBookingResult,
+) -> None:
+    recipient = settings.calendar_notification_email.strip()
+    if not recipient:
+        return
+
+    send_email(
+        settings=settings,
+        to_email=recipient,
+        subject=calendar_owner_notification_subject(action, booking),
+        text_body=calendar_owner_notification_text(action, booking),
+        html_body=calendar_owner_notification_html(action, booking),
+        reply_to=booking.participant_email,
+    )
+
+
+def calendar_owner_notification_subject(action: str, booking: CalendarBookingResult) -> str:
+    action_label = {
+        "created": "created",
+        "updated": "updated",
+        "cancelled": "cancelled",
+    }.get(action, "changed")
+    participant = booking.participant_name or booking.participant_email or "client"
+    return f"[CriativAI Calendar] Event {action_label}: {participant}"
+
+
+def calendar_owner_notification_text(action: str, booking: CalendarBookingResult) -> str:
+    local_start, local_end = calendar_notification_local_times(booking)
+    action_label = calendar_notification_action_label(action)
+    return "\n".join(
+        [
+            f"Calendar event {action_label}",
+            "",
+            f"Created by: CriativAI scheduling assistant",
+            f"Client name: {booking.participant_name or 'n/a'}",
+            f"Client email: {booking.participant_email or 'n/a'}",
+            f"Description: {booking.conversation_summary or 'n/a'}",
+            f"Date: {local_start:%d/%m/%Y}",
+            f"Time: {local_start:%H:%M} - {local_end:%H:%M} ({booking.timezone})",
+            f"Link: {booking.meet_link or 'n/a'}",
+            f"Google event ID: {booking.google_event_id}",
+        ]
+    )
+
+
+def calendar_owner_notification_html(action: str, booking: CalendarBookingResult) -> str:
+    local_start, local_end = calendar_notification_local_times(booking)
+    action_label = escape(calendar_notification_action_label(action))
+    meet_link = booking.meet_link
+    link_html = f'<a href="{escape(meet_link, quote=True)}">{escape(meet_link)}</a>' if meet_link else "n/a"
+    rows = [
+        ("Created by", "CriativAI scheduling assistant"),
+        ("Client name", booking.participant_name or "n/a"),
+        ("Client email", booking.participant_email or "n/a"),
+        ("Description", booking.conversation_summary or "n/a"),
+        ("Date", f"{local_start:%d/%m/%Y}"),
+        ("Time", f"{local_start:%H:%M} - {local_end:%H:%M} ({booking.timezone})"),
+        ("Link", link_html),
+        ("Google event ID", booking.google_event_id),
+    ]
+    rendered_rows = "\n".join(
+        f"<tr><th>{escape(label)}</th><td>{value if label == 'Link' else escape(value)}</td></tr>"
+        for label, value in rows
+    )
+    return f"""
+    <h1>Calendar event {action_label}</h1>
+    <table>
+      <tbody>
+        {rendered_rows}
+      </tbody>
+    </table>
+    """
+
+
+def calendar_notification_action_label(action: str) -> str:
+    return {
+        "created": "created",
+        "updated": "updated",
+        "cancelled": "cancelled",
+    }.get(action, "changed")
+
+
+def calendar_notification_local_times(booking: CalendarBookingResult) -> tuple[datetime, datetime]:
+    visitor_tz = load_timezone(booking.timezone)
+    return (
+        ensure_aware_utc(booking.starts_at_utc).astimezone(visitor_tz),
+        ensure_aware_utc(booking.ends_at_utc).astimezone(visitor_tz),
     )
