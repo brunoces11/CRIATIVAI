@@ -38,6 +38,16 @@ def test_calendar_instructions_require_confirmation_of_reused_email(tmp_path: Pa
     assert "ask the visitor to confirm it" in instructions
 
 
+def test_calendar_instructions_limit_long_day_availability_lists(tmp_path: Path) -> None:
+    prompt_path = tmp_path / "prompt.md"
+    prompt_path.write_text("Default SDR prompt", encoding="utf-8")
+
+    instructions = build_calendar_instructions(prompt_path, None)
+
+    assert "Never return more than 5 availability slots in one reply." in instructions
+    assert "Bruno's schedule is very flexible for that day" in instructions
+
+
 def test_client_temporal_context_uses_iana_timezone_and_server_time() -> None:
     conversation = Conversation(
         session_id="session_1234567890abcdef",
