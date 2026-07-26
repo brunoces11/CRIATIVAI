@@ -2,6 +2,7 @@ from functools import lru_cache
 import os
 from pathlib import Path
 from urllib.parse import unquote
+from urllib.parse import urlsplit
 
 from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -89,7 +90,7 @@ class Settings(BaseSettings):
             missing.append("GOOGLE_CLIENT_ID")
         if self.google_client_secret is None:
             missing.append("GOOGLE_CLIENT_SECRET")
-        if not self.google_redirect_uri:
+        if not self.resolved_google_redirect_uri:
             missing.append("GOOGLE_REDIRECT_URI")
         if not self.google_calendar_id:
             missing.append("GOOGLE_CALENDAR_ID")
@@ -101,6 +102,22 @@ class Settings(BaseSettings):
             raise ValueError(f"Missing required production settings: {joined}")
 
         return self.validate_calendar_settings().validate_smtp_settings()
+
+    @property
+    def resolved_google_redirect_uri(self) -> str:
+        explicit = (self.google_redirect_uri or "").strip()
+        if explicit:
+            return explicit
+
+        base_url = self.app_base_url.strip().rstrip("/")
+        if not base_url:
+            return ""
+
+        parsed = urlsplit(base_url)
+        if not parsed.scheme or not parsed.netloc:
+            return ""
+
+        return f"{base_url}/api/google/oauth/callback"
 
     def validate_calendar_settings(self) -> "Settings":
         invalid = []

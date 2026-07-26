@@ -96,7 +96,7 @@ def google_oauth_callback(
 
 
 def ensure_google_oauth_config(settings: Settings) -> None:
-    if not settings.google_client_id or settings.google_client_secret is None or not settings.google_redirect_uri:
+    if not settings.google_client_id or settings.google_client_secret is None or not settings.resolved_google_redirect_uri:
         raise HTTPException(status_code=HTTP_503_SERVICE_UNAVAILABLE, detail="Google OAuth is not configured")
 
 
@@ -133,6 +133,7 @@ def consume_oauth_state(session: Session, state: str) -> OAuthState | None:
 
 def build_flow(settings: Settings, state: str, code_verifier: str | None = None) -> Flow:
     ensure_google_oauth_config(settings)
+    redirect_uri = settings.resolved_google_redirect_uri
     return Flow.from_client_config(
         {
             "web": {
@@ -140,12 +141,12 @@ def build_flow(settings: Settings, state: str, code_verifier: str | None = None)
                 "client_secret": settings.google_client_secret.get_secret_value(),
                 "auth_uri": GOOGLE_AUTH_URI,
                 "token_uri": GOOGLE_TOKEN_URI,
-                "redirect_uris": [settings.google_redirect_uri],
+                "redirect_uris": [redirect_uri],
             }
         },
         scopes=settings.google_oauth_scopes,
         state=state,
-        redirect_uri=settings.google_redirect_uri,
+        redirect_uri=redirect_uri,
         code_verifier=code_verifier,
     )
 

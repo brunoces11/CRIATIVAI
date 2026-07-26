@@ -35,7 +35,7 @@ def oauth_settings(tmp_path: Path) -> Settings:
     return Settings(
         google_client_id="client-id",
         google_client_secret="client-secret",
-        google_redirect_uri="http://localhost:8000/api/google/oauth/callback",
+        app_base_url="http://localhost:8000",
         google_token_path=tmp_path / "google-token.json",
         _env_file=None,
     )
@@ -104,10 +104,35 @@ def test_build_flow_uses_official_calendar_scopes(tmp_path: Path) -> None:
 
     flow = build_flow(settings, "opaque-state")
 
-    assert flow.redirect_uri == settings.google_redirect_uri
+    assert flow.redirect_uri == settings.resolved_google_redirect_uri
     assert "https://www.googleapis.com/auth/calendar.freebusy" in flow.oauth2session.scope
     assert "https://www.googleapis.com/auth/calendar.events" in flow.oauth2session.scope
     assert "https://www.googleapis.com/auth/calendar.calendarlist" in flow.oauth2session.scope
+
+
+def test_google_redirect_uri_defaults_from_app_base_url(tmp_path: Path) -> None:
+    settings = Settings(
+        app_base_url="https://criativai.site/",
+        google_client_id="client-id",
+        google_client_secret="client-secret",
+        google_token_path=tmp_path / "google-token.json",
+        _env_file=None,
+    )
+
+    assert settings.resolved_google_redirect_uri == "https://criativai.site/api/google/oauth/callback"
+
+
+def test_explicit_google_redirect_uri_overrides_app_base_url(tmp_path: Path) -> None:
+    settings = Settings(
+        app_base_url="https://criativai.site",
+        google_client_id="client-id",
+        google_client_secret="client-secret",
+        google_redirect_uri="https://custom.example.com/oauth/callback",
+        google_token_path=tmp_path / "google-token.json",
+        _env_file=None,
+    )
+
+    assert settings.resolved_google_redirect_uri == "https://custom.example.com/oauth/callback"
 
 
 def test_google_connect_persists_pkce_code_verifier(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

@@ -61,3 +61,9 @@ def test_production_missing_required_settings_reports_names_only() -> None:
     assert "GOOGLE_CLIENT_SECRET" in error_text
     assert "OPENAI_MOCK_RESPONSE must be empty" in error_text
     assert "input_value" not in error_text
+
+
+def test_google_redirect_uri_defaults_from_app_base_url() -> None:
+    settings = Settings(app_base_url="https://criativai.site/", _env_file=None)
+
+    assert settings.resolved_google_redirect_uri == "https://criativai.site/api/google/oauth/callback"
