@@ -19,6 +19,7 @@ from backend.app.google_oauth import (
     google_oauth_callback,
     google_status,
     oauth_error_redirect,
+    resolve_google_redirect_uri,
     save_credentials,
 )
 from backend.app.models import Base, OAuthState
@@ -39,6 +40,15 @@ def oauth_settings(tmp_path: Path) -> Settings:
         google_token_path=tmp_path / "google-token.json",
         _env_file=None,
     )
+
+
+class FakeRequest:
+    def __init__(self, callback_url: str) -> None:
+        self.callback_url = callback_url
+
+    def url_for(self, name: str) -> str:
+        assert name == "google_oauth_callback"
+        return self.callback_url
 
 
 def test_google_status_never_returns_token(tmp_path: Path) -> None:
@@ -138,6 +148,7 @@ def test_explicit_google_redirect_uri_overrides_app_base_url(tmp_path: Path) -> 
 def test_google_connect_persists_pkce_code_verifier(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     session = make_session()
     settings = oauth_settings(tmp_path)
+    request = FakeRequest("https://criativai.site/api/google/oauth/callback")
 
     class FakeFlow:
         code_verifier = "stored-code-verifier"
@@ -145,9 +156,12 @@ def test_google_connect_persists_pkce_code_verifier(monkeypatch: pytest.MonkeyPa
         def authorization_url(self, **_kwargs: object) -> tuple[str, str]:
             return "https://accounts.google.com/o/oauth2/auth", "ignored"
 
-    monkeypatch.setattr("backend.app.google_oauth.build_flow", lambda _settings, _state: FakeFlow())
+    monkeypatch.setattr(
+        "backend.app.google_oauth.build_flow",
+        lambda _settings, _state, **_kwargs: FakeFlow(),
+    )
 
-    response = google_connect(session=session, settings=settings)
+    response = google_connect(request=request, session=session, settings=settings)
 
     stored_state = session.scalar(select(OAuthState))
     assert response.status_code == 302
@@ -158,6 +172,7 @@ def test_google_connect_persists_pkce_code_verifier(monkeypatch: pytest.MonkeyPa
 def test_callback_saves_token_and_redirects_cleanly(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     session = make_session()
     settings = oauth_settings(tmp_path)
+    request = FakeRequest("https://criativai.site/api/google/oauth/callback")
     state = create_oauth_state(session, settings)
     state.code_verifier = "stored-code-verifier"
     session.commit()
@@ -168,14 +183,15 @@ def test_callback_saves_token_and_redirects_cleanly(monkeypatch: pytest.MonkeyPa
         def fetch_token(self, code: str) -> None:
             assert code == "auth-code"
 
-    def fake_build_flow(_settings: Settings, _state: str, code_verifier: str | None = None) -> FakeFlow:
+    def fake_build_flow(_settings: Settings, _state: str, code_verifier: str | None = None, **kwargs: object) -> FakeFlow:
         assert code_verifier == "stored-code-verifier"
+        assert kwargs["redirect_uri"] == "https://criativai.site/api/google/oauth/callback"
         return FakeFlow()
 
     monkeypatch.setattr("backend.app.google_oauth.build_flow", fake_build_flow)
     monkeypatch.setattr("backend.app.calendar_notifications.enable_calendar_notifications", lambda _settings: None)
 
-    response = google_oauth_callback(code="auth-code", state=state.state, session=session, settings=settings)
+    response = google_oauth_callback(request=request, code="auth-code", state=state.state, session=session, settings=settings)
 
     assert response.status_code == 303
     assert response.headers["location"] == settings.google_oauth_success_path
@@ -188,8 +204,10 @@ def test_callback_saves_token_and_redirects_cleanly(monkeypatch: pytest.MonkeyPa
 def test_callback_redirects_with_safe_google_error_detail(tmp_path: Path) -> None:
     session = make_session()
     settings = oauth_settings(tmp_path)
+    request = FakeRequest("https://criativai.site/api/google/oauth/callback")
 
     response = google_oauth_callback(
+        request=request,
         error="access_denied",
         error_description="User denied access",
         session=session,
@@ -215,6 +233,20 @@ def test_callback_failure_redirect_redacts_sensitive_details(tmp_path: Path) -> 
     assert "abc" not in location
     assert "state%3Dsecret" not in location
     assert "redacted" in location
+
+
+def test_request_redirect_uri_overrides_app_base_url(tmp_path: Path) -> None:
+    settings = Settings(
+        app_base_url="https://criativai.site",
+        google_client_id="client-id",
+        google_client_secret="client-secret",
+        google_token_path=tmp_path / "google-token.json",
+        _env_file=None,
+    )
+
+    request = FakeRequest("http://localhost:8000/api/google/oauth/callback")
+
+    assert resolve_google_redirect_uri(settings, request) == "http://localhost:8000/api/google/oauth/callback"
 
 
 def test_save_credentials_creates_private_token_file_when_supported(tmp_path: Path) -> None:

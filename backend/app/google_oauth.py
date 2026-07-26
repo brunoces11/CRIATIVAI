@@ -5,7 +5,7 @@ from pathlib import Path
 import secrets
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from google.auth.exceptions import GoogleAuthError
 from google.oauth2.credentials import Credentials
@@ -31,12 +31,13 @@ callback_router = APIRouter(prefix="/api/google/oauth", tags=["google-oauth"])
 
 @admin_router.get("/connect")
 def google_connect(
+    request: Request,
     session: Session = Depends(get_session),
     settings: Settings = Depends(get_settings),
 ) -> RedirectResponse:
     ensure_google_oauth_config(settings)
     state = create_oauth_state(session, settings)
-    flow = build_flow(settings, state.state)
+    flow = build_flow(settings, state.state, redirect_uri=resolve_google_redirect_uri(settings, request))
     authorization_url, _state = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
@@ -63,6 +64,7 @@ def google_status(settings: Settings = Depends(get_settings)) -> GoogleOAuthStat
 
 @callback_router.get("/callback")
 def google_oauth_callback(
+    request: Request,
     code: str | None = None,
     state: str | None = None,
     error: str | None = None,
@@ -81,7 +83,12 @@ def google_oauth_callback(
         return oauth_error_redirect(settings, "invalid_state", "OAuth state is missing, expired, or already used.")
 
     try:
-        flow = build_flow(settings, state, oauth_state.code_verifier)
+        flow = build_flow(
+            settings,
+            state,
+            oauth_state.code_verifier,
+            redirect_uri=resolve_google_redirect_uri(settings, request),
+        )
         flow.fetch_token(code=code)
         save_credentials(flow.credentials, settings.google_token_path)
         from backend.app.calendar_notifications import enable_calendar_notifications
@@ -131,9 +138,15 @@ def consume_oauth_state(session: Session, state: str) -> OAuthState | None:
     return oauth_state
 
 
-def build_flow(settings: Settings, state: str, code_verifier: str | None = None) -> Flow:
+def build_flow(
+    settings: Settings,
+    state: str,
+    code_verifier: str | None = None,
+    *,
+    redirect_uri: str | None = None,
+) -> Flow:
     ensure_google_oauth_config(settings)
-    redirect_uri = settings.resolved_google_redirect_uri
+    resolved_redirect_uri = redirect_uri or settings.resolved_google_redirect_uri
     return Flow.from_client_config(
         {
             "web": {
@@ -141,14 +154,20 @@ def build_flow(settings: Settings, state: str, code_verifier: str | None = None)
                 "client_secret": settings.google_client_secret.get_secret_value(),
                 "auth_uri": GOOGLE_AUTH_URI,
                 "token_uri": GOOGLE_TOKEN_URI,
-                "redirect_uris": [redirect_uri],
+                "redirect_uris": [resolved_redirect_uri],
             }
         },
         scopes=settings.google_oauth_scopes,
         state=state,
-        redirect_uri=redirect_uri,
+        redirect_uri=resolved_redirect_uri,
         code_verifier=code_verifier,
     )
+
+
+def resolve_google_redirect_uri(settings: Settings, request: Request | None = None) -> str:
+    if request is not None:
+        return str(request.url_for("google_oauth_callback"))
+    return settings.resolved_google_redirect_uri
 
 
 def save_credentials(credentials: Credentials, token_path: Path) -> None:
