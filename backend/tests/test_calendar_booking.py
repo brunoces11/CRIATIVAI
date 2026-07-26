@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from backend.app.calendar_availability import AvailabilitySlot
 from backend.app.calendar_booking import calendar_cancel_event, calendar_create_event, calendar_lookup_bookings, calendar_update_event, deterministic_google_event_id
 from backend.app.config import Settings
+from backend.app.emailer import EmailDeliveryResult
 from backend.app.models import Base, Booking, Conversation
 
 
@@ -24,7 +25,7 @@ def booking_settings(tmp_path) -> Settings:
         google_client_secret="client-secret",
         google_redirect_uri="http://localhost/callback",
         google_token_path=tmp_path / "token.json",
-        calendar_notification_email="bruno@criativaai.site",
+        calendar_notification_email="bruno@criativai.site",
         _env_file=None,
     )
 
@@ -106,6 +107,14 @@ class FakeService:
         return self.events_resource
 
 
+def capture_email(email_calls: list[dict]):
+    def _capture(**kwargs):
+        email_calls.append(kwargs)
+        return EmailDeliveryResult(status="sent")
+
+    return _capture
+
+
 def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     session = make_session()
     conversation = Conversation(session_id="session_1234567890abcdef")
@@ -122,7 +131,7 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
     email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.calendar_booking.calendar_check_availability", lambda *_args, **_kwargs: [slot])
     monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
-    monkeypatch.setattr("backend.app.calendar_booking.send_email", lambda **kwargs: email_calls.append(kwargs))
+    monkeypatch.setattr("backend.app.calendar_booking.send_email", capture_email(email_calls))
 
     result = calendar_create_event(
         session,
@@ -153,7 +162,7 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
     assert insert_call["body"]["conferenceData"]["createRequest"]["requestId"] == booking.google_event_id
     assert insert_call["body"]["summary"] == "Reunião CriativAI"
     assert len(email_calls) == 1
-    assert email_calls[0]["to_email"] == "bruno@criativaai.site"
+    assert email_calls[0]["to_email"] == "bruno@criativai.site"
     assert email_calls[0]["reply_to"] == "cliente@example.com"
     assert "Event created" in email_calls[0]["subject"]
     assert "Client name: Bruno Cliente" in email_calls[0]["text_body"]
@@ -267,7 +276,7 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
     email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.calendar_booking.calendar_check_availability", lambda *_args, **_kwargs: [new_slot])
     monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
-    monkeypatch.setattr("backend.app.calendar_booking.send_email", lambda **kwargs: email_calls.append(kwargs))
+    monkeypatch.setattr("backend.app.calendar_booking.send_email", capture_email(email_calls))
 
     result = calendar_update_event(
         session,
@@ -285,7 +294,7 @@ def test_update_event_uses_owned_booking_and_patches_google(monkeypatch: pytest.
     assert patch_call["eventId"] == "cai12345"
     assert patch_call["sendUpdates"] == "all"
     assert len(email_calls) == 1
-    assert email_calls[0]["to_email"] == "bruno@criativaai.site"
+    assert email_calls[0]["to_email"] == "bruno@criativai.site"
     assert "Event updated" in email_calls[0]["subject"]
     assert "Date: 28/07/2026" in email_calls[0]["text_body"]
 
@@ -476,7 +485,7 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
     fake_service = FakeService()
     email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.calendar_booking.build_calendar_service", lambda _settings: fake_service)
-    monkeypatch.setattr("backend.app.calendar_booking.send_email", lambda **kwargs: email_calls.append(kwargs))
+    monkeypatch.setattr("backend.app.calendar_booking.send_email", capture_email(email_calls))
 
     result = calendar_cancel_event(
         session,
@@ -492,7 +501,7 @@ def test_cancel_event_deletes_google_event_and_preserves_booking(monkeypatch: py
     assert delete_call["eventId"] == "cai12345"
     assert delete_call["sendUpdates"] == "all"
     assert len(email_calls) == 1
-    assert email_calls[0]["to_email"] == "bruno@criativaai.site"
+    assert email_calls[0]["to_email"] == "bruno@criativai.site"
     assert "Event cancelled" in email_calls[0]["subject"]
     assert "Client email: cliente@example.com" in email_calls[0]["text_body"]
 

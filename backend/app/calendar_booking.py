@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 import base64
 import hashlib
 from html import escape
+import logging
 import re
 from textwrap import shorten
 
@@ -22,6 +23,7 @@ from backend.app.models import Booking, Conversation
 
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 IDEMPOTENCY_PATTERN = re.compile(r"^[A-Za-z0-9_-]{16,128}$")
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -677,7 +679,7 @@ def send_calendar_owner_notification(
     if not recipient:
         return
 
-    send_email(
+    delivery = send_email(
         settings=settings,
         to_email=recipient,
         subject=calendar_owner_notification_subject(action, booking),
@@ -685,6 +687,23 @@ def send_calendar_owner_notification(
         html_body=calendar_owner_notification_html(action, booking),
         reply_to=booking.participant_email,
     )
+    if delivery.status == "sent":
+        logger.info("Calendar owner notification sent: action=%s recipient=%s event_id=%s", action, recipient, booking.google_event_id)
+    elif delivery.status == "pending_config":
+        logger.warning(
+            "Calendar owner notification skipped because SMTP is not fully configured: action=%s recipient=%s event_id=%s",
+            action,
+            recipient,
+            booking.google_event_id,
+        )
+    else:
+        logger.warning(
+            "Calendar owner notification failed: action=%s recipient=%s event_id=%s error=%s",
+            action,
+            recipient,
+            booking.google_event_id,
+            delivery.error or "unknown",
+        )
 
 
 def calendar_owner_notification_subject(action: str, booking: CalendarBookingResult) -> str:

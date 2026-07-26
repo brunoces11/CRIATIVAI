@@ -1,4 +1,5 @@
 from functools import lru_cache
+import logging
 import os
 from pathlib import Path
 from urllib.parse import unquote
@@ -6,6 +7,9 @@ from urllib.parse import urlsplit
 
 from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -52,7 +56,7 @@ class Settings(BaseSettings):
     smtp_sender_email: str | None = None
     smtp_reply_to: str | None = None
     forms_notification_email: str = "bruno@criativai.site"
-    calendar_notification_email: str = "bruno@criativaai.site"
+    calendar_notification_email: str = "bruno@criativai.site"
     form_rate_limit_count: int = 3
     form_rate_limit_window_seconds: int = 900
     form_min_fill_seconds: int = 4
@@ -174,11 +178,19 @@ class Settings(BaseSettings):
 
         return self
 
+    def log_calendar_notification_configuration(self) -> None:
+        if self.calendar_notification_email.strip():
+            logger.info("Calendar owner notifications configured for %s", self.calendar_notification_email.strip())
+        else:
+            logger.warning("Calendar owner notifications are disabled because CALENDAR_NOTIFICATION_EMAIL is empty")
+
 
 @lru_cache
 def get_settings() -> Settings:
     env_file = ".env" if should_load_dotenv() else None
-    return Settings(_env_file=env_file)
+    settings = Settings(_env_file=env_file)
+    settings.log_calendar_notification_configuration()
+    return settings
 
 
 def should_load_dotenv() -> bool:

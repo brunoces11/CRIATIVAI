@@ -54,6 +54,7 @@ To activate live sending, configure these environment variables in `.env`:
 - `SMTP_SENDER_NAME`
 - `SMTP_REPLY_TO` (optional)
 - `FORMS_NOTIFICATION_EMAIL`
+- `CALENDAR_NOTIFICATION_EMAIL`
 
 For Mailjet SMTP, the typical base is:
 
