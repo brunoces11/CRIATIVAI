@@ -224,9 +224,10 @@ img {
 
 .language-option__icon {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 12px;
   border: 0;
+  object-fit: contain;
 }
 
 .language-option--active {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MarkdownText } from "../components/MarkdownText";
 import "./Admin.css";
 
 type AdminConversationSummary = {
@@ -25,6 +26,14 @@ type GoogleCalendarStatus = {
   scopes: string[];
 };
 
+type ChatTracingStatus = {
+  enabled: boolean;
+  log_path: string;
+  state_path: string;
+  log_exists: boolean;
+  log_size_bytes: number;
+};
+
 type AdminPromptResponse = {
   content: string;
 };
@@ -39,13 +48,22 @@ export default function AdminPage() {
   const [googleStatus, setGoogleStatus] = useState<GoogleCalendarStatus | null>(null);
   const [googleLoading, setGoogleLoading] = useState(true);
   const [googleError, setGoogleError] = useState("");
+  const [tracingStatus, setTracingStatus] = useState<ChatTracingStatus | null>(null);
+  const [tracingLoading, setTracingLoading] = useState(true);
+  const [tracingSaving, setTracingSaving] = useState(false);
+  const [tracingError, setTracingError] = useState("");
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptDraft, setPromptDraft] = useState("");
   const [promptLoading, setPromptLoading] = useState(false);
   const [promptSaving, setPromptSaving] = useState(false);
   const [promptError, setPromptError] = useState("");
   const [promptStatus, setPromptStatus] = useState("");
-  const googleFeedback = new URLSearchParams(window.location.search).get("google");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const googleFeedbackParams = new URLSearchParams(window.location.search);
+  const googleFeedback = googleFeedbackParams.get("google");
+  const googleErrorReason = googleFeedbackParams.get("reason");
+  const googleErrorDetail = googleFeedbackParams.get("detail");
+  const tracingEnabled = tracingStatus?.enabled ?? true;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,6 +105,28 @@ export default function AdminPage() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setGoogleLoading(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setTracingLoading(true);
+    setTracingError("");
+
+    fetch("/api/admin/chat-tracing", { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load chat tracing status.");
+        return response.json() as Promise<ChatTracingStatus>;
+      })
+      .then(setTracingStatus)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setTracingError(loadError instanceof Error ? loadError.message : "Unable to load chat tracing status.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setTracingLoading(false);
       });
 
     return () => controller.abort();
@@ -165,6 +205,62 @@ export default function AdminPage() {
     }
   }
 
+  async function deleteConversation(conversationId: number) {
+    if (deletingId === conversationId) return;
+
+    const confirmed = window.confirm("Delete this conversation and all its messages?");
+    if (!confirmed) return;
+
+    setDeletingId(conversationId);
+    setError("");
+
+    try {
+      const response = await fetch(`/api/admin/conversations/${conversationId}`, {
+        method: "DELETE",
+        headers: { accept: "application/json" },
+      });
+      if (!response.ok) throw new Error("Unable to delete the conversation.");
+
+      const remaining = conversations.filter((conversation) => conversation.id !== conversationId);
+      setConversations(remaining);
+
+      if (selectedId === conversationId) {
+        const nextSelected = remaining[0]?.id ?? null;
+        setSelectedId(nextSelected);
+        setDetail(null);
+      }
+    } catch (deleteError: unknown) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete the conversation.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  async function updateTracing(enabled: boolean) {
+    if (tracingSaving) return;
+
+    setTracingSaving(true);
+    setTracingError("");
+
+    try {
+      const response = await fetch("/api/admin/chat-tracing", {
+        method: "PUT",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!response.ok) throw new Error("Unable to update chat tracing.");
+      const payload = (await response.json()) as ChatTracingStatus;
+      setTracingStatus(payload);
+    } catch (saveError: unknown) {
+      setTracingError(saveError instanceof Error ? saveError.message : "Unable to update chat tracing.");
+    } finally {
+      setTracingSaving(false);
+    }
+  }
+
   return (
     <main className="admin-page">
       <section className="admin-shell" aria-label="Admin conversations">
@@ -183,6 +279,7 @@ export default function AdminPage() {
 
         {error ? <p className="admin-error">{error}</p> : null}
         {googleError ? <p className="admin-error">{googleError}</p> : null}
+        {tracingError ? <p className="admin-error">{tracingError}</p> : null}
         {promptError ? <p className="admin-error">{promptError}</p> : null}
 
         {promptOpen ? (
@@ -268,7 +365,53 @@ export default function AdminPage() {
             </a>
 
             {googleFeedback === "connected" ? <p className="admin-notice admin-notice--success">Google Calendar connected successfully.</p> : null}
-            {googleFeedback === "error" ? <p className="admin-notice admin-notice--error">Google Calendar connection could not be completed.</p> : null}
+            {googleFeedback === "error" ? (
+              <p className="admin-notice admin-notice--error">
+                Google Calendar connection could not be completed.
+                {googleErrorReason ? <span> Reason: {googleErrorReason}.</span> : null}
+                {googleErrorDetail ? <span> Detail: {googleErrorDetail}</span> : null}
+              </p>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="admin-tracing" aria-label="Chat tracing">
+          <div className="admin-tracing__copy">
+            <p className="admin-kicker">Chat tracing</p>
+            <h2>Tool use debug log</h2>
+            <p>
+              {tracingLoading
+                ? "Checking chat tracing..."
+                : "When enabled, each chat turn appends a JSON line to the root-level tracing file so we can inspect prompt behavior and tool calls later."}
+            </p>
+            <div className="admin-tracing__meta">
+              <span>Log file</span>
+              <strong>{tracingStatus?.log_path ?? "chat-tracing-log.txt"}</strong>
+            </div>
+            <div className="admin-tracing__meta">
+              <span>Toggle file</span>
+              <strong>{tracingStatus?.state_path ?? "chat-tracing-enabled.txt"}</strong>
+            </div>
+            <div className="admin-tracing__meta">
+              <span>Current size</span>
+              <strong>{tracingStatus ? `${formatBytes(tracingStatus.log_size_bytes)}${tracingStatus.log_exists ? "" : " (not created yet)"}` : "0 B"}</strong>
+            </div>
+          </div>
+
+          <div className="admin-tracing__actions">
+            <button
+              className={`admin-switch${tracingEnabled ? " admin-switch--on" : ""}`}
+              type="button"
+              role="switch"
+              aria-checked={tracingEnabled}
+              disabled={tracingLoading || tracingSaving}
+              onClick={() => void updateTracing(!tracingEnabled)}
+            >
+              <span className="admin-switch__track" aria-hidden="true">
+                <span className="admin-switch__thumb" />
+              </span>
+              <span className="admin-switch__label">{tracingEnabled ? "On" : "Off"}</span>
+            </button>
           </div>
         </section>
 
@@ -277,16 +420,26 @@ export default function AdminPage() {
             {loadingList ? <p className="admin-muted">Loading conversations...</p> : null}
             {!loadingList && conversations.length === 0 ? <p className="admin-muted">No conversations yet.</p> : null}
             {conversations.map((conversation) => (
-              <button
-                key={conversation.id}
-                className={`admin-list-item${conversation.id === selectedId ? " admin-list-item--active" : ""}`}
-                type="button"
-                onClick={() => setSelectedId(conversation.id)}
-              >
-                <span>{conversation.visitor_label}</span>
-                <small>{formatDate(conversation.last_activity_at)}</small>
-                <em>{conversation.summary ?? "No summary yet"}</em>
-              </button>
+              <div key={conversation.id} className={`admin-list-item${conversation.id === selectedId ? " admin-list-item--active" : ""}`}>
+                <button className="admin-list-item__body" type="button" onClick={() => setSelectedId(conversation.id)}>
+                  <span>{conversation.visitor_label}</span>
+                  <small>{formatDate(conversation.last_activity_at)}</small>
+                  <em>{conversation.summary ?? "No summary yet"}</em>
+                </button>
+                <button
+                  className="admin-list-item__delete"
+                  type="button"
+                  aria-label={`Delete conversation ${conversation.visitor_label}`}
+                  title="Delete conversation"
+                  disabled={deletingId === conversation.id}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void deleteConversation(conversation.id);
+                  }}
+                >
+                  <TrashIcon />
+                </button>
+              </div>
             ))}
           </aside>
 
@@ -347,7 +500,7 @@ export default function AdminPage() {
                   {detail.messages.map((message, index) => (
                     <article key={`${message.created_at ?? index}-${index}`} className={`admin-message admin-message--${message.role}`}>
                       <span>{message.role}</span>
-                      <p>{message.content}</p>
+                      <MarkdownText text={message.content} />
                       <small>{message.status}</small>
                     </article>
                   ))}
@@ -361,12 +514,33 @@ export default function AdminPage() {
   );
 }
 
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M9 3.75h6m-8.25 3h10.5m-9 0 .5 12a1.5 1.5 0 0 0 1.5 1.5h2.75m4.75-13.5-.5 12a1.5 1.5 0 0 1-1.5 1.5H13.5m-1.5-13.5v9m-3-9v9m9-12-.8 14.25a2.25 2.25 0 0 1-2.24 2.13H8.04a2.25 2.25 0 0 1-2.24-2.13L5 6.75h14Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.6"
+      />
+    </svg>
+  );
+}
+
 function formatDate(value: string | null) {
   if (!value) return "No activity";
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function formatBytes(value: number) {
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function normalizeGoogleStatus(status: string | undefined) {

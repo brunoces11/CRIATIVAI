@@ -31,7 +31,13 @@ class FakeResponses:
                         type="function_call",
                         call_id="call_1",
                         name="calendar_check_availability",
-                        arguments=json.dumps({"visitor_timezone": "America/Sao_Paulo", "requested_start": None, "requested_date": None}),
+                        arguments=json.dumps({
+                            "visitor_timezone": "America/Sao_Paulo",
+                            "requested_start": None,
+                            "requested_date": None,
+                            "requested_end_date": None,
+                            "requested_period": None,
+                        }),
                     )
                 ],
             )

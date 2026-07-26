@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import json
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -21,6 +21,8 @@ class CalendarCheckAvailabilityArgs(BaseModel):
     visitor_timezone: str = Field(min_length=1, max_length=80)
     requested_start: datetime | None = None
     requested_date: date | None = None
+    requested_end_date: date | None = None
+    requested_period: Literal["morning", "afternoon", "evening"] | None = None
 
 
 class CalendarCreateEventArgs(BaseModel):
@@ -84,7 +86,7 @@ TOOL_ARGUMENT_MODELS: dict[str, type[BaseModel]] = {
 CALENDAR_TOOLS: list[dict[str, Any]] = [
     function_tool(
         name="calendar_check_availability",
-        description="Check available CriativAI meeting slots. Set requested_start for an exact requested time, requested_date for a day-only request, or both null to return suggested slots. Returns only available slots, never busy event details.",
+        description="Check available CriativAI meeting slots. Set requested_start for an exact requested time. Set requested_date for a day-only request, requested_end_date for a date range such as next week, and requested_period for morning/afternoon/evening in the visitor timezone. Use null dates for general suggestions. Returns only available slots, never busy event details.",
         model=CalendarCheckAvailabilityArgs,
     ),
     function_tool(
@@ -134,6 +136,8 @@ def execute_calendar_tool(
                 parsed.visitor_timezone,  # type: ignore[attr-defined]
                 requested_start=parsed.requested_start,  # type: ignore[attr-defined]
                 requested_date=parsed.requested_date,  # type: ignore[attr-defined]
+                requested_end_date=parsed.requested_end_date,  # type: ignore[attr-defined]
+                requested_period=parsed.requested_period,  # type: ignore[attr-defined]
                 settings=settings,
             )
         ),

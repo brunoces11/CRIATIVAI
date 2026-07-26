@@ -1,0 +1,66 @@
+.markdown-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.91rem;
+  line-height: 1.55;
+}
+
+.markdown-text > * {
+  margin: 0;
+}
+
+.markdown-text > * + * {
+  margin-top: 10px;
+}
+
+.markdown-text h1,
+.markdown-text h2,
+.markdown-text h3 {
+  color: #23272d;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.markdown-text ul,
+.markdown-text ol {
+  padding-left: 18px;
+}
+
+.markdown-text li + li {
+  margin-top: 6px;
+}
+
+.markdown-text strong {
+  color: #24282e;
+  font-weight: 700;
+}
+
+.markdown-text a {
+  color: #8f604e;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.markdown-text code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(21, 26, 32, 0.08);
+  color: #23272d;
+  font-size: 0.84em;
+}
+
+.markdown-text pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px;
+  border: 1px solid rgba(21, 26, 32, 0.1);
+  border-radius: 6px;
+  background: rgba(21, 26, 32, 0.05);
+}
+
+.markdown-text pre code {
+  padding: 0;
+  background: transparent;
+}

@@ -1,13 +1,13 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload
 from starlette.status import HTTP_404_NOT_FOUND
 
 from backend.app.config import Settings, get_settings
 from backend.app.db import get_session
-from backend.app.models import Conversation
+from backend.app.models import Booking, Conversation
 from backend.app.schemas import AdminConversationDetail, AdminConversationMessage, AdminConversationSummary, AdminPromptResponse, AdminPromptUpdate
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -48,6 +48,16 @@ def admin_conversation_detail(conversation_id: int, session: Session = Depends(g
             if message.role in {"user", "assistant"}
         ],
     )
+
+@router.delete("/conversations/{conversation_id}", status_code=204)
+def delete_admin_conversation(conversation_id: int, session: Session = Depends(get_session)) -> None:
+    conversation = session.get(Conversation, conversation_id)
+    if conversation is None:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Conversation not found")
+
+    session.execute(delete(Booking).where(Booking.conversation_id == conversation_id))
+    session.delete(conversation)
+    session.commit()
 
 
 @router.get("/prompt", response_model=AdminPromptResponse)

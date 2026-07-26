@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import HTTPException
@@ -43,6 +44,8 @@ def calendar_check_availability(
     *,
     requested_start: datetime | None = None,
     requested_date: date | None = None,
+    requested_end_date: date | None = None,
+    requested_period: Literal["morning", "afternoon", "evening"] | None = None,
     now: datetime | None = None,
     settings: Settings | None = None,
 ) -> list[AvailabilitySlot]:
@@ -60,8 +63,9 @@ def calendar_check_availability(
     )
     if requested_date is not None and requested_start is None:
         day_start = datetime.combine(requested_date, time.min, tzinfo=business_tz).astimezone(UTC)
-        day_end = datetime.combine(requested_date + timedelta(days=1), time.min, tzinfo=business_tz).astimezone(UTC)
-        return build_available_slots(
+        final_date = max(requested_date, requested_end_date or requested_date)
+        day_end = datetime.combine(final_date + timedelta(days=1), time.min, tzinfo=business_tz).astimezone(UTC)
+        slots = build_available_slots(
             search_start=max(search_start, day_start),
             search_end=min(search_end, day_end),
             business_tz=business_tz,
@@ -69,8 +73,10 @@ def calendar_check_availability(
             busy_windows=busy_windows,
             slot_minutes=resolved_settings.calendar_slot_minutes,
             buffer_minutes=resolved_settings.calendar_buffer_minutes,
-            limit=resolved_settings.calendar_suggestion_count,
+            limit=resolved_settings.calendar_day_suggestion_count,
+            requested_period=requested_period,
         )
+        return slots
 
     if requested_start is not None:
         requested_start_utc = ensure_aware_utc(requested_start)
@@ -92,7 +98,7 @@ def calendar_check_availability(
                 )
             ]
         return []
-    return build_available_slots(
+    slots = build_available_slots(
         search_start=search_start,
         search_end=search_end,
         business_tz=business_tz,
@@ -100,8 +106,10 @@ def calendar_check_availability(
         busy_windows=busy_windows,
         slot_minutes=resolved_settings.calendar_slot_minutes,
         buffer_minutes=resolved_settings.calendar_buffer_minutes,
-        limit=resolved_settings.calendar_suggestion_count,
+        limit=resolved_settings.calendar_day_suggestion_count if requested_period else resolved_settings.calendar_suggestion_count,
+        requested_period=requested_period,
     )
+    return slots
 
 
 def build_available_slots(
@@ -114,6 +122,7 @@ def build_available_slots(
     slot_minutes: int,
     buffer_minutes: int,
     limit: int,
+    requested_period: str | None = None,
 ) -> list[AvailabilitySlot]:
     slots: list[AvailabilitySlot] = []
     duration = timedelta(minutes=slot_minutes)
@@ -131,13 +140,13 @@ def build_available_slots(
                 slot_start_utc = cursor.astimezone(UTC)
                 slot_end_utc = (cursor + duration).astimezone(UTC)
                 if slot_end_utc <= search_end and not overlaps_busy(slot_start_utc, slot_end_utc, busy_windows, buffer_minutes):
-                    slots.append(
-                        AvailabilitySlot(
-                            start=slot_start_utc.astimezone(visitor_tz),
-                            end=slot_end_utc.astimezone(visitor_tz),
-                            timezone=visitor_tz.key,
-                        )
+                    slot = AvailabilitySlot(
+                        start=slot_start_utc.astimezone(visitor_tz),
+                        end=slot_end_utc.astimezone(visitor_tz),
+                        timezone=visitor_tz.key,
                     )
+                    if slot_matches_period(slot, requested_period):
+                        slots.append(slot)
                 cursor += duration
 
         cursor_day = cursor_day + timedelta(days=1)
@@ -225,6 +234,20 @@ def overlaps_busy(slot_start: datetime, slot_end: datetime, busy_windows: list[B
         if slot_start < blocked_end and slot_end > blocked_start:
             return True
     return False
+
+
+def slot_matches_period(slot: AvailabilitySlot, requested_period: str | None) -> bool:
+    if requested_period is None:
+        return True
+
+    local_start = slot.start
+    if requested_period == "morning":
+        return time(5, 0) <= local_start.time() < time(12, 0)
+    if requested_period == "afternoon":
+        return time(12, 0) <= local_start.time() < time(18, 0)
+    if requested_period == "evening":
+        return time(18, 0) <= local_start.time() < time(22, 0)
+    return True
 
 
 def round_up_to_next_quarter_hour(value: datetime) -> datetime:

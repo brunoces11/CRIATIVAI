@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { fetchCurrentConversation, sendChatMessage } from "../lib/chatStream";
+import { MarkdownText } from "./MarkdownText";
 import "./ChatWidget.css";
 
 type Message = {
@@ -24,6 +25,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [assistantStarted, setAssistantStarted] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [toolStatus, setToolStatus] = useState("");
   const [error, setError] = useState("");
@@ -108,6 +110,7 @@ export function ChatWidget() {
     event.preventDefault();
     const message = draft.trim();
     if (!message || loading || restoring) return;
+    const shouldRefocusInput = document.activeElement === inputRef.current;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -117,10 +120,11 @@ export function ChatWidget() {
 
     const assistantMessageId = crypto.randomUUID();
     const turnId = crypto.randomUUID();
-    setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: "assistant", text: "" }]);
+    setMessages((current) => [...current, userMessage]);
     setDraft("");
     setError("");
     setToolStatus("");
+    setAssistantStarted(false);
     setLoading(true);
 
     const controller = new AbortController();
@@ -137,7 +141,14 @@ export function ChatWidget() {
 
         if (streamEvent.event === "delta") {
           assistantText += streamEvent.text;
-          setMessages((current) => current.map((item) => (item.id === assistantMessageId ? { ...item, text: assistantText } : item)));
+          setAssistantStarted(true);
+          setMessages((current) => {
+            const assistantMessage: Message = { id: assistantMessageId, role: "assistant", text: assistantText };
+            const exists = current.some((item) => item.id === assistantMessageId);
+            return exists
+              ? current.map((item) => (item.id === assistantMessageId ? assistantMessage : item))
+              : [...current, assistantMessage];
+          });
           return;
         }
 
@@ -158,12 +169,18 @@ export function ChatWidget() {
     } catch (sendError: unknown) {
       if (!controller.signal.aborted) {
         setError(sendError instanceof Error ? sendError.message : "Unable to reach the assistant.");
-        setMessages((current) => current.filter((item) => item.id !== assistantMessageId || item.text));
+        setMessages((current) => current.filter((item) => item.id !== assistantMessageId));
       }
     } finally {
       if (abortRef.current === controller) abortRef.current = null;
       setToolStatus("");
       setLoading(false);
+      setAssistantStarted(false);
+      if (shouldRefocusInput) {
+        window.requestAnimationFrame(() => {
+          inputRef.current?.focus();
+        });
+      }
     }
   }
 
@@ -198,7 +215,7 @@ export function ChatWidget() {
                 )}
               </article>
             ))}
-            {loading ? (
+            {loading && !assistantStarted ? (
               <div className="chat-message chat-message--assistant chat-message--loading" aria-label="Assistant is preparing a response">
                 <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
                 <div className="chat-message__loading-dots">
@@ -250,154 +267,4 @@ export function ChatWidget() {
       )}
     </aside>
   );
-}
-
-function MarkdownText({ text }: { text: string }) {
-  const blocks = parseMarkdownBlocks(text);
-  if (!blocks.length) return <p />;
-
-  return (
-    <div className="chat-markdown">
-      {blocks.map((block, index) => {
-        if (block.type === "heading") {
-          const Heading = `h${Math.min(block.level, 3)}` as "h1" | "h2" | "h3";
-          return <Heading key={index}>{renderInlineMarkdown(block.text)}</Heading>;
-        }
-        if (block.type === "list") {
-          const List = block.ordered ? "ol" : "ul";
-          return (
-            <List key={index}>
-              {block.items.map((item, itemIndex) => (
-                <li key={itemIndex}>{renderInlineMarkdown(item)}</li>
-              ))}
-            </List>
-          );
-        }
-        if (block.type === "code") {
-          return (
-            <pre key={index}>
-              <code>{block.text}</code>
-            </pre>
-          );
-        }
-        return <p key={index}>{renderInlineMarkdown(block.text)}</p>;
-      })}
-    </div>
-  );
-}
-
-type MarkdownBlock =
-  | { type: "heading"; level: number; text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "list"; ordered: boolean; items: string[] }
-  | { type: "code"; text: string };
-
-function parseMarkdownBlocks(text: string): MarkdownBlock[] {
-  const blocks: MarkdownBlock[] = [];
-  const lines = text.replace(/\r\n/g, "\n").split("\n");
-  let paragraph: string[] = [];
-  let list: { ordered: boolean; items: string[] } | null = null;
-  let code: string[] | null = null;
-
-  function flushParagraph() {
-    if (!paragraph.length) return;
-    blocks.push({ type: "paragraph", text: paragraph.join(" ") });
-    paragraph = [];
-  }
-
-  function flushList() {
-    if (!list) return;
-    blocks.push({ type: "list", ordered: list.ordered, items: list.items });
-    list = null;
-  }
-
-  for (const line of lines) {
-    if (line.trim().startsWith("```")) {
-      if (code) {
-        blocks.push({ type: "code", text: code.join("\n") });
-        code = null;
-      } else {
-        flushParagraph();
-        flushList();
-        code = [];
-      }
-      continue;
-    }
-
-    if (code) {
-      code.push(line);
-      continue;
-    }
-
-    const trimmed = line.trim();
-    if (!trimmed) {
-      flushParagraph();
-      flushList();
-      continue;
-    }
-
-    const headingMatch = /^(#{1,3})\s+(.+)$/.exec(trimmed);
-    if (headingMatch) {
-      flushParagraph();
-      flushList();
-      blocks.push({ type: "heading", level: headingMatch[1].length, text: headingMatch[2] });
-      continue;
-    }
-
-    const unorderedMatch = /^[-*]\s+(.+)$/.exec(trimmed);
-    const orderedMatch = /^\d+[.)]\s+(.+)$/.exec(trimmed);
-    if (unorderedMatch || orderedMatch) {
-      flushParagraph();
-      const ordered = Boolean(orderedMatch);
-      if (!list || list.ordered !== ordered) {
-        flushList();
-        list = { ordered, items: [] };
-      }
-      list.items.push((unorderedMatch ?? orderedMatch)?.[1] ?? "");
-      continue;
-    }
-
-    flushList();
-    paragraph.push(trimmed);
-  }
-
-  if (code) blocks.push({ type: "code", text: code.join("\n") });
-  flushParagraph();
-  flushList();
-  return blocks;
-}
-
-function renderInlineMarkdown(text: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  const pattern = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g;
-  let lastIndex = 0;
-
-  for (const match of text.matchAll(pattern)) {
-    if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index));
-    const token = match[0];
-    const key = `${match.index}-${token}`;
-
-    if (token.startsWith("`")) {
-      nodes.push(<code key={key}>{token.slice(1, -1)}</code>);
-    } else if (token.startsWith("**")) {
-      nodes.push(<strong key={key}>{token.slice(2, -2)}</strong>);
-    } else if (token.startsWith("*")) {
-      nodes.push(<em key={key}>{token.slice(1, -1)}</em>);
-    } else {
-      const linkMatch = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(token);
-      if (linkMatch) {
-        nodes.push(
-          <a key={key} href={linkMatch[2]} target="_blank" rel="noreferrer noopener">
-            {linkMatch[1]}
-          </a>,
-        );
-      } else {
-        nodes.push(token);
-      }
-    }
-    lastIndex = match.index + token.length;
-  }
-
-  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
-  return nodes.map((node, index) => <Fragment key={index}>{node}</Fragment>);
 }

@@ -1,0 +1,101 @@
+Hi [[CONTACT_NAME]],
+
+My name is Bruno Cesar from CriativAI.site. I have been conducting research on Finnish recruitment firms operating in the [[COMPANY_SECTOR]] area. [[COMPANY_NAME]] stood out for demonstrating [[COMPANY_SPECIALIZATION_FEATURES]]. For this reason, your company was selected to try Talent Discovery, a solution that searches, filters, and pre-qualifies potential candidates across multiple online sources based on the specific criteria of your role.
+
+Due to the personalized nature of this resource, only a limited number of complimentary previews are available. So claim yours using the code **TALENT_07**:
+
+https://criativai.site/talent-discovery
+
+Best regards,
+
+Bruno Cesar
+Founder, CriativAI
+[bruno@criativai.site](mailto:bruno@criativai.site)
+https://criativai.site
+
+
+
+
+
+
+
+
+
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PROMPT - TASK
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+Exite uma planilha LEAD_RH no meu google sheets q vc ja tem acesso, dentro dela tem uma nova aba chamada FIN_CSV que contem apenas a primeira linha com as colunas: "[[CONTACT_NAME]], [[CONTACT_EMAIL]], [[COMPANY_NAME]], [[COMPANY_SECTOR]], [[COMPANY_SPECIALIZATION_FEATURES]]"
+
+Seu trabalho sera alimentar essa aba extraindo valores da outra aba ja existente "FINLANDIA", com objetivo principal de extrair todos os contatos principais e complementares (apenas os que tiverem email de contato) para q possamos criar uma campanha de email. Entao alem de extrair os dados solicitados para preencher as colunas da aba FIN_CSV, vc devera dar atencao especial para a coluna [[COMPANY_SPECIALIZATION_FEATURES]], pois ela deve conter uma frase curta que descreva pontos verdadeiros de destaque da especializacao da empresa no setor q ela atua, e para preencher essa coluna vc devra fazer 3 coisas:
+1- Acessar o site da empresa (verificando a URL q esta na coluna webbsite da aba "FINLANDIA" + ler o website da empresa buscando pontos concretos e verdadeiros q possamos considerar pontos de destaque e vantagem competitiva na area de atuacao da empresa + escrever uma frase curta q condense essas caracteristicas para se encaixar perfeitamente no template de email a seguir).
+
+Em resumo considere q o termo "[COMPANY_SPECIALIZATION_FEATURES]]" devera sera uma frase curta, direta e que ela devera se encaixar perfeitamente na dinamica do texto do template a seguir:
+
+Template_email: """My name is Bruno Cesar from CriativAI.site. I have been conducting research on Finnish recruitment firms operating in the [[COMPANY_NAME]] area. [[COMPANY_SECTOR]] stood out for demonstrating [[COMPANY_FEATURES_SPECIALIZATION]]. For this reason, your company was selected to try Talent Discovery, a solution that searches, filters, and pre-qualifies potential candidates across multiple online sources based on the specific criteria of your role."""
+
+
+Nao faca nada ainda, quero apenas q vc avalie criteriosamente meu pedido, indique se vc entendeu claramente e se tiver qualquer duvida vc devera perguntar antes pro esclarecimento, considere que todas duvidas criticas sou eu quem decide, vc nao decide, vc apenas executa, entao pergunte antes em caso de duvida. Verifique o acesso a planilha indicada, as abas existentes e de seu parecer, se vc podera iniciar a tarefa ou se precisa de mais alguma info/esclarecimento.
+
+
+
+
+
+
+
+
+
+--------------------------
+
+
+
+
+
+
+
+Hi {{name}},
+
+I've been researching {{company}} and noticed that
+{{personalized_observation}}.
+
+That's why I decided to reach out.
+
+[proposta curta]
+
+[CTA]
+
+Best regards,
+Bruno Cesar
+Criativa AI
+
+
+------------------------------
+
+
+
+Hi [[data:firstname]],
+
+I came across [[data:company_name]] while researching Finnish recruitment firms specializing in [[data:company_specialization]].
+
+[[data:personalized_observation]]
+
+I’m Bruno Cesar, founder of CriativAI. I help recruitment companies discover streamline operations, optimize recrutient process and conquistar novos clientes atraves do uso estratégico e personalizado da IA e automação.
+
+Então eu selecionei algumas empresas para um convite restrito to try a complimentary Talent Preview, que dentre outra soluçoes ela basicamwente automatiza o processo de talent discovery and pre-qualification em fontes publicas da internet, e hj vc pdoera testar de forma totalmente gratuita no link abaixo, usando o cupom "TALENT_DISCOVERY".
+
+www.creativai.site/talent-discovery
+
+Como funciona
+Vc Share one open or representative role, including its requirements, pontos de destaque and knockout criteria, and we will deliver a shortlist of up to 20 potential matches discovered, with supporting evidence and a clear rationale for each profile.
+
+There is no commitment. Your team reviews the results and remains fully in control of every decision.
+
+Best regards,
+
+Bruno Cesar
+Founder, CriativAI
+bruno@criativai.site
+https://criativai.site

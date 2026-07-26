@@ -62,6 +62,7 @@ class Settings(BaseSettings):
     calendar_max_window_days: int = 14
     calendar_lookup_window_days: int = 365
     calendar_suggestion_count: int = 3
+    calendar_day_suggestion_count: int = 24
     calendar_add_google_meet: bool = True
     calendar_event_title: str = "Reunião CriativAI"
     calendar_event_description: str = "Agendamento realizado via CriativAI."
@@ -115,6 +116,8 @@ class Settings(BaseSettings):
             invalid.append("CALENDAR_LOOKUP_WINDOW_DAYS")
         if self.calendar_suggestion_count <= 0:
             invalid.append("CALENDAR_SUGGESTION_COUNT")
+        if self.calendar_day_suggestion_count <= 0:
+            invalid.append("CALENDAR_DAY_SUGGESTION_COUNT")
         if self.chat_tool_max_iterations <= 0:
             invalid.append("CHAT_TOOL_MAX_ITERATIONS")
 
