@@ -306,15 +306,17 @@ export default function VideoPage() {
         <div className="site-container video-next-section-inner">
           <div className="video-hero-next video-hero-next--section">
             <h2 id="video-next-title" className="hero-title video-hero-next-title">
-              <span className="hero-line video-hero-next-line video-hero-next-line--one">WELCOME TO</span>
               <span className="hero-line video-hero-next-line video-hero-next-line--two">
                 THE <span className="video-hero-next-line--two-highlight">HYPER-PERSONALIZATION</span> ERA
               </span>
             </h2>
-            <p>
-              REPLACE ME
+            <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome">
+              WELCOME TO
             </p>
-            <p>
+            <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome">
+              THE <span className="video-hero-next-line--two-highlight">HYPER-PERSONALIZATION</span> ERA
+            </p>
+            <p className="video-hero-next-description">
               Now it&apos;s your turn to leverage AI and build digital solutions tailored precisely to your business...
               unlocking new opportunities, accelerating your initiatives, and driving better results.
             </p>

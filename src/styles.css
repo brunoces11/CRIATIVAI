@@ -1988,6 +1988,14 @@ img {
   font-weight: 200;
 }
 
+.video-hero-next-welcome {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+  font-size: clamp(2.7rem, 4.7vw, 5.25rem);
+  line-height: inherit;
+}
+
 .video-hero-next-line--two {
   color: var(--accent);
   font-family: var(--font-condensed), "Roboto Condensed", sans-serif;
@@ -2000,7 +2008,7 @@ img {
   font-weight: 500;
 }
 
-.video-hero-next > p {
+.video-hero-next-description {
   max-width: 620px;
   margin: 30px auto 0;
   color: rgba(225, 225, 223, 0.86);
