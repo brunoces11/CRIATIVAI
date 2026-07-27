@@ -292,23 +292,6 @@ export default function VideoPage() {
                 </a>
               </div>
             </div>
-            <div className="video-hero-next">
-              <h2 className="hero-title video-hero-next-title">
-                <span className="hero-line video-hero-next-line video-hero-next-line--one">WELCOME TO THE</span>
-                <span className="hero-line video-hero-next-line video-hero-next-line--two">HYPER-</span>
-                <span className="hero-line video-hero-next-line video-hero-next-line--three">PERSONALIZATION</span>
-                <span className="hero-line video-hero-next-line video-hero-next-line--four">ERA</span>
-              </h2>
-              <p>
-                Now it&apos;s your turn to leverage AI and build digital solutions tailored precisely to your business...
-                unlocking new opportunities, accelerating your initiatives, and driving better results.
-              </p>
-              <div className="hero-actions video-hero-next-actions">
-                <a className="button button--light" href="/contact">
-                  Let&apos;s Talk <span aria-hidden="true">↗</span>
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -316,6 +299,27 @@ export default function VideoPage() {
             <span>Scroll to explore</span>
             <i aria-hidden="true" />
           </a>
+        </div>
+      </section>
+
+      <section className="video-next-section" aria-labelledby="video-next-title">
+        <div className="site-container video-next-section-inner">
+          <div className="video-hero-next video-hero-next--section">
+            <h2 id="video-next-title" className="hero-title video-hero-next-title">
+              <span className="hero-line video-hero-next-line video-hero-next-line--one">WELCOME TO</span>
+              <span className="hero-line video-hero-next-line video-hero-next-line--two">THE HYPER-PERSONALIZATION</span>
+              <span className="hero-line video-hero-next-line video-hero-next-line--three">ERA</span>
+            </h2>
+            <p>
+              Now it&apos;s your turn to leverage AI and build digital solutions tailored precisely to your business...
+              unlocking new opportunities, accelerating your initiatives, and driving better results.
+            </p>
+            <div className="hero-actions video-hero-next-actions">
+              <a className="button button--light" href="/contact">
+                Let&apos;s Talk <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
