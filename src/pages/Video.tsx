@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 
 const HERO_VIDEO_SRC = "/video-bruno-cesar.mp4";
-const HERO_SCROLL_DISTANCE = 1080;
+const HERO_PIN_DISTANCE = 2500;
+const HERO_SCRUB_DISTANCE = 2200;
 
 const stats = [
   { value: "20+", label: "Years of Experience" },
@@ -129,46 +130,53 @@ export default function VideoPage() {
 
   useEffect(() => {
     const syncHero = () => {
-      frameRef.current = 0;
-
       const hero = heroRef.current;
-      if (!hero) return;
+      if (!hero) {
+        frameRef.current = window.requestAnimationFrame(syncHero);
+        return;
+      }
 
       const heroTop = hero.getBoundingClientRect().top + window.scrollY;
-      const progress = clamp((window.scrollY - heroTop) / HERO_SCROLL_DISTANCE, 0, 1);
+      const heroScroll = window.scrollY - heroTop;
+      const scrollProgress = clamp(heroScroll / HERO_PIN_DISTANCE, 0, 1);
+      const scrubProgress = clamp(heroScroll / HERO_SCRUB_DISTANCE, 0, 1);
+      const isPinned = heroScroll >= 0 && heroScroll < HERO_PIN_DISTANCE;
+      const isReleased = heroScroll >= HERO_PIN_DISTANCE;
 
-      if (readyRef.current) {
-        const video = videoRef.current;
-        const duration = durationRef.current;
-        if (video && duration > 0) {
-          const nextTime = progress * duration;
-          if (Math.abs(video.currentTime - nextTime) > 0.03) {
-            video.currentTime = nextTime;
-          }
+      hero.classList.toggle("video-hero--pinned", isPinned);
+      hero.classList.toggle("video-hero--released", isReleased);
+
+      const video = videoRef.current;
+      const duration =
+        durationRef.current || (video && Number.isFinite(video.duration) ? video.duration : 0);
+
+      if (video && duration > 0) {
+        if (!readyRef.current) {
+          durationRef.current = duration;
+          readyRef.current = true;
+          setVideoReady(true);
+        }
+
+        const nextTime = scrubProgress * Math.max(duration - 0.001, 0);
+        video.pause();
+        if (!video.seeking && Math.abs(video.currentTime - nextTime) > 0.01) {
+          video.currentTime = nextTime;
         }
       }
 
       if (heroMediaRef.current) {
-        heroMediaRef.current.style.transform = `translate3d(0, ${Math.round(-progress * 34)}px, 0)`;
+        heroMediaRef.current.style.transform = "translate3d(0, 0, 0)";
       }
 
       if (heroCopyRef.current) {
-        heroCopyRef.current.style.transform = `translate3d(0, ${Math.round(-progress * 46)}px, 0)`;
+        heroCopyRef.current.style.transform = `translate3d(0, ${Math.round(-scrollProgress * 260)}px, 0)`;
       }
-    };
-
-    const onScrollOrResize = () => {
-      if (frameRef.current) return;
       frameRef.current = window.requestAnimationFrame(syncHero);
     };
 
-    onScrollOrResize();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
+    frameRef.current = window.requestAnimationFrame(syncHero);
 
     return () => {
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
       if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
     };
   }, []);
@@ -183,6 +191,7 @@ export default function VideoPage() {
       video.currentTime = 0.001;
       readyRef.current = true;
       setVideoReady(true);
+      void video.play().then(() => video.pause()).catch(() => undefined);
       window.dispatchEvent(new Event("scroll"));
     }
   };
@@ -204,6 +213,7 @@ export default function VideoPage() {
       <SiteHeader brand={<Brand />} page="video" />
 
       <section className="hero video-hero" aria-labelledby="hero-title" ref={heroRef}>
+        <div className="video-hero-stage">
         <div className="hero-atmosphere video-hero-atmosphere" aria-hidden="true" />
 
         <div className="video-hero-media" ref={heroMediaRef} aria-hidden="true">
@@ -216,6 +226,7 @@ export default function VideoPage() {
               playsInline
               preload="auto"
               onLoadedMetadata={onLoadedMetadata}
+              onLoadedData={onCanPlay}
               onCanPlay={onCanPlay}
               onError={onVideoError}
             />
@@ -248,10 +259,11 @@ export default function VideoPage() {
           </div>
         </div>
 
-        <a className="scroll-cue video-scroll-cue" href="#experience" aria-label="Scroll to experience and numbers">
-          <span>Scroll to explore</span>
-          <i aria-hidden="true" />
-        </a>
+          <a className="scroll-cue video-scroll-cue" href="#experience" aria-label="Scroll to experience and numbers">
+            <span>Scroll to explore</span>
+            <i aria-hidden="true" />
+          </a>
+        </div>
       </section>
 
       <section className="stats-section" id="experience" aria-label="Experience and key numbers">
