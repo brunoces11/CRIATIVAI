@@ -1926,7 +1926,7 @@ img {
   position: relative;
   z-index: 2;
   max-width: 760px;
-  padding: clamp(96px, 12svh, 138px) 0 88px;
+  padding: calc(clamp(96px, 12svh, 138px) + 26px) 0 88px;
   will-change: transform;
   text-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
 }

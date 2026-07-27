@@ -287,9 +287,9 @@ export default function VideoPage() {
                 engineering, and business strategy to solve real-world challenges.
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="/contact">
+                <span className="button button--light">
                   Let&apos;s Talk <span aria-hidden="true">↗</span>
-                </a>
+                </span>
               </div>
             </div>
           </div>
