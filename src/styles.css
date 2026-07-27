@@ -1945,7 +1945,7 @@ img {
 
 .video-next-section {
   display: grid;
-  min-height: 672px;
+  min-height: 492px;
   place-items: center;
   padding: 0;
   background: #0a1015;
@@ -1962,6 +1962,8 @@ img {
 }
 
 .video-hero-next--section {
+  width: 90%;
+  max-width: none;
   margin-inline: auto;
 }
 
@@ -1993,7 +1995,17 @@ img {
   max-width: none;
   padding: 0;
   font-size: clamp(2.7rem, 4.7vw, 5.25rem);
-  line-height: inherit;
+  line-height: 0.85;
+}
+
+.video-hero-next-welcome--top {
+  padding-bottom: 18px;
+}
+
+.video-hero-next-white {
+  color: var(--white);
+  font-family: var(--font-condensed), "Roboto Condensed", sans-serif;
+  font-weight: 500;
 }
 
 .video-hero-next-line--two {
