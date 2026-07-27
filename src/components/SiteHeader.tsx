@@ -6,11 +6,12 @@ const navigation = [
   { label: "Services", href: "#services" },
   { label: "Projects", href: "#projects" },
   { label: "Human Resources", href: "/human-resources" },
+  { label: "Vídeo", href: "/video" },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style" },
 ];
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 

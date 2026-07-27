@@ -1828,3 +1828,122 @@ img {
     font-size: clamp(2.9rem, 14.5vw, 4.7rem);
   }
 }
+
+.video-page {
+  min-height: 100vh;
+  background: var(--graphite);
+}
+
+.video-hero {
+  position: relative;
+  height: 1080px;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 76% 30%, rgba(255, 255, 255, 0.06), transparent 30%),
+    linear-gradient(135deg, #171c22 0%, #151a20 58%, #11151a 100%);
+}
+
+.video-hero::after {
+  height: 32%;
+  background: linear-gradient(to top, rgba(24, 29, 35, 0.96), transparent);
+}
+
+.video-hero-atmosphere {
+  top: 14%;
+  left: -10%;
+}
+
+.video-hero-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.video-hero-video,
+.video-hero-placeholder {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1920px;
+  height: 1080px;
+  max-width: none;
+  transform: translateX(-50%);
+}
+
+.video-hero-video {
+  object-fit: fill;
+  object-position: center center;
+  filter: saturate(0.84) contrast(1.08) brightness(0.72);
+}
+
+.video-hero-placeholder {
+  background:
+    radial-gradient(circle at 70% 28%, rgba(200, 162, 143, 0.22), transparent 24%),
+    radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.08), transparent 28%),
+    linear-gradient(145deg, #1d2329, #0f1419 72%);
+}
+
+.video-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(10, 13, 17, 0.58) 0%, rgba(10, 13, 17, 0.32) 42%, rgba(10, 13, 17, 0.54) 100%),
+    linear-gradient(to top, rgba(16, 20, 25, 0.72) 0%, transparent 42%);
+}
+
+.video-hero-inner {
+  position: sticky;
+  z-index: 2;
+  top: 80px;
+  display: grid;
+  min-height: calc(100svh - 80px);
+  align-items: start;
+}
+
+.video-hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+  padding: clamp(84px, 11svh, 126px) 0 88px;
+  will-change: transform;
+  text-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
+}
+
+.video-hero-copy .hero-intro {
+  max-width: 700px;
+}
+
+.video-hero-copy .hero-intro > p {
+  color: rgba(225, 225, 223, 0.86);
+}
+
+.video-scroll-cue {
+  z-index: 4;
+}
+
+@media (max-width: 860px) {
+  .video-hero-inner {
+    top: 72px;
+    min-height: calc(100svh - 72px);
+  }
+
+  .video-hero-copy {
+    max-width: 640px;
+    padding-top: clamp(62px, 10svh, 92px);
+    padding-bottom: 74px;
+  }
+
+  .video-hero-copy .hero-intro {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .video-hero-copy {
+    padding-top: 54px;
+    padding-bottom: 62px;
+  }
+}
