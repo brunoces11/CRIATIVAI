@@ -1863,16 +1863,6 @@ img {
     linear-gradient(135deg, #171c22 0%, #151a20 58%, #11151a 100%);
 }
 
-.video-hero--pinned .video-hero-stage {
-  position: fixed;
-  z-index: 1;
-}
-
-.video-hero--released .video-hero-stage {
-  position: absolute;
-  top: 2500px;
-}
-
 .video-hero-stage::after {
   position: absolute;
   right: 0;
@@ -1894,7 +1884,6 @@ img {
   inset: 0;
   overflow: hidden;
   z-index: 0;
-  will-change: transform;
   transform: translate3d(0, 0, 0);
 }
 
@@ -1912,7 +1901,6 @@ img {
 .video-hero-video {
   object-fit: fill;
   object-position: center center;
-  filter: saturate(0.84) contrast(1.08) brightness(0.72);
 }
 
 .video-hero-placeholder {
@@ -1926,8 +1914,8 @@ img {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(10, 13, 17, 0.58) 0%, rgba(10, 13, 17, 0.32) 42%, rgba(10, 13, 17, 0.54) 100%),
-    linear-gradient(to top, rgba(16, 20, 25, 0.72) 0%, transparent 42%);
+    linear-gradient(90deg, rgba(10, 13, 17, 0.66) 0%, rgba(10, 13, 17, 0.4) 42%, rgba(10, 13, 17, 0.62) 100%),
+    linear-gradient(to top, rgba(16, 20, 25, 0.78) 0%, transparent 42%);
 }
 
 .video-hero-inner {

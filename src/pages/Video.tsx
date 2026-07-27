@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 
-const HERO_VIDEO_SRC = "/video-bruno-cesar.mp4";
+const HERO_VIDEO_SRC = "/video-bruno-cesar_1440.mp4";
 const HERO_PIN_DISTANCE = 2500;
 const HERO_SCRUB_DISTANCE = 2200;
+const HERO_VIDEO_FPS = 15;
+const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
 
 const stats = [
   { value: "20+", label: "Years of Experience" },
@@ -119,32 +121,40 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 
 export default function VideoPage() {
   const heroRef = useRef<HTMLElement | null>(null);
+  const heroStageRef = useRef<HTMLDivElement | null>(null);
   const heroCopyRef = useRef<HTMLDivElement | null>(null);
   const heroMediaRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const durationRef = useRef(0);
-  const frameRef = useRef(0);
+  const trailingSyncRef = useRef(0);
+  const lastSyncAtRef = useRef(0);
   const readyRef = useRef(false);
+  const lastHeroStateRef = useRef<"before" | "pinned" | "released" | null>(null);
+  const lastTextOffsetRef = useRef<number | null>(null);
+  const lastVideoTimeRef = useRef<number | null>(null);
   const [videoMissing, setVideoMissing] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     const syncHero = () => {
+      trailingSyncRef.current = 0;
+      lastSyncAtRef.current = performance.now();
+
       const hero = heroRef.current;
-      if (!hero) {
-        frameRef.current = window.requestAnimationFrame(syncHero);
-        return;
-      }
+      if (!hero) return;
 
       const heroTop = hero.getBoundingClientRect().top + window.scrollY;
       const heroScroll = window.scrollY - heroTop;
       const scrollProgress = clamp(heroScroll / HERO_PIN_DISTANCE, 0, 1);
       const scrubProgress = clamp(heroScroll / HERO_SCRUB_DISTANCE, 0, 1);
-      const isPinned = heroScroll >= 0 && heroScroll < HERO_PIN_DISTANCE;
-      const isReleased = heroScroll >= HERO_PIN_DISTANCE;
+      const heroState = heroScroll < 0 ? "before" : heroScroll < HERO_PIN_DISTANCE ? "pinned" : "released";
 
-      hero.classList.toggle("video-hero--pinned", isPinned);
-      hero.classList.toggle("video-hero--released", isReleased);
+      if (heroStageRef.current && heroState !== lastHeroStateRef.current) {
+        lastHeroStateRef.current = heroState;
+        heroStageRef.current.style.position = heroState === "pinned" ? "fixed" : "absolute";
+        heroStageRef.current.style.top = heroState === "released" ? `${HERO_PIN_DISTANCE}px` : "0";
+        heroStageRef.current.style.zIndex = heroState === "pinned" ? "1" : "";
+      }
 
       const video = videoRef.current;
       const duration =
@@ -157,27 +167,53 @@ export default function VideoPage() {
           setVideoReady(true);
         }
 
-        const nextTime = scrubProgress * Math.max(duration - 0.001, 0);
+        const rawTime = scrubProgress * Math.max(duration - 0.001, 0);
+        const nextTime = Math.round(rawTime / HERO_VIDEO_FRAME_DURATION) * HERO_VIDEO_FRAME_DURATION;
         video.pause();
-        if (!video.seeking && Math.abs(video.currentTime - nextTime) > 0.01) {
+        if (
+          !video.seeking &&
+          nextTime !== lastVideoTimeRef.current &&
+          Math.abs(video.currentTime - nextTime) >= HERO_VIDEO_FRAME_DURATION * 0.5
+        ) {
+          lastVideoTimeRef.current = nextTime;
           video.currentTime = nextTime;
         }
       }
 
-      if (heroMediaRef.current) {
-        heroMediaRef.current.style.transform = "translate3d(0, 0, 0)";
-      }
-
+      const textOffset = Math.round(-scrollProgress * 260);
       if (heroCopyRef.current) {
-        heroCopyRef.current.style.transform = `translate3d(0, ${Math.round(-scrollProgress * 260)}px, 0)`;
+        if (textOffset !== lastTextOffsetRef.current) {
+          lastTextOffsetRef.current = textOffset;
+          heroCopyRef.current.style.transform = `translate3d(0, ${textOffset}px, 0)`;
+        }
       }
-      frameRef.current = window.requestAnimationFrame(syncHero);
     };
 
-    frameRef.current = window.requestAnimationFrame(syncHero);
+    const requestSync = () => {
+      const elapsed = performance.now() - lastSyncAtRef.current;
+      const waitMs = HERO_VIDEO_FRAME_DURATION * 1000 - elapsed;
+
+      if (waitMs <= 0) {
+        if (trailingSyncRef.current) {
+          window.clearTimeout(trailingSyncRef.current);
+          trailingSyncRef.current = 0;
+        }
+        syncHero();
+        return;
+      }
+
+      if (trailingSyncRef.current) return;
+      trailingSyncRef.current = window.setTimeout(syncHero, waitMs);
+    };
+
+    syncHero();
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", requestSync);
 
     return () => {
-      if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
+      window.removeEventListener("scroll", requestSync);
+      window.removeEventListener("resize", requestSync);
+      if (trailingSyncRef.current) window.clearTimeout(trailingSyncRef.current);
     };
   }, []);
 
@@ -213,7 +249,7 @@ export default function VideoPage() {
       <SiteHeader brand={<Brand />} page="video" />
 
       <section className="hero video-hero" aria-labelledby="hero-title" ref={heroRef}>
-        <div className="video-hero-stage">
+        <div className="video-hero-stage" ref={heroStageRef}>
         <div className="hero-atmosphere video-hero-atmosphere" aria-hidden="true" />
 
         <div className="video-hero-media" ref={heroMediaRef} aria-hidden="true">
