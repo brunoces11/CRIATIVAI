@@ -5,13 +5,14 @@ import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from
 const navigation = [
   { label: "Services", href: "#services" },
   { label: "Projects", href: "#projects" },
+  { label: "About Me", href: "/about-me" },
   { label: "Human Resources", href: "/human-resources" },
   { label: "Vídeo", href: "/video" },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style" },
 ];
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 

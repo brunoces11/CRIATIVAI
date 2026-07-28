@@ -45,6 +45,11 @@ export function ChatWidget() {
     window.requestAnimationFrame(() => setOpen(true));
   }
 
+  useEffect(() => {
+    window.addEventListener("criativai:open-chat", openChat);
+    return () => window.removeEventListener("criativai:open-chat", openChat);
+  }, []);
+
   function closeChat() {
     setOpen(false);
     closeTimerRef.current = window.setTimeout(() => {
