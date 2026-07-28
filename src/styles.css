@@ -2042,6 +2042,12 @@ img {
 }
 
 @media (max-width: 860px) {
+  .video-hero-video,
+  .video-hero-placeholder {
+    width: 800px;
+    height: 450px;
+  }
+
   .video-hero-inner {
     height: 770px;
   }
