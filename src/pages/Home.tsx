@@ -1,15 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
 
-const stats = [
-  { value: "20+", label: "Years of Experience" },
-  { value: "50+", label: "Interactive Projects Delivered" },
-  { value: "150K+", label: "Followers Across Social Platforms" },
-  {
-    value: "5",
-    label: "International Prompt Engineering Hackathon Awards",
-  },
-];
-
 const groundingTopics = [
   "Retrieval-Augmented Generation (RAG)",
   "GraphRAG",
@@ -146,20 +136,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <a className="scroll-cue" href="#experience" aria-label="Scroll to experience and numbers">
+        <a className="scroll-cue" href="#projects" aria-label="Scroll to featured projects">
           <span>Scroll to explore</span><i aria-hidden="true" />
         </a>
-      </section>
-
-      <section className="stats-section" id="experience" aria-label="Experience and key numbers">
-        <div className="site-container stats-grid">
-          {stats.map((stat) => (
-            <article className="stat" key={stat.value}>
-              <strong className="stat-value">{stat.value}</strong>
-              <p>{stat.label}</p>
-            </article>
-          ))}
-        </div>
       </section>
 
       <section className="section projects-section" id="projects" aria-labelledby="projects-title">

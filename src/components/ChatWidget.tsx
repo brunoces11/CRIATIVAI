@@ -197,8 +197,8 @@ export function ChatWidget() {
             <div className="chat-panel__identity">
               <img className="chat-panel__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
               <div className="chat-panel__identity-copy">
-                <p className="chat-panel__eyebrow">AI assistant</p>
-                <h2>Talk with CriativAI</h2>
+                <p className="chat-panel__eyebrow">BRUNO CESAR AI ASSISTANT</p>
+                <h2>Ask your questions and book a call</h2>
               </div>
             </div>
             <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>

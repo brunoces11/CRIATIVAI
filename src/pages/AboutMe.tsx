@@ -46,6 +46,16 @@ const featureColumns = [
   },
 ] as const;
 
+const stats = [
+  { value: "20+", label: "Years of Experience" },
+  { value: "50+", label: "Interactive Projects Delivered" },
+  { value: "150K+", label: "Followers Across Social Platforms" },
+  {
+    value: "5+",
+    label: "International Prompt Engineering Hackathon Awards",
+  },
+] as const;
+
 const awards: Award[] = [
   {
     result: "1st place at Chipp.ai",
@@ -148,7 +158,6 @@ export default function AboutMePage() {
       <section className="about-me-hero" aria-labelledby="about-me-title">
         <div className="site-container about-me-hero-grid">
           <div className="about-me-hero-copy">
-            <p className="eyebrow"><span /> Bruno Cesar</p>
             <h1 id="about-me-title">
               GenAI Architect <span className="about-me-title-subline">Context Prompt Engineer</span>
             </h1>
@@ -175,9 +184,9 @@ export default function AboutMePage() {
                 alt="Bruno Cesar, GenAI Architect and Context Prompt Engineer"
                 className="about-me-portrait"
               />
+              <span className="about-me-portrait-name">BRUNO CESAR</span>
               <div className="about-me-portrait-meta">
-                <span>GenAI</span>
-                <strong>Architecture / Design / Strategy</strong>
+                <strong>AI Architecture / Design / Strategy</strong>
               </div>
             </div>
             <nav className="about-me-social-links" aria-label="Bruno Cesar social links">
@@ -187,6 +196,17 @@ export default function AboutMePage() {
               <a href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener" aria-label="GitHub" title="GitHub">GH</a>
             </nav>
           </div>
+        </div>
+      </section>
+
+      <section className="stats-section about-me-stats-section" id="experience" aria-label="Experience and key numbers">
+        <div className="site-container stats-grid">
+          {stats.map((stat) => (
+            <article className="stat" key={stat.value}>
+              <strong className="stat-value">{stat.value}</strong>
+              <p>{stat.label}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -261,7 +281,7 @@ export default function AboutMePage() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">Build with judgment</p>
+          <p className="eyebrow">BUILD WITH CONFIDENCE</p>
           <h2 id="about-me-cta-title">
             Technology is most valuable when it amplifies human capabilities
           </h2>

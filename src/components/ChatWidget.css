@@ -1,7 +1,7 @@
 .chat-widget {
   position: fixed;
-  right: 12px;
-  bottom: 8px;
+  right: 27px;
+  bottom: 23px;
   z-index: 90;
   color: var(--white);
   font-family: var(--font-sans), Inter, Arial, sans-serif;
@@ -324,8 +324,8 @@
 
 @media (max-width: 560px) {
   .chat-widget {
-    right: 12px;
-    bottom: 8px;
+    right: 27px;
+    bottom: 23px;
     left: 16px;
   }
 
