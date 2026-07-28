@@ -2044,8 +2044,8 @@ img {
 @media (max-width: 860px) {
   .video-hero-video,
   .video-hero-placeholder {
-    width: 800px;
-    height: 450px;
+    width: 770px;
+    height: 433px;
   }
 
   .video-hero-inner {
