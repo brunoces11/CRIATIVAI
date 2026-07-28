@@ -7,16 +7,6 @@ const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;
 const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
 
-const stats = [
-  { value: "20+", label: "Years of Experience" },
-  { value: "50+", label: "Interactive Projects Delivered" },
-  { value: "150K+", label: "Followers Across Social Platforms" },
-  {
-    value: "5",
-    label: "International Prompt Engineering Hackathon Awards",
-  },
-];
-
 const groundingTopics = [
   "Retrieval-Augmented Generation (RAG)",
   "GraphRAG",
@@ -80,6 +70,10 @@ function Brand() {
       <img className="brand-logo" src="/logo.svg" alt="" aria-hidden="true" />
     </span>
   );
+}
+
+function openAssistantChat() {
+  window.dispatchEvent(new Event("criativai:open-chat"));
 }
 
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
@@ -295,7 +289,7 @@ export default function VideoPage() {
           </div>
         </div>
 
-          <a className="scroll-cue video-scroll-cue" href="#experience" aria-label="Scroll to experience and numbers">
+          <a className="scroll-cue video-scroll-cue" href="#projects" aria-label="Scroll to featured projects">
             <span>Scroll to explore</span>
             <i aria-hidden="true" />
           </a>
@@ -318,22 +312,14 @@ export default function VideoPage() {
               unlocking new opportunities, accelerating your initiatives, and driving better results.
             </p>
             <div className="hero-actions video-hero-next-actions">
-              <a className="button button--light" href="/contact">
-                Let&apos;s Talk <span aria-hidden="true">↗</span>
+              <button className="button button--accent" type="button" onClick={openAssistantChat}>
+                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
+              </button>
+              <a className="button button--ghost" href="/contact">
+                Drop Me a Message <span aria-hidden="true">-&gt;</span>
               </a>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="stats-section" id="experience" aria-label="Experience and key numbers">
-        <div className="site-container stats-grid">
-          {stats.map((stat) => (
-            <article className="stat" key={stat.value}>
-              <strong className="stat-value">{stat.value}</strong>
-              <p>{stat.label}</p>
-            </article>
-          ))}
         </div>
       </section>
 

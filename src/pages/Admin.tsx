@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MarkdownText } from "../components/MarkdownText";
+import { SiteHeader } from "../components/SiteHeader";
 import "./Admin.css";
 
 type AdminConversationSummary = {
@@ -37,6 +38,14 @@ type ChatTracingStatus = {
 type AdminPromptResponse = {
   content: string;
 };
+
+function Brand() {
+  return (
+    <span className="brand-lockup" aria-label="CriativAI">
+      <img className="brand-logo" src="/logo.svg" alt="" aria-hidden="true" />
+    </span>
+  );
+}
 
 export default function AdminPage() {
   const [conversations, setConversations] = useState<AdminConversationSummary[]>([]);
@@ -263,6 +272,7 @@ export default function AdminPage() {
 
   return (
     <main className="admin-page">
+      <SiteHeader brand={<Brand />} page="adm" />
       <section className="admin-shell" aria-label="Admin conversations">
         <header className="admin-header">
           <div>

@@ -4,6 +4,7 @@ type Award = {
   result: string;
   category: string;
   image: string;
+  grayscaleImage: string;
   title: string;
   description: string;
   resultsUrl?: string;
@@ -61,6 +62,7 @@ const awards: Award[] = [
     result: "1st place at Chipp.ai",
     category: "Prompt Engineer Hackathon",
     image: "/CPT_TUB_AGENTOS.jpg",
+    grayscaleImage: "/PB_CPT_TUB_AGENTOS.jpg",
     title: "AgentOS, Multi-Tasking AI Agent",
     description:
       "AgentOS is a personalized multi-tasking AI agent designed to execute multiple internal and external functions from a single prompt input.",
@@ -71,6 +73,7 @@ const awards: Award[] = [
     result: "1st place at FlowGPT",
     category: "Original Prompt Engineering Technique",
     image: "/CPT_TUB.jpg",
+    grayscaleImage: "/PB_CPT_TUB.jpg",
     title: "Concatenated Prompt Technique",
     description:
       "An advanced prompt engineering method that lets ChatGPT run multiple prompt layers in a single input, expanding complex interactions into prompt-app experiences.",
@@ -81,6 +84,7 @@ const awards: Award[] = [
     result: "2nd place at FlowGPT Hackathon S3",
     category: "Prompt Engineer, Judge Category",
     image: "/TUB_JUDGEN.jpg",
+    grayscaleImage: "/PB_TUB_JUDGEN.jpg",
     title: "AI Judgen",
     description:
       "A prompt evaluation agent that grades creativity, clarity, precision, originality, syntax consistency, logical structure, and improvement opportunities.",
@@ -90,7 +94,8 @@ const awards: Award[] = [
   {
     result: "1st place at FlowGPT Prompt Battle",
     category: "Past and Future",
-    image: "/TIME_TUB.jpg",
+    image: "/TIME_TUB2.jpg",
+    grayscaleImage: "/PB_TIME_TUB2.jpg",
     title: "Track to the Future",
     description:
       "An innovative built-in ChatGPT game about quantum travel, hidden life secrets, and speculative scenarios for humanity's future.",
@@ -101,6 +106,7 @@ const awards: Award[] = [
     result: "3rd place at FlowGPT Hackathon S2",
     category: "Creative Category",
     image: "/GPTINDER_Brazil.jpg",
+    grayscaleImage: "/PB_GPTINDER_Brazil.jpg",
     title: "GPTinder",
     description:
       "A creative dating advisor prompt that generates personalized conversation lines and topics for dating apps based on user and match context.",
@@ -111,6 +117,7 @@ const awards: Award[] = [
     result: "3rd place at FlowGPT Hackathon S2",
     category: "Software Development",
     image: "/TUB_ICON_v2.jpg",
+    grayscaleImage: "/PB_TUB_ICON_v2.jpg",
     title: "ICON Machine",
     description:
       "A Unicode icon discovery tool for ChatGPT that finds related icons, official names, and deployment-ready icon tables from any reference.",
@@ -121,6 +128,7 @@ const awards: Award[] = [
     result: "Finalist at FlowGPT Prompt Battle",
     category: "Innovative Built-In ChatGPT Game",
     image: "/MINECRAFT_MASHUP_CHATGPT_GAME.jpg",
+    grayscaleImage: "/PB_MINECRAFT_MASHUP_CHATGPT_GAME.jpg",
     title: "Minecraft Mashup Game",
     description:
       "A ChatGPT game experience built around an epic journey beyond The End, hidden messages, iconic game characters, and a mystery-driven adventure.",
@@ -131,6 +139,7 @@ const awards: Award[] = [
     result: "Finalist at FlowGPT Prompt Battle",
     category: "Innovative ChatGPT Built-In Game",
     image: "/SHERLOCK_TUB.jpg",
+    grayscaleImage: "/PB_SHERLOCK_TUB.jpg",
     title: "Sherlock Hoax",
     description:
       "A themed investigation game with expert characters designed to explore complex theories from multiple perspectives inside a conversational experience.",
@@ -253,7 +262,8 @@ export default function AboutMePage() {
             {awards.map((award) => (
               <article className="about-me-award-card" key={`${award.result}-${award.title}`}>
                 <div className="about-me-award-image-wrap">
-                  <img src={award.image} alt="" className="about-me-award-image" loading="lazy" />
+                  <img src={award.grayscaleImage} alt="" className="about-me-award-image about-me-award-image--gray" loading="lazy" />
+                  <img src={award.image} alt="" className="about-me-award-image about-me-award-image--color" loading="lazy" />
                 </div>
                 <div className="about-me-award-content">
                   <p className="about-me-award-result">{award.result}</p>

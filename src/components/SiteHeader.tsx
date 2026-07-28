@@ -4,15 +4,15 @@ import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from
 
 const navigation = [
   { label: "Services", href: "#services" },
-  { label: "Projects", href: "#projects" },
+  { label: "Projects", href: "#projects", adminOnly: true },
   { label: "About Me", href: "/about-me" },
-  { label: "Human Resources", href: "/human-resources" },
-  { label: "Vídeo", href: "/video" },
+  { label: "Human Resources", href: "/human-resources", adminOnly: true },
+  { label: "Vídeo", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
-  { label: "Style", href: "/style" },
+  { label: "Style", href: "/style", adminOnly: true },
 ];
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "adm" }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -73,7 +73,7 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
 
         <div className="header-right" id="primary-navigation">
           <nav className="primary-nav" aria-label="Primary navigation">
-            {navigation.map((item) => {
+            {navigation.filter((item) => !item.adminOnly || page === "adm").map((item) => {
               const href = page !== "home" && item.href.startsWith("#") ? `/${item.href}` : item.href;
               return <a key={item.href} href={href} onClick={() => setMenuOpen(false)}>{item.label}</a>;
             })}

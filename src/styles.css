@@ -1225,7 +1225,7 @@ img {
 .about-me-award-card {
   display: grid;
   min-height: 215px;
-  grid-template-columns: minmax(180px, 0.94fr) minmax(0, 1.06fr);
+  grid-template-columns: 215px minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -1239,22 +1239,36 @@ img {
   transform: translateY(-3px);
 }
 .about-me-award-image-wrap {
-  min-height: 100%;
+  position: relative;
+  width: 215px;
+  aspect-ratio: 1;
+  align-self: stretch;
   overflow: hidden;
   background: #151a20;
 }
 .about-me-award-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  filter: saturate(0.82) contrast(1.04) brightness(0.88);
-  transition: transform 300ms ease, filter 300ms ease;
+  filter: contrast(1.04) brightness(0.88);
+  transition: opacity 260ms ease, filter 260ms ease;
+}
+.about-me-award-image--gray {
+  opacity: 1;
+}
+.about-me-award-image--color {
+  opacity: 0;
 }
 .about-me-award-card:hover .about-me-award-image,
 .about-me-award-card:focus-within .about-me-award-image {
   filter: saturate(0.95) contrast(1.05) brightness(0.96);
-  transform: scale(1.025);
+}
+.about-me-award-card:hover .about-me-award-image--color,
+.about-me-award-card:focus-within .about-me-award-image--color {
+  opacity: 1;
 }
 .about-me-award-content {
   display: flex;
@@ -1264,12 +1278,13 @@ img {
 }
 .about-me-award-result {
   margin: 0 0 5px;
-  color: var(--accent);
+  color: var(--white);
   font-size: 1.175rem;
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.08;
   text-transform: uppercase;
+  transition: color 180ms ease;
 }
 .about-me-award-category {
   min-height: 0;
@@ -1289,6 +1304,13 @@ img {
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.08;
+  transition: color 180ms ease;
+}
+.about-me-award-card:hover .about-me-award-result,
+.about-me-award-card:focus-within .about-me-award-result,
+.about-me-award-card:hover .about-me-award-content h3,
+.about-me-award-card:focus-within .about-me-award-content h3 {
+  color: var(--accent);
 }
 .about-me-award-content > p:last-of-type {
   margin: 0;
@@ -1490,8 +1512,8 @@ img {
   .about-me-hero-grid { grid-template-columns: minmax(0, 6fr) minmax(330px, 5fr); gap: 52px; }
   .about-me-hero h1 { font-size: 5rem; }
   .about-me-hero h1 .about-me-title-subline { font-size: 2.635rem; }
-  .about-me-award-card { grid-template-columns: 1fr; }
-  .about-me-award-image-wrap { min-height: 225px; }
+  .about-me-award-card { grid-template-columns: 225px minmax(0, 1fr); }
+  .about-me-award-image-wrap { width: 225px; }
   .hero-grid { grid-template-columns: minmax(0, 6.8fr) minmax(320px, 5.2fr); }
   .hero-title { font-size: clamp(3.36rem, 6.96vw, 5.6rem); }
   .hero-intro { grid-template-columns: 1fr; gap: 24px; }
@@ -1529,7 +1551,8 @@ img {
   .about-me-feature-grid,
   .about-me-awards-grid { grid-template-columns: 1fr; }
   .about-me-feature-card { min-height: 0; }
-  .about-me-award-card { grid-template-columns: minmax(210px, 0.86fr) minmax(0, 1.14fr); }
+  .about-me-award-card { grid-template-columns: 210px minmax(0, 1fr); }
+  .about-me-award-image-wrap { width: 210px; }
   .about-me-cta-actions { flex-wrap: wrap; }
   .scroll-cue { display: none; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1568,7 +1591,7 @@ img {
   .about-me-feature-card { padding: 22px; }
   .about-me-feature-card h3 { margin-bottom: 28px; }
   .about-me-award-card { grid-template-columns: 1fr; }
-  .about-me-award-image-wrap { min-height: 205px; }
+  .about-me-award-image-wrap { width: 100%; }
   .about-me-award-content { padding: 22px; }
   .about-me-final-cta { padding-top: 58px; }
   .hero-portrait-column { min-height: 560px; }
@@ -2412,12 +2435,14 @@ img {
 }
 
 .video-hero-next-actions {
+  justify-content: center;
   align-items: center;
+  gap: 14px;
   margin-top: 30px;
 }
 
 .video-hero-next-actions .button {
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 .video-scroll-cue {

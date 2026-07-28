@@ -19,10 +19,10 @@ function Page() {
   if (pathname === "/talent-preview") return <TalentPreviewPageLazy />;
   if (pathname === "/about-me") return <AboutMePageLazy />;
   if (pathname === "/contact") return <ContactPageLazy />;
-  if (pathname === "/video") return <VideoPageLazy />;
+  if (pathname === "/video") return <Home />;
   if (pathname === "/adm") return <AdminPage />;
   if (pathname === "/privacy" || pathname === "/terms") return <PrivacyTermsPage />;
-  return <Home />;
+  return <VideoPageLazy />;
 }
 
 export default function App() {
