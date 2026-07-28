@@ -4,6 +4,7 @@ const ChatWidget = lazy(async () => import("./components/ChatWidget").then((modu
 const TargetMode = lazy(() => import("./components/target-mode/TargetMode"));
 const AdminPage = lazy(() => import("./pages/Admin"));
 const HumanResourcesPage = lazy(() => import("./pages/HumanResources"));
+const ServicesPageLazy = lazy(() => import("./pages/Services"));
 const StyleGuide = lazy(() => import("./pages/StyleGuide"));
 const ContactPageLazy = lazy(() => import("./pages/Contact"));
 const TalentPreviewPageLazy = lazy(() => import("./pages/TalentPreview"));
@@ -15,6 +16,7 @@ function Page() {
   const pathname = window.location.pathname.replace(/\/$/, "") || "/";
 
   if (pathname === "/human-resources") return <HumanResourcesPage />;
+  if (pathname === "/services") return <ServicesPageLazy />;
   if (pathname === "/style") return <StyleGuide />;
   if (pathname === "/talent-preview") return <TalentPreviewPageLazy />;
   if (pathname === "/about-me") return <AboutMePageLazy />;

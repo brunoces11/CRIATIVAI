@@ -4,6 +4,11 @@ import { SiteHeader } from "../components/SiteHeader";
 const colors = [
   ["Graphite", "--graphite", "#181D23"],
   ["Blue Black", "--blue-black", "#151A20"],
+  ["Blue Cyan", "--blue-cyan", "#21D8FF"],
+  ["Blue Steel", "--blue-steel", "#4F8FB8"],
+  ["Navy Deep", "--navy-deep", "#0D1824"],
+  ["Purple Muted", "--purple-muted", "#8D7BB7"],
+  ["Purple Deep", "--purple-deep", "#24162F"],
   ["Surface", "--surface", "#22272D"],
   ["Surface 2", "--surface-2", "#2B3038"],
   ["Metal", "--metal", "#34383F"],
@@ -102,6 +107,11 @@ export default function StyleGuide() {
                 <div className="color-swatch" style={{ backgroundColor: `var(${token})` }} />
                 <div><h3>{name}</h3><Spec>{token} · {value}</Spec></div>
               </article>
+            ))}
+          </div>
+          <div className="color-strip" aria-label="Full color palette strip">
+            {colors.map(([name, token]) => (
+              <span key={token} style={{ backgroundColor: `var(${token})` }} title={name} />
             ))}
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 
 const HERO_VIDEO_SRC = "/video-bruno-cesar_1440.mp4";
@@ -6,6 +6,9 @@ const HERO_PIN_DISTANCE = 2500;
 const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;
 const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
+const HERO_TOPIC_REVEAL_START = 0.1;
+const HERO_TOPIC_REVEAL_STEP = 0.12;
+const HERO_TOPIC_REVEAL_SPAN = 0.12;
 
 const groundingTopics = [
   "Retrieval-Augmented Generation (RAG)",
@@ -23,29 +26,52 @@ const groundingTopics = [
 const services = [
   {
     index: "01",
-    title: "UI/UX Design",
+    title: "Product Design",
     text: "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences.",
+    icon: "product",
     featured: true,
   },
   {
     index: "02",
     title: "Enterprise Knowledge System",
     text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
+    icon: "knowledge",
   },
   {
     index: "03",
     title: "System Design",
     text: "Technical architecture and system planning for scalable digital products and AI-powered applications.",
+    icon: "system",
   },
   {
     index: "04",
     title: "AI Automations",
     text: "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence.",
+    icon: "automation",
   },
   {
     index: "05",
     title: "Smart Agents",
     text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
+    icon: "agents",
+  },
+  {
+    index: "06",
+    title: "Refined Websites",
+    text: "Refined design for large-scale corporate websites and simple landing pages built to convert with clarity, elegance, and performance.",
+    icon: "websites",
+  },
+  {
+    index: "07",
+    title: "Custom AI Training",
+    text: "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities.",
+    icon: "training",
+  },
+  {
+    index: "08",
+    title: "Enterprise AI Consulting",
+    text: "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization.",
+    icon: "consulting",
   },
 ];
 
@@ -74,6 +100,78 @@ function Brand() {
 
 function openAssistantChat() {
   window.dispatchEvent(new Event("criativai:open-chat"));
+}
+
+function ServiceIcon({ type }: { type: string }) {
+  const iconPaths: Record<string, ReactNode> = {
+    product: (
+      <>
+        <circle cx="12" cy="12" r="8" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="12" cy="12" r="1.2" />
+      </>
+    ),
+    knowledge: (
+      <>
+        <path d="M6 5h9a3 3 0 0 1 3 3v11H8a3 3 0 0 1-3-3V5Z" />
+        <path d="M8 9h7" />
+        <path d="M8 13h5" />
+      </>
+    ),
+    system: (
+      <>
+        <path d="M12 3 4.5 7.2v9.6L12 21l7.5-4.2V7.2L12 3Z" />
+        <path d="M12 12 4.8 7.8" />
+        <path d="M12 12v8.5" />
+        <path d="m12 12 7.2-4.2" />
+      </>
+    ),
+    automation: (
+      <>
+        <path d="M6 12a6 6 0 0 1 10.2-4.3" />
+        <path d="M16 4v4h-4" />
+        <path d="M18 12a6 6 0 0 1-10.2 4.3" />
+        <path d="M8 20v-4h4" />
+      </>
+    ),
+    agents: (
+      <>
+        <circle cx="12" cy="8" r="3" />
+        <path d="M5 20a7 7 0 0 1 14 0" />
+        <path d="M4 9h2" />
+        <path d="M18 9h2" />
+      </>
+    ),
+    websites: (
+      <>
+        <rect x="3.5" y="5" width="17" height="13" rx="2" />
+        <path d="M3.5 9h17" />
+        <path d="M7 14h5" />
+        <path d="M15 14h2" />
+      </>
+    ),
+    training: (
+      <>
+        <path d="M4 7.5 12 4l8 3.5-8 3.5-8-3.5Z" />
+        <path d="M7 10v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V10" />
+        <path d="M20 8v5" />
+      </>
+    ),
+    consulting: (
+      <>
+        <path d="M5 17.5 9.5 13l3 3L19 9.5" />
+        <path d="M15 9h4v4" />
+        <path d="M4 5h8" />
+        <path d="M4 9h5" />
+      </>
+    ),
+  };
+
+  return (
+    <svg className="service-title-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {iconPaths[type] ?? iconPaths.system}
+    </svg>
+  );
 }
 
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
@@ -118,6 +216,7 @@ export default function VideoPage() {
   const heroStageRef = useRef<HTMLDivElement | null>(null);
   const heroCopyRef = useRef<HTMLDivElement | null>(null);
   const heroMediaRef = useRef<HTMLDivElement | null>(null);
+  const heroTopicsRef = useRef<HTMLUListElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const durationRef = useRef(0);
   const trailingSyncRef = useRef(0);
@@ -180,6 +279,19 @@ export default function VideoPage() {
           lastTextOffsetRef.current = textOffset;
           heroCopyRef.current.style.transform = `translate3d(0, ${textOffset}px, 0)`;
         }
+      }
+
+      const topicItems = heroTopicsRef.current?.children;
+      if (topicItems) {
+        Array.from(topicItems).forEach((item, index) => {
+          const start = HERO_TOPIC_REVEAL_START + index * HERO_TOPIC_REVEAL_STEP;
+          const topicProgress = clamp((scrollProgress - start) / HERO_TOPIC_REVEAL_SPAN, 0, 1);
+          const offset = Math.round((1 - topicProgress) * 56);
+          const element = item as HTMLElement;
+
+          element.style.opacity = `${topicProgress}`;
+          element.style.transform = `translate3d(${offset}px, 0, 0)`;
+        });
       }
     };
 
@@ -269,7 +381,7 @@ export default function VideoPage() {
         <div className="site-container video-hero-inner">
           <div className="hero-copy video-hero-copy" ref={heroCopyRef}>
             <p className="eyebrow hero-eyebrow">
-              <span /> Design Ã— Engineering Ã— Strategy
+              <span /> Product Design &mdash; AI Engineering &mdash; Strategy
             </p>
             <h1 id="hero-title" className="hero-title">
               <span className="hero-line hero-line--one">CREATIVE</span>
@@ -286,6 +398,21 @@ export default function VideoPage() {
                 </span>
               </div>
             </div>
+            <ul className="video-hero-topics" ref={heroTopicsRef} aria-label="Featured AI solution topics">
+              {[
+                "AI-Powered Client Acquisition",
+                "AI-Powered Customer Service",
+                "Refined Websites",
+                "Corporate Knowledge Systems",
+                "Custom Software",
+                "Business Process Automation",
+              ].map((topic) => (
+                <li key={topic}>
+                  <span className="video-hero-topic-cube" aria-hidden="true" />
+                  <h4>{topic}</h4>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
@@ -441,7 +568,10 @@ export default function VideoPage() {
                     <b />
                   </i>
                 </div>
-                <h3>{service.title}</h3>
+                <div className="service-title-row">
+                  <ServiceIcon type={service.icon} />
+                  <h3>{service.title}</h3>
+                </div>
                 <p>{service.text}</p>
               </article>
             ))}
