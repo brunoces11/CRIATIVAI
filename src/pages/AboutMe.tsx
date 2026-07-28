@@ -150,7 +150,7 @@ export default function AboutMePage() {
           <div className="about-me-hero-copy">
             <p className="eyebrow"><span /> Bruno Cesar</p>
             <h1 id="about-me-title">
-              GenAI Architect <span>Context Prompt Engineer</span>
+              GenAI Architect <span className="about-me-title-subline">Context Prompt Engineer</span>
             </h1>
             <p className="about-me-hero-role">with Creative Design Background</p>
             <p className="about-me-hero-lead">
@@ -160,24 +160,32 @@ export default function AboutMePage() {
             </p>
             <div className="hero-actions about-me-actions">
               <button className="button button--accent" type="button" onClick={openAssistantChat}>
-                Ask my AI Assistant <span aria-hidden="true">-&gt;</span>
+                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
               </button>
               <a className="button button--ghost" href="/contact">
-                Book a Call <span aria-hidden="true">-&gt;</span>
+                Drop Me a Message <span aria-hidden="true">-&gt;</span>
               </a>
             </div>
           </div>
 
-          <div className="about-me-portrait-card">
-            <img
-              src="/Bruno_cesar_ai_architect_edge.png"
-              alt="Bruno Cesar, GenAI Architect and Context Prompt Engineer"
-              className="about-me-portrait"
-            />
-            <div className="about-me-portrait-meta">
-              <span>GenAI</span>
-              <strong>Architecture / Design / Strategy</strong>
+          <div className="about-me-portrait-column">
+            <div className="about-me-portrait-card">
+              <img
+                src="/Bruno_cesar_ai_architect_edge.png"
+                alt="Bruno Cesar, GenAI Architect and Context Prompt Engineer"
+                className="about-me-portrait"
+              />
+              <div className="about-me-portrait-meta">
+                <span>GenAI</span>
+                <strong>Architecture / Design / Strategy</strong>
+              </div>
             </div>
+            <nav className="about-me-social-links" aria-label="Bruno Cesar social links">
+              <a href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener" aria-label="YouTube" title="YouTube">YT</a>
+              <a href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener" aria-label="LinkedIn" title="LinkedIn">in</a>
+              <a href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener" aria-label="Behance" title="Behance">Be</a>
+              <a href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener" aria-label="GitHub" title="GitHub">GH</a>
+            </nav>
           </div>
         </div>
       </section>
@@ -235,7 +243,7 @@ export default function AboutMePage() {
                   <div className="about-me-award-links">
                     {award.resultsUrl ? (
                       <a href={award.resultsUrl} target="_blank" rel="noreferrer noopener">
-                        Results <span aria-hidden="true">-&gt;</span>
+                        Results Page <span aria-hidden="true">-&gt;</span>
                       </a>
                     ) : null}
                     <a href={award.projectUrl} target="_blank" rel="noreferrer noopener">
@@ -255,7 +263,7 @@ export default function AboutMePage() {
         <div className="site-container final-cta-inner">
           <p className="eyebrow">Build with judgment</p>
           <h2 id="about-me-cta-title">
-            Technology is most valuable when it amplifies human judgment
+            Technology is most valuable when it amplifies human capabilities
           </h2>
           <p>
             Let's build amazing things together. Send a message through the form or ask the AI assistant about ideas,
@@ -263,7 +271,7 @@ export default function AboutMePage() {
           </p>
           <div className="hero-actions about-me-cta-actions">
             <button className="button button--accent" type="button" onClick={openAssistantChat}>
-              Talk to the AI Agent <span aria-hidden="true">-&gt;</span>
+              Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
             </button>
             <a className="button button--ghost" href="/contact">
               Contact Bruno <span aria-hidden="true">-&gt;</span>
