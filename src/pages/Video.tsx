@@ -221,6 +221,7 @@ export default function VideoPage() {
   const durationRef = useRef(0);
   const syncFrameRef = useRef(0);
   const heroMetricsRef = useRef({ top: 0 });
+  const pendingVideoTimeRef = useRef<number | null>(null);
   const readyRef = useRef(false);
   const lastHeroStateRef = useRef<"before" | "pinned" | "released" | null>(null);
   const lastTextOffsetRef = useRef<number | null>(null);
@@ -272,13 +273,15 @@ export default function VideoPage() {
         const rawTime = scrubProgress * Math.max(duration - 0.001, 0);
         const nextTime = Math.round(rawTime / HERO_VIDEO_FRAME_DURATION) * HERO_VIDEO_FRAME_DURATION;
         video.pause();
-        if (
-          !video.seeking &&
-          nextTime !== lastVideoTimeRef.current &&
-          Math.abs(video.currentTime - nextTime) >= HERO_VIDEO_FRAME_DURATION * 0.5
-        ) {
-          lastVideoTimeRef.current = nextTime;
-          video.currentTime = nextTime;
+        pendingVideoTimeRef.current = nextTime;
+
+        if (nextTime !== lastVideoTimeRef.current) {
+          const timeDelta = Math.abs(video.currentTime - nextTime);
+
+          if (timeDelta >= HERO_VIDEO_FRAME_DURATION * 0.5) {
+            lastVideoTimeRef.current = nextTime;
+            video.currentTime = nextTime;
+          }
         }
       }
 
@@ -319,14 +322,30 @@ export default function VideoPage() {
       requestSync();
     };
 
+    const requestSeekSync = () => {
+      const video = videoRef.current;
+      const pendingTime = pendingVideoTimeRef.current;
+
+      if (
+        video &&
+        pendingTime !== null &&
+        pendingTime !== lastVideoTimeRef.current &&
+        Math.abs(video.currentTime - pendingTime) >= HERO_VIDEO_FRAME_DURATION * 0.5
+      ) {
+        requestSync();
+      }
+    };
+
     measureHero();
     requestSync();
     window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("resize", requestMeasuredSync);
+    videoRef.current?.addEventListener("seeked", requestSeekSync);
 
     return () => {
       window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestMeasuredSync);
+      videoRef.current?.removeEventListener("seeked", requestSeekSync);
       if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
     };
   }, []);
