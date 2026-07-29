@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 
-const HERO_VIDEO_SRC = "/video-bruno-cesar__FADE_1200.mp4";
+const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
 const HERO_PIN_DISTANCE = 2500;
 const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;

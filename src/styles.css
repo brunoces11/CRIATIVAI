@@ -1010,9 +1010,41 @@ img {
   content: "";
 }
 
+.services-page-card::after {
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  content: "";
+  opacity: 0;
+  background: conic-gradient(
+    from var(--services-card-border-angle),
+    rgba(200, 162, 143, 0.16),
+    #f4dfd3,
+    #c8a28f,
+    #fff8f1,
+    rgba(200, 162, 143, 0.16)
+  );
+  transition: opacity 220ms ease;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
 .services-page-card:hover {
   border-color: var(--border-strong);
   transform: translateY(-4px);
+}
+
+.services-page-card:hover::after {
+  opacity: 1;
+  animation: servicesPageCardBorderSpin 2.4s linear infinite;
 }
 
 .services-page-card:nth-child(1),
@@ -1036,11 +1068,23 @@ img {
 .services-page-card h3 {
   max-width: 520px;
   margin: 0 0 18px;
-  color: var(--white);
+  color: var(--accent);
   font-size: clamp(1.75rem, 2.4vw, 2.55rem);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 0.98;
+}
+
+@property --services-card-border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes servicesPageCardBorderSpin {
+  to {
+    --services-card-border-angle: 360deg;
+  }
 }
 
 .services-page-card p {
