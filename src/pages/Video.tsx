@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 
-const HERO_VIDEO_SRC = "/video-bruno-cesar_1440.mp4";
+const HERO_VIDEO_SRC = "/video-bruno-cesar__FADE_1200.mp4";
 const HERO_PIN_DISTANCE = 2500;
 const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;
@@ -219,25 +219,34 @@ export default function VideoPage() {
   const heroTopicsRef = useRef<HTMLUListElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const durationRef = useRef(0);
-  const trailingSyncRef = useRef(0);
-  const lastSyncAtRef = useRef(0);
+  const syncFrameRef = useRef(0);
+  const heroMetricsRef = useRef({ top: 0 });
   const readyRef = useRef(false);
   const lastHeroStateRef = useRef<"before" | "pinned" | "released" | null>(null);
   const lastTextOffsetRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef<number | null>(null);
+  const lastTopicStyleRef = useRef<Array<{ opacity: number; offset: number }>>([]);
   const [videoMissing, setVideoMissing] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
+    const measureHero = () => {
+      const hero = heroRef.current;
+      if (!hero) return;
+
+      const nextTop = hero.getBoundingClientRect().top + window.scrollY;
+      if (Math.abs(nextTop - heroMetricsRef.current.top) >= 0.5) {
+        heroMetricsRef.current = { top: nextTop };
+      }
+    };
+
     const syncHero = () => {
-      trailingSyncRef.current = 0;
-      lastSyncAtRef.current = performance.now();
+      syncFrameRef.current = 0;
 
       const hero = heroRef.current;
       if (!hero) return;
 
-      const heroTop = hero.getBoundingClientRect().top + window.scrollY;
-      const heroScroll = window.scrollY - heroTop;
+      const heroScroll = window.scrollY - heroMetricsRef.current.top;
       const scrollProgress = clamp(heroScroll / HERO_PIN_DISTANCE, 0, 1);
       const scrubProgress = clamp(heroScroll / HERO_SCRUB_DISTANCE, 0, 1);
       const heroState = heroScroll < 0 ? "before" : heroScroll < HERO_PIN_DISTANCE ? "pinned" : "released";
@@ -286,40 +295,39 @@ export default function VideoPage() {
         Array.from(topicItems).forEach((item, index) => {
           const start = HERO_TOPIC_REVEAL_START + index * HERO_TOPIC_REVEAL_STEP;
           const topicProgress = clamp((scrollProgress - start) / HERO_TOPIC_REVEAL_SPAN, 0, 1);
+          const roundedTopicProgress = Math.round(topicProgress * 100) / 100;
           const offset = Math.round((1 - topicProgress) * 56);
           const element = item as HTMLElement;
+          const lastStyle = lastTopicStyleRef.current[index];
 
-          element.style.opacity = `${topicProgress}`;
-          element.style.transform = `translate3d(${offset}px, 0, 0)`;
+          if (!lastStyle || lastStyle.opacity !== roundedTopicProgress || lastStyle.offset !== offset) {
+            lastTopicStyleRef.current[index] = { opacity: roundedTopicProgress, offset };
+            element.style.opacity = `${roundedTopicProgress}`;
+            element.style.transform = `translate3d(${offset}px, 0, 0)`;
+          }
         });
       }
     };
 
     const requestSync = () => {
-      const elapsed = performance.now() - lastSyncAtRef.current;
-      const waitMs = HERO_VIDEO_FRAME_DURATION * 1000 - elapsed;
-
-      if (waitMs <= 0) {
-        if (trailingSyncRef.current) {
-          window.clearTimeout(trailingSyncRef.current);
-          trailingSyncRef.current = 0;
-        }
-        syncHero();
-        return;
-      }
-
-      if (trailingSyncRef.current) return;
-      trailingSyncRef.current = window.setTimeout(syncHero, waitMs);
+      if (syncFrameRef.current) return;
+      syncFrameRef.current = window.requestAnimationFrame(syncHero);
     };
 
-    syncHero();
+    const requestMeasuredSync = () => {
+      measureHero();
+      requestSync();
+    };
+
+    measureHero();
+    requestSync();
     window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("resize", requestSync);
+    window.addEventListener("resize", requestMeasuredSync);
 
     return () => {
       window.removeEventListener("scroll", requestSync);
-      window.removeEventListener("resize", requestSync);
-      if (trailingSyncRef.current) window.clearTimeout(trailingSyncRef.current);
+      window.removeEventListener("resize", requestMeasuredSync);
+      if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
     };
   }, []);
 
