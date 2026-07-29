@@ -57,6 +57,34 @@ const stats = [
   },
 ] as const;
 
+const productCycle = [
+  {
+    index: "01",
+    title: "Ideation",
+    text: "I can join from the earliest idea stage, helping clarify requirements, collect the briefing, and turn loose goals into a practical product direction.",
+  },
+  {
+    index: "02",
+    title: "Planning",
+    text: "A simple, effective onboarding process: you define the objective, I help expand the vision, then we shape the right plan for your business.",
+  },
+  {
+    index: "03",
+    title: "Design",
+    text: "More than 20 years of product design experience, strengthened by AI, from the Macromedia Flash era to refined React web applications focused on great user experience.",
+  },
+  {
+    index: "04",
+    title: "Agentic Development",
+    text: "From harness to production system. I do not reinvent the wheel; I use AI intelligently to build reliable, efficient systems with strong delivery and accessible cost.",
+  },
+  {
+    index: "05",
+    title: "Delivery",
+    text: "Infrastructure and deployment adapted to the project, from corporate environments to your own server, with availability and reliability aligned with serious production standards.",
+  },
+] as const;
+
 const awards: Award[] = [
   {
     result: "1st place at Chipp.ai",
@@ -216,6 +244,26 @@ export default function AboutMePage() {
               <p>{stat.label}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="section about-me-product-cycle-section" aria-labelledby="about-me-product-cycle-title">
+        <div className="site-container">
+          <div className="about-me-product-cycle-heading">
+            <p className="eyebrow">Full Product Cycle</p>
+            <h2 id="about-me-product-cycle-title">One Professional, Full Product Cycle</h2>
+            <p>AI, design, and engineering combined into one brain.</p>
+          </div>
+
+          <div className="about-me-product-cycle-grid">
+            {productCycle.map((item) => (
+              <article className="about-me-product-cycle-card" key={item.title}>
+                <span>{item.index}</span>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
