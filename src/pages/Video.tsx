@@ -220,6 +220,7 @@ export default function VideoPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const durationRef = useRef(0);
   const syncFrameRef = useRef(0);
+  const seekRetryFrameRef = useRef(0);
   const heroMetricsRef = useRef({ top: 0 });
   const pendingVideoTimeRef = useRef<number | null>(null);
   const readyRef = useRef(false);
@@ -244,7 +245,17 @@ export default function VideoPage() {
     const applyPendingVideoTime = () => {
       const video = videoRef.current;
       const pendingTime = pendingVideoTimeRef.current;
-      if (!video || pendingTime === null || video.seeking) return;
+      if (!video || pendingTime === null) return;
+
+      if (video.seeking) {
+        if (!seekRetryFrameRef.current) {
+          seekRetryFrameRef.current = window.requestAnimationFrame(() => {
+            seekRetryFrameRef.current = 0;
+            applyPendingVideoTime();
+          });
+        }
+        return;
+      }
 
       const timeDelta = Math.abs(video.currentTime - pendingTime);
       if (timeDelta >= HERO_VIDEO_FRAME_DURATION * 0.5) {
@@ -345,6 +356,7 @@ export default function VideoPage() {
       window.removeEventListener("resize", requestMeasuredSync);
       video?.removeEventListener("seeked", requestSeekSync);
       if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
+      if (seekRetryFrameRef.current) window.cancelAnimationFrame(seekRetryFrameRef.current);
     };
   }, []);
 
