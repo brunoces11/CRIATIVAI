@@ -224,10 +224,7 @@ export default function VideoPage() {
   const heroMetricsRef = useRef({ top: 0 });
   const pendingVideoTimeRef = useRef<number | null>(null);
   const readyRef = useRef(false);
-  const lastHeroStateRef = useRef<"before" | "pinned" | "released" | null>(null);
-  const lastTextOffsetRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef<number | null>(null);
-  const lastTopicStyleRef = useRef<Array<{ opacity: number; offset: number }>>([]);
   const [videoMissing, setVideoMissing] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
 
@@ -278,8 +275,7 @@ export default function VideoPage() {
       const scrubProgress = clamp(heroScroll / HERO_SCRUB_DISTANCE, 0, 1);
       const heroState = heroScroll < 0 ? "before" : heroScroll < HERO_PIN_DISTANCE ? "pinned" : "released";
 
-      if (heroStageRef.current && heroState !== lastHeroStateRef.current) {
-        lastHeroStateRef.current = heroState;
+      if (heroStageRef.current) {
         heroStageRef.current.style.position = heroState === "pinned" ? "fixed" : "absolute";
         heroStageRef.current.style.top = heroState === "released" ? `${HERO_PIN_DISTANCE}px` : "0";
         heroStageRef.current.style.zIndex = heroState === "pinned" ? "1" : "";
@@ -305,10 +301,7 @@ export default function VideoPage() {
 
       const textOffset = Math.round(-scrollProgress * 260);
       if (heroCopyRef.current) {
-        if (textOffset !== lastTextOffsetRef.current) {
-          lastTextOffsetRef.current = textOffset;
-          heroCopyRef.current.style.transform = `translate3d(0, ${textOffset}px, 0)`;
-        }
+        heroCopyRef.current.style.transform = `translate3d(0, ${textOffset}px, 0)`;
       }
 
       const topicItems = heroTopicsRef.current?.children;
@@ -319,13 +312,9 @@ export default function VideoPage() {
           const roundedTopicProgress = Math.round(topicProgress * 100) / 100;
           const offset = Math.round((1 - topicProgress) * 56);
           const element = item as HTMLElement;
-          const lastStyle = lastTopicStyleRef.current[index];
 
-          if (!lastStyle || lastStyle.opacity !== roundedTopicProgress || lastStyle.offset !== offset) {
-            lastTopicStyleRef.current[index] = { opacity: roundedTopicProgress, offset };
-            element.style.opacity = `${roundedTopicProgress}`;
-            element.style.transform = `translate3d(${offset}px, 0, 0)`;
-          }
+          element.style.opacity = `${roundedTopicProgress}`;
+          element.style.transform = `translate3d(${offset}px, 0, 0)`;
         });
       }
     };
@@ -340,6 +329,11 @@ export default function VideoPage() {
       requestSync();
     };
 
+    const requestVisibleSync = () => {
+      if (document.visibilityState === "hidden") return;
+      requestMeasuredSync();
+    };
+
     const requestSeekSync = () => {
       applyPendingVideoTime();
     };
@@ -349,11 +343,17 @@ export default function VideoPage() {
     requestSync();
     window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("resize", requestMeasuredSync);
+    window.addEventListener("focus", requestMeasuredSync);
+    window.addEventListener("pageshow", requestMeasuredSync);
+    document.addEventListener("visibilitychange", requestVisibleSync);
     video?.addEventListener("seeked", requestSeekSync);
 
     return () => {
       window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestMeasuredSync);
+      window.removeEventListener("focus", requestMeasuredSync);
+      window.removeEventListener("pageshow", requestMeasuredSync);
+      document.removeEventListener("visibilitychange", requestVisibleSync);
       video?.removeEventListener("seeked", requestSeekSync);
       if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
       if (seekRetryFrameRef.current) window.cancelAnimationFrame(seekRetryFrameRef.current);
