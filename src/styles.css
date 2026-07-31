@@ -968,7 +968,7 @@ img {
   margin: 24px 0 0;
   color: var(--white);
   font-family: var(--font-condensed), "Roboto Condensed", sans-serif;
-  font-size: clamp(2.75rem, calc(9.4vw - 1.25rem), 7.95rem);
+  font-size: clamp(calc(2.75rem - 20pt), calc(9.4vw - 1.25rem - 20pt), calc(7.95rem - 20pt));
   font-weight: 300;
   letter-spacing: -0.045em;
   line-height: 0.84;
@@ -1393,7 +1393,7 @@ img {
   }
 
   .services-page-hero h1 {
-    font-size: clamp(2.25rem, calc(16vw - 1.25rem), 3.75rem);
+    font-size: clamp(1.75rem, calc(16vw - 1.25rem - 20pt), calc(3.75rem - 20pt));
   }
 
   .services-page-card,
