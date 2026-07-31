@@ -1,16 +1,29 @@
-import { SiteHeader } from "../components/SiteHeader";
+﻿import { SiteHeader } from "../components/SiteHeader";
 
 const groundingTopics = [
-  "Retrieval-Augmented Generation (RAG)",
-  "GraphRAG",
-  "Knowledge Graphs",
+  "Custom RAG Setups",
+  "Knowledge Graphs | GraphRAG",
+  "Prompt Engineering Research",
   "Context Engineering",
-  "Business Intelligence",
-  "Enterprise Knowledge Bases",
-  "Long-Term Memory",
-  "Multi-Agent Architectures",
-  "Private Knowledge Integration",
-  "Structured Data Integration",
+  "Enterprise Knowledge Systems",
+  "Multi Agent Architecture",
+  "ETL, Data Processing",
+  "Context Enrichment",
+  "Smart Chunk processing",
+  "Guard rails | Observability",
+];
+
+const customDevelopmentTopics = [
+  "Intelligence Hubs",
+  "Custom CRM Systems",
+  "Tailored ERP Operations",
+  "High-Conversion Landing Pages",
+  "AI-Powered Internal Tools",
+  "Custom Workflow Automations",
+  "Business-Critical Integrations",
+  "Operational Dashboards",
+  "Process-Specific UX",
+  "No Vendor Lock-In",
 ];
 
 const services = [
@@ -64,10 +77,10 @@ function Brand() {
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
   const src =
     type === "hr"
-      ? "/project-visuals/project-human-resources.svg"
+      ? "/tub_dashboard_inteligence.png"
       : type === "trading"
-        ? "/project-visuals/project-trading.svg"
-        : "/project-visuals/project-dante.svg";
+        ? "/tub_ai-first-trading-plataform.png"
+        : "/tub_dante_ai_legal_system.png";
 
   if (type === "hr") {
     return (
@@ -107,7 +120,7 @@ export default function Home() {
         <div className="hero-atmosphere" aria-hidden="true" />
         <div className="site-container hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow hero-eyebrow"><span /> Design × Engineering × Strategy</p>
+            <p className="eyebrow hero-eyebrow"><span /> Design Ã— Engineering Ã— Strategy</p>
             <h1 id="hero-title" className="hero-title">
               <span className="hero-line hero-line--one">CREATIVE</span>
               <span className="hero-line hero-line--two">AI SOLUTIONS</span>
@@ -118,7 +131,7 @@ export default function Home() {
                 engineering, and business strategy to solve real-world challenges.
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
+                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">â†—</span></a>
               </div>
             </div>
           </div>
@@ -141,6 +154,79 @@ export default function Home() {
         </a>
       </section>
 
+
+      <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid grounding-grid--reverse">
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/bruno-cesar-custom-software-development.jpg"
+              alt="Custom software development"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+          <div className="grounding-copy">
+            <h2 id="custom-development-title">Custom Development</h2>
+            <h3>Custom software built for your operation, without lock-in or workarounds.</h3>
+            <p>
+              Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
+              operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit
+              your workflow, your goals, and the way your business actually runs.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="grounding-title">Knowledge Grounding</h2>
+            <h3>Building AI systems that truly understand your business.</h3>
+            <p>
+              With the mission of transforming business information into actionable business knowledge, this layer helps
+              AI agents answer with precision and predictability inside your project constraints, processing multi-source
+              data into a reliable context retrieval system that gives you clear control over what your agents consume
+              and consistently improves the quality of their responses.
+            </p>
+          </div>
+          <div className="grounding-panel">
+            <div className="grounding-panel-head">
+              <span>Enterprise intelligence layer</span>
+              <span>10 capabilities</span>
+            </div>
+            <ul className="topic-list">
+              {groundingTopics.map((topic, index) => (
+                <li key={topic}><span>{String(index + 1).padStart(2, "0")}</span>{topic}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section grounding-section--lead-gen" id="lead-generation" aria-labelledby="lead-generation-title">
+        <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="lead-generation-title">AI Lead Generation and Convertion Agents</h2>
+            <h3>Increase revenue with better qualified leads and smarter conversion.</h3>
+            <p>
+              Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate
+              outbound actions that expand your conversion potential and drive more revenue.
+            </p>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/LEAD_FUNNEL.png"
+              alt="Lead generation funnel placeholder"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="section projects-section" id="projects" aria-labelledby="projects-title">
         <div className="site-container">
           <div className="section-heading section-heading--split">
@@ -155,13 +241,13 @@ export default function Home() {
               <div className="project-overlay" />
               <div className="project-content">
                 <p className="project-index">01 / Automation</p>
-                <h3>Human Resources Automations</h3>
+                <h3>Inteliggence Dashboard</h3>
                 <p>
-                  End-to-end recruitment automation, including candidate sourcing, qualification, ranking, workflow
-                  automation, report generation, and AI-assisted hiring.
+                  Gain a clearer view of your business with personalized smart dashboards, fully connected to your
+                  business knowledge and focused exactly on your precise operational needs.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
+              <span className="project-arrow" aria-hidden="true">Ã¢â€ â€”</span>
             </article>
 
             <article className="project-card">
@@ -175,7 +261,7 @@ export default function Home() {
                   automation, and decision support.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
+              <span className="project-arrow" aria-hidden="true">Ã¢â€ â€”</span>
             </article>
 
             <article className="project-card">
@@ -189,39 +275,8 @@ export default function Home() {
                   reasoning, and enterprise knowledge systems.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
+              <span className="project-arrow" aria-hidden="true">Ã¢â€ â€”</span>
             </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
-        <div className="grounding-orbit" aria-hidden="true" />
-        <div className="site-container grounding-grid">
-          <div className="grounding-copy">
-            <p className="eyebrow">Technical foundation</p>
-            <h2 id="grounding-title">Knowledge Grounding</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
-            <p>
-              Foundation models are powerful, but generic knowledge is not enough for business-critical work.
-              Grounding connects AI to your organization&apos;s verified data, context, processes, and relationships—so
-              every answer is more relevant, traceable, and reliable.
-            </p>
-          </div>
-          <div className="grounding-panel">
-            <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
-            </div>
-            <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}><span>{String(index + 1).padStart(2, "0")}</span>{topic}</li>
-              ))}
-            </ul>
-            <p className="grounding-note">
-              Proprietary knowledge turns a general-purpose model into a system aligned with how your business
-              actually operates.
-            </p>
           </div>
         </div>
       </section>
@@ -267,7 +322,7 @@ export default function Home() {
             <p className="eyebrow">The human behind the systems</p>
             <h2 id="about-title">About</h2>
             <p className="about-lead">
-              Technology is most valuable when it amplifies human judgment—not when it gets in the way.
+              Technology is most valuable when it amplifies human judgmentâ€”not when it gets in the way.
             </p>
             <p>
               Bruno works at the intersection of product design, artificial intelligence, and business strategy.
@@ -295,7 +350,7 @@ export default function Home() {
             business challenges.
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">↗</span>
+            Start a Project <span aria-hidden="true">â†—</span>
           </a>
         </div>
       </section>
@@ -305,7 +360,7 @@ export default function Home() {
           <div className="footer-brand">
             <a href="#top" aria-label="CriativAI home"><Brand /></a>
             <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
@@ -317,14 +372,14 @@ export default function Home() {
             </div>
             <div>
               <p className="micro-label">Social Media</p>
-              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</a>
+              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">â–¶</span>YouTube</a>
               <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</a>
+              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">BÄ“</span>Behance</a>
               <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top â†‘</a></div>
       </footer>
     </main>
   );

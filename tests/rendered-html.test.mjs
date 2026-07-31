@@ -36,9 +36,9 @@ test("keeps the public pages in the client router", async () => {
   assert.match(app, /pathname === "\/privacy" \|\| pathname === "\/terms"/);
   assert.match(home, /Creative Artificial Intelligence|AI SOLUTIONS/i);
   assert.match(home, /src="\/logo\.svg"/);
-  assert.match(home, /project-human-resources\.svg/);
-  assert.match(home, /project-trading\.svg/);
-  assert.match(home, /project-dante\.svg/);
+  assert.match(home, /tub_dashboard_inteligence\.png/);
+  assert.match(home, /tub_ai-first-trading-plataform\.png/);
+  assert.match(home, /tub_dante_ai_legal_system\.png/);
   assert.match(home, /Product Design \+ Enterprise Knowledge Systems/);
   assert.match(home, /Increase Lead Generation \+ Conversion Rate with AI/);
   assert.doesNotMatch(home, /title: "UI\/UX Design"/);
@@ -47,7 +47,7 @@ test("keeps the public pages in the client router", async () => {
   assert.match(siteStyles, /\.project-card[\s\S]*background: transparent/);
   assert.match(siteStyles, /\.project-card[\s\S]*box-shadow: none/);
   assert.match(siteStyles, /\.project-overlay[\s\S]*display: none/);
-  assert.match(siteStyles, /transform: translateY\(calc\(-8% - 25px\)\) scale\(0\.72\)/);
+  assert.match(siteStyles, /\.project-graphic-scale[\s\S]*transform: translateY\(-79px\)/);
   assert.match(siteStyles, /\.project-visual-image\[src\$="\.svg"\][\s\S]*visibility: hidden/);
   assert.match(humanResources, /AI for recruitment companies/i);
   assert.match(humanResources, /The era of hyper-personalization/i);
@@ -102,11 +102,14 @@ test("keeps the video hero scroll effects resilient after refreshes", async () =
   assert.match(video, /window\.addEventListener\("pageshow", requestMeasuredSync\)/);
   assert.match(video, /document\.addEventListener\("visibilitychange", requestVisibleSync\)/);
   assert.match(video, /HERO_VIDEO_SEEK_TIMEOUT_MS/);
+  assert.match(video, /HERO_VIDEO_MAX_RECOVERY_ATTEMPTS/);
   assert.match(video, /video\.readyState < MEDIA_HAVE_METADATA/);
   assert.match(video, /video\.networkState === MEDIA_NETWORK_EMPTY/);
   assert.match(video, /video\.load\(\)/);
   assert.match(video, /video\?\.addEventListener\("stalled", requestMeasuredSync\)/);
   assert.match(video, /requestHeroSyncRef\.current\(\)/);
+  assert.match(video, /video-hero-video--hidden/);
+  assert.doesNotMatch(video, /!\s*videoMissing \?\s*\(/);
   assert.doesNotMatch(video, /void video\.play\(\)/);
   assert.doesNotMatch(video, /lastHeroStateRef|lastTextOffsetRef|lastTopicStyleRef/);
 });

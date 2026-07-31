@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+﻿import { type ReactNode, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 
 const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
@@ -8,6 +8,7 @@ const HERO_VIDEO_FPS = 15;
 const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
 const HERO_VIDEO_SEEK_TIMEOUT_MS = 1200;
 const HERO_VIDEO_RELOAD_COOLDOWN_MS = 1800;
+const HERO_VIDEO_MAX_RECOVERY_ATTEMPTS = 4;
 const MEDIA_HAVE_METADATA = 1;
 const MEDIA_NETWORK_EMPTY = 0;
 const HERO_TOPIC_REVEAL_START = 0.1;
@@ -15,16 +16,29 @@ const HERO_TOPIC_REVEAL_STEP = 0.12;
 const HERO_TOPIC_REVEAL_SPAN = 0.12;
 
 const groundingTopics = [
-  "Retrieval-Augmented Generation (RAG)",
-  "GraphRAG",
-  "Knowledge Graphs",
+  "Custom RAG Setups",
+  "Knowledge Graphs | GraphRAG",
+  "Prompt Engineering Research",
   "Context Engineering",
-  "Business Intelligence",
-  "Enterprise Knowledge Bases",
-  "Long-Term Memory",
-  "Multi-Agent Architectures",
-  "Private Knowledge Integration",
-  "Structured Data Integration",
+  "Enterprise Knowledge Systems",
+  "Multi Agent Architecture",
+  "ETL, Data Processing",
+  "Context Enrichment",
+  "Smart Chunk processing",
+  "Guard rails | Observability",
+];
+
+const customDevelopmentTopics = [
+  "Intelligence Hubs",
+  "Custom CRM Systems",
+  "Tailored ERP Operations",
+  "High-Conversion Landing Pages",
+  "AI-Powered Internal Tools",
+  "Custom Workflow Automations",
+  "Business-Critical Integrations",
+  "Operational Dashboards",
+  "Process-Specific UX",
+  "No Vendor Lock-In",
 ];
 
 const services = [
@@ -181,10 +195,10 @@ function ServiceIcon({ type }: { type: string }) {
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
   const src =
     type === "hr"
-      ? "/project-visuals/project-human-resources.svg"
+      ? "/tub_dashboard_inteligence.png"
       : type === "trading"
-        ? "/project-visuals/project-trading.svg"
-        : "/project-visuals/project-dante.svg";
+        ? "/tub_ai-first-trading-plataform.png"
+        : "/tub_dante_ai_legal_system.png";
 
   if (type === "hr") {
     return (
@@ -231,6 +245,7 @@ export default function VideoPage() {
   const lastVideoTimeRef = useRef<number | null>(null);
   const seekStartedAtRef = useRef<number | null>(null);
   const lastReloadAtRef = useRef(0);
+  const recoveryAttemptsRef = useRef(0);
   const requestHeroSyncRef = useRef<() => void>(() => undefined);
   const [videoMissing, setVideoMissing] = useState(false);
 
@@ -264,6 +279,7 @@ export default function VideoPage() {
       if (now - lastReloadAtRef.current < HERO_VIDEO_RELOAD_COOLDOWN_MS) return;
 
       lastReloadAtRef.current = now;
+      recoveryAttemptsRef.current += 1;
       seekStartedAtRef.current = null;
       lastVideoTimeRef.current = null;
       readyRef.current = false;
@@ -444,6 +460,8 @@ export default function VideoPage() {
     const video = videoRef.current;
     if (!video) return;
 
+    recoveryAttemptsRef.current = 0;
+    setVideoMissing(false);
     durationRef.current = Number.isFinite(video.duration) ? video.duration : 0;
     video.pause();
     if (durationRef.current > 0) {
@@ -455,14 +473,27 @@ export default function VideoPage() {
   };
 
   const onCanPlay = () => {
+    recoveryAttemptsRef.current = 0;
+    setVideoMissing(false);
     readyRef.current = durationRef.current > 0;
     requestHeroSyncRef.current();
   };
 
   const onVideoError = () => {
+    const video = videoRef.current;
+
     readyRef.current = false;
     seekStartedAtRef.current = null;
     lastVideoTimeRef.current = null;
+
+    if (video && recoveryAttemptsRef.current < HERO_VIDEO_MAX_RECOVERY_ATTEMPTS) {
+      setVideoMissing(false);
+      lastReloadAtRef.current = 0;
+      video.load();
+      requestHeroSyncRef.current();
+      return;
+    }
+
     setVideoMissing(true);
   };
 
@@ -475,22 +506,19 @@ export default function VideoPage() {
         <div className="hero-atmosphere video-hero-atmosphere" aria-hidden="true" />
 
         <div className="video-hero-media" ref={heroMediaRef} aria-hidden="true">
-          {!videoMissing ? (
-            <video
-              ref={videoRef}
-              className="video-hero-video"
-              src={HERO_VIDEO_SRC}
-              muted
-              playsInline
-              preload="auto"
-              onLoadedMetadata={onLoadedMetadata}
-              onLoadedData={onCanPlay}
-              onCanPlay={onCanPlay}
-              onError={onVideoError}
-            />
-          ) : (
-            <div className="video-hero-placeholder" />
-          )}
+          <video
+            ref={videoRef}
+            className={`video-hero-video${videoMissing ? " video-hero-video--hidden" : ""}`}
+            src={HERO_VIDEO_SRC}
+            muted
+            playsInline
+            preload="auto"
+            onLoadedMetadata={onLoadedMetadata}
+            onLoadedData={onCanPlay}
+            onCanPlay={onCanPlay}
+            onError={onVideoError}
+          />
+          <div className={`video-hero-placeholder${videoMissing ? " is-visible" : ""}`} />
           <div className="video-hero-overlay" />
         </div>
 
@@ -510,7 +538,7 @@ export default function VideoPage() {
               </p>
               <div className="hero-actions">
                 <span className="button button--light">
-                  Let&apos;s Talk <span aria-hidden="true">↗</span>
+                  Let&apos;s Talk <span aria-hidden="true">â†—</span>
                 </span>
               </div>
             </div>
@@ -566,6 +594,82 @@ export default function VideoPage() {
         </div>
       </section>
 
+
+      <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid grounding-grid--reverse">
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/bruno-cesar-custom-software-development.jpg"
+              alt="Custom software development"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+          <div className="grounding-copy">
+            <h2 id="custom-development-title">Custom Development</h2>
+            <h3>Custom software built for your operation, without lock-in or workarounds.</h3>
+            <p>
+              Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
+              operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit
+              your workflow, your goals, and the way your business actually runs.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="grounding-title">Knowledge Grounding</h2>
+            <h3>Building AI systems that truly understand your business.</h3>
+            <p>
+              With the mission of transforming business information into actionable business knowledge, this layer helps
+              AI agents answer with precision and predictability inside your project constraints, processing multi-source
+              data into a reliable context retrieval system that gives you clear control over what your agents consume
+              and consistently improves the quality of their responses.
+            </p>
+          </div>
+          <div className="grounding-panel">
+            <div className="grounding-panel-head">
+              <span>Enterprise intelligence layer</span>
+              <span>10 capabilities</span>
+            </div>
+            <ul className="topic-list">
+              {groundingTopics.map((topic, index) => (
+                <li key={topic}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  {topic}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section grounding-section--lead-gen" id="lead-generation" aria-labelledby="lead-generation-title">
+        <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="lead-generation-title">AI Lead Generation and Convertion Agents</h2>
+            <h3>Increase revenue with better qualified leads and smarter conversion.</h3>
+            <p>
+              Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate
+              outbound actions that expand your conversion potential and drive more revenue.
+            </p>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/LEAD_FUNNEL.png"
+              alt="Lead generation funnel placeholder"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="section projects-section" id="projects" aria-labelledby="projects-title">
         <div className="site-container">
           <div className="section-heading section-heading--split">
@@ -580,14 +684,14 @@ export default function VideoPage() {
               <div className="project-overlay" />
               <div className="project-content">
                 <p className="project-index">01 / Automation</p>
-                <h3>Human Resources Automations</h3>
+                <h3>Inteliggence Dashboard</h3>
                 <p>
-                  End-to-end recruitment automation, including candidate sourcing, qualification, ranking, workflow
-                  automation, report generation, and AI-assisted hiring.
+                  Gain a clearer view of your business with personalized smart dashboards, fully connected to your
+                  business knowledge and focused exactly on your precise operational needs.
                 </p>
               </div>
               <span className="project-arrow" aria-hidden="true">
-                ↗
+                Ã¢â€ â€”
               </span>
             </article>
 
@@ -603,7 +707,7 @@ export default function VideoPage() {
                 </p>
               </div>
               <span className="project-arrow" aria-hidden="true">
-                ↗
+                Ã¢â€ â€”
               </span>
             </article>
 
@@ -621,43 +725,9 @@ export default function VideoPage() {
                 </p>
               </div>
               <span className="project-arrow" aria-hidden="true">
-                ↗
+                Ã¢â€ â€”
               </span>
             </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
-        <div className="grounding-orbit" aria-hidden="true" />
-        <div className="site-container grounding-grid">
-          <div className="grounding-copy">
-            <p className="eyebrow">Technical foundation</p>
-            <h2 id="grounding-title">Knowledge Grounding</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
-            <p>
-              Foundation models are powerful, but generic knowledge is not enough for business-critical work.
-              Grounding connects AI to your organization&apos;s verified data, context, processes, and relationships so
-              every answer is more relevant, traceable, and reliable.
-            </p>
-          </div>
-          <div className="grounding-panel">
-            <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
-            </div>
-            <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {topic}
-                </li>
-              ))}
-            </ul>
-            <p className="grounding-note">
-              Proprietary knowledge turns a general-purpose model into a system aligned with how your business
-              actually operates.
-            </p>
           </div>
         </div>
       </section>
@@ -740,7 +810,7 @@ export default function VideoPage() {
             business challenges.
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">↗</span>
+            Start a Project <span aria-hidden="true">â†—</span>
           </a>
         </div>
       </section>
@@ -752,7 +822,7 @@ export default function VideoPage() {
               <Brand />
             </a>
             <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
@@ -771,7 +841,7 @@ export default function VideoPage() {
                 rel="noreferrer noopener"
               >
                 <span className="footer-social-icon" aria-hidden="true">
-                  ▶
+                  â–¶
                 </span>
                 YouTube
               </a>
@@ -793,7 +863,7 @@ export default function VideoPage() {
                 rel="noreferrer noopener"
               >
                 <span className="footer-social-icon" aria-hidden="true">
-                  Bē
+                  BÄ“
                 </span>
                 Behance
               </a>
@@ -816,7 +886,7 @@ export default function VideoPage() {
           <a className="footer-legal-link" href="/privacy">
             Privacy &amp; Terms
           </a>
-          <a href="#top">Back to top ↑</a>
+          <a href="#top">Back to top â†‘</a>
         </div>
       </footer>
     </main>
