@@ -168,12 +168,16 @@ export default function Home() {
           </div>
           <div className="grounding-copy">
             <h2 id="custom-development-title">Custom Development</h2>
-            <h3>Custom software built for your operation, without lock-in or workarounds.</h3>
+            <h3>Accessible custom software built around the way your business actually operates.</h3>
             <p>
               Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
               operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit
               your workflow, your goals, and the way your business actually runs.
             </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href="/contact">I WANT BUILD</a>
+              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+            </div>
           </div>
         </div>
       </section>
@@ -190,6 +194,10 @@ export default function Home() {
               data into a reliable context retrieval system that gives you clear control over what your agents consume
               and consistently improves the quality of their responses.
             </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href="/contact">I WANT BUILD</a>
+              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+            </div>
           </div>
           <div className="grounding-panel">
             <div className="grounding-panel-head">
@@ -215,6 +223,10 @@ export default function Home() {
               Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate
               outbound actions that expand your conversion potential and drive more revenue.
             </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href="/contact">I want it</a>
+              <a className="button button--ghost" href="/contact">Book a call</a>
+            </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
             <img
@@ -247,7 +259,6 @@ export default function Home() {
                   business knowledge and focused exactly on your precise operational needs.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">Ã¢â€ â€”</span>
             </article>
 
             <article className="project-card">
@@ -261,7 +272,6 @@ export default function Home() {
                   automation, and decision support.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">Ã¢â€ â€”</span>
             </article>
 
             <article className="project-card">
@@ -275,7 +285,6 @@ export default function Home() {
                   reasoning, and enterprise knowledge systems.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">Ã¢â€ â€”</span>
             </article>
           </div>
         </div>
@@ -305,36 +314,6 @@ export default function Home() {
                 <p>{service.text}</p>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section about-section" id="about" aria-labelledby="about-title">
-        <div className="site-container about-grid">
-          <div className="about-image-wrap">
-            <img src="/bruno-portrait.png" alt="Bruno, founder of CriativAI" className="about-image" />
-            <div className="about-image-meta">
-              <span>Bruno</span>
-              <span>Founder / Designer / AI Engineer</span>
-            </div>
-          </div>
-          <div className="about-copy">
-            <p className="eyebrow">The human behind the systems</p>
-            <h2 id="about-title">About</h2>
-            <p className="about-lead">
-              Technology is most valuable when it amplifies human judgmentâ€”not when it gets in the way.
-            </p>
-            <p>
-              Bruno works at the intersection of product design, artificial intelligence, and business strategy.
-              His practice combines two decades of creative experience with a systems mindset to turn complex ideas
-              into useful, understandable, and carefully crafted digital products.
-            </p>
-            <div className="expertise-block">
-              <p className="micro-label">Areas of expertise</p>
-              <ul className="expertise-list">
-                {expertise.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
           </div>
         </div>
       </section>

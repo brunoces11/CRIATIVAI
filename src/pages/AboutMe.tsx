@@ -259,7 +259,10 @@ export default function AboutMePage() {
         <div className="site-container">
           <div className="about-me-product-cycle-heading">
             <p className="eyebrow">Full Product Cycle</p>
-            <h2 id="about-me-product-cycle-title">One Professional, Full Product Cycle</h2>
+            <h2 id="about-me-product-cycle-title">
+              <span className="about-me-product-cycle-line about-me-product-cycle-line--primary">One Professional,</span>
+              <span className="about-me-product-cycle-line about-me-product-cycle-line--secondary">Full Product Cycle</span>
+            </h2>
             <p>AI, design, and engineering combined into one brain.</p>
           </div>
 
@@ -306,73 +309,31 @@ export default function AboutMePage() {
           <div className="about-me-awards-accordion">
             <article className={`about-me-awards-accordion-item${openAccordionId === "awards" ? " is-open" : ""}`}>
               <h2 className="sr-only" id="about-me-awards-title">Awards Prompt Engineering</h2>
-              <div className="section-heading section-heading--split about-me-awards-heading">
-                <div className="about-me-awards-heading-control">
-                  <button
-                    type="button"
-                    className="about-me-awards-trigger"
-                    aria-expanded={openAccordionId === "awards"}
-                    aria-controls="about-me-awards-panel"
-                    onClick={() => toggleAccordion("awards")}
-                  >
-                    <span className="about-me-awards-trigger-visual" aria-hidden="true">
-                      <svg viewBox="0 0 400 120" className="about-me-awards-trigger-svg" preserveAspectRatio="none">
-                        <defs>
-                          <linearGradient id="awardsButtonCore" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#ffd7b4" />
-                            <stop offset="22%" stopColor="#ffbf75" />
-                            <stop offset="58%" stopColor="#ef8f35" />
-                            <stop offset="100%" stopColor="#b64e17" />
-                          </linearGradient>
-                          <linearGradient id="awardsButtonEdge" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="rgba(255,255,255,0.92)" />
-                            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-                          </linearGradient>
-                          <radialGradient id="awardsButtonGlow" cx="50%" cy="38%" r="62%">
-                            <stop offset="0%" stopColor="rgba(255,243,226,0.9)" />
-                            <stop offset="38%" stopColor="rgba(255,212,160,0.46)" />
-                            <stop offset="100%" stopColor="rgba(255,149,56,0)" />
-                          </radialGradient>
-                          <filter id="awardsButtonShadow" x="-20%" y="-60%" width="140%" height="220%">
-                            <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="rgba(0,0,0,0.38)" />
-                            <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="rgba(255,224,186,0.32)" />
-                          </filter>
-                        </defs>
-                        <ellipse cx="200" cy="67" rx="164" ry="38" fill="rgba(255,164,85,0.18)" />
-                        <ellipse cx="200" cy="75" rx="136" ry="28" fill="rgba(72,22,6,0.35)" />
-                        <rect x="24" y="18" width="352" height="76" rx="38" fill="url(#awardsButtonCore)" filter="url(#awardsButtonShadow)" />
-                        <path
-                          d="M46 38C60 28 82 24 112 24H288C318 24 340 28 354 38C329 32 303 30 274 30H126C97 30 71 32 46 38Z"
-                          fill="url(#awardsButtonEdge)"
-                          opacity="0.7"
-                        />
-                        <path
-                          d="M38 70C52 82 78 88 112 88H288C322 88 348 82 362 70C348 90 321 98 284 98H116C79 98 52 90 38 70Z"
-                          fill="rgba(108,35,10,0.28)"
-                        />
-                        <ellipse cx="200" cy="36" rx="120" ry="22" fill="url(#awardsButtonGlow)" opacity="0.72" />
-                        <path
-                          d="M90 78C108 84 131 87 160 87H240C269 87 292 84 310 78"
-                          fill="none"
-                          stroke="rgba(255,229,201,0.36)"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </span>
-                    <span className="about-me-awards-trigger-copy">
-                      <span className="about-me-awards-trigger-copy-inner">
-                        <h3 className="about-me-awards-trigger-heading">AWARDS</h3>
-                        <h4 className="about-me-awards-trigger-subheading">Prompt Engineering</h4>
-                      </span>
-                    </span>
-                  </button>
+              <button
+                type="button"
+                className="section-heading section-heading--split about-me-awards-heading"
+                aria-expanded={openAccordionId === "awards"}
+                aria-controls="about-me-awards-panel"
+                onClick={() => toggleAccordion("awards")}
+              >
+                <div className="about-me-awards-heading-copy">
+                  <p className="eyebrow">Awards</p>
+                  <h3 className="about-me-awards-heading-title">Prompt Engineering</h3>
                 </div>
-                <p className="section-intro about-me-awards-intro">
-                  International recognition across prompt engineering competitions, agent design, prompt-app concepts,
-                  and built-in ChatGPT game experiences.
-                </p>
-              </div>
+                <div className="about-me-awards-heading-side">
+                  <p className="section-intro about-me-awards-intro">
+                    International recognition across prompt engineering competitions, agent design, prompt-app
+                    concepts, and built-in ChatGPT game experiences.
+                  </p>
+                </div>
+                <span className="about-me-awards-chevron-wrap" aria-hidden="true">
+                  <span className="about-me-awards-hover-label">Click to view details</span>
+                  <span className="about-me-awards-chevron">
+                    <span />
+                    <span />
+                  </span>
+                </span>
+              </button>
 
               <div
                 id="about-me-awards-panel"
