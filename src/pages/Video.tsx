@@ -6,6 +6,10 @@ const HERO_PIN_DISTANCE = 2500;
 const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;
 const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
+const HERO_VIDEO_SEEK_TIMEOUT_MS = 1200;
+const HERO_VIDEO_RELOAD_COOLDOWN_MS = 1800;
+const MEDIA_HAVE_METADATA = 1;
+const MEDIA_NETWORK_EMPTY = 0;
 const HERO_TOPIC_REVEAL_START = 0.1;
 const HERO_TOPIC_REVEAL_STEP = 0.12;
 const HERO_TOPIC_REVEAL_SPAN = 0.12;
@@ -225,8 +229,10 @@ export default function VideoPage() {
   const pendingVideoTimeRef = useRef<number | null>(null);
   const readyRef = useRef(false);
   const lastVideoTimeRef = useRef<number | null>(null);
+  const seekStartedAtRef = useRef<number | null>(null);
+  const lastReloadAtRef = useRef(0);
+  const requestHeroSyncRef = useRef<() => void>(() => undefined);
   const [videoMissing, setVideoMissing] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     const measureHero = () => {
@@ -239,29 +245,76 @@ export default function VideoPage() {
       }
     };
 
+    const getVideoDuration = (video: HTMLVideoElement) => {
+      const duration = durationRef.current || video.duration;
+      return Number.isFinite(duration) && duration > 0 ? duration : 0;
+    };
+
+    const scheduleSeekRetry = () => {
+      if (seekRetryFrameRef.current) return;
+
+      seekRetryFrameRef.current = window.requestAnimationFrame(() => {
+        seekRetryFrameRef.current = 0;
+        applyPendingVideoTime();
+      });
+    };
+
+    const reloadVideo = (video: HTMLVideoElement) => {
+      const now = performance.now();
+      if (now - lastReloadAtRef.current < HERO_VIDEO_RELOAD_COOLDOWN_MS) return;
+
+      lastReloadAtRef.current = now;
+      seekStartedAtRef.current = null;
+      lastVideoTimeRef.current = null;
+      readyRef.current = false;
+      video.load();
+    };
+
     const applyPendingVideoTime = () => {
       const video = videoRef.current;
       const pendingTime = pendingVideoTimeRef.current;
       if (!video || pendingTime === null) return;
 
+      if (video.error || video.networkState === MEDIA_NETWORK_EMPTY) {
+        reloadVideo(video);
+        return;
+      }
+
+      if (video.readyState < MEDIA_HAVE_METADATA) {
+        scheduleSeekRetry();
+        return;
+      }
+
+      const duration = getVideoDuration(video);
+      if (duration <= 0) {
+        scheduleSeekRetry();
+        return;
+      }
+
       if (video.seeking) {
-        if (!seekRetryFrameRef.current) {
-          seekRetryFrameRef.current = window.requestAnimationFrame(() => {
-            seekRetryFrameRef.current = 0;
-            applyPendingVideoTime();
-          });
+        const seekStartedAt = seekStartedAtRef.current ?? performance.now();
+        seekStartedAtRef.current = seekStartedAt;
+
+        if (performance.now() - seekStartedAt > HERO_VIDEO_SEEK_TIMEOUT_MS) {
+          reloadVideo(video);
+          return;
         }
+
+        scheduleSeekRetry();
         return;
       }
 
-      const timeDelta = Math.abs(video.currentTime - pendingTime);
+      seekStartedAtRef.current = null;
+      const nextTime = clamp(pendingTime, 0, Math.max(duration - 0.001, 0));
+      const timeDelta = Math.abs(video.currentTime - nextTime);
       if (timeDelta >= HERO_VIDEO_FRAME_DURATION * 0.5) {
-        lastVideoTimeRef.current = pendingTime;
-        video.currentTime = pendingTime;
+        lastVideoTimeRef.current = nextTime;
+        seekStartedAtRef.current = performance.now();
+        video.currentTime = nextTime;
         return;
       }
 
-      lastVideoTimeRef.current = pendingTime;
+      lastVideoTimeRef.current = nextTime;
     };
 
     const syncHero = () => {
@@ -282,19 +335,29 @@ export default function VideoPage() {
       }
 
       const video = videoRef.current;
-      const duration =
-        durationRef.current || (video && Number.isFinite(video.duration) ? video.duration : 0);
+      const duration = video ? getVideoDuration(video) : 0;
+
+      if (video) {
+        video.pause();
+        video.preload = "auto";
+        if (video.networkState === MEDIA_NETWORK_EMPTY) video.load();
+
+        if (duration <= 0) {
+          applyPendingVideoTime();
+        } else if (!readyRef.current) {
+          durationRef.current = duration;
+          readyRef.current = true;
+        }
+      }
 
       if (video && duration > 0) {
         if (!readyRef.current) {
           durationRef.current = duration;
           readyRef.current = true;
-          setVideoReady(true);
         }
 
         const rawTime = scrubProgress * Math.max(duration - 0.001, 0);
         const nextTime = Math.round(rawTime / HERO_VIDEO_FRAME_DURATION) * HERO_VIDEO_FRAME_DURATION;
-        video.pause();
         pendingVideoTimeRef.current = nextTime;
         applyPendingVideoTime();
       }
@@ -329,6 +392,8 @@ export default function VideoPage() {
       requestSync();
     };
 
+    requestHeroSyncRef.current = requestMeasuredSync;
+
     const requestVisibleSync = () => {
       if (document.visibilityState === "hidden") return;
       requestMeasuredSync();
@@ -346,7 +411,14 @@ export default function VideoPage() {
     window.addEventListener("focus", requestMeasuredSync);
     window.addEventListener("pageshow", requestMeasuredSync);
     document.addEventListener("visibilitychange", requestVisibleSync);
+    video?.addEventListener("loadedmetadata", requestMeasuredSync);
+    video?.addEventListener("loadeddata", requestSeekSync);
+    video?.addEventListener("canplay", requestSeekSync);
+    video?.addEventListener("durationchange", requestMeasuredSync);
+    video?.addEventListener("progress", requestSeekSync);
     video?.addEventListener("seeked", requestSeekSync);
+    video?.addEventListener("stalled", requestMeasuredSync);
+    video?.addEventListener("emptied", requestMeasuredSync);
 
     return () => {
       window.removeEventListener("scroll", requestSync);
@@ -354,7 +426,15 @@ export default function VideoPage() {
       window.removeEventListener("focus", requestMeasuredSync);
       window.removeEventListener("pageshow", requestMeasuredSync);
       document.removeEventListener("visibilitychange", requestVisibleSync);
+      video?.removeEventListener("loadedmetadata", requestMeasuredSync);
+      video?.removeEventListener("loadeddata", requestSeekSync);
+      video?.removeEventListener("canplay", requestSeekSync);
+      video?.removeEventListener("durationchange", requestMeasuredSync);
+      video?.removeEventListener("progress", requestSeekSync);
       video?.removeEventListener("seeked", requestSeekSync);
+      video?.removeEventListener("stalled", requestMeasuredSync);
+      video?.removeEventListener("emptied", requestMeasuredSync);
+      requestHeroSyncRef.current = () => undefined;
       if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
       if (seekRetryFrameRef.current) window.cancelAnimationFrame(seekRetryFrameRef.current);
     };
@@ -367,24 +447,23 @@ export default function VideoPage() {
     durationRef.current = Number.isFinite(video.duration) ? video.duration : 0;
     video.pause();
     if (durationRef.current > 0) {
-      video.currentTime = 0.001;
+      const pendingTime = pendingVideoTimeRef.current ?? 0.001;
+      video.currentTime = clamp(pendingTime, 0, Math.max(durationRef.current - 0.001, 0));
       readyRef.current = true;
-      setVideoReady(true);
-      void video.play().then(() => video.pause()).catch(() => undefined);
-      window.dispatchEvent(new Event("scroll"));
+      requestHeroSyncRef.current();
     }
   };
 
   const onCanPlay = () => {
     readyRef.current = durationRef.current > 0;
-    setVideoReady(readyRef.current);
-    window.dispatchEvent(new Event("scroll"));
+    requestHeroSyncRef.current();
   };
 
   const onVideoError = () => {
     readyRef.current = false;
+    seekStartedAtRef.current = null;
+    lastVideoTimeRef.current = null;
     setVideoMissing(true);
-    setVideoReady(false);
   };
 
   return (

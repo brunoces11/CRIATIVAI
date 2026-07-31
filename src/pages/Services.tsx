@@ -148,19 +148,6 @@ const faqs: Array<{ question: string; answer: ReactNode }> = [
     ),
   },
   {
-    question: "Will we become dependent on your agency?",
-    answer: (
-      <p>
-        No. Projects can be delivered with the complete source code, allowing the client to maintain, expand, or
-        transfer the solution to another team without vendor lock-in.
-      </p>
-    ),
-  },
-  {
-    question: "Who owns the developed code?",
-    answer: <p>Code ownership can be transferred to the client and formally defined in the project agreement.</p>,
-  },
-  {
     question: "How do you ensure application security?",
     answer: (
       <p>

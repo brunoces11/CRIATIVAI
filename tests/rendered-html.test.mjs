@@ -20,6 +20,7 @@ test("builds a static Vite app shell", async () => {
 test("keeps the public pages in the client router", async () => {
   const app = await read("src/App.tsx");
   const home = await read("src/pages/Home.tsx");
+  const siteStyles = await read("src/styles.css");
   const humanResources = await read("src/pages/HumanResources.tsx");
   const style = await read("src/pages/StyleGuide.tsx");
   const talentPreview = await read("src/pages/TalentPreview.tsx");
@@ -38,6 +39,16 @@ test("keeps the public pages in the client router", async () => {
   assert.match(home, /project-human-resources\.svg/);
   assert.match(home, /project-trading\.svg/);
   assert.match(home, /project-dante\.svg/);
+  assert.match(home, /Product Design \+ Enterprise Knowledge Systems/);
+  assert.match(home, /Increase Lead Generation \+ Conversion Rate with AI/);
+  assert.doesNotMatch(home, /title: "UI\/UX Design"/);
+  assert.doesNotMatch(home, /title: "Enterprise Knowledge System"/);
+  assert.match(siteStyles, /\.project-card[\s\S]*border: 0/);
+  assert.match(siteStyles, /\.project-card[\s\S]*background: transparent/);
+  assert.match(siteStyles, /\.project-card[\s\S]*box-shadow: none/);
+  assert.match(siteStyles, /\.project-overlay[\s\S]*display: none/);
+  assert.match(siteStyles, /transform: translateY\(calc\(-8% - 25px\)\) scale\(0\.72\)/);
+  assert.match(siteStyles, /\.project-visual-image\[src\$="\.svg"\][\s\S]*visibility: hidden/);
   assert.match(humanResources, /AI for recruitment companies/i);
   assert.match(humanResources, /The era of hyper-personalization/i);
   assert.match(humanResources, /Recruitment Intelligence/i);
@@ -82,11 +93,31 @@ test("ships Target Mode and no starter scaffold markers", async () => {
   assert.doesNotMatch(app + targetMode, /codex-preview|SkeletonPreview|react-loading-skeleton/i);
 });
 
+test("keeps the video hero scroll effects resilient after refreshes", async () => {
+  const video = await read("src/pages/Video.tsx");
+
+  assert.match(video, /heroStageRef\.current\.style\.position = heroState === "pinned" \? "fixed" : "absolute"/);
+  assert.match(video, /heroCopyRef\.current\.style\.transform = `translate3d\(0, \$\{textOffset\}px, 0\)`/);
+  assert.match(video, /element\.style\.opacity = `\$\{roundedTopicProgress\}`/);
+  assert.match(video, /window\.addEventListener\("pageshow", requestMeasuredSync\)/);
+  assert.match(video, /document\.addEventListener\("visibilitychange", requestVisibleSync\)/);
+  assert.match(video, /HERO_VIDEO_SEEK_TIMEOUT_MS/);
+  assert.match(video, /video\.readyState < MEDIA_HAVE_METADATA/);
+  assert.match(video, /video\.networkState === MEDIA_NETWORK_EMPTY/);
+  assert.match(video, /video\.load\(\)/);
+  assert.match(video, /video\?\.addEventListener\("stalled", requestMeasuredSync\)/);
+  assert.match(video, /requestHeroSyncRef\.current\(\)/);
+  assert.doesNotMatch(video, /void video\.play\(\)/);
+  assert.doesNotMatch(video, /lastHeroStateRef|lastTextOffsetRef|lastTopicStyleRef/);
+});
+
 test("ships the chat widget wired to the backend stream", async () => {
   const app = await read("src/App.tsx");
   const home = await read("src/pages/Home.tsx");
   const chatWidget = await read("src/components/ChatWidget.tsx");
   const chatStyles = await read("src/components/ChatWidget.css");
+  const markdownText = await read("src/components/MarkdownText.tsx");
+  const markdownTextStyles = await read("src/components/MarkdownText.css");
   const siteHeader = await read("src/components/SiteHeader.tsx");
   const siteStyles = await read("src/styles.css");
   const chatStream = await read("src/lib/chatStream.ts");
@@ -101,18 +132,46 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /sendChatMessage/);
   assert.match(chatWidget, /const turnId = crypto\.randomUUID\(\)/);
   assert.match(chatWidget, /<MarkdownText text=\{message\.text\} \/>/);
-  assert.match(chatWidget, /function parseMarkdownBlocks/);
-  assert.match(chatWidget, /target="_blank" rel="noreferrer noopener"/);
+  assert.match(markdownText, /function parseMarkdownBlocks/);
+  assert.match(markdownText, /target="_blank" rel="noreferrer noopener"/);
   assert.match(chatWidget, /src="\/icons\/chat-launcher\.svg"/);
   assert.match(chatWidget, /src="\/icons\/chat-collapse\.svg"/);
   assert.match(chatWidget, /src="\/icons\/chat-send\.svg"/);
+  assert.match(chatWidget, /I want to discuss my project idea\./);
+  assert.match(chatWidget, /I want to increase my lead capture and conversion\./);
+  assert.match(chatWidget, /I want to automate my business operations\./);
+  assert.match(chatWidget, /I want to book a call with Bruno\./);
+  assert.match(chatWidget, /I want to build a customer support agent\./);
+  assert.match(chatWidget, /I want to hire consulting or personalized training\./);
+  assert.match(chatWidget, /function IceBreakerIcon/);
+  assert.match(chatWidget, /function startPanelResize/);
+  assert.match(chatWidget, /clampChatPanelSize/);
+  assert.match(chatWidget, /chat-panel__resize-handle--left/);
+  assert.match(chatWidget, /chat-panel__resize-handle--top/);
   assert.match(home, /src="\/logo\.svg"/);
   assert.match(siteHeader, /src="\/icons\/flag-uk\.svg"/);
   assert.match(siteHeader, /src="\/icons\/flag-brazil\.svg"/);
   assert.match(chatStyles, /width: 88px/);
-  assert.match(chatStyles, /min-width: 450px/);
-  assert.match(chatStyles, /resize: horizontal/);
-  assert.match(chatStyles, /\.chat-markdown/);
+  assert.match(chatStyles, /width: min\(var\(--chat-panel-width, 840px\), calc\(100vw - 32px\)\)/);
+  assert.match(chatStyles, /height: min\(var\(--chat-panel-height, 540px\), calc\(100vh - 136px\)\)/);
+  assert.match(chatStyles, /container-type: inline-size/);
+  assert.match(chatStyles, /min-width: min\(300px, calc\(100vw - 32px\)\)/);
+  assert.match(chatStyles, /min-height: min\(300px, calc\(100vh - 136px\)\)/);
+  assert.match(chatStyles, /max-width: min\(950px, calc\(100vw - 32px\)\)/);
+  assert.match(chatStyles, /max-height: min\(650px, calc\(100vh - 136px\)\)/);
+  assert.match(chatStyles, /resize: none/);
+  assert.match(chatStyles, /\.chat-panel__resize-handle/);
+  assert.match(chatStyles, /\.chat-panel__ice-breakers/);
+  assert.match(chatStyles, /gap: 20px/);
+  assert.match(chatStyles, /font-size: 1\.06rem/);
+  assert.match(chatStyles, /font-weight: 600/);
+  assert.match(chatStyles, /\.chat-panel__ice-breaker-icon/);
+  assert.match(chatStyles, /--ice-breaker-tone: #c9cbcd/);
+  assert.match(chatStyles, /button:hover \.chat-panel__ice-breaker-icon[\s\S]*--ice-breaker-tone: var\(--blue-steel\)/);
+  assert.match(chatStyles, /button:hover \.chat-panel__ice-breaker-icon[\s\S]*color: #fff/);
+  assert.match(chatStyles, /@container \(max-width: 620px\)/);
+  assert.match(chatStyles, /-webkit-line-clamp: 2/);
+  assert.match(markdownTextStyles, /\.markdown-text/);
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
   assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);
   assert.match(chatStyles, /\.chat-panel__header[\s\S]*background: var\(--accent\)/);

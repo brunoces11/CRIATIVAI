@@ -20,7 +20,7 @@ const colors = [
 ] as const;
 
 const headings = [
-  ["H1", "Creative intelligence", "Anton", "clamp(3.6rem, 18vw, 7rem)"],
+  ["H1", "Creative intelligence", "Roboto Condensed Semi-bold", "clamp(3.6rem, 18vw, 7rem)"],
   ["H2", "A clear visual hierarchy", "Anton", "clamp(2.6rem, 6vw, 5rem)"],
   ["H3", "Human-centered systems", "Inter", "clamp(1.8rem, 2.5vw, 2.45rem)"],
   ["H4", "Component detail", "Inter", "1.25rem"],

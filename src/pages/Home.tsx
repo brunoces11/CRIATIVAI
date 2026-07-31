@@ -16,14 +16,14 @@ const groundingTopics = [
 const services = [
   {
     index: "01",
-    title: "UI/UX Design",
-    text: "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences.",
+    title: "Product Design + Enterprise Knowledge Systems",
+    text: "Human-centered product design connected to enterprise knowledge architecture, giving AI experiences clear interfaces, verified context, and a reliable source of truth.",
     featured: true,
   },
   {
     index: "02",
-    title: "Enterprise Knowledge System",
-    text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
+    title: "Increase Lead Generation + Conversion Rate with AI",
+    text: "AI-assisted acquisition systems for lead capture, qualification, nurturing, personalization, and conversion improvements across the customer journey.",
   },
   {
     index: "03",

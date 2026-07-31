@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { fetchCurrentConversation, sendChatMessage } from "../lib/chatStream";
 import { MarkdownText } from "./MarkdownText";
 import "./ChatWidget.css";
@@ -10,6 +10,31 @@ type Message = {
 };
 
 const SESSION_STORAGE_KEY = "chat_session_id";
+
+type IceBreaker = {
+  message: string;
+  icon: "idea" | "growth" | "automation" | "calendar" | "support" | "training";
+};
+
+type ChatPanelSize = {
+  width: number;
+  height: number;
+};
+
+type ResizeDirection = "left" | "top" | "top-left";
+
+const iceBreakers: IceBreaker[] = [
+  { message: "I want to discuss my project idea.", icon: "idea" },
+  { message: "I want to increase my lead capture and conversion.", icon: "growth" },
+  { message: "I want to automate my business operations.", icon: "automation" },
+  { message: "I want to book a call with Bruno.", icon: "calendar" },
+  { message: "I want to build a customer support agent.", icon: "support" },
+  { message: "I want to hire consulting or personalized training.", icon: "training" },
+];
+
+const CHAT_PANEL_DEFAULT_SIZE: ChatPanelSize = { width: 840, height: 540 };
+const CHAT_PANEL_MIN_SIZE: ChatPanelSize = { width: 300, height: 300 };
+const CHAT_PANEL_MAX_SIZE: ChatPanelSize = { width: 950, height: 650 };
 
 const initialMessages: Message[] = [
   {
@@ -30,6 +55,7 @@ export function ChatWidget() {
   const [toolStatus, setToolStatus] = useState("");
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(() => window.localStorage.getItem(SESSION_STORAGE_KEY));
+  const [panelSize, setPanelSize] = useState(() => clampChatPanelSize(CHAT_PANEL_DEFAULT_SIZE));
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -107,15 +133,21 @@ export function ChatWidget() {
   }, []);
 
   useEffect(() => {
+    function clampCurrentPanelSize() {
+      setPanelSize((current) => clampChatPanelSize(current));
+    }
+
+    window.addEventListener("resize", clampCurrentPanelSize);
+    return () => window.removeEventListener("resize", clampCurrentPanelSize);
+  }, []);
+
+  useEffect(() => {
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior });
   }, [messages, loading]);
 
-  async function submitMessage(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const message = draft.trim();
+  async function sendMessage(message: string, shouldRefocusInput: boolean) {
     if (!message || loading || restoring) return;
-    const shouldRefocusInput = document.activeElement === inputRef.current;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -189,10 +221,73 @@ export function ChatWidget() {
     }
   }
 
+  async function submitMessage(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const message = draft.trim();
+    const shouldRefocusInput = document.activeElement === inputRef.current;
+    await sendMessage(message, shouldRefocusInput);
+  }
+
+  function startWithIceBreaker(message: string) {
+    void sendMessage(message, false);
+  }
+
+  function startPanelResize(event: ReactPointerEvent<HTMLDivElement>, direction: ResizeDirection) {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startSize = panelSize;
+    const originalCursor = document.body.style.cursor;
+    const originalUserSelect = document.body.style.userSelect;
+
+    document.body.style.cursor = direction === "left" ? "ew-resize" : direction === "top" ? "ns-resize" : "nwse-resize";
+    document.body.style.userSelect = "none";
+
+    function handlePointerMove(moveEvent: PointerEvent) {
+      const nextSize = { ...startSize };
+
+      if (direction.includes("left")) {
+        nextSize.width = startSize.width + startX - moveEvent.clientX;
+      }
+
+      if (direction.includes("top")) {
+        nextSize.height = startSize.height + startY - moveEvent.clientY;
+      }
+
+      setPanelSize(clampChatPanelSize(nextSize));
+    }
+
+    function stopPanelResize() {
+      document.body.style.cursor = originalCursor;
+      document.body.style.userSelect = originalUserSelect;
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", stopPanelResize);
+      window.removeEventListener("pointercancel", stopPanelResize);
+    }
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", stopPanelResize);
+    window.addEventListener("pointercancel", stopPanelResize);
+  }
+
+  const showIceBreakers =
+    !sessionId &&
+    !loading &&
+    !restoring &&
+    messages.length === initialMessages.length &&
+    messages.every((message, index) => message.id === initialMessages[index]?.id);
+  const panelStyle = {
+    "--chat-panel-width": `${panelSize.width}px`,
+    "--chat-panel-height": `${panelSize.height}px`,
+  } as CSSProperties;
+
   return (
     <aside className={`chat-widget${open ? " chat-widget--open" : ""}`} aria-label="AI chat assistant">
       {renderPanel ? (
-        <section className="chat-panel" aria-label="Chat conversation">
+        <section className="chat-panel" style={panelStyle} aria-label="Chat conversation">
+          <div className="chat-panel__resize-handle chat-panel__resize-handle--left" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "left")} />
+          <div className="chat-panel__resize-handle chat-panel__resize-handle--top" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "top")} />
+          <div className="chat-panel__resize-handle chat-panel__resize-handle--top-left" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "top-left")} />
           <header className="chat-panel__header">
             <div className="chat-panel__identity">
               <img className="chat-panel__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
@@ -220,6 +315,16 @@ export function ChatWidget() {
                 )}
               </article>
             ))}
+            {showIceBreakers ? (
+              <div className="chat-panel__ice-breakers" aria-label="Conversation starters">
+                {iceBreakers.map((iceBreaker) => (
+                  <button key={iceBreaker.message} type="button" onClick={() => startWithIceBreaker(iceBreaker.message)}>
+                    <IceBreakerIcon type={iceBreaker.icon} />
+                    <span className="chat-panel__ice-breaker-label">{iceBreaker.message}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
             {loading && !assistantStarted ? (
               <div className="chat-message chat-message--assistant chat-message--loading" aria-label="Assistant is preparing a response">
                 <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
@@ -271,5 +376,84 @@ export function ChatWidget() {
         </button>
       )}
     </aside>
+  );
+}
+
+function clampChatPanelSize(size: ChatPanelSize): ChatPanelSize {
+  const viewportWidth = Math.max(CHAT_PANEL_MIN_SIZE.width, window.innerWidth - 32);
+  const viewportHeightGap = window.innerWidth <= 560 ? 112 : 136;
+  const viewportHeight = Math.max(CHAT_PANEL_MIN_SIZE.height, window.innerHeight - viewportHeightGap);
+  const maxWidth = Math.min(CHAT_PANEL_MAX_SIZE.width, viewportWidth);
+  const maxHeight = Math.min(CHAT_PANEL_MAX_SIZE.height, viewportHeight);
+
+  return {
+    width: clamp(size.width, CHAT_PANEL_MIN_SIZE.width, maxWidth),
+    height: clamp(size.height, CHAT_PANEL_MIN_SIZE.height, maxHeight),
+  };
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function IceBreakerIcon({ type }: { type: IceBreaker["icon"] }) {
+  const iconPaths: Record<IceBreaker["icon"], ReactNode> = {
+    idea: (
+      <>
+        <path d="M9 18h6" />
+        <path d="M10 21h4" />
+        <path d="M8 11a4 4 0 1 1 8 0c0 1.7-1 2.6-1.8 3.4-.5.5-.9 1-.9 1.6h-2.6c0-.6-.4-1.1-.9-1.6C9 13.6 8 12.7 8 11Z" />
+        <path d="M12 3V1.8" />
+        <path d="m18.4 5.6.9-.9" />
+        <path d="m5.6 5.6-.9-.9" />
+      </>
+    ),
+    growth: (
+      <>
+        <path d="M4 18V6" />
+        <path d="M4 18h16" />
+        <path d="m7 15 4-4 3 3 5-7" />
+        <path d="M15 7h4v4" />
+      </>
+    ),
+    automation: (
+      <>
+        <path d="M6 12a6 6 0 0 1 10.2-4.3" />
+        <path d="M16 4v4h-4" />
+        <path d="M18 12a6 6 0 0 1-10.2 4.3" />
+        <path d="M8 20v-4h4" />
+      </>
+    ),
+    calendar: (
+      <>
+        <rect x="4" y="5" width="16" height="15" rx="2" />
+        <path d="M8 3v4" />
+        <path d="M16 3v4" />
+        <path d="M4 10h16" />
+        <path d="m9 15 2 2 4-4" />
+      </>
+    ),
+    support: (
+      <>
+        <path d="M5 12a7 7 0 0 1 14 0v3a3 3 0 0 1-3 3h-2" />
+        <path d="M5 12v3a2 2 0 0 0 2 2h1v-6H7a2 2 0 0 0-2 1Z" />
+        <path d="M19 12v3a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 1Z" />
+      </>
+    ),
+    training: (
+      <>
+        <path d="M4 7.5 12 4l8 3.5-8 3.5-8-3.5Z" />
+        <path d="M7 10v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V10" />
+        <path d="M20 8v5" />
+      </>
+    ),
+  };
+
+  return (
+    <span className="chat-panel__ice-breaker-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        {iconPaths[type]}
+      </svg>
+    </span>
   );
 }
