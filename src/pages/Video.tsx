@@ -7,8 +7,7 @@ const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;
 const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
 const HERO_VIDEO_SEEK_TIMEOUT_MS = 1200;
-const HERO_VIDEO_RELOAD_COOLDOWN_MS = 1800;
-const HERO_VIDEO_MAX_RECOVERY_ATTEMPTS = 4;
+const HERO_VIDEO_MAX_RECOVERY_ATTEMPTS = 2;
 const MEDIA_HAVE_METADATA = 1;
 const MEDIA_NETWORK_EMPTY = 0;
 const HERO_TOPIC_REVEAL_START = 0.1;
@@ -16,17 +15,47 @@ const HERO_TOPIC_REVEAL_STEP = 0.12;
 const HERO_TOPIC_REVEAL_SPAN = 0.12;
 
 const groundingTopics = [
-  "Custom RAG Setups",
-  "Knowledge Graphs | GraphRAG",
-  "Prompt Engineering Research",
-  "Context Engineering",
-  "Enterprise Knowledge Systems",
-  "Multi Agent Architecture",
-  "ETL, Data Processing",
-  "Context Enrichment",
-  "Smart Chunk processing",
-  "Guard rails | Observability",
-];
+  {
+    title: "Custom RAG Setups",
+    description: "Connect private knowledge to AI answers with retrieval tailored to your business rules.",
+  },
+  {
+    title: "Knowledge Graphs | GraphRAG",
+    description: "Map relationships across your data so agents understand context, entities, and dependencies.",
+  },
+  {
+    title: "Prompt Engineering Research",
+    description: "Design tested prompts and reasoning patterns for clearer, more predictable AI behavior.",
+  },
+  {
+    title: "Context Engineering",
+    description: "Control the exact information your agents receive before they answer or act.",
+  },
+  {
+    title: "Enterprise Knowledge Systems",
+    description: "Turn scattered company information into a reliable intelligence layer for people and AI.",
+  },
+  {
+    title: "Multi Agent Architecture",
+    description: "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows.",
+  },
+  {
+    title: "ETL, Data Processing",
+    description: "Clean, transform, and structure multi-source data so it becomes useful AI-ready knowledge.",
+  },
+  {
+    title: "Context Enrichment",
+    description: "Add metadata, relationships, and business meaning to improve retrieval and answer quality.",
+  },
+  {
+    title: "Smart Chunk processing",
+    description: "Split knowledge into precise chunks that preserve meaning and reduce noisy retrieval.",
+  },
+  {
+    title: "Guard rails | Observability",
+    description: "Monitor, constrain, and improve agent behavior with clearer controls and visibility.",
+  },
+] as const;
 
 const customDevelopmentTopics = [
   "Intelligence Hubs",
@@ -237,17 +266,23 @@ export default function VideoPage() {
   const heroTopicsRef = useRef<HTMLUListElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const durationRef = useRef(0);
-  const syncFrameRef = useRef(0);
-  const seekRetryFrameRef = useRef(0);
+  const loopFrameRef = useRef(0);
   const heroMetricsRef = useRef({ top: 0 });
   const pendingVideoTimeRef = useRef<number | null>(null);
   const readyRef = useRef(false);
   const lastVideoTimeRef = useRef<number | null>(null);
   const seekStartedAtRef = useRef<number | null>(null);
-  const lastReloadAtRef = useRef(0);
   const recoveryAttemptsRef = useRef(0);
   const requestHeroSyncRef = useRef<() => void>(() => undefined);
   const [videoMissing, setVideoMissing] = useState(false);
+  const [expandedGroundingTopics, setExpandedGroundingTopics] = useState<Record<string, string>>({});
+
+  const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
+    setExpandedGroundingTopics((currentTopics) => ({
+      ...currentTopics,
+      [columnId]: currentTopics[columnId] === topicTitle ? "" : topicTitle,
+    }));
+  };
 
   useEffect(() => {
     const measureHero = () => {
@@ -265,45 +300,23 @@ export default function VideoPage() {
       return Number.isFinite(duration) && duration > 0 ? duration : 0;
     };
 
-    const scheduleSeekRetry = () => {
-      if (seekRetryFrameRef.current) return;
-
-      seekRetryFrameRef.current = window.requestAnimationFrame(() => {
-        seekRetryFrameRef.current = 0;
-        applyPendingVideoTime();
-      });
-    };
-
-    const reloadVideo = (video: HTMLVideoElement) => {
-      const now = performance.now();
-      if (now - lastReloadAtRef.current < HERO_VIDEO_RELOAD_COOLDOWN_MS) return;
-
-      lastReloadAtRef.current = now;
-      recoveryAttemptsRef.current += 1;
-      seekStartedAtRef.current = null;
-      lastVideoTimeRef.current = null;
-      readyRef.current = false;
-      video.load();
-    };
-
     const applyPendingVideoTime = () => {
       const video = videoRef.current;
       const pendingTime = pendingVideoTimeRef.current;
       if (!video || pendingTime === null) return;
 
-      if (video.error || video.networkState === MEDIA_NETWORK_EMPTY) {
-        reloadVideo(video);
-        return;
-      }
-
-      if (video.readyState < MEDIA_HAVE_METADATA) {
-        scheduleSeekRetry();
+      if (video.networkState === MEDIA_NETWORK_EMPTY) {
+        video.load();
         return;
       }
 
       const duration = getVideoDuration(video);
       if (duration <= 0) {
-        scheduleSeekRetry();
+        readyRef.current = false;
+        return;
+      }
+
+      if (video.readyState < MEDIA_HAVE_METADATA) {
         return;
       }
 
@@ -312,30 +325,31 @@ export default function VideoPage() {
         seekStartedAtRef.current = seekStartedAt;
 
         if (performance.now() - seekStartedAt > HERO_VIDEO_SEEK_TIMEOUT_MS) {
-          reloadVideo(video);
-          return;
+          lastVideoTimeRef.current = null;
+          seekStartedAtRef.current = null;
         }
 
-        scheduleSeekRetry();
         return;
       }
 
-      seekStartedAtRef.current = null;
       const nextTime = clamp(pendingTime, 0, Math.max(duration - 0.001, 0));
-      const timeDelta = Math.abs(video.currentTime - nextTime);
-      if (timeDelta >= HERO_VIDEO_FRAME_DURATION * 0.5) {
-        lastVideoTimeRef.current = nextTime;
-        seekStartedAtRef.current = performance.now();
-        video.currentTime = nextTime;
-        return;
-      }
-
+      if (lastVideoTimeRef.current !== null && Math.abs(lastVideoTimeRef.current - nextTime) < HERO_VIDEO_FRAME_DURATION * 0.5) return;
       lastVideoTimeRef.current = nextTime;
+      seekStartedAtRef.current = performance.now();
+
+      try {
+        if (typeof video.fastSeek === "function") {
+          video.fastSeek(nextTime);
+        } else {
+          video.currentTime = nextTime;
+        }
+      } catch {
+        seekStartedAtRef.current = null;
+        // If the browser is temporarily busy seeking, the next animation frame will retry.
+      }
     };
 
     const syncHero = () => {
-      syncFrameRef.current = 0;
-
       const hero = heroRef.current;
       if (!hero) return;
 
@@ -354,9 +368,7 @@ export default function VideoPage() {
       const duration = video ? getVideoDuration(video) : 0;
 
       if (video) {
-        video.pause();
         video.preload = "auto";
-        if (video.networkState === MEDIA_NETWORK_EMPTY) video.load();
 
         if (duration <= 0) {
           applyPendingVideoTime();
@@ -398,14 +410,9 @@ export default function VideoPage() {
       }
     };
 
-    const requestSync = () => {
-      if (syncFrameRef.current) return;
-      syncFrameRef.current = window.requestAnimationFrame(syncHero);
-    };
-
     const requestMeasuredSync = () => {
       measureHero();
-      requestSync();
+      syncHero();
     };
 
     requestHeroSyncRef.current = requestMeasuredSync;
@@ -415,44 +422,40 @@ export default function VideoPage() {
       requestMeasuredSync();
     };
 
-    const requestSeekSync = () => {
-      applyPendingVideoTime();
-    };
-
     const video = videoRef.current;
     measureHero();
-    requestSync();
-    window.addEventListener("scroll", requestSync, { passive: true });
+    syncHero();
     window.addEventListener("resize", requestMeasuredSync);
     window.addEventListener("focus", requestMeasuredSync);
     window.addEventListener("pageshow", requestMeasuredSync);
     document.addEventListener("visibilitychange", requestVisibleSync);
     video?.addEventListener("loadedmetadata", requestMeasuredSync);
-    video?.addEventListener("loadeddata", requestSeekSync);
-    video?.addEventListener("canplay", requestSeekSync);
+    video?.addEventListener("loadeddata", requestMeasuredSync);
+    video?.addEventListener("canplay", requestMeasuredSync);
     video?.addEventListener("durationchange", requestMeasuredSync);
-    video?.addEventListener("progress", requestSeekSync);
-    video?.addEventListener("seeked", requestSeekSync);
     video?.addEventListener("stalled", requestMeasuredSync);
     video?.addEventListener("emptied", requestMeasuredSync);
 
+    const tick = () => {
+      syncHero();
+      loopFrameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    tick();
+
     return () => {
-      window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestMeasuredSync);
       window.removeEventListener("focus", requestMeasuredSync);
       window.removeEventListener("pageshow", requestMeasuredSync);
       document.removeEventListener("visibilitychange", requestVisibleSync);
       video?.removeEventListener("loadedmetadata", requestMeasuredSync);
-      video?.removeEventListener("loadeddata", requestSeekSync);
-      video?.removeEventListener("canplay", requestSeekSync);
+      video?.removeEventListener("loadeddata", requestMeasuredSync);
+      video?.removeEventListener("canplay", requestMeasuredSync);
       video?.removeEventListener("durationchange", requestMeasuredSync);
-      video?.removeEventListener("progress", requestSeekSync);
-      video?.removeEventListener("seeked", requestSeekSync);
       video?.removeEventListener("stalled", requestMeasuredSync);
       video?.removeEventListener("emptied", requestMeasuredSync);
       requestHeroSyncRef.current = () => undefined;
-      if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
-      if (seekRetryFrameRef.current) window.cancelAnimationFrame(seekRetryFrameRef.current);
+      if (loopFrameRef.current) window.cancelAnimationFrame(loopFrameRef.current);
     };
   }, []);
 
@@ -460,10 +463,10 @@ export default function VideoPage() {
     const video = videoRef.current;
     if (!video) return;
 
-    recoveryAttemptsRef.current = 0;
     setVideoMissing(false);
+    recoveryAttemptsRef.current = 0;
+    seekStartedAtRef.current = null;
     durationRef.current = Number.isFinite(video.duration) ? video.duration : 0;
-    video.pause();
     if (durationRef.current > 0) {
       const pendingTime = pendingVideoTimeRef.current ?? 0.001;
       video.currentTime = clamp(pendingTime, 0, Math.max(durationRef.current - 0.001, 0));
@@ -473,8 +476,9 @@ export default function VideoPage() {
   };
 
   const onCanPlay = () => {
-    recoveryAttemptsRef.current = 0;
     setVideoMissing(false);
+    recoveryAttemptsRef.current = 0;
+    seekStartedAtRef.current = null;
     readyRef.current = durationRef.current > 0;
     requestHeroSyncRef.current();
   };
@@ -483,18 +487,21 @@ export default function VideoPage() {
     const video = videoRef.current;
 
     readyRef.current = false;
-    seekStartedAtRef.current = null;
     lastVideoTimeRef.current = null;
+    seekStartedAtRef.current = null;
 
     if (video && recoveryAttemptsRef.current < HERO_VIDEO_MAX_RECOVERY_ATTEMPTS) {
+      recoveryAttemptsRef.current += 1;
       setVideoMissing(false);
-      lastReloadAtRef.current = 0;
       video.load();
       requestHeroSyncRef.current();
       return;
     }
 
     setVideoMissing(true);
+    if (video) {
+      video.pause();
+    }
   };
 
   return (
@@ -597,15 +604,7 @@ export default function VideoPage() {
 
       <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
         <div className="grounding-orbit" aria-hidden="true" />
-        <div className="site-container grounding-grid grounding-grid--reverse">
-          <div className="grounding-panel grounding-panel--image">
-            <img
-              src="/bruno-cesar-custom-software-development.jpg"
-              alt="Custom software development"
-              className="grounding-panel-image"
-              loading="lazy"
-            />
-          </div>
+        <div className="site-container grounding-grid">
           <div className="grounding-copy">
             <h2 id="custom-development-title">Custom Development</h2>
             <h3>Accessible custom software built around the way your business actually operates.</h3>
@@ -618,6 +617,14 @@ export default function VideoPage() {
               <a className="button button--accent" href="/contact">I WANT BUILD</a>
               <a className="button button--ghost" href="/contact">BOOK A CALL</a>
             </div>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
+              alt="Custom software development"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
@@ -645,12 +652,35 @@ export default function VideoPage() {
               <span>10 capabilities</span>
             </div>
             <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {topic}
-                </li>
-              ))}
+              {groundingTopics.map((topic, index) => {
+                const columnId = index % 2 === 0 ? "left" : "right";
+                const expandedTopic = expandedGroundingTopics[columnId];
+                const isExpanded = expandedTopic === topic.title;
+                const isCompact = Boolean(expandedTopic) && !isExpanded;
+                const detailId = `grounding-topic-${index}`;
+
+                return (
+                  <li
+                    className={`${isExpanded ? "is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                    key={topic.title}
+                  >
+                    <button
+                      type="button"
+                      className="topic-list-button"
+                      aria-expanded={isExpanded}
+                      aria-controls={detailId}
+                      onClick={() => toggleGroundingTopic(columnId, topic.title)}
+                    >
+                      <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="topic-list-title">{topic.title}</span>
+                      <span className="topic-list-toggle" aria-hidden="true" />
+                      <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                        {topic.description}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -774,7 +804,8 @@ export default function VideoPage() {
         <div className="site-container final-cta-inner">
           <p className="eyebrow">Start a conversation</p>
           <h2 id="contact-title">
-            Ready to Build Your Next <span>AI Product?</span>
+            <span>Ready to Build Your</span>
+            <span>Next AI Product?</span>
           </h2>
           <p>
             Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real

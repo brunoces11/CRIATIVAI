@@ -296,11 +296,18 @@ export default function ServicesPage() {
             <h1 id="services-page-title">
               AI services for products, operations, and growth.
             </h1>
+            <p>
+              A unified service portfolio connecting refined product design, custom software, enterprise knowledge,
+              AI agents, automation, and customer-facing AI experiences.
+            </p>
           </div>
-          <p>
-            A unified service portfolio connecting refined product design, custom software, enterprise knowledge,
-            AI agents, automation, and customer-facing AI experiences.
-          </p>
+          <div className="services-page-hero-visual" aria-hidden="true">
+            <img
+              src="/criativai_ai_services.png"
+              alt=""
+              className="services-page-hero-image"
+            />
+          </div>
         </div>
       </section>
 

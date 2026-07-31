@@ -3,16 +3,17 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 const navigation = [
+  { label: "Hire me", href: "/hire-me" },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "#projects", adminOnly: true },
-  { label: "About Me", href: "/about-me" },
+  { label: "About", href: "/about-me" },
   { label: "Human Resources", href: "/human-resources", adminOnly: true },
   { label: "Vídeo", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style", adminOnly: true },
 ];
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "adm" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm" }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 

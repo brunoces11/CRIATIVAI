@@ -11,6 +11,7 @@ const TalentPreviewPageLazy = lazy(() => import("./pages/TalentPreview"));
 const PrivacyTermsPage = lazy(() => import("./pages/PrivacyTerms"));
 const VideoPageLazy = lazy(() => import("./pages/Video"));
 const AboutMePageLazy = lazy(() => import("./pages/AboutMe"));
+const HireMePageLazy = lazy(() => import("./pages/HireMe"));
 
 function Page() {
   const pathname = window.location.pathname.replace(/\/$/, "") || "/";
@@ -20,6 +21,7 @@ function Page() {
   if (pathname === "/style") return <StyleGuide />;
   if (pathname === "/talent-preview") return <TalentPreviewPageLazy />;
   if (pathname === "/about-me") return <AboutMePageLazy />;
+  if (pathname === "/hire-me") return <HireMePageLazy />;
   if (pathname === "/contact") return <ContactPageLazy />;
   if (pathname === "/video") return <Home />;
   if (pathname === "/adm") return <AdminPage />;

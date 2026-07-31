@@ -1,17 +1,49 @@
 ﻿import { SiteHeader } from "../components/SiteHeader";
 
+import { useState } from "react";
+
 const groundingTopics = [
-  "Custom RAG Setups",
-  "Knowledge Graphs | GraphRAG",
-  "Prompt Engineering Research",
-  "Context Engineering",
-  "Enterprise Knowledge Systems",
-  "Multi Agent Architecture",
-  "ETL, Data Processing",
-  "Context Enrichment",
-  "Smart Chunk processing",
-  "Guard rails | Observability",
-];
+  {
+    title: "Custom RAG Setups",
+    description: "Connect private knowledge to AI answers with retrieval tailored to your business rules.",
+  },
+  {
+    title: "Knowledge Graphs | GraphRAG",
+    description: "Map relationships across your data so agents understand context, entities, and dependencies.",
+  },
+  {
+    title: "Prompt Engineering Research",
+    description: "Design tested prompts and reasoning patterns for clearer, more predictable AI behavior.",
+  },
+  {
+    title: "Context Engineering",
+    description: "Control the exact information your agents receive before they answer or act.",
+  },
+  {
+    title: "Enterprise Knowledge Systems",
+    description: "Turn scattered company information into a reliable intelligence layer for people and AI.",
+  },
+  {
+    title: "Multi Agent Architecture",
+    description: "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows.",
+  },
+  {
+    title: "ETL, Data Processing",
+    description: "Clean, transform, and structure multi-source data so it becomes useful AI-ready knowledge.",
+  },
+  {
+    title: "Context Enrichment",
+    description: "Add metadata, relationships, and business meaning to improve retrieval and answer quality.",
+  },
+  {
+    title: "Smart Chunk processing",
+    description: "Split knowledge into precise chunks that preserve meaning and reduce noisy retrieval.",
+  },
+  {
+    title: "Guard rails | Observability",
+    description: "Monitor, constrain, and improve agent behavior with clearer controls and visibility.",
+  },
+] as const;
 
 const customDevelopmentTopics = [
   "Intelligence Hubs",
@@ -112,6 +144,15 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function Home() {
+  const [expandedGroundingTopics, setExpandedGroundingTopics] = useState<Record<string, string>>({});
+
+  const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
+    setExpandedGroundingTopics((currentTopics) => ({
+      ...currentTopics,
+      [columnId]: currentTopics[columnId] === topicTitle ? "" : topicTitle,
+    }));
+  };
+
   return (
     <main id="top">
       <SiteHeader brand={<Brand />} />
@@ -157,15 +198,7 @@ export default function Home() {
 
       <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
         <div className="grounding-orbit" aria-hidden="true" />
-        <div className="site-container grounding-grid grounding-grid--reverse">
-          <div className="grounding-panel grounding-panel--image">
-            <img
-              src="/bruno-cesar-custom-software-development.jpg"
-              alt="Custom software development"
-              className="grounding-panel-image"
-              loading="lazy"
-            />
-          </div>
+        <div className="site-container grounding-grid">
           <div className="grounding-copy">
             <h2 id="custom-development-title">Custom Development</h2>
             <h3>Accessible custom software built around the way your business actually operates.</h3>
@@ -178,6 +211,14 @@ export default function Home() {
               <a className="button button--accent" href="/contact">I WANT BUILD</a>
               <a className="button button--ghost" href="/contact">BOOK A CALL</a>
             </div>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
+              alt="Custom software development"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
@@ -205,9 +246,35 @@ export default function Home() {
               <span>10 capabilities</span>
             </div>
             <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}><span>{String(index + 1).padStart(2, "0")}</span>{topic}</li>
-              ))}
+              {groundingTopics.map((topic, index) => {
+                const columnId = index % 2 === 0 ? "left" : "right";
+                const expandedTopic = expandedGroundingTopics[columnId];
+                const isExpanded = expandedTopic === topic.title;
+                const isCompact = Boolean(expandedTopic) && !isExpanded;
+                const detailId = `grounding-topic-${index}`;
+
+                return (
+                  <li
+                    className={`${isExpanded ? "is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                    key={topic.title}
+                  >
+                    <button
+                      type="button"
+                      className="topic-list-button"
+                      aria-expanded={isExpanded}
+                      aria-controls={detailId}
+                      onClick={() => toggleGroundingTopic(columnId, topic.title)}
+                    >
+                      <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="topic-list-title">{topic.title}</span>
+                      <span className="topic-list-toggle" aria-hidden="true" />
+                      <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                        {topic.description}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -323,7 +390,10 @@ export default function Home() {
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
           <p className="eyebrow">Start a conversation</p>
-          <h2 id="contact-title">Ready to Build Your Next <span>AI Product?</span></h2>
+          <h2 id="contact-title">
+            <span>Ready to Build Your</span>
+            <span>Next AI Product?</span>
+          </h2>
           <p>
             Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
             business challenges.
