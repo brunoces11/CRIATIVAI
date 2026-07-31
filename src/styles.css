@@ -1790,6 +1790,139 @@ img {
   background: var(--blue-black);
   border-block: 1px solid rgba(255, 255, 255, 0.08);
 }
+.about-me-experience-section {
+  overflow: hidden;
+  background: var(--graphite);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.about-me-experience-panel {
+  padding-top: 30px;
+}
+.about-me-timeline {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px 74px;
+}
+.about-me-timeline::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), rgba(200, 162, 143, 0.18));
+  content: "";
+  transform: translateX(-50%);
+}
+.about-me-timeline-item {
+  position: relative;
+  min-width: 0;
+}
+.about-me-timeline-card {
+  padding: 26px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(200, 162, 143, 0.12), transparent 36%),
+    linear-gradient(145deg, rgba(43, 48, 56, 0.9), rgba(24, 29, 35, 0.98));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.13);
+  transition: border-color 260ms ease, transform 260ms ease;
+}
+.about-me-timeline-item:nth-child(even) {
+  margin-top: 30px;
+}
+.about-me-timeline-card:hover {
+  border-color: rgba(200, 162, 143, 0.42);
+  transform: translateY(-3px);
+}
+.about-me-timeline-card-header {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+}
+.about-me-timeline-company-mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  color: var(--accent);
+  border: 1px solid rgba(200, 162, 143, 0.38);
+  border-radius: 8px;
+  background: rgba(200, 162, 143, 0.06);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.about-me-timeline-company {
+  margin: 0 0 6px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.about-me-timeline-card h3 {
+  margin: 0;
+  color: var(--white);
+  font-size: clamp(1.18rem, 1.5vw, 1.48rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+.about-me-timeline-period {
+  margin: 24px 0 4px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.about-me-timeline-location,
+.about-me-timeline-description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.58;
+}
+.about-me-timeline-description {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+.about-me-timeline-skills {
+  display: flex;
+  padding: 0;
+  margin: 20px 0 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+.about-me-timeline-skills li {
+  padding: 7px 9px;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 0.62rem;
+  line-height: 1;
+}
+.about-me-timeline-marker {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 16px;
+  height: 16px;
+  top: 28px;
+  border: 4px solid var(--graphite);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px rgba(200, 162, 143, 0.62), 0 0 18px rgba(200, 162, 143, 0.28);
+}
+.about-me-timeline-item:nth-child(odd) .about-me-timeline-marker {
+  right: -45px;
+}
+.about-me-timeline-item:nth-child(even) .about-me-timeline-marker {
+  left: -45px;
+}
 .about-me-awards-accordion {
   display: grid;
   gap: 28px;
@@ -2273,6 +2406,25 @@ img {
     width: 100%;
   }
   .about-me-awards-intro { max-width: 100%; }
+  .about-me-timeline {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .about-me-timeline::before {
+    left: 8px;
+    transform: none;
+  }
+  .about-me-timeline-item {
+    padding-left: 34px;
+  }
+  .about-me-timeline-item:nth-child(even) {
+    margin-top: 0;
+  }
+  .about-me-timeline-item:nth-child(odd) .about-me-timeline-marker,
+  .about-me-timeline-item:nth-child(even) .about-me-timeline-marker {
+    right: auto;
+    left: 0;
+  }
   .about-me-award-card { grid-template-columns: 210px minmax(0, 1fr); }
   .about-me-award-image-wrap { width: 210px; }
   .about-me-cta-actions { flex-wrap: wrap; }
@@ -2330,6 +2482,11 @@ img {
   }
   .about-me-awards-heading-title { font-size: clamp(1.25rem, 7vw, 1.7rem); }
   .about-me-awards-panel { padding: 0 22px 22px; }
+  .about-me-timeline-item { padding-left: 28px; }
+  .about-me-timeline-card { padding: 20px; }
+  .about-me-timeline-card-header { grid-template-columns: 40px minmax(0, 1fr); gap: 12px; }
+  .about-me-timeline-company-mark { width: 40px; height: 40px; }
+  .about-me-timeline-skills li { line-height: 1.25; }
   .about-me-award-card { grid-template-columns: 1fr; }
   .about-me-award-image-wrap { width: 100%; }
   .about-me-award-content { padding: 22px; }
