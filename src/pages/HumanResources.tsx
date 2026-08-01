@@ -2,21 +2,6 @@ import { SiteHeader } from "../components/SiteHeader";
 
 const pillars = [
   {
-    id: "recruitment-intelligence",
-    number: "01",
-    title: "Recruitment Intelligence",
-    intro:
-      "Turn hours of manual research into a recruitment process shaped around your own methodology, criteria, and critical roles.",
-    items: [
-      "Search for professionals across multiple public and specialized sources.",
-      "Pre-qualify and rank professionals by level of fit.",
-      "Create evidence-based shortlists ready for recruiter review.",
-      "Build custom qualification tests for specific roles and skills.",
-      "Run standardized assessments at scale using your own evaluation criteria.",
-      "Create personalized outreach messages and screening questions.",
-    ],
-  },
-  {
     id: "digital-operations",
     number: "02",
     title: "Digital Operations",
@@ -45,6 +30,21 @@ const pillars = [
       "Automate campaigns, follow-ups, and sales tracking.",
       "Deploy AI SDR agents to engage and qualify leads.",
       "Integrate calendars for direct meeting scheduling.",
+    ],
+  },
+  {
+    id: "recruitment-intelligence",
+    number: "01",
+    title: "Recruitment Intelligence",
+    intro:
+      "Turn hours of manual research into a recruitment process shaped around your own methodology, criteria, and critical roles.",
+    items: [
+      "Search for professionals across multiple public and specialized sources.",
+      "Pre-qualify and rank professionals by level of fit.",
+      "Create evidence-based shortlists ready for recruiter review.",
+      "Build custom qualification tests for specific roles and skills.",
+      "Run standardized assessments at scale using your own evaluation criteria.",
+      "Create personalized outreach messages and screening questions.",
     ],
   },
 ] as const;
@@ -132,22 +132,6 @@ export default function HumanResourcesPage() {
         </div>
       </section>
 
-      <section className="section hr-value-section" id="overview" aria-labelledby="value-title">
-        <div className="site-container hr-value-grid">
-          <div>
-            <p className="eyebrow">The era of hyper-personalization</p>
-            <h2 id="value-title">Design fully customized recruitment workflows</h2>
-          </div>
-          <div className="hr-value-copy">
-            <p>
-              This is no longer about a one-size-fits-all tool. It is about building precise systems around your methodology,
-              business rules, and operating reality.
-            </p>
-            <strong>What matters is not generic automation. What matters is a stack that fits your company.</strong>
-          </div>
-        </div>
-      </section>
-
       {pillars.map((pillar) => (
         <section className="section hr-workflow-section" id={pillar.id} aria-labelledby={`${pillar.id}-title`} key={pillar.id}>
           <div className="site-container">
@@ -173,6 +157,22 @@ export default function HumanResourcesPage() {
           </div>
         </section>
       ))}
+
+      <section className="section hr-value-section" id="overview" aria-labelledby="value-title">
+        <div className="site-container hr-value-grid">
+          <div>
+            <p className="eyebrow">The era of hyper-personalization</p>
+            <h2 id="value-title">Design fully customized recruitment workflows</h2>
+          </div>
+          <div className="hr-value-copy">
+            <p>
+              This is no longer about a one-size-fits-all tool. It is about building precise systems around your methodology,
+              business rules, and operating reality.
+            </p>
+            <strong>What matters is not generic automation. What matters is a stack that fits your company.</strong>
+          </div>
+        </div>
+      </section>
 
       <section className="final-cta hr-final-cta" aria-labelledby="demo-title">
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
