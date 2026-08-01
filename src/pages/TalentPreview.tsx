@@ -2,6 +2,7 @@ import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { FormSuccessModal } from "../components/FormSuccessModal";
 import { SiteHeader } from "../components/SiteHeader";
 import { submitTalentPreview } from "../lib/forms";
+import { buildMailtoHref, isSitesFrontendOnly } from "../lib/sitesRuntime";
 
 type TalentPreviewState = {
   requester_name: string;
@@ -71,6 +72,24 @@ export default function TalentPreviewPage() {
     event.preventDefault();
     if (!isValid || submitting) return;
 
+    if (isSitesFrontendOnly) {
+      window.location.href = buildMailtoHref({
+        subject: `Talent Preview Request${form.job_title.trim() ? ` - ${form.job_title.trim()}` : ""}`,
+        lines: [
+          `Requester: ${form.requester_name.trim() || "-"}`,
+          `Email: ${form.requester_email.trim() || "-"}`,
+          `Role: ${form.job_title.trim() || "-"}`,
+          "",
+          "Primary search criterion:",
+          form.search_criteria_1.trim() || "-",
+          "",
+          `Exclusion characteristic: ${form.exclusion_criteria.trim() || "-"}`,
+          `Differentiator: ${form.differentiator.trim() || "-"}`,
+        ],
+      });
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
@@ -103,7 +122,7 @@ export default function TalentPreviewPage() {
             </p>
             <div className="hero-actions">
               <a className="button button--accent" href="#talent-preview-form">
-                Start the Request <span aria-hidden="true">↘</span>
+                Start the Request <span aria-hidden="true">-&gt;</span>
               </a>
             </div>
           </div>
@@ -153,7 +172,11 @@ export default function TalentPreviewPage() {
               Give us the live vacancy and the main search signal. You can also add an exclusion characteristic
               and one differentiator if they help sharpen the shortlist.
             </p>
-            <strong>We review the brief and respond to the requester by email within 24 hours.</strong>
+            <strong>
+              {isSitesFrontendOnly
+                ? "Public test mode: your brief is handed off through your email app instead of a live backend form."
+                : "We review the brief and respond to the requester by email within 24 hours."}
+            </strong>
           </div>
 
           <form className="form-panel" onSubmit={onSubmit} onReset={onReset} noValidate>
@@ -202,12 +225,17 @@ export default function TalentPreviewPage() {
 
             <input type="hidden" name="started_at_ms" value={form.started_at_ms} />
 
+            {isSitesFrontendOnly ? (
+              <p className="form-feedback form-feedback--notice">
+                Public test mode: submitting this form opens your email app with the role brief prefilled.
+              </p>
+            ) : null}
             {error ? <p className="form-feedback form-feedback--error">{error}</p> : null}
 
             <div className="form-actions">
               <button type="reset" className="button button--ghost">Clean Form</button>
               <button type="submit" className="button button--accent" disabled={!isValid || submitting}>
-                {submitting ? "Sending..." : "Send"} <span aria-hidden="true">↗</span>
+                {isSitesFrontendOnly ? "Continue by Email" : submitting ? "Sending..." : "Send"} <span aria-hidden="true">-&gt;</span>
               </button>
             </div>
           </form>
@@ -219,7 +247,7 @@ export default function TalentPreviewPage() {
           <div className="footer-brand">
             <a href="/" aria-label="CriativAI home"><Brand /></a>
             <p>AI-supported recruiting systems designed to help teams find stronger candidates, faster.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
@@ -236,7 +264,7 @@ export default function TalentPreviewPage() {
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Recruitment intelligence, grounded in clear criteria.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Recruitment intelligence, grounded in clear criteria.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top</a></div>
       </footer>
 
       <FormSuccessModal

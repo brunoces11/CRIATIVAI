@@ -9,6 +9,7 @@
     "dev": "node scripts/dev.mjs",
     "dev:frontend": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:sites": "node scripts/build-sites.mjs",
     "backend": "node scripts/backend.mjs",
     "backend:migrate": "python -m alembic -c backend/alembic.ini upgrade head",
     "start": "npx serve@latest dist",

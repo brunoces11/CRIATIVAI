@@ -1,13 +1,24 @@
+import { access, cp, mkdir, rm } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { findVenvPython } from "./scripts/runtime.mjs";
 
 const root = resolve(fileURLToPath(new URL(".", import.meta.url)));
+const isSitesFrontendOnlyBuild = process.env.VITE_SITES_FRONTEND_ONLY === "1";
 let backendProcess: ReturnType<typeof spawn> | null = null;
 let backendStartup: Promise<void> | null = null;
+
+async function exists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 async function isBackendReady() {
   try {
@@ -30,9 +41,9 @@ async function ensureBackendStarted() {
       ["-m", "uvicorn", "backend.app.main:app", "--reload", "--host", "127.0.0.1", "--port", "8000"],
       {
         cwd: root,
-        stdio: "inherit",
-        shell: process.platform === "win32",
         env: process.env,
+        shell: process.platform === "win32",
+        stdio: "inherit",
       },
     );
 
@@ -54,6 +65,34 @@ async function ensureBackendStarted() {
   return backendStartup;
 }
 
+function emitSitesArtifacts(): Plugin {
+  let configRoot = root;
+
+  return {
+    name: "criativai-sites-artifacts",
+    apply: "build",
+    configResolved(config) {
+      configRoot = config.root;
+    },
+    async closeBundle() {
+      const distRoot = resolve(configRoot, "dist");
+      const outputDirectory = resolve(distRoot, ".openai");
+      const workerOutput = resolve(distRoot, "server", "index.js");
+      const workerSource = resolve(configRoot, "worker", "sites-static-entry.js");
+      const hostingConfig = resolve(configRoot, ".openai", "hosting.json");
+
+      await rm(outputDirectory, { force: true, recursive: true });
+      await mkdir(resolve(distRoot, "server"), { recursive: true });
+      await mkdir(outputDirectory, { recursive: true });
+      await cp(workerSource, workerOutput);
+
+      if (await exists(hostingConfig)) {
+        await cp(hostingConfig, resolve(outputDirectory, "hosting.json"));
+      }
+    },
+  };
+}
+
 process.once("exit", () => {
   if (backendProcess && !backendProcess.killed) {
     backendProcess.kill();
@@ -63,19 +102,24 @@ process.once("exit", () => {
 export default defineConfig({
   plugins: [
     react(),
-    {
-      name: "criativai-auto-backend",
-      configureServer() {
-        void ensureBackendStarted();
-      },
-    },
+    !isSitesFrontendOnlyBuild
+      ? {
+          name: "criativai-auto-backend",
+          configureServer() {
+            void ensureBackendStarted();
+          },
+        }
+      : null,
+    isSitesFrontendOnlyBuild ? emitSitesArtifacts() : null,
   ],
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:8000",
-        changeOrigin: true,
-      },
-    },
-  },
+  server: !isSitesFrontendOnlyBuild
+    ? {
+        proxy: {
+          "/api": {
+            target: "http://127.0.0.1:8000",
+            changeOrigin: true,
+          },
+        },
+      }
+    : undefined,
 });

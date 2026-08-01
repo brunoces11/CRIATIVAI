@@ -3678,6 +3678,10 @@ h1.hero-title .hero-line {
   color: #efc0b9;
 }
 
+.form-feedback--notice {
+  color: rgba(229, 232, 236, 0.78);
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

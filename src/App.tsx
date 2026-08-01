@@ -1,5 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { isSitesFrontendOnly, openAssistantFallback } from "./lib/sitesRuntime";
 import Home from "./pages/Home";
+
 const ChatWidget = lazy(async () => import("./components/ChatWidget").then((module) => ({ default: module.ChatWidget })));
 const TargetMode = lazy(() => import("./components/target-mode/TargetMode"));
 const AdminPage = lazy(() => import("./pages/Admin"));
@@ -16,6 +18,7 @@ const HireMePageLazy = lazy(() => import("./pages/HireMe"));
 function Page() {
   const pathname = window.location.pathname.replace(/\/$/, "") || "/";
 
+  if (isSitesFrontendOnly && pathname === "/adm") return <VideoPageLazy />;
   if (pathname === "/human-resources") return <HumanResourcesPage />;
   if (pathname === "/services") return <ServicesPageLazy />;
   if (pathname === "/style") return <StyleGuide />;
@@ -31,13 +34,24 @@ function Page() {
 
 export default function App() {
   const pathname = window.location.pathname.replace(/\/$/, "") || "/";
-  const showChat = pathname !== "/adm";
+  const showChat = !isSitesFrontendOnly && pathname !== "/adm";
+
+  useEffect(() => {
+    if (!isSitesFrontendOnly) return;
+
+    const handleAssistantLaunch = () => {
+      openAssistantFallback();
+    };
+
+    window.addEventListener("criativai:open-chat", handleAssistantLaunch);
+    return () => window.removeEventListener("criativai:open-chat", handleAssistantLaunch);
+  }, []);
 
   return (
     <Suspense fallback={null}>
       <Page />
       {showChat ? <ChatWidget /> : null}
-      <TargetMode />
+      {isSitesFrontendOnly ? null : <TargetMode />}
     </Suspense>
   );
 }
