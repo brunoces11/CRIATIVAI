@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { attachChatContextTag, CHAT_OPEN_EVENT, getChatContextTag } from "../lib/chatContext";
 import { fetchCurrentConversation, sendChatMessage } from "../lib/chatStream";
 import { MarkdownText } from "./MarkdownText";
 import "./ChatWidget.css";
@@ -62,18 +63,26 @@ export function ChatWidget() {
   const closeTimerRef = useRef<number | null>(null);
   const restoredRef = useRef(false);
 
-  function openChat() {
+  function openChat(contextTag?: string) {
     if (closeTimerRef.current !== null) {
       window.clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
     setRenderPanel(true);
+    if (contextTag) {
+      setDraft((current) => attachChatContextTag(current, contextTag));
+      setError("");
+    }
     window.requestAnimationFrame(() => setOpen(true));
   }
 
   useEffect(() => {
-    window.addEventListener("criativai:open-chat", openChat);
-    return () => window.removeEventListener("criativai:open-chat", openChat);
+    function handleOpenChat(event: Event) {
+      openChat(getChatContextTag(event) ?? undefined);
+    }
+
+    window.addEventListener(CHAT_OPEN_EVENT, handleOpenChat);
+    return () => window.removeEventListener(CHAT_OPEN_EVENT, handleOpenChat);
   }, []);
 
   function closeChat() {
@@ -371,7 +380,7 @@ export function ChatWidget() {
           </form>
         </section>
       ) : (
-        <button className="chat-launcher" type="button" aria-label="Open AI chat" title="Open AI chat" onClick={openChat}>
+        <button className="chat-launcher" type="button" aria-label="Open AI chat" title="Open AI chat" onClick={() => openChat()}>
           <img className="chat-launcher__icon" src="/icons/chat-launcher.svg" alt="" aria-hidden="true" />
         </button>
       )}

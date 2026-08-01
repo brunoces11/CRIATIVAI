@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import { SiteHeader } from "../components/SiteHeader";
+import { openAssistantChat } from "../lib/chatContext";
 
 const services = [
   {
@@ -70,7 +71,6 @@ const steps = [
     title: "Initial AI Briefing",
     text: "With our AI assistant, you describe the initial scope of your idea so we can collect the first briefing and understand the business context.",
     ctaLabel: "Start Ai Briefing Now",
-    ctaHref: null,
     compactTitle: false,
   },
   {
@@ -78,7 +78,6 @@ const steps = [
     title: "Planning Call",
     text: "You schedule a call with our AI-assisted process so we can refine the plan, discuss ideas, define priorities, and shape the budget.",
     ctaLabel: "Book a call",
-    ctaHref: "/contact",
     compactTitle: false,
   },
   {
@@ -86,7 +85,6 @@ const steps = [
     title: "Design & Delivery",
     text: "We start development with key stages shared for your review, including follow-up meetings and iteration rounds until delivery.",
     ctaLabel: "Ask my Agent",
-    ctaHref: null,
     compactTitle: true,
   },
 ] as const;
@@ -189,8 +187,28 @@ function Brand() {
   );
 }
 
-function openAssistantChat() {
-  window.dispatchEvent(new Event("criativai:open-chat"));
+type Service = (typeof services)[number];
+type Step = (typeof steps)[number];
+
+function openServiceCardChat(service: Service, button: string) {
+  openAssistantChat({
+    page: "services",
+    section: "services",
+    card_type: "service",
+    card: service.title,
+    button,
+  });
+}
+
+function openProcessCardChat(step: Step) {
+  openAssistantChat({
+    page: "services",
+    section: "process",
+    card_type: "process_step",
+    step: step.index,
+    card: step.title,
+    button: step.ctaLabel,
+  });
 }
 
 function ServiceIcon({ type }: { type: string }) {
@@ -338,8 +356,8 @@ export default function ServicesPage() {
                   <p>{service.text}</p>
                 </div>
                 <div className="services-page-card-actions">
-                  <button type="button" onClick={openAssistantChat}>Ask my Ai Assistant</button>
-                  <button type="button" onClick={openAssistantChat}>I want It</button>
+                  <button type="button" onClick={() => openServiceCardChat(service, "Ask my Ai Assistant")}>Ask my Ai Assistant</button>
+                  <button type="button" onClick={() => openServiceCardChat(service, "I want It")}>I want It</button>
                 </div>
               </article>
             ))}
@@ -365,11 +383,7 @@ export default function ServicesPage() {
                 <span>{step.index}</span>
                 <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{step.title}</h3>
                 <p>{step.text}</p>
-                {step.ctaHref ? (
-                  <a className="button services-process-card__cta" href={step.ctaHref}>{step.ctaLabel}</a>
-                ) : (
-                  <button className="button services-process-card__cta" type="button" onClick={openAssistantChat}>{step.ctaLabel}</button>
-                )}
+                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{step.ctaLabel}</button>
               </article>
             ))}
           </div>
@@ -413,7 +427,7 @@ export default function ServicesPage() {
             Bring the rough idea, the messy process, or the opportunity you keep postponing. We turn it into a scoped
             plan, a buildable system, and a real delivery path.
           </p>
-          <button className="button button--accent" type="button" onClick={openAssistantChat}>
+          <button className="button button--accent" type="button" onClick={() => openAssistantChat()}>
             Start the Project Conversation <span aria-hidden="true">-&gt;</span>
           </button>
         </div>

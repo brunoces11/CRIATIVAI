@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { openAssistantChat } from "../lib/chatContext";
 
 const pillars = [
   {
@@ -57,8 +58,17 @@ function Brand() {
   );
 }
 
-function openAssistantChat() {
-  window.dispatchEvent(new Event("criativai:open-chat"));
+type Pillar = (typeof pillars)[number];
+
+function openBenefitCardChat(pillar: Pillar, item: string, button: string) {
+  openAssistantChat({
+    page: "human-resources",
+    section: pillar.id,
+    section_title: pillar.title,
+    card_type: "hr_benefit",
+    card: item,
+    button,
+  });
 }
 
 function HrFooter() {
@@ -148,8 +158,8 @@ export default function HumanResourcesPage() {
                     <p>{item}</p>
                   </div>
                   <div className="hr-benefits-card-actions">
-                    <button type="button" onClick={openAssistantChat}>Ask my Agents</button>
-                    <button type="button" onClick={openAssistantChat}>I want It</button>
+                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "Ask my Agents")}>Ask my Agents</button>
+                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "I want It")}>I want It</button>
                   </div>
                 </article>
               ))}
