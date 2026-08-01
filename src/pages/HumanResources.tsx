@@ -64,7 +64,7 @@ function HrFooter() {
         <div className="footer-brand">
           <a href="#top" aria-label="CriativAI Human Resources home"><Brand /></a>
           <p>AI systems for recruitment companies that want more precision, more capacity, and more control.</p>
-          <span className="copyright">Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+          <span className="copyright">Ã‚Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
         </div>
         <div className="footer-links-grid">
           <div>
@@ -76,14 +76,14 @@ function HrFooter() {
           </div>
           <div>
             <p className="micro-label">Social Media</p>
-            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">â–¶</span>YouTube</a>
+            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Ã¢â€“Â¶</span>YouTube</a>
             <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">BÄ“</span>Behance</a>
+            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">BÃ„â€œ</span>Behance</a>
             <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
           </div>
         </div>
       </div>
-      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top â†‘</a></div>
+      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top Ã¢â€ â€˜</a></div>
     </footer>
   );
 }
@@ -95,12 +95,20 @@ export default function HumanResourcesPage() {
 
       <section className="hr-hero" aria-labelledby="hr-hero-title">
         <div className="hr-hero-glow" aria-hidden="true" />
-        <div className="site-container hr-hero-grid">
+        <div className="site-container hr-hero-grid hr-hero-grid--solo">
           <div className="hr-hero-copy">
             <p className="eyebrow"><span /> AI for recruitment companies</p>
             <h1 id="hr-hero-title">
-              Find talent, streamline operations, and win new clients with AI
-              <span> built around your company.</span>
+              <span className="hr-hero-title-topline">
+                <span className="hr-hero-title-line hr-hero-title-line--streamline">STREAMLINE</span>
+                <span className="hr-hero-title-line hr-hero-title-line--your">YOUR</span>
+              </span>
+              <span className="hr-hero-title-line hr-hero-title-line--recruitment">RECRUITMENT</span>
+              <span className="hr-hero-title-line hr-hero-title-line--operations">OPERATIONS</span>
+              <span className="hr-hero-title-line hr-hero-title-line--ai">
+                <span className="hr-hero-title-with">WITH </span>
+                <span className="hr-hero-title-ai">AI</span>
+              </span>
             </h1>
             <p className="hr-hero-lead">
               Your methods. Your criteria. Your tools.
@@ -110,32 +118,12 @@ export default function HumanResourcesPage() {
             </p>
             <div className="hero-actions">
               <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
-                Request a Demo <span aria-hidden="true">â†—</span>
+                Request a Demo <span aria-hidden="true">Ã¢â€ â€”</span>
               </a>
               <a className="hr-text-link" href="#overview">
-                Explore the overview <span aria-hidden="true">â†“</span>
+                Explore the overview <span aria-hidden="true">Ã¢â€ â€œ</span>
               </a>
             </div>
-          </div>
-
-          <div className="hr-console" aria-label="Illustration of AI opportunities for recruitment companies">
-            <div className="hr-console-head"><span>AI / RECRUITMENT</span><i>CUSTOM</i></div>
-            <div className="hr-console-criteria"><span>Three strategic areas</span><strong>Talent · Operations · Business growth</strong></div>
-            {[
-              { name: "Recruitment Intelligence", note: "Search, qualify, shortlist" },
-              { name: "Digital Operations", note: "Systems, dashboards, agents" },
-              { name: "Business Discovery", note: "Leads, outreach, meetings" },
-            ].map((item) => (
-              <div className="hr-candidate" key={item.name}>
-                <span className="hr-avatar" />
-                <div>
-                  <strong>{item.name}</strong>
-                  <small>{item.note}</small>
-                </div>
-                <b>AI</b>
-              </div>
-            ))}
-            <div className="hr-console-footer"><span>MACRO VIEW</span><strong>Adapted to your process</strong></div>
           </div>
         </div>
       </section>
@@ -144,10 +132,7 @@ export default function HumanResourcesPage() {
         <div className="site-container hr-value-grid">
           <div>
             <p className="eyebrow">The era of hyper-personalization</p>
-            <h2 id="value-title">
-              AI now enables recruitment companies to design fully customized workflows,
-              <span> assessments, dashboards, and management systems.</span>
-            </h2>
+            <h2 id="value-title">Design fully customized recruitment workflows</h2>
           </div>
           <div className="hr-value-copy">
             <p>
@@ -192,10 +177,10 @@ export default function HumanResourcesPage() {
           </p>
           <div className="hero-actions">
             <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
-              Request a Demo <span aria-hidden="true">â†—</span>
+              Request a Demo <span aria-hidden="true">Ã¢â€ â€”</span>
             </a>
             <a className="hr-text-link" href="mailto:hello@criativai.com?subject=Talk%20about%20AI%20for%20Recruitment">
-              Talk about your use case <span aria-hidden="true">â†—</span>
+              Talk about your use case <span aria-hidden="true">Ã¢â€ â€”</span>
             </a>
           </div>
         </div>

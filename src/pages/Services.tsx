@@ -329,7 +329,7 @@ export default function ServicesPage() {
                   <p>{service.text}</p>
                 </div>
                 <div className="services-page-card-actions">
-                  <button type="button" onClick={openAssistantChat}>Ask AI</button>
+                  <button type="button" onClick={openAssistantChat}>Ask my Ai Assistant</button>
                   <button type="button" onClick={openAssistantChat}>I want It</button>
                 </div>
               </article>
