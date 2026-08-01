@@ -673,9 +673,9 @@ export default function VideoPage() {
                           aria-controls={detailId}
                           onClick={() => toggleGroundingTopic(columnId, topic.title)}
                         >
+                          <span className="topic-list-toggle" aria-hidden="true" />
                           <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
                           <span className="topic-list-title">{topic.title}</span>
-                          <span className="topic-list-toggle" aria-hidden="true" />
                           <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
                             {topic.description}
                           </span>
