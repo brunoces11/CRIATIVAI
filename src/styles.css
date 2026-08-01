@@ -897,10 +897,18 @@ img {
   padding: 0;
   margin: 0;
   grid-template-columns: 1fr 1fr;
-  list-style: none;
 }
 
-.topic-list li {
+.topic-list-column {
+  display: grid;
+  align-content: start;
+}
+
+.topic-list-column:first-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.topic-list-item {
   position: relative;
   min-height: 64px;
   padding: 0;
@@ -910,12 +918,11 @@ img {
   transition: min-height 240ms ease, background-color 240ms ease;
 }
 
-.topic-list li:nth-child(odd) { border-right: 1px solid rgba(255, 255, 255, 0.09); }
-.topic-list li.is-expanded {
+.topic-list-item.is-expanded {
   min-height: 132px;
   background: rgba(200, 162, 143, 0.055);
 }
-.topic-list li.is-compact {
+.topic-list-item.is-compact {
   min-height: 42px;
 }
 .topic-list-button {
@@ -976,7 +983,7 @@ img {
 }
 .topic-list-button:hover .topic-list-title,
 .topic-list-button:focus-visible .topic-list-title,
-.topic-list li.is-expanded .topic-list-title {
+.topic-list-item.is-expanded .topic-list-title {
   color: var(--accent);
 }
 .topic-list-button:hover .topic-list-toggle::before,
@@ -985,13 +992,13 @@ img {
 .topic-list-button:focus-visible .topic-list-toggle::after {
   background: var(--accent-light);
 }
-.topic-list li.is-compact .topic-list-button {
+.topic-list-item.is-compact .topic-list-button {
   padding-block: 9px;
 }
-.topic-list li.is-compact .topic-list-index {
+.topic-list-item.is-compact .topic-list-index {
   display: none;
 }
-.topic-list li.is-compact .topic-list-title {
+.topic-list-item.is-compact .topic-list-title {
   font-size: 0.7rem;
 }
 .topic-list-detail {
@@ -2813,7 +2820,7 @@ img {
   .grounding-copy h3 { font-size: 2.32rem; }
   .grounding-panel { padding: 0 20px 24px; }
   .topic-list { grid-template-columns: 1fr; }
-  .topic-list li:nth-child(odd) { border-right: 0; }
+  .topic-list-column:first-child { border-right: 0; }
   .services-grid { grid-template-columns: 1fr; }
   .service-card:last-child { grid-column: auto; }
   .service-card { min-height: 220px !important; padding: 22px; }
@@ -3745,6 +3752,7 @@ h1.hero-title .hero-line {
 @media (max-width: 860px) {
   .video-hero-video,
   .video-hero-placeholder {
+    top: 120px;
     width: 770px;
     height: 433px;
   }

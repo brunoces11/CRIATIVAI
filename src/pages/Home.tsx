@@ -144,13 +144,12 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function Home() {
-  const [expandedGroundingTopics, setExpandedGroundingTopics] = useState<Record<string, string>>({});
+  const [expandedGroundingTopic, setExpandedGroundingTopic] = useState<{ columnId: string; title: string } | null>(null);
 
   const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
-    setExpandedGroundingTopics((currentTopics) => ({
-      ...currentTopics,
-      [columnId]: currentTopics[columnId] === topicTitle ? "" : topicTitle,
-    }));
+    setExpandedGroundingTopic((currentTopic) =>
+      currentTopic?.columnId === columnId && currentTopic.title === topicTitle ? null : { columnId, title: topicTitle },
+    );
   };
 
   return (
@@ -245,37 +244,42 @@ export default function Home() {
               <span>Enterprise intelligence layer</span>
               <span>10 capabilities</span>
             </div>
-            <ul className="topic-list">
-              {groundingTopics.map((topic, index) => {
-                const columnId = index % 2 === 0 ? "left" : "right";
-                const expandedTopic = expandedGroundingTopics[columnId];
-                const isExpanded = expandedTopic === topic.title;
-                const isCompact = Boolean(expandedTopic) && !isExpanded;
-                const detailId = `grounding-topic-${index}`;
+            <div className="topic-list" role="list">
+              {(["left", "right"] as const).map((columnId) => (
+                <div className="topic-list-column" key={columnId}>
+                  {groundingTopics.map((topic, index) => {
+                    if ((columnId === "left" && index % 2 !== 0) || (columnId === "right" && index % 2 === 0)) return null;
 
-                return (
-                  <li
-                    className={`${isExpanded ? "is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
-                    key={topic.title}
-                  >
-                    <button
-                      type="button"
-                      className="topic-list-button"
-                      aria-expanded={isExpanded}
-                      aria-controls={detailId}
-                      onClick={() => toggleGroundingTopic(columnId, topic.title)}
-                    >
-                      <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="topic-list-title">{topic.title}</span>
-                      <span className="topic-list-toggle" aria-hidden="true" />
-                      <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
-                        {topic.description}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+                    const isExpanded = expandedGroundingTopic?.columnId === columnId && expandedGroundingTopic.title === topic.title;
+                    const isCompact = expandedGroundingTopic?.columnId === columnId && !isExpanded;
+                    const detailId = `grounding-topic-${index}`;
+
+                    return (
+                      <div
+                        role="listitem"
+                        className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                        key={topic.title}
+                      >
+                        <button
+                          type="button"
+                          className="topic-list-button"
+                          aria-expanded={isExpanded}
+                          aria-controls={detailId}
+                          onClick={() => toggleGroundingTopic(columnId, topic.title)}
+                        >
+                          <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                          <span className="topic-list-title">{topic.title}</span>
+                          <span className="topic-list-toggle" aria-hidden="true" />
+                          <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                            {topic.description}
+                          </span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
