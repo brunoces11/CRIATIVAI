@@ -69,16 +69,25 @@ const steps = [
     index: "01",
     title: "Initial AI Briefing",
     text: "With our AI assistant, you describe the initial scope of your idea so we can collect the first briefing and understand the business context.",
+    ctaLabel: "Start Ai Briefing Now",
+    ctaHref: null,
+    compactTitle: false,
   },
   {
     index: "02",
     title: "Planning Call",
     text: "You schedule a call with our AI-assisted process so we can refine the plan, discuss ideas, define priorities, and shape the budget.",
+    ctaLabel: "Book a call",
+    ctaHref: "/contact",
+    compactTitle: false,
   },
   {
     index: "03",
-    title: "Development & Delivery",
+    title: "Design & Delivery",
     text: "We start development with key stages shared for your review, including follow-up meetings and iteration rounds until delivery.",
+    ctaLabel: "Ask my Agent",
+    ctaHref: null,
+    compactTitle: true,
   },
 ] as const;
 
@@ -354,8 +363,13 @@ export default function ServicesPage() {
             {steps.map((step) => (
               <article className="services-process-card" key={step.title}>
                 <span>{step.index}</span>
-                <h3>{step.title}</h3>
+                <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{step.title}</h3>
                 <p>{step.text}</p>
+                {step.ctaHref ? (
+                  <a className="button services-process-card__cta" href={step.ctaHref}>{step.ctaLabel}</a>
+                ) : (
+                  <button className="button services-process-card__cta" type="button" onClick={openAssistantChat}>{step.ctaLabel}</button>
+                )}
               </article>
             ))}
           </div>
