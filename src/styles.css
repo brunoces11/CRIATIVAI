@@ -3819,8 +3819,20 @@ h1.hero-title .hero-line {
     padding-bottom: 74px;
   }
 
+  .video-hero-copy .hero-eyebrow {
+    display: none;
+  }
+
   .video-hero-copy .hero-intro {
     max-width: 100%;
+  }
+
+  .video-hero-copy .hero-intro > p {
+    max-width: 400px;
+  }
+
+  .video-hero-topics {
+    padding-left: 0;
   }
 
   .video-hero-next {
