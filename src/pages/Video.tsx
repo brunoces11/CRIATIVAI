@@ -544,7 +544,7 @@ export default function VideoPage() {
               </p>
               <div className="hero-actions">
                 <span className="button button--light">
-                  Let&apos;s Talk <span aria-hidden="true">â†—</span>
+                  Let&apos;s Talk <span aria-hidden="true">{"\u2197"}</span>
                 </span>
               </div>
             </div>
@@ -816,7 +816,7 @@ export default function VideoPage() {
             business challenges.
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">â†—</span>
+            Start a Project <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -828,7 +828,7 @@ export default function VideoPage() {
               <Brand />
             </a>
             <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
@@ -847,7 +847,7 @@ export default function VideoPage() {
                 rel="noreferrer noopener"
               >
                 <span className="footer-social-icon" aria-hidden="true">
-                  â–¶
+                  {"\u25B6"}
                 </span>
                 YouTube
               </a>
@@ -892,7 +892,7 @@ export default function VideoPage() {
           <a className="footer-legal-link" href="/privacy">
             Privacy &amp; Terms
           </a>
-          <a href="#top">Back to top â†‘</a>
+          <a href="#top">Back to top {"\u2191"}</a>
         </div>
       </footer>
     </main>

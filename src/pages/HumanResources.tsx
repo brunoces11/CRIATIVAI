@@ -57,6 +57,10 @@ function Brand() {
   );
 }
 
+function openAssistantChat() {
+  window.dispatchEvent(new Event("criativai:open-chat"));
+}
+
 function HrFooter() {
   return (
     <footer className="footer" id="footer">
@@ -64,7 +68,7 @@ function HrFooter() {
         <div className="footer-brand">
           <a href="#top" aria-label="CriativAI Human Resources home"><Brand /></a>
           <p>AI systems for recruitment companies that want more precision, more capacity, and more control.</p>
-          <span className="copyright">Ã‚Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+          <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
         </div>
         <div className="footer-links-grid">
           <div>
@@ -76,14 +80,14 @@ function HrFooter() {
           </div>
           <div>
             <p className="micro-label">Social Media</p>
-            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Ã¢â€“Â¶</span>YouTube</a>
+            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>YouTube</a>
             <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">BÃ„â€œ</span>Behance</a>
+            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>Behance</a>
             <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
           </div>
         </div>
       </div>
-      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top Ã¢â€ â€˜</a></div>
+      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top {"\u2191"}</a></div>
     </footer>
   );
 }
@@ -118,10 +122,10 @@ export default function HumanResourcesPage() {
             </p>
             <div className="hero-actions">
               <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
-                Request a Demo <span aria-hidden="true">Ã¢â€ â€”</span>
+                Request a Demo <span aria-hidden="true">{"\u2197"}</span>
               </a>
               <a className="hr-text-link" href="#overview">
-                Explore the overview <span aria-hidden="true">Ã¢â€ â€œ</span>
+                Explore the overview <span aria-hidden="true">{"\u2193"}</span>
               </a>
             </div>
           </div>
@@ -154,9 +158,15 @@ export default function HumanResourcesPage() {
             </div>
             <div className="hr-benefits-grid">
               {pillar.items.map((item) => (
-                <article key={item}>
-                  <i aria-hidden="true" />
-                  <p>{item}</p>
+                <article className="hr-benefits-card" key={item}>
+                  <div className="hr-benefits-card-body">
+                    <i aria-hidden="true" />
+                    <p>{item}</p>
+                  </div>
+                  <div className="hr-benefits-card-actions">
+                    <button type="button" onClick={openAssistantChat}>Ask my Agents</button>
+                    <button type="button" onClick={openAssistantChat}>I want It</button>
+                  </div>
                 </article>
               ))}
             </div>
@@ -177,10 +187,10 @@ export default function HumanResourcesPage() {
           </p>
           <div className="hero-actions">
             <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
-              Request a Demo <span aria-hidden="true">Ã¢â€ â€”</span>
+              Request a Demo <span aria-hidden="true">{"\u2197"}</span>
             </a>
             <a className="hr-text-link" href="mailto:hello@criativai.com?subject=Talk%20about%20AI%20for%20Recruitment">
-              Talk about your use case <span aria-hidden="true">Ã¢â€ â€”</span>
+              Talk about your use case <span aria-hidden="true">{"\u2197"}</span>
             </a>
           </div>
         </div>

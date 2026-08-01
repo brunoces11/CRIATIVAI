@@ -68,6 +68,10 @@ const fontFamilies = [
   },
 ] as const;
 
+const MIDDOT = "\u00B7";
+const TIMES = "\u00D7";
+const ARROW_NE = "\u2197";
+
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
@@ -106,7 +110,7 @@ export default function StyleGuide() {
             {colors.map(([name, token, value]) => (
               <article className="color-card" key={token}>
                 <div className="color-swatch" style={{ backgroundColor: `var(${token})` }} />
-                <div><h3>{name}</h3><Spec>{token} Â· {value}</Spec></div>
+                <div><h3>{name}</h3><Spec>{token} {MIDDOT} {value}</Spec></div>
               </article>
             ))}
           </div>
@@ -130,9 +134,9 @@ export default function StyleGuide() {
             ))}
           </div>
           <div className="body-samples">
-            <article><p className="micro-label">Body / Inter</p><p>Clear, considered copy for complex ideas. Default body text uses 16px with a 1.55 line-height.</p><Spec>16px Â· 400 Â· line-height 1.55</Spec></article>
-            <article><p className="micro-label">Eyebrow / Inter</p><p className="eyebrow">Design Ã— Engineering Ã— Strategy</p><Spec>0.72rem Â· 500 Â· 0.15em tracking</Spec></article>
-            <article><p className="micro-label">Brand serif / Cormorant Garamond</p><p className="serif-sample">Thoughtful, human, precise.</p><Spec>600â€“700 Â· brand moments</Spec></article>
+            <article><p className="micro-label">Body / Inter</p><p>Clear, considered copy for complex ideas. Default body text uses 16px with a 1.55 line-height.</p><Spec>16px {MIDDOT} 400 {MIDDOT} line-height 1.55</Spec></article>
+            <article><p className="micro-label">Eyebrow / Inter</p><p className="eyebrow">Design {TIMES} Engineering {TIMES} Strategy</p><Spec>0.72rem {MIDDOT} 500 {MIDDOT} 0.15em tracking</Spec></article>
+            <article><p className="micro-label">Brand serif / Cormorant Garamond</p><p className="serif-sample">Thoughtful, human, precise.</p><Spec>600-700 {MIDDOT} brand moments</Spec></article>
           </div>
         </div>
       </section>
@@ -149,7 +153,7 @@ export default function StyleGuide() {
                 <div className="font-family-head">
                   <p className="micro-label">{family.role}</p>
                   <h3 style={{ fontFamily: `var(${family.variable})` }}>{family.name}</h3>
-                  <Spec>{family.variable} Â· {family.stack}</Spec>
+                  <Spec>{family.variable} {MIDDOT} {family.stack}</Spec>
                 </div>
                 <div className="font-weight-list">
                   {family.weights.map(([weight, label]) => (
@@ -180,9 +184,9 @@ export default function StyleGuide() {
             <p>Interactions are quiet by default and respond with the accent color, movement, and clear keyboard focus.</p>
           </div>
           <div className="action-grid">
-            <article className="specimen-card"><p className="micro-label">Primary button</p><a className="button button--light" href="#actions-title">Let&apos;s Talk <span>â†—</span></a><Spec>46px min-height Â· 22px horizontal padding Â· 2px radius</Spec></article>
-            <article className="specimen-card"><p className="micro-label">Accent button</p><a className="button button--accent" href="#actions-title">Start a Project <span>â†—</span></a><Spec>Accent gradient Â· hover lift âˆ’2px</Spec></article>
-            <article className="specimen-card"><p className="micro-label">Text link</p><a className="style-text-link" href="#actions-title">Explore the system <span>â†—</span></a><Spec>0.75rem Â· 0.08em tracking Â· accent on hover</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Primary button</p><a className="button button--light" href="#actions-title">Let&apos;s Talk <span>{ARROW_NE}</span></a><Spec>46px min-height {MIDDOT} 22px horizontal padding {MIDDOT} 2px radius</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Accent button</p><a className="button button--accent" href="#actions-title">Start a Project <span>{ARROW_NE}</span></a><Spec>Accent gradient {MIDDOT} hover lift -2px</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Text link</p><a className="style-text-link" href="#actions-title">Explore the system <span>{ARROW_NE}</span></a><Spec>0.75rem {MIDDOT} 0.08em tracking {MIDDOT} accent on hover</Spec></article>
           </div>
         </div>
       </section>
@@ -194,15 +198,15 @@ export default function StyleGuide() {
             <p>Reusable surfaces, borders, labels, and feedback patterns used to make the interface feel coherent.</p>
           </div>
           <div className="component-grid">
-            <article className="component-card"><p className="project-index">01 / Card</p><h3>Surface card</h3><p>Layered dark gradients give modules depth while preserving a calm reading surface.</p><Spec>12px radius Â· 1px border Â· 14px / 36px shadow</Spec></article>
-            <article className="component-card component-card--label"><p className="micro-label">System label</p><h3>Technical foundation</h3><p>Uppercase labels establish context without competing with the main message.</p><Spec>0.72rem Â· uppercase Â· 0.15em tracking</Spec></article>
-            <article className="component-card"><div className="component-status"><i /> Grounded system</div><h3>Accent signal</h3><p>Use warm accent marks to indicate priority, active states, and confidence.</p><Spec>#C8A28F Â· subtle glow Â· never body copy</Spec></article>
+            <article className="component-card"><p className="project-index">01 / Card</p><h3>Surface card</h3><p>Layered dark gradients give modules depth while preserving a calm reading surface.</p><Spec>12px radius {MIDDOT} 1px border {MIDDOT} 14px / 36px shadow</Spec></article>
+            <article className="component-card component-card--label"><p className="micro-label">System label</p><h3>Technical foundation</h3><p>Uppercase labels establish context without competing with the main message.</p><Spec>0.72rem {MIDDOT} uppercase {MIDDOT} 0.15em tracking</Spec></article>
+            <article className="component-card"><div className="component-status"><i /> Grounded system</div><h3>Accent signal</h3><p>Use warm accent marks to indicate priority, active states, and confidence.</p><Spec>#C8A28F {MIDDOT} subtle glow {MIDDOT} never body copy</Spec></article>
           </div>
           <div className="style-rules">
             <div><span>Layout</span><strong>1,300px maximum content width</strong></div>
-            <div><span>Spacing</span><strong>16px base rhythm Â· 72px section spacing</strong></div>
-            <div><span>Motion</span><strong>220â€“300ms ease transitions</strong></div>
-            <div><span>Focus</span><strong>2px accent-light outline Â· 4px offset</strong></div>
+            <div><span>Spacing</span><strong>16px base rhythm {MIDDOT} 72px section spacing</strong></div>
+            <div><span>Motion</span><strong>220-300ms ease transitions</strong></div>
+            <div><span>Focus</span><strong>2px accent-light outline {MIDDOT} 4px offset</strong></div>
           </div>
         </div>
       </section>
@@ -217,17 +221,17 @@ export default function StyleGuide() {
             <a className="style-page-link" href="/human-resources">
               <span className="micro-label">Recruitment offer</span>
               <strong>Human Resources</strong>
-              <em>Open the service page â†—</em>
+              <em>Open the service page {ARROW_NE}</em>
             </a>
             <a className="style-page-link style-page-link--featured" href="/talent-preview">
               <span className="micro-label">Free shortlist request</span>
               <strong>Talent Preview</strong>
-              <em>Open the promotional intake page â†—</em>
+              <em>Open the promotional intake page {ARROW_NE}</em>
             </a>
             <a className="style-page-link" href="/contact">
               <span className="micro-label">Direct inquiry</span>
               <strong>Contact</strong>
-              <em>Open the contact form â†—</em>
+              <em>Open the contact form {ARROW_NE}</em>
             </a>
           </div>
         </div>
@@ -249,7 +253,7 @@ export default function StyleGuide() {
       </section>
 
       <footer className="style-footer">
-        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home â†—</a></div>
+        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home {ARROW_NE}</a></div>
       </footer>
     </main>
   );
@@ -266,7 +270,7 @@ function HeadingSample({ tag, text, font, size }: HeadingSampleProps) {
   const Tag = tag.toLowerCase() as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   return (
     <article className="type-row">
-      <div className="type-meta"><span>{tag}</span><Spec>{font} Â· {size}</Spec></div>
+      <div className="type-meta"><span>{tag}</span><Spec>{font} {MIDDOT} {size}</Spec></div>
       <Tag className={`type-sample type-sample--${tag.toLowerCase()}`}>{text}</Tag>
     </article>
   );

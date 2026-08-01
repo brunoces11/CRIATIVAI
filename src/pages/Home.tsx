@@ -160,7 +160,7 @@ export default function Home() {
         <div className="hero-atmosphere" aria-hidden="true" />
         <div className="site-container hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow hero-eyebrow"><span /> Design Ã— Engineering Ã— Strategy</p>
+            <p className="eyebrow hero-eyebrow"><span /> Design {"\u00D7"} Engineering {"\u00D7"} Strategy</p>
             <h1 id="hero-title" className="hero-title">
               <span className="hero-line hero-line--one">CREATIVE</span>
               <span className="hero-line hero-line--two">AI SOLUTIONS</span>
@@ -171,7 +171,7 @@ export default function Home() {
                 engineering, and business strategy to solve real-world challenges.
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">â†—</span></a>
+                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">{"\u2197"}</span></a>
               </div>
             </div>
           </div>
@@ -403,7 +403,7 @@ export default function Home() {
             business challenges.
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">â†—</span>
+            Start a Project <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -413,7 +413,7 @@ export default function Home() {
           <div className="footer-brand">
             <a href="#top" aria-label="CriativAI home"><Brand /></a>
             <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">Â© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
@@ -425,14 +425,14 @@ export default function Home() {
             </div>
             <div>
               <p className="micro-label">Social Media</p>
-              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">â–¶</span>YouTube</a>
+              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>YouTube</a>
               <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">BÄ“</span>Behance</a>
+              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>Behance</a>
               <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top â†‘</a></div>
+        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top {"\u2191"}</a></div>
       </footer>
     </main>
   );
