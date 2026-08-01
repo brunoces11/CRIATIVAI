@@ -7,7 +7,7 @@ const navigation = [
   { label: "Services", href: "/services" },
   { label: "Projects", href: "#projects", adminOnly: true },
   { label: "About", href: "/about-me" },
-  { label: "Human Resources", href: "/human-resources", adminOnly: true },
+  { label: "Human Resources", href: "/human-resources" },
   { label: "Vídeo", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style", adminOnly: true },

@@ -414,13 +414,12 @@ export default function AboutMePage() {
                 onClick={() => toggleAccordion("features")}
               >
                 <div className="about-me-awards-heading-copy">
-                  <p className="eyebrow">Capabilities</p>
-                  <h3 className="about-me-awards-heading-title">What Bruno Builds</h3>
+                  <p className="eyebrow">Tech Stack</p>
+                  <h3 className="about-me-awards-heading-title">Capabilities</h3>
                 </div>
                 <div className="about-me-awards-heading-side">
                   <p className="section-intro about-me-awards-intro">
-                    A hybrid practice that connects AI systems, product experience, and implementation details into one
-                    coherent product direction.
+                    From deep creative AI background to solid technical knowledge of GenAI and related technologies.
                   </p>
                 </div>
                 <span className="about-me-awards-chevron-wrap" aria-hidden="true">
@@ -471,8 +470,8 @@ export default function AboutMePage() {
                 </div>
                 <div className="about-me-awards-heading-side">
                   <p className="section-intro about-me-awards-intro">
-                    International recognition across prompt engineering competitions, agent design, prompt-app
-                    concepts, and built-in ChatGPT game experiences.
+                    International recognition in prompt engineering, agent design, prompt-app concepts, and built-in
+                    ChatGPT games.
                   </p>
                 </div>
                 <span className="about-me-awards-chevron-wrap" aria-hidden="true">
@@ -539,8 +538,8 @@ export default function AboutMePage() {
                 </div>
                 <div className="about-me-awards-heading-side">
                   <p className="section-intro about-me-awards-intro">
-                    More than 20 years creating and leading interactive systems, from design and education to AI
-                    architecture.
+                    20+ years building interactive systems, from a deep creative design background to modern AI
+                    development.
                   </p>
                 </div>
                 <span className="about-me-awards-chevron-wrap" aria-hidden="true">
