@@ -4,60 +4,70 @@ import { openAssistantChat } from "../lib/chatContext";
 
 const services = [
   {
+    id: "product-design",
     index: "01",
     title: "Product Design",
     text: "Human-centered digital product and UI/UX design focused on usability, accessibility, conversion, and exceptional user experiences.",
     icon: "product",
   },
   {
+    id: "refined-websites",
     index: "02",
     title: "Refined Websites",
     text: "Fast, accessible, refined websites for large-scale corporate platforms or simple landing pages built to convert, with clean infrastructure, continuous deployment, and code your team can own.",
     icon: "websites",
   },
   {
+    id: "custom-software",
     index: "03",
     title: "Custom Software",
     text: "Purpose-built software shaped around your workflows, users, data, and operational constraints, combining AI-assisted architecture, development, testing, deployment, and optimized delivery across the full build process.",
     icon: "software",
   },
   {
+    id: "ai-client-acquisition",
     index: "04",
     title: "AI Client Acquisition",
     text: "AI-assisted acquisition flows that qualify leads, capture context, personalize follow-ups, and help turn visitor intent into real commercial opportunities.",
     icon: "acquisition",
   },
   {
+    id: "ai-customer-service",
     index: "05",
     title: "AI Customer Service",
     text: "AI customer service agents that respond instantly, assemble requests inside the conversation, route orders or tickets to operations, and keep customers updated automatically.",
     icon: "support",
   },
   {
+    id: "ai-automations",
     index: "06",
     title: "AI Automations",
     text: "AI-powered business process automation that eliminates repetitive tasks, connects tools and approvals, and increases operational efficiency.",
     icon: "automation",
   },
   {
+    id: "smart-ai-agents",
     index: "07",
     title: "Smart AI Agents",
     text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
     icon: "agents",
   },
   {
+    id: "enterprise-knowledge-systems",
     index: "08",
     title: "Enterprise Knowledge Systems",
     text: "Enterprise knowledge architecture that gives AI agents a single source of truth through knowledge lakes, custom RAG setups, GraphRAG, process context, and traceable business data relationships.",
     icon: "knowledge",
   },
   {
+    id: "enterprise-consulting",
     index: "09",
     title: "Enterprise Consulting",
     text: "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization.",
     icon: "consulting",
   },
   {
+    id: "ai-training",
     index: "10",
     title: "AI Training",
     text: "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities.",
@@ -67,6 +77,7 @@ const services = [
 
 const steps = [
   {
+    welcomeKey: "services/process/initial-ai-briefing/start-ai-briefing-now",
     index: "01",
     title: "Initial AI Briefing",
     text: "With our AI assistant, you describe the initial scope of your idea so we can collect the first briefing and understand the business context.",
@@ -74,6 +85,7 @@ const steps = [
     compactTitle: false,
   },
   {
+    welcomeKey: "services/process/planning-call/book-a-call",
     index: "02",
     title: "Planning Call",
     text: "You schedule a call with our AI-assisted process so we can refine the plan, discuss ideas, define priorities, and shape the budget.",
@@ -81,6 +93,7 @@ const steps = [
     compactTitle: false,
   },
   {
+    welcomeKey: "services/process/design-and-delivery/ask-my-agent",
     index: "03",
     title: "Design & Delivery",
     text: "We start development with key stages shared for your review, including follow-up meetings and iteration rounds until delivery.",
@@ -190,25 +203,12 @@ function Brand() {
 type Service = (typeof services)[number];
 type Step = (typeof steps)[number];
 
-function openServiceCardChat(service: Service, button: string) {
-  openAssistantChat({
-    page: "services",
-    section: "services",
-    card_type: "service",
-    card: service.title,
-    button,
-  });
+function openServiceCardChat(service: Service, buttonKey: "ask-my-ai-assistant" | "i-want-it") {
+  openAssistantChat({ welcomeKey: `services/service-catalog/${service.id}/${buttonKey}` });
 }
 
 function openProcessCardChat(step: Step) {
-  openAssistantChat({
-    page: "services",
-    section: "process",
-    card_type: "process_step",
-    step: step.index,
-    card: step.title,
-    button: step.ctaLabel,
-  });
+  openAssistantChat({ welcomeKey: step.welcomeKey });
 }
 
 function ServiceIcon({ type }: { type: string }) {
@@ -356,8 +356,8 @@ export default function ServicesPage() {
                   <p>{service.text}</p>
                 </div>
                 <div className="services-page-card-actions">
-                  <button type="button" onClick={() => openServiceCardChat(service, "Ask my Ai Assistant")}>Ask my Ai Assistant</button>
-                  <button type="button" onClick={() => openServiceCardChat(service, "I want It")}>I want It</button>
+                  <button type="button" onClick={() => openServiceCardChat(service, "ask-my-ai-assistant")}>Ask my Ai Assistant</button>
+                  <button type="button" onClick={() => openServiceCardChat(service, "i-want-it")}>I want It</button>
                 </div>
               </article>
             ))}
@@ -427,7 +427,7 @@ export default function ServicesPage() {
             Bring the rough idea, the messy process, or the opportunity you keep postponing. We turn it into a scoped
             plan, a buildable system, and a real delivery path.
           </p>
-          <button className="button button--accent" type="button" onClick={() => openAssistantChat()}>
+          <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "services/global/project-conversation/start-project-conversation" })}>
             Start the Project Conversation <span aria-hidden="true">-&gt;</span>
           </button>
         </div>

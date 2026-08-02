@@ -1,7 +1,9 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { openAssistantChat } from "../lib/chatContext";
 
 const positions = [
   {
+    welcomeKey: "hire-me/open-positions/full-time/hire-me-full-time",
     eyebrow: "Employment",
     title: "FULL TIME",
     status: "Negociavel",
@@ -13,6 +15,7 @@ const positions = [
       "Available for fully remote, hybrid, or on-site work anywhere in the world, depending on the scope, seniority, compensation, and strategic fit.",
   },
   {
+    welcomeKey: "hire-me/open-positions/dedicated-part-time/reserve-part-time-capacity",
     eyebrow: "Dedicated capacity",
     title: "Dedicated Part Time",
     status: "Open positions 1/3",
@@ -24,6 +27,7 @@ const positions = [
       "Ideal for businesses that need senior AI, product, and engineering capability without the cost of a full-time executive or internal team.",
   },
   {
+    welcomeKey: "hire-me/open-positions/project-design/start-a-custom-build",
     eyebrow: "Custom build",
     title: "Project Design",
     status: "Scoped by project",
@@ -35,6 +39,7 @@ const positions = [
       "Best for intelligence hubs, internal platforms, AI agents, CRMs, operational tools, and product experiences that need focused delivery.",
   },
   {
+    welcomeKey: "hire-me/open-positions/discovery-consultant-sessions/book-discovery-session",
     eyebrow: "Strategic session",
     title: "Discovery Consultant Sessions",
     status: "Available",
@@ -46,6 +51,7 @@ const positions = [
       "Bruno researches the path to the target and presents a sharp 1h30 call with strategic direction, practical evaluation, and next-step recommendations.",
   },
   {
+    welcomeKey: "hire-me/open-positions/specialized-training/plan-training",
     eyebrow: "Training",
     title: "Specialized Training",
     status: "For teams or individuals",
@@ -64,10 +70,6 @@ function Brand() {
       <img className="brand-logo" src="/logo.svg" alt="" aria-hidden="true" />
     </span>
   );
-}
-
-function openAssistantChat() {
-  window.dispatchEvent(new Event("criativai:open-chat"));
 }
 
 export default function HireMePage() {
@@ -114,7 +116,7 @@ export default function HireMePage() {
                 <h3>{position.title}</h3>
                 <p>{position.text}</p>
                 <p>{position.detail}</p>
-                <button className="button button--accent" type="button" onClick={openAssistantChat}>
+                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: position.welcomeKey })}>
                   {position.action} <span aria-hidden="true">-&gt;</span>
                 </button>
               </article>

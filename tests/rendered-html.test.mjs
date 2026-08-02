@@ -135,8 +135,13 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /sendChatMessage/);
   assert.match(chatWidget, /const turnId = crypto\.randomUUID\(\)/);
   assert.match(chatWidget, /<MarkdownText text=\{message\.text\} \/>/);
-  assert.match(markdownText, /function parseMarkdownBlocks/);
-  assert.match(markdownText, /target="_blank" rel="noreferrer noopener"/);
+  assert.match(chatWidget, /startWelcomeConversation/);
+  assert.match(chatWidget, /WELCOME_STREAM_INTERVAL_MS/);
+  assert.match(chatWidget, /welcomeRequesting/);
+  assert.match(markdownText, /ReactMarkdown/);
+  assert.match(markdownText, /remarkGfm/);
+  assert.match(markdownText, /skipHtml/);
+  assert.match(markdownText, /target=\{isExternalHref\(href\) \? "_blank" : undefined\}/);
   assert.match(chatWidget, /src="\/icons\/chat-launcher\.svg"/);
   assert.match(chatWidget, /src="\/icons\/chat-collapse\.svg"/);
   assert.match(chatWidget, /src="\/icons\/chat-send\.svg"/);
@@ -198,6 +203,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.ok(icons.includes("flag-uk.svg"));
   assert.ok(icons.includes("flag-brazil.svg"));
   assert.match(chatStream, /tool_status"; message: string/);
+  assert.match(chatStream, /\/api\/chat\/welcome/);
   assert.match(viteConfig, /proxy/);
   assert.match(viteConfig, /127\.0\.0\.1:8000/);
   assert.match(chatStyles, /min-height: 37px/);

@@ -1,5 +1,6 @@
 ﻿import { type ReactNode, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
+import { openAssistantChat } from "../lib/chatContext";
 
 const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
 const HERO_PIN_DISTANCE = 2500;
@@ -143,10 +144,6 @@ function Brand() {
       <img className="brand-logo" src="/logo.svg" alt="" aria-hidden="true" />
     </span>
   );
-}
-
-function openAssistantChat() {
-  window.dispatchEvent(new Event("criativai:open-chat"));
 }
 
 function ServiceIcon({ type }: { type: string }) {
@@ -589,7 +586,7 @@ export default function VideoPage() {
               unlocking new opportunities, accelerating your initiatives, and driving better results.
             </p>
             <div className="hero-actions video-hero-next-actions">
-              <button className="button button--accent" type="button" onClick={openAssistantChat}>
+              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call" })}>
                 Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
               </button>
               <a className="button button--ghost" href="/contact">

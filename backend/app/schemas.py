@@ -18,6 +18,8 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
     session_id: str | None = Field(default=None, min_length=16, max_length=64, pattern=SESSION_ID_PATTERN)
     turn_id: str | None = Field(default=None, min_length=16, max_length=96, pattern=TURN_ID_PATTERN)
+    welcome_key: str | None = Field(default=None, min_length=8, max_length=260, pattern=r"^[a-z0-9-]+(?:/[a-z0-9-]+)+$")
+    welcome_message: str | None = Field(default=None, min_length=1, max_length=12000)
     client_timezone: str | None = Field(default=None, min_length=1, max_length=80)
     client_locale: str | None = Field(default=None, min_length=2, max_length=40)
 
@@ -37,6 +39,23 @@ class ChatRequest(BaseModel):
     @classmethod
     def normalize_client_locale(cls, value: str | None) -> str | None:
         return value.strip() if value else None
+
+    @model_validator(mode="after")
+    def validate_welcome_context(self) -> "ChatRequest":
+        has_welcome_key = bool(self.welcome_key)
+        has_welcome_message = bool(self.welcome_message)
+        if has_welcome_key != has_welcome_message:
+            raise ValueError("welcome_key and welcome_message must be provided together")
+        return self
+
+
+class ChatWelcomeRequest(BaseModel):
+    welcome_key: str = Field(min_length=8, max_length=260, pattern=r"^[a-z0-9-]+(?:/[a-z0-9-]+)+$")
+
+
+class ChatWelcomeResponse(BaseModel):
+    session_id: str | None = None
+    message: str
 
 
 class ConversationMessage(BaseModel):

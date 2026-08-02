@@ -50,6 +50,28 @@ const pillars = [
   },
 ] as const;
 
+const benefitCardIds: Record<string, string> = {
+  "Automate repetitive administrative and operational processes.": "administrative-process-automation",
+  "Deploy AI agents to support recruiters, clients, and candidates.": "recruitment-support-ai-agents",
+  "Build custom management systems for your workflows and business rules.": "custom-management-systems",
+  "Create dashboards to monitor roles, talent, teams, and performance.": "performance-operations-dashboards",
+  "Develop custom tools for specific operational challenges.": "custom-operational-tools",
+  "Integrate ATS, CRM, spreadsheets, forms, and calendars.": "business-tool-integration",
+  "Discover and qualify companies by market, industry, and potential.": "company-prospecting",
+  "Identify relevant decision-makers and professional contacts.": "decision-maker-identification",
+  "Enrich leads with verified data, context, and sources.": "lead-data-enrichment",
+  "Create personalized messages based on real business evidence.": "evidence-based-personalized-messaging",
+  "Automate campaigns, follow-ups, and sales tracking.": "campaign-automation-and-tracking",
+  "Deploy AI SDR agents to engage and qualify leads.": "ai-sdr-agents",
+  "Integrate calendars for direct meeting scheduling.": "calendar-scheduling-integration",
+  "Search for professionals across multiple public and specialized sources.": "multi-source-talent-search",
+  "Pre-qualify and rank professionals by level of fit.": "candidate-fit-ranking",
+  "Create evidence-based shortlists ready for recruiter review.": "evidence-based-shortlists",
+  "Build custom qualification tests for specific roles and skills.": "custom-qualification-tests",
+  "Run standardized assessments at scale using your own evaluation criteria.": "standardized-assessments",
+  "Create personalized outreach messages and screening questions.": "outreach-and-screening",
+};
+
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
@@ -60,15 +82,10 @@ function Brand() {
 
 type Pillar = (typeof pillars)[number];
 
-function openBenefitCardChat(pillar: Pillar, item: string, button: string) {
-  openAssistantChat({
-    page: "human-resources",
-    section: pillar.id,
-    section_title: pillar.title,
-    card_type: "hr_benefit",
-    card: item,
-    button,
-  });
+function openBenefitCardChat(pillar: Pillar, item: string, buttonKey: "ask-my-agents" | "i-want-it") {
+  const cardId = benefitCardIds[item];
+  if (!cardId) return;
+  openAssistantChat({ welcomeKey: `human-resources/${pillar.id}/${cardId}/${buttonKey}` });
 }
 
 function HrFooter() {
@@ -158,8 +175,8 @@ export default function HumanResourcesPage() {
                     <p>{item}</p>
                   </div>
                   <div className="hr-benefits-card-actions">
-                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "Ask my Agents")}>Ask my Agents</button>
-                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "I want It")}>I want It</button>
+                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "ask-my-agents")}>Ask my Agents</button>
+                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "i-want-it")}>I want It</button>
                   </div>
                 </article>
               ))}

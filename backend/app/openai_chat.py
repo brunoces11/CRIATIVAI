@@ -21,6 +21,8 @@ from backend.app.models import Conversation, Message
 logger = logging.getLogger(__name__)
 
 PUBLIC_OPENAI_ERROR = "The assistant is temporarily unavailable. Please try again in a moment."
+MAX_PUBLIC_PROVIDER_ERROR_CHARS = 700
+SECRET_PATTERN = re.compile(r"(sk-[A-Za-z0-9_-]{8,}|Bearer\s+[A-Za-z0-9._-]+)", re.IGNORECASE)
 CALENDAR_TOOL_INSTRUCTIONS = """
 Calendar scheduling rules:
 - Use only the provided calendar tools for availability, booking, rescheduling, or cancellation.
@@ -43,6 +45,22 @@ EMAIL_PATTERN = re.compile(r"(?<![\w.+-])[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-
 
 class OpenAIChatUnavailable(RuntimeError):
     pass
+
+
+def build_public_provider_error(exc: BaseException) -> str:
+    details = _sanitize_provider_error(str(exc))
+    status_code = getattr(exc, "status_code", None)
+    status = f" status={status_code}" if status_code else ""
+    if details:
+        return f"{PUBLIC_OPENAI_ERROR}\n\nProvider error: {exc.__class__.__name__}{status}. {details}"
+    return f"{PUBLIC_OPENAI_ERROR}\n\nProvider error: {exc.__class__.__name__}{status}."
+
+
+def _sanitize_provider_error(message: str) -> str:
+    clean_message = SECRET_PATTERN.sub("<redacted>", " ".join(message.split()))
+    if len(clean_message) <= MAX_PUBLIC_PROVIDER_ERROR_CHARS:
+        return clean_message
+    return f"{clean_message[:MAX_PUBLIC_PROVIDER_ERROR_CHARS].rstrip()}..."
 
 
 @dataclass(frozen=True)
@@ -99,15 +117,18 @@ def stream_openai_text(
                 if event.type == "response.output_text.delta":
                     yield event.delta
                 elif event.type == "response.error":
+                    response_error = getattr(event, "error", None)
                     if trace is not None:
                         trace.log("openai_error", reason="response_error_event")
-                    raise OpenAIChatUnavailable(PUBLIC_OPENAI_ERROR)
+                    raise OpenAIChatUnavailable(
+                        f"{PUBLIC_OPENAI_ERROR}\n\nProvider error: ResponseError. {_sanitize_provider_error(str(response_error or event))}"
+                    )
             stream.get_final_response()
     except (AuthenticationError, RateLimitError, APITimeoutError, APIConnectionError, APIStatusError) as exc:
         logger.warning("OpenAI request failed: %s", exc.__class__.__name__)
         if trace is not None:
             trace.log("openai_error", reason=exc.__class__.__name__)
-        raise OpenAIChatUnavailable(PUBLIC_OPENAI_ERROR) from exc
+        raise OpenAIChatUnavailable(build_public_provider_error(exc)) from exc
 
 
 def stream_openai_text_with_calendar_tools(

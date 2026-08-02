@@ -32,7 +32,7 @@ class Conversation(Base):
         onupdate=func.current_timestamp(),
     )
 
-    messages: Mapped[list["Message"]] = relationship(back_populates="conversation", cascade="all, delete-orphan")
+    messages: Mapped[list["Message"]] = relationship(back_populates="conversation", cascade="all, delete-orphan", order_by="Message.id")
 
 
 class Message(Base):

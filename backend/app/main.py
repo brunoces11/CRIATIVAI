@@ -11,6 +11,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 
 from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
+from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
 from backend.app.db import get_session, initialize_database, ping_database
 from backend.app.chat_tracing import router as chat_tracing_router
@@ -18,7 +19,7 @@ from backend.app.forms import router as forms_router
 from backend.app.google_oauth import admin_router as google_admin_router
 from backend.app.google_oauth import callback_router as google_callback_router
 from backend.app.models import Conversation
-from backend.app.schemas import SESSION_ID_PATTERN, ChatRequest, ConversationMessage, ConversationResponse, HealthResponse
+from backend.app.schemas import SESSION_ID_PATTERN, ChatRequest, ChatWelcomeRequest, ChatWelcomeResponse, ConversationMessage, ConversationResponse, HealthResponse
 
 settings = get_settings()
 
@@ -63,6 +64,11 @@ def chat(request: ChatRequest, session: Session = Depends(get_session)) -> Strea
         media_type="application/x-ndjson",
         headers={"Cache-Control": "no-store"},
     )
+
+
+@app.post("/api/chat/welcome", response_model=ChatWelcomeResponse)
+def chat_welcome(request: ChatWelcomeRequest) -> ChatWelcomeResponse:
+    return create_welcome_conversation(request.welcome_key)
 
 
 @app.get("/api/conversations/current", response_model=ConversationResponse)

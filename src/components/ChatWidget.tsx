@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import { attachChatContextTag, CHAT_OPEN_EVENT, getChatContextTag } from "../lib/chatContext";
-import { fetchCurrentConversation, sendChatMessage } from "../lib/chatStream";
+import { CHAT_OPEN_EVENT, getChatWelcomeKey } from "../lib/chatContext";
+import { createWelcomeConversation, fetchCurrentConversation, sendChatMessage, type PendingWelcomeContext } from "../lib/chatStream";
 import { MarkdownText } from "./MarkdownText";
 import "./ChatWidget.css";
 
@@ -36,6 +36,9 @@ const iceBreakers: IceBreaker[] = [
 const CHAT_PANEL_DEFAULT_SIZE: ChatPanelSize = { width: 840, height: 540 };
 const CHAT_PANEL_MIN_SIZE: ChatPanelSize = { width: 300, height: 300 };
 const CHAT_PANEL_MAX_SIZE: ChatPanelSize = { width: 950, height: 650 };
+const WELCOME_LOADING_DURATION_MS = 2000;
+const WELCOME_STREAM_INTERVAL_MS = 18;
+const WELCOME_STREAM_CHUNK_SIZE = 4;
 
 const initialMessages: Message[] = [
   {
@@ -51,34 +54,41 @@ export function ChatWidget() {
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [welcomeRequesting, setWelcomeRequesting] = useState(false);
+  const [welcomeLoading, setWelcomeLoading] = useState(false);
   const [assistantStarted, setAssistantStarted] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [toolStatus, setToolStatus] = useState("");
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(() => window.localStorage.getItem(SESSION_STORAGE_KEY));
+  const [pendingWelcome, setPendingWelcome] = useState<PendingWelcomeContext | null>(null);
   const [panelSize, setPanelSize] = useState(() => clampChatPanelSize(CHAT_PANEL_DEFAULT_SIZE));
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const restoreAbortRef = useRef<AbortController | null>(null);
+  const welcomeAbortRef = useRef<AbortController | null>(null);
+  const welcomeTimerRef = useRef<number | null>(null);
+  const welcomeRunRef = useRef(0);
   const closeTimerRef = useRef<number | null>(null);
   const restoredRef = useRef(false);
 
-  function openChat(contextTag?: string) {
+  function openChat() {
     if (closeTimerRef.current !== null) {
       window.clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
     setRenderPanel(true);
-    if (contextTag) {
-      setDraft((current) => attachChatContextTag(current, contextTag));
-      setError("");
-    }
     window.requestAnimationFrame(() => setOpen(true));
   }
 
   useEffect(() => {
     function handleOpenChat(event: Event) {
-      openChat(getChatContextTag(event) ?? undefined);
+      const welcomeKey = getChatWelcomeKey(event);
+      openChat();
+      if (welcomeKey) {
+        void startWelcomeConversation(welcomeKey);
+      }
     }
 
     window.addEventListener(CHAT_OPEN_EVENT, handleOpenChat);
@@ -102,6 +112,7 @@ export function ChatWidget() {
     if (!open || restoredRef.current || !sessionId) return;
 
     const controller = new AbortController();
+    restoreAbortRef.current = controller;
     restoredRef.current = true;
     setRestoring(true);
     setError("");
@@ -111,6 +122,7 @@ export function ChatWidget() {
         if (!conversation) {
           window.localStorage.removeItem(SESSION_STORAGE_KEY);
           setSessionId(null);
+          setPendingWelcome(null);
           setMessages(initialMessages);
           return;
         }
@@ -129,14 +141,21 @@ export function ChatWidget() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setRestoring(false);
+        if (restoreAbortRef.current === controller) restoreAbortRef.current = null;
       });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      if (restoreAbortRef.current === controller) restoreAbortRef.current = null;
+    };
   }, [open, sessionId]);
 
   useEffect(() => {
     return () => {
       abortRef.current?.abort();
+      restoreAbortRef.current?.abort();
+      welcomeAbortRef.current?.abort();
+      stopWelcomeStream();
       if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
     };
   }, []);
@@ -153,10 +172,100 @@ export function ChatWidget() {
   useEffect(() => {
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior });
-  }, [messages, loading]);
+  }, [messages, loading, welcomeRequesting, welcomeLoading]);
+
+  async function startWelcomeConversation(welcomeKey: string) {
+    const runId = welcomeRunRef.current + 1;
+    welcomeRunRef.current = runId;
+    abortRef.current?.abort();
+    restoreAbortRef.current?.abort();
+    welcomeAbortRef.current?.abort();
+    stopWelcomeStream();
+
+    const controller = new AbortController();
+    welcomeAbortRef.current = controller;
+    restoredRef.current = true;
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    setSessionId(null);
+    setMessages([]);
+    setDraft("");
+    setError("");
+    setToolStatus("");
+    setLoading(false);
+    setAssistantStarted(false);
+    setRestoring(false);
+    setWelcomeRequesting(true);
+    setWelcomeLoading(true);
+    setPendingWelcome(null);
+
+    try {
+      const startedAt = Date.now();
+      const welcome = await createWelcomeConversation(welcomeKey, controller.signal);
+      if (welcomeRunRef.current !== runId) return;
+
+      const elapsed = Date.now() - startedAt;
+      const remainingDelay = Math.max(0, WELCOME_LOADING_DURATION_MS - elapsed);
+      if (remainingDelay > 0) {
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, remainingDelay);
+        });
+      }
+
+      if (controller.signal.aborted || welcomeRunRef.current !== runId) return;
+
+      setWelcomeLoading(false);
+      setPendingWelcome({ key: welcomeKey, message: welcome.message });
+      streamWelcomeMessage(welcome.message, runId);
+    } catch (welcomeError: unknown) {
+      if (controller.signal.aborted || welcomeRunRef.current !== runId) return;
+      setError(welcomeError instanceof Error ? welcomeError.message : "Unable to prepare the chat welcome message.");
+      setMessages(initialMessages);
+      setWelcomeLoading(false);
+      setWelcomeRequesting(false);
+    } finally {
+      if (welcomeAbortRef.current === controller) welcomeAbortRef.current = null;
+    }
+  }
+
+  function streamWelcomeMessage(fullText: string, runId: number) {
+    const messageId = crypto.randomUUID();
+    setMessages([{ id: messageId, role: "assistant", text: "" }]);
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setMessages([{ id: messageId, role: "assistant", text: fullText }]);
+      if (welcomeRunRef.current === runId) setWelcomeRequesting(false);
+      return;
+    }
+
+    let nextLength = 0;
+    welcomeTimerRef.current = window.setInterval(() => {
+      if (welcomeRunRef.current !== runId) {
+        stopWelcomeStream();
+        return;
+      }
+
+      nextLength = Math.min(fullText.length, nextLength + WELCOME_STREAM_CHUNK_SIZE);
+      const visibleText = fullText.slice(0, nextLength);
+      setMessages((current) =>
+        current.map((message) => (message.id === messageId ? { ...message, text: visibleText } : message)),
+      );
+
+      if (nextLength >= fullText.length) {
+        stopWelcomeStream();
+        if (welcomeRunRef.current === runId) setWelcomeRequesting(false);
+      }
+    }, WELCOME_STREAM_INTERVAL_MS);
+  }
+
+  function stopWelcomeStream() {
+    if (welcomeTimerRef.current !== null) {
+      window.clearInterval(welcomeTimerRef.current);
+      welcomeTimerRef.current = null;
+    }
+  }
 
   async function sendMessage(message: string, shouldRefocusInput: boolean) {
-    if (!message || loading || restoring) return;
+    if (!message || loading || restoring || welcomeRequesting) return;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -178,10 +287,11 @@ export function ChatWidget() {
 
     try {
       let assistantText = "";
-      await sendChatMessage(message, sessionId, turnId, controller.signal, (streamEvent) => {
+      await sendChatMessage(message, sessionId, turnId, controller.signal, pendingWelcome, (streamEvent) => {
         if (streamEvent.event === "session_start") {
           setSessionId(streamEvent.session_id);
           window.localStorage.setItem(SESSION_STORAGE_KEY, streamEvent.session_id);
+          setPendingWelcome(null);
           return;
         }
 
@@ -334,6 +444,15 @@ export function ChatWidget() {
                 ))}
               </div>
             ) : null}
+            {welcomeLoading ? (
+              <div className="chat-message chat-message--assistant chat-message--welcome-loading" aria-label="Contacting Agent...">
+                <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
+                <div className="chat-message__welcome-loader">
+                  <span className="chat-message__spinner" aria-hidden="true" />
+                  <p>Contacting Agent...</p>
+                </div>
+              </div>
+            ) : null}
             {loading && !assistantStarted ? (
               <div className="chat-message chat-message--assistant chat-message--loading" aria-label="Assistant is preparing a response">
                 <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
@@ -374,7 +493,7 @@ export function ChatWidget() {
                 }
               }}
             />
-            <button type="submit" disabled={!draft.trim() || loading || restoring} aria-label="Send message" title="Send message">
+            <button type="submit" disabled={!draft.trim() || loading || restoring || welcomeRequesting} aria-label="Send message" title="Send message">
               <img className="chat-panel__form-icon" src="/icons/chat-send.svg" alt="" aria-hidden="true" />
             </button>
           </form>

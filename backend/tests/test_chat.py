@@ -1,7 +1,10 @@
+import json
+
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app import chat as chat_module
+from backend.app import chat_welcome as welcome_module
 from backend.app.config import Settings
 from backend.app.models import Base, Conversation, Message
 from backend.app.schemas import ChatRequest
@@ -46,7 +49,7 @@ def test_stream_chat_keeps_user_message_when_assistant_fails(monkeypatch) -> Non
 
     events = list(chat_module.stream_chat(session, ChatRequest(message="Hi")))
 
-    assert any('"event": "error"' in event for event in events)
+    assert any('"event": "error"' in event and "boom" in event for event in events)
     assert session.scalar(select(Conversation)) is not None
     messages = session.scalars(select(Message).order_by(Message.id)).all()
     assert [(message.role, message.content) for message in messages] == [("user", "Hi")]
@@ -210,6 +213,79 @@ def test_stream_chat_writes_chat_tracing_log(monkeypatch, tmp_path) -> None:
     assert any('"event":"turn_start"' in line for line in log_lines)
     assert any('"event":"assistant_delta"' in line for line in log_lines)
     assert any('"event":"turn_completed"' in line for line in log_lines)
+
+
+def test_create_welcome_conversation_returns_message_without_persisting(monkeypatch, tmp_path) -> None:
+    session = make_session()
+    welcome_key = "services/service-catalog/product-design/ask-my-ai-assistant"
+    welcome_text = "Ola **Product Design**"
+    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path.write_text(json.dumps({welcome_key: welcome_text}), encoding="utf-8")
+    monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
+
+    first = welcome_module.create_welcome_conversation(welcome_key)
+    second = welcome_module.create_welcome_conversation(welcome_key)
+
+    assert first.session_id is None
+    assert second.session_id is None
+    assert first.message == welcome_text
+    assert second.message == welcome_text
+    assert session.query(Conversation).count() == 0
+    assert session.scalars(select(Message)).all() == []
+
+
+def test_first_user_message_after_cta_welcome_sends_welcome_context_to_model(monkeypatch, tmp_path) -> None:
+    session = make_session()
+    welcome_key = "services/service-catalog/product-design/ask-my-ai-assistant"
+    welcome_text = "Ola, notei que vc clicou em **Product Design**."
+    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path.write_text(json.dumps({welcome_key: welcome_text}), encoding="utf-8")
+    monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
+    monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="unused", _env_file=None))
+    captured_inputs = []
+
+    def capture_model_input(_settings, history, user_message, _summary, **_kwargs):
+        captured_inputs.append({"history": list(history), "user_message": user_message})
+        yield "model answer"
+
+    monkeypatch.setattr(chat_module, "stream_openai_text", capture_model_input)
+
+    events = list(chat_module.stream_chat(
+        session,
+        ChatRequest(
+            message="Quero entender custo e prazo.",
+            welcome_key=welcome_key,
+            welcome_message=welcome_text,
+        ),
+    ))
+
+    assert any('"event": "done"' in event for event in events)
+    session_id = next(json_event(event)["session_id"] for event in events if '"event": "session_start"' in event)
+    first_input = captured_inputs[0]
+    assert first_input["history"] == []
+    assert "CTA welcome context shown to the visitor before this first message:" in first_input["user_message"]
+    assert welcome_text in first_input["user_message"]
+    assert "Visitor's first message:" in first_input["user_message"]
+    assert "Quero entender custo e prazo." in first_input["user_message"]
+    messages = session.scalars(select(Message).order_by(Message.id)).all()
+    assert [(message.role, message.content) for message in messages] == [
+        ("assistant", welcome_text),
+        ("user", "Quero entender custo e prazo."),
+        ("assistant", "model answer"),
+    ]
+
+    list(chat_module.stream_chat(
+        session,
+        ChatRequest(message="Agora quero uma proposta.", session_id=session_id),
+    ))
+
+    second_input = captured_inputs[1]
+    assert second_input["user_message"] == "Agora quero uma proposta."
+    assert welcome_text not in second_input["user_message"]
+    assert [(message.role, message.content) for message in second_input["history"]] == [
+        ("user", "Quero entender custo e prazo."),
+        ("assistant", "model answer"),
+    ]
 
 
 def json_event(line: str) -> dict:

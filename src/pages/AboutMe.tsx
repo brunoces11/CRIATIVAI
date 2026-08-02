@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { SiteHeader } from "../components/SiteHeader";
+import { openAssistantChat } from "../lib/chatContext";
 
 type Award = {
   result: string;
@@ -308,10 +309,6 @@ function Brand() {
   );
 }
 
-function openAssistantChat() {
-  window.dispatchEvent(new Event("criativai:open-chat"));
-}
-
 export default function AboutMePage() {
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
 
@@ -336,7 +333,7 @@ export default function AboutMePage() {
               into useful, understandable, and carefully crafted digital products.
             </p>
             <div className="hero-actions about-me-actions">
-              <button className="button button--accent" type="button" onClick={openAssistantChat}>
+              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-ai-assistant-and-book-a-call" })}>
                 Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
               </button>
               <a className="button button--ghost" href="/contact">
@@ -604,7 +601,7 @@ export default function AboutMePage() {
             availability, and the best next step for your project.
           </p>
           <div className="hero-actions about-me-cta-actions">
-            <button className="button button--accent" type="button" onClick={openAssistantChat}>
+            <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/ask-my-ai-assistant-and-book-a-call" })}>
               Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
             </button>
             <a className="button button--ghost" href="/contact">
