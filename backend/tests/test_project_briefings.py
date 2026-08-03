@@ -36,11 +36,11 @@ def make_conversation(session: Session, **kwargs) -> Conversation:
     return conversation
 
 
-def build_key(conversation_id: int, turn_id: str, title: str, briefing_markdown: str) -> str:
+def build_key(conversation_id: int, turn_id: str, briefing_title: str, briefing_markdown: str) -> str:
     return build_briefing_idempotency_key(
         conversation_id=conversation_id,
         turn_id=turn_id,
-        title=title,
+        briefing_title=briefing_title,
         briefing_markdown=briefing_markdown,
     )
 
@@ -95,16 +95,16 @@ def test_chat_capture_contact_rejects_invalid_email() -> None:
 def test_project_briefing_send_email_requires_contact() -> None:
     session = make_session()
     conversation = make_conversation(session)
-    title = "CRM com IA"
+    briefing_title = "CRM com IA"
     content = "Briefing completo do projeto."
 
     with pytest.raises(HTTPException) as exc_info:
         project_briefing_send_email(
             session,
             conversation_id=conversation.id,
-            title=title,
+            briefing_title=briefing_title,
             briefing_markdown=content,
-            idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", title, content),
+            idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", briefing_title, content),
             confirmed=True,
             settings=briefing_settings(),
         )
@@ -121,7 +121,7 @@ def test_project_briefing_send_email_requires_title() -> None:
         project_briefing_send_email(
             session,
             conversation_id=conversation.id,
-            title=" ",
+            briefing_title=" ",
             briefing_markdown=content,
             idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", " ", content),
             confirmed=True,
@@ -142,14 +142,14 @@ def test_project_briefing_send_email_creates_briefing_and_sends_both_emails(monk
     email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.project_briefings.send_email", capture_email(email_calls))
 
-    title = "CRM com IA"
+    briefing_title = "CRM com IA"
     content = "# Briefing\n\nAutomatizar qualificacao comercial."
     result = project_briefing_send_email(
         session,
         conversation_id=conversation.id,
-        title=title,
+        briefing_title=briefing_title,
         briefing_markdown=content,
-        idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", title, content),
+        idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", briefing_title, content),
         confirmed=True,
         settings=briefing_settings(),
     )
@@ -157,7 +157,7 @@ def test_project_briefing_send_email_creates_briefing_and_sends_both_emails(monk
     briefing = session.scalar(select(ProjectBriefing).where(ProjectBriefing.briefing_id == result.briefing_id))
     assert briefing is not None
     assert briefing.conversation_id == conversation.id
-    assert briefing.briefing_title == title
+    assert briefing.briefing_title == briefing_title
     assert briefing.briefing_markdown == content
     assert briefing.briefing_status == "sent"
     assert briefing.owner_email_status == "sent"
@@ -172,15 +172,15 @@ def test_project_briefing_send_email_creates_briefing_and_sends_both_emails(monk
 def test_project_briefing_send_email_records_pending_config_without_smtp() -> None:
     session = make_session()
     conversation = make_conversation(session, visitor_name="Cliente", visitor_email="cliente@example.com")
-    title = "CRM com IA"
+    briefing_title = "CRM com IA"
     content = "Briefing completo do projeto."
 
     result = project_briefing_send_email(
         session,
         conversation_id=conversation.id,
-        title=title,
+        briefing_title=briefing_title,
         briefing_markdown=content,
-        idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", title, content),
+        idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", briefing_title, content),
         confirmed=True,
         settings=briefing_settings(),
     )
@@ -196,14 +196,14 @@ def test_project_briefing_send_email_is_idempotent_for_same_turn_and_same_conten
     email_calls: list[dict] = []
     monkeypatch.setattr("backend.app.project_briefings.send_email", capture_email(email_calls))
 
-    title = "CRM com IA"
+    briefing_title = "CRM com IA"
     content = "Briefing completo do projeto."
-    key = build_key(conversation.id, "turn_1234567890abcdef", title, content)
+    key = build_key(conversation.id, "turn_1234567890abcdef", briefing_title, content)
 
     first = project_briefing_send_email(
         session,
         conversation_id=conversation.id,
-        title=title,
+        briefing_title=briefing_title,
         briefing_markdown=content,
         idempotency_key=key,
         confirmed=True,
@@ -212,7 +212,7 @@ def test_project_briefing_send_email_is_idempotent_for_same_turn_and_same_conten
     second = project_briefing_send_email(
         session,
         conversation_id=conversation.id,
-        title="CRM com IA duplicado",
+        briefing_title="CRM com IA duplicado",
         briefing_markdown="Nao deve criar outro briefing.",
         idempotency_key=key,
         confirmed=True,
@@ -229,26 +229,26 @@ def test_project_briefing_send_email_allows_new_briefing_for_new_turn(monkeypatc
     conversation = make_conversation(session, visitor_name="Cliente", visitor_email="cliente@example.com")
     monkeypatch.setattr("backend.app.project_briefings.send_email", capture_email([]))
 
-    first_title = "CRM com IA"
+    first_briefing_title = "CRM com IA"
     first_content = "Primeiro briefing."
     first = project_briefing_send_email(
         session,
         conversation_id=conversation.id,
-        title=first_title,
+        briefing_title=first_briefing_title,
         briefing_markdown=first_content,
-        idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", first_title, first_content),
+        idempotency_key=build_key(conversation.id, "turn_1234567890abcdef", first_briefing_title, first_content),
         confirmed=True,
         settings=briefing_settings(),
     )
 
-    second_title = "Portal de atendimento"
+    second_briefing_title = "Portal de atendimento"
     second_content = "Segundo briefing."
     second = project_briefing_send_email(
         session,
         conversation_id=conversation.id,
-        title=second_title,
+        briefing_title=second_briefing_title,
         briefing_markdown=second_content,
-        idempotency_key=build_key(conversation.id, "turn_abcdef1234567890", second_title, second_content),
+        idempotency_key=build_key(conversation.id, "turn_abcdef1234567890", second_briefing_title, second_content),
         confirmed=True,
         settings=briefing_settings(),
     )

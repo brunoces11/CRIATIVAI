@@ -86,14 +86,14 @@ def project_briefing_send_email(
     session: Session,
     *,
     conversation_id: int,
-    title: str,
+    briefing_title: str,
     briefing_markdown: str,
     idempotency_key: str,
     confirmed: bool,
     settings: Settings | None = None,
 ) -> ProjectBriefingResult:
     resolved_settings = settings or get_settings()
-    validate_briefing_request(title, briefing_markdown, idempotency_key, confirmed)
+    validate_briefing_request(briefing_title, briefing_markdown, idempotency_key, confirmed)
 
     existing = session.scalar(select(ProjectBriefing).where(ProjectBriefing.idempotency_key == idempotency_key))
     if existing is not None:
@@ -112,7 +112,7 @@ def project_briefing_send_email(
 
     briefing = ProjectBriefing(
         conversation_id=conversation.id,
-        briefing_title=title.strip(),
+        briefing_title=briefing_title.strip(),
         briefing_markdown=briefing_markdown.strip(),
         briefing_status="created",
         idempotency_key=idempotency_key,
@@ -161,7 +161,7 @@ def build_briefing_idempotency_key(
     *,
     conversation_id: int,
     turn_id: str,
-    title: str,
+    briefing_title: str,
     briefing_markdown: str,
 ) -> str:
     digest = hashlib.sha256(
@@ -169,7 +169,7 @@ def build_briefing_idempotency_key(
             [
                 str(conversation_id),
                 turn_id.strip(),
-                title.strip(),
+                briefing_title.strip(),
                 briefing_markdown.strip(),
             ]
         ).encode("utf-8")
@@ -177,10 +177,10 @@ def build_briefing_idempotency_key(
     return f"briefing_{uuid5(NAMESPACE_URL, digest).hex}"
 
 
-def validate_briefing_request(title: str, briefing_markdown: str, idempotency_key: str, confirmed: bool) -> None:
+def validate_briefing_request(briefing_title: str, briefing_markdown: str, idempotency_key: str, confirmed: bool) -> None:
     if not confirmed:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Briefing confirmation is required")
-    if not title.strip():
+    if not briefing_title.strip():
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Briefing title is required")
     if not briefing_markdown.strip():
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Briefing markdown is required")

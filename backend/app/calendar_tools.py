@@ -74,7 +74,7 @@ class ChatCaptureContactArgs(BaseModel):
 class ProjectBriefingSendEmailArgs(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    title: str = Field(min_length=1, max_length=220)
+    briefing_title: str = Field(min_length=1, max_length=220)
     briefing_markdown: str = Field(min_length=1, max_length=40000)
     confirmed: bool
 
@@ -136,7 +136,7 @@ CALENDAR_TOOLS: list[dict[str, Any]] = [
     ),
     function_tool(
         name="project_briefing_send_email",
-        description="Create a confirmed project briefing for the active chat conversation and email it to Bruno and the visitor. The title must be a short LLM-created phrase describing the briefing. Use only after the visitor explicitly confirms the contact details and final briefing content.",
+        description="Create a confirmed project briefing for the active chat conversation and email it to Bruno and the visitor. briefing_title must be a short LLM-created phrase describing the briefing. Use only after the visitor explicitly confirms the contact details and final briefing content.",
         model=ProjectBriefingSendEmailArgs,
     ),
 ]
@@ -227,12 +227,12 @@ def execute_calendar_tool(
             project_briefing_send_email(
                 session,
                 conversation_id=conversation.id,
-                title=parsed.title,  # type: ignore[attr-defined]
+                briefing_title=parsed.briefing_title,  # type: ignore[attr-defined]
                 briefing_markdown=parsed.briefing_markdown,  # type: ignore[attr-defined]
                 idempotency_key=build_briefing_idempotency_key(
                     conversation_id=conversation.id,
                     turn_id=turn_id or "unknown-turn",
-                    title=parsed.title,  # type: ignore[attr-defined]
+                    briefing_title=parsed.briefing_title,  # type: ignore[attr-defined]
                     briefing_markdown=parsed.briefing_markdown,  # type: ignore[attr-defined]
                 ),
                 confirmed=parsed.confirmed,  # type: ignore[attr-defined]
