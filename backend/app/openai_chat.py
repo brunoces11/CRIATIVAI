@@ -76,6 +76,7 @@ def stream_openai_text(
     *,
     session: Session | None = None,
     conversation: Conversation | None = None,
+    turn_id: str | None = None,
     trace: ChatTraceSink | None = None,
 ) -> Iterator[str | PublicToolStatus]:
     if settings.openai_mock_response is not None:
@@ -101,6 +102,7 @@ def stream_openai_text(
                 history,
                 user_message,
                 summary,
+                turn_id=turn_id,
                 trace=trace,
             )
             return
@@ -140,6 +142,7 @@ def stream_openai_text_with_calendar_tools(
     user_message: str,
     summary: str | None,
     *,
+    turn_id: str | None = None,
     trace: ChatTraceSink | None = None,
 ) -> Iterator[str | PublicToolStatus]:
     response_input: list[dict[str, Any]] = build_response_input(history, user_message, settings.chat_context_recent_messages)
@@ -190,7 +193,13 @@ def stream_openai_text_with_calendar_tools(
             if trace is not None:
                 trace.log("calendar_tool_call", iteration=_iteration + 1, name=tool_call["name"], arguments=tool_call["arguments"])
             yield PublicToolStatus(tool_status_message(tool_call["name"]))
-            output = execute_calendar_tool_safely(tool_call, session=session, conversation=conversation, settings=settings)
+            output = execute_calendar_tool_safely(
+                tool_call,
+                session=session,
+                conversation=conversation,
+                settings=settings,
+                turn_id=turn_id,
+            )
             if trace is not None:
                 trace.log("calendar_tool_output", iteration=_iteration + 1, name=tool_call["name"], output=output)
             response_input.append(tool_call)
@@ -213,6 +222,7 @@ def execute_calendar_tool_safely(
     session: Session,
     conversation: Conversation,
     settings: Settings,
+    turn_id: str | None = None,
 ) -> dict[str, Any]:
     try:
         return execute_calendar_tool(
@@ -221,6 +231,7 @@ def execute_calendar_tool_safely(
             session=session,
             conversation=conversation,
             settings=settings,
+            turn_id=turn_id,
         )
     except HTTPException as exc:
         detail = exc.detail if isinstance(exc.detail, str) else "Calendar request could not be completed"

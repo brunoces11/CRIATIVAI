@@ -13,7 +13,7 @@ from backend.app.calendar_availability import calendar_check_availability
 from backend.app.calendar_booking import calendar_cancel_event, calendar_create_event, calendar_lookup_bookings, calendar_update_event
 from backend.app.config import Settings
 from backend.app.models import Conversation
-from backend.app.project_briefings import chat_capture_contact, project_briefing_send_email
+from backend.app.project_briefings import build_briefing_idempotency_key, chat_capture_contact, project_briefing_send_email
 
 
 class CalendarCheckAvailabilityArgs(BaseModel):
@@ -76,7 +76,6 @@ class ProjectBriefingSendEmailArgs(BaseModel):
 
     title: str = Field(min_length=1, max_length=220)
     briefing_markdown: str = Field(min_length=1, max_length=40000)
-    idempotency_key: str = Field(min_length=16, max_length=128)
     confirmed: bool
 
 
@@ -150,6 +149,7 @@ def execute_calendar_tool(
     session: Session,
     conversation: Conversation,
     settings: Settings,
+    turn_id: str | None = None,
 ) -> dict[str, Any]:
     model = TOOL_ARGUMENT_MODELS.get(name)
     if model is None:
@@ -229,7 +229,12 @@ def execute_calendar_tool(
                 conversation_id=conversation.id,
                 title=parsed.title,  # type: ignore[attr-defined]
                 briefing_markdown=parsed.briefing_markdown,  # type: ignore[attr-defined]
-                idempotency_key=parsed.idempotency_key,  # type: ignore[attr-defined]
+                idempotency_key=build_briefing_idempotency_key(
+                    conversation_id=conversation.id,
+                    turn_id=turn_id or "unknown-turn",
+                    title=parsed.title,  # type: ignore[attr-defined]
+                    briefing_markdown=parsed.briefing_markdown,  # type: ignore[attr-defined]
+                ),
                 confirmed=parsed.confirmed,  # type: ignore[attr-defined]
                 settings=settings,
             )
@@ -280,7 +285,6 @@ def serialize_project_briefing(briefing) -> dict[str, Any]:
         "conversation_id": briefing.conversation_id,
         "briefing_title": briefing.briefing_title,
         "briefing_status": briefing.briefing_status,
-        "idempotency_key": briefing.idempotency_key,
         "owner_email_status": briefing.owner_email_status,
         "client_email_status": briefing.client_email_status,
         "email_error": briefing.email_error,

@@ -122,6 +122,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
             conversation.summary,
             session=session,
             conversation=conversation,
+            turn_id=turn_id,
             trace=trace,
         ):
             if not delta:
@@ -356,15 +357,33 @@ def _stream_openai_text(
     *,
     session: Session,
     conversation: Conversation,
+    turn_id: str | None = None,
     trace=None,
 ):
     try:
-        return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation, trace=trace)
+        return stream_openai_text(
+            settings,
+            history,
+            user_message,
+            summary,
+            session=session,
+            conversation=conversation,
+            turn_id=turn_id,
+            trace=trace,
+        )
     except TypeError as exc:
         if "unexpected keyword argument" not in str(exc):
             raise
         try:
-            return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation)
+            return stream_openai_text(
+                settings,
+                history,
+                user_message,
+                summary,
+                session=session,
+                conversation=conversation,
+                trace=trace,
+            )
         except TypeError as inner_exc:
             if "unexpected keyword argument" not in str(inner_exc):
                 raise

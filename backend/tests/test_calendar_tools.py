@@ -36,6 +36,8 @@ def test_calendar_tools_are_strict_and_closed() -> None:
         required = set(tool["parameters"]["required"])
         properties = set(tool["parameters"]["properties"])
         assert required == properties
+        if tool["name"] == "project_briefing_send_email":
+            assert "idempotency_key" not in properties
         if tool["name"] in {"calendar_update_event", "calendar_cancel_event"}:
             assert "booking_id" in required
             assert "participant_email" in required

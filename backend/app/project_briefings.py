@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from html import escape
+import hashlib
 import re
+from uuid import NAMESPACE_URL, uuid5
 
 from fastapi import HTTPException
 from sqlalchemy import select
@@ -153,6 +155,26 @@ def project_briefing_send_email(
     session.refresh(briefing)
 
     return briefing_result(briefing)
+
+
+def build_briefing_idempotency_key(
+    *,
+    conversation_id: int,
+    turn_id: str,
+    title: str,
+    briefing_markdown: str,
+) -> str:
+    digest = hashlib.sha256(
+        "\n".join(
+            [
+                str(conversation_id),
+                turn_id.strip(),
+                title.strip(),
+                briefing_markdown.strip(),
+            ]
+        ).encode("utf-8")
+    ).hexdigest()
+    return f"briefing_{uuid5(NAMESPACE_URL, digest).hex}"
 
 
 def validate_briefing_request(title: str, briefing_markdown: str, idempotency_key: str, confirmed: bool) -> None:
