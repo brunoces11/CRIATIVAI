@@ -11,6 +11,13 @@ type Message = {
 };
 
 const SESSION_STORAGE_KEY = "chat_session_id";
+const CHAT_QUERY_PARAM = "chat";
+const CHAT_QUERY_NEW_VALUE = "new";
+
+type ChatMultiWindowStatus = {
+  enabled: boolean;
+  state_path: string;
+};
 
 type IceBreaker = {
   message: string;
@@ -60,9 +67,10 @@ export function ChatWidget() {
   const [restoring, setRestoring] = useState(false);
   const [toolStatus, setToolStatus] = useState("");
   const [error, setError] = useState("");
-  const [sessionId, setSessionId] = useState<string | null>(() => window.localStorage.getItem(SESSION_STORAGE_KEY));
+  const [sessionId, setSessionId] = useState<string | null>(() => readStoredSessionId());
   const [pendingWelcome, setPendingWelcome] = useState<PendingWelcomeContext | null>(null);
   const [panelSize, setPanelSize] = useState(() => clampChatPanelSize(CHAT_PANEL_DEFAULT_SIZE));
+  const [newChatEnabled, setNewChatEnabled] = useState(true);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -104,6 +112,30 @@ export function ChatWidget() {
   }
 
   useEffect(() => {
+    const controller = new AbortController();
+
+    fetch("/api/admin/chat-multi-window", { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load chat multi-window status.");
+        return response.json() as Promise<ChatMultiWindowStatus>;
+      })
+      .then((payload) => setNewChatEnabled(payload.enabled))
+      .catch(() => {
+        setNewChatEnabled(true);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldStartFreshChatWindow()) return;
+
+    resetConversationState();
+    openChat();
+    clearFreshChatWindowQuery();
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
     inputRef.current?.focus();
   }, [open]);
@@ -120,7 +152,7 @@ export function ChatWidget() {
     fetchCurrentConversation(sessionId, controller.signal)
       .then((conversation) => {
         if (!conversation) {
-          window.localStorage.removeItem(SESSION_STORAGE_KEY);
+          clearStoredSessionId();
           setSessionId(null);
           setPendingWelcome(null);
           setMessages(initialMessages);
@@ -185,7 +217,7 @@ export function ChatWidget() {
     const controller = new AbortController();
     welcomeAbortRef.current = controller;
     restoredRef.current = true;
-    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    clearStoredSessionId();
     setSessionId(null);
     setMessages([]);
     setDraft("");
@@ -290,7 +322,7 @@ export function ChatWidget() {
       await sendChatMessage(message, sessionId, turnId, controller.signal, pendingWelcome, (streamEvent) => {
         if (streamEvent.event === "session_start") {
           setSessionId(streamEvent.session_id);
-          window.localStorage.setItem(SESSION_STORAGE_KEY, streamEvent.session_id);
+          storeSessionId(streamEvent.session_id);
           setPendingWelcome(null);
           return;
         }
@@ -319,7 +351,7 @@ export function ChatWidget() {
 
         if (streamEvent.event === "done" && streamEvent.session_id) {
           setSessionId(streamEvent.session_id);
-          window.localStorage.setItem(SESSION_STORAGE_KEY, streamEvent.session_id);
+          storeSessionId(streamEvent.session_id);
         }
       });
     } catch (sendError: unknown) {
@@ -349,6 +381,40 @@ export function ChatWidget() {
 
   function startWithIceBreaker(message: string) {
     void sendMessage(message, false);
+  }
+
+  function openNewChatWindow() {
+    const url = new URL(window.location.href);
+    url.searchParams.set(CHAT_QUERY_PARAM, CHAT_QUERY_NEW_VALUE);
+    const features = "popup=yes,width=460,height=760,noopener,noreferrer";
+    const openedWindow = window.open(url.toString(), "_blank", features);
+
+    if (openedWindow) {
+      return;
+    }
+
+    window.open(url.toString(), "_blank", "noopener,noreferrer");
+  }
+
+  function resetConversationState() {
+    welcomeRunRef.current += 1;
+    abortRef.current?.abort();
+    restoreAbortRef.current?.abort();
+    welcomeAbortRef.current?.abort();
+    stopWelcomeStream();
+    clearStoredSessionId();
+    restoredRef.current = false;
+    setSessionId(null);
+    setPendingWelcome(null);
+    setMessages(initialMessages);
+    setDraft("");
+    setError("");
+    setToolStatus("");
+    setLoading(false);
+    setWelcomeRequesting(false);
+    setWelcomeLoading(false);
+    setAssistantStarted(false);
+    setRestoring(false);
   }
 
   function startPanelResize(event: ReactPointerEvent<HTMLDivElement>, direction: ResizeDirection) {
@@ -415,9 +481,22 @@ export function ChatWidget() {
                 <h2>Ask your questions and book a call</h2>
               </div>
             </div>
-            <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>
-              <img className="chat-panel__collapse-icon" src="/icons/chat-collapse.svg" alt="" aria-hidden="true" />
-            </button>
+            <div className="chat-panel__header-actions">
+              {newChatEnabled ? (
+                <button
+                  className="chat-panel__new-chat"
+                  type="button"
+                  aria-label="Open a new chat window"
+                  title="Open a new chat window"
+                  onClick={openNewChatWindow}
+                >
+                  <NewChatIcon />
+                </button>
+              ) : null}
+              <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>
+                <img className="chat-panel__collapse-icon" src="/icons/chat-collapse.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
           </header>
 
           <div className="chat-panel__messages" ref={transcriptRef} aria-live="polite">
@@ -507,6 +586,42 @@ export function ChatWidget() {
   );
 }
 
+function readStoredSessionId() {
+  const sessionValue = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+  if (sessionValue) {
+    return sessionValue;
+  }
+
+  const legacyValue = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  if (!legacyValue) {
+    return null;
+  }
+
+  window.sessionStorage.setItem(SESSION_STORAGE_KEY, legacyValue);
+  window.localStorage.removeItem(SESSION_STORAGE_KEY);
+  return legacyValue;
+}
+
+function storeSessionId(sessionId: string) {
+  window.sessionStorage.setItem(SESSION_STORAGE_KEY, sessionId);
+  window.localStorage.removeItem(SESSION_STORAGE_KEY);
+}
+
+function clearStoredSessionId() {
+  window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  window.localStorage.removeItem(SESSION_STORAGE_KEY);
+}
+
+function shouldStartFreshChatWindow() {
+  return new URLSearchParams(window.location.search).get(CHAT_QUERY_PARAM) === CHAT_QUERY_NEW_VALUE;
+}
+
+function clearFreshChatWindowQuery() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete(CHAT_QUERY_PARAM);
+  window.history.replaceState({}, "", url.toString());
+}
+
 function clampChatPanelSize(size: ChatPanelSize): ChatPanelSize {
   const viewportWidth = Math.max(CHAT_PANEL_MIN_SIZE.width, window.innerWidth - 32);
   const viewportHeightGap = window.innerWidth <= 560 ? 112 : 136;
@@ -522,6 +637,21 @@ function clampChatPanelSize(size: ChatPanelSize): ChatPanelSize {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function NewChatIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M12 5v14M5 12h14M5 6.75h2.25M16.25 6.75H19M5 17.25h5.25M14.75 17.25H19"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.7"
+      />
+    </svg>
+  );
 }
 
 function IceBreakerIcon({ type }: { type: IceBreaker["icon"] }) {

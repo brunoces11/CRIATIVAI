@@ -11,6 +11,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 
 from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
+from backend.app.chat_multi_window import router as chat_multi_window_router
 from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
 from backend.app.db import get_session, initialize_database, ping_database
@@ -33,6 +34,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="CriativAI API", lifespan=lifespan)
 app.include_router(admin_router)
 app.include_router(chat_tracing_router)
+app.include_router(chat_multi_window_router)
 app.include_router(google_admin_router)
 app.include_router(google_callback_router)
 app.include_router(forms_router)

@@ -35,6 +35,11 @@ type ChatTracingStatus = {
   log_size_bytes: number;
 };
 
+type ChatMultiWindowStatus = {
+  enabled: boolean;
+  state_path: string;
+};
+
 type AdminPromptResponse = {
   content: string;
 };
@@ -61,6 +66,10 @@ export default function AdminPage() {
   const [tracingLoading, setTracingLoading] = useState(true);
   const [tracingSaving, setTracingSaving] = useState(false);
   const [tracingError, setTracingError] = useState("");
+  const [multiWindowStatus, setMultiWindowStatus] = useState<ChatMultiWindowStatus | null>(null);
+  const [multiWindowLoading, setMultiWindowLoading] = useState(true);
+  const [multiWindowSaving, setMultiWindowSaving] = useState(false);
+  const [multiWindowError, setMultiWindowError] = useState("");
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptDraft, setPromptDraft] = useState("");
   const [promptLoading, setPromptLoading] = useState(false);
@@ -73,6 +82,7 @@ export default function AdminPage() {
   const googleErrorReason = googleFeedbackParams.get("reason");
   const googleErrorDetail = googleFeedbackParams.get("detail");
   const tracingEnabled = tracingStatus?.enabled ?? true;
+  const multiWindowEnabled = multiWindowStatus?.enabled ?? true;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -136,6 +146,28 @@ export default function AdminPage() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setTracingLoading(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setMultiWindowLoading(true);
+    setMultiWindowError("");
+
+    fetch("/api/admin/chat-multi-window", { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load new chat button status.");
+        return response.json() as Promise<ChatMultiWindowStatus>;
+      })
+      .then(setMultiWindowStatus)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setMultiWindowError(loadError instanceof Error ? loadError.message : "Unable to load new chat button status.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setMultiWindowLoading(false);
       });
 
     return () => controller.abort();
@@ -270,6 +302,31 @@ export default function AdminPage() {
     }
   }
 
+  async function updateMultiWindow(enabled: boolean) {
+    if (multiWindowSaving) return;
+
+    setMultiWindowSaving(true);
+    setMultiWindowError("");
+
+    try {
+      const response = await fetch("/api/admin/chat-multi-window", {
+        method: "PUT",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!response.ok) throw new Error("Unable to update the new chat button status.");
+      const payload = (await response.json()) as ChatMultiWindowStatus;
+      setMultiWindowStatus(payload);
+    } catch (saveError: unknown) {
+      setMultiWindowError(saveError instanceof Error ? saveError.message : "Unable to update the new chat button status.");
+    } finally {
+      setMultiWindowSaving(false);
+    }
+  }
+
   return (
     <main className="admin-page">
       <SiteHeader brand={<Brand />} page="adm" />
@@ -290,6 +347,7 @@ export default function AdminPage() {
         {error ? <p className="admin-error">{error}</p> : null}
         {googleError ? <p className="admin-error">{googleError}</p> : null}
         {tracingError ? <p className="admin-error">{tracingError}</p> : null}
+        {multiWindowError ? <p className="admin-error">{multiWindowError}</p> : null}
         {promptError ? <p className="admin-error">{promptError}</p> : null}
 
         {promptOpen ? (
@@ -421,6 +479,38 @@ export default function AdminPage() {
                 <span className="admin-switch__thumb" />
               </span>
               <span className="admin-switch__label">{tracingEnabled ? "On" : "Off"}</span>
+            </button>
+          </div>
+        </section>
+
+        <section className="admin-tracing" aria-label="New chat button toggle">
+          <div className="admin-tracing__copy">
+            <p className="admin-kicker">Chat multi-window</p>
+            <h2>New chat button</h2>
+            <p>
+              {multiWindowLoading
+                ? "Checking the new chat button status..."
+                : "When enabled, the live chat header shows a round New Chat button that opens a fresh chat window with the standard icebreakers."}
+            </p>
+            <div className="admin-tracing__meta">
+              <span>Toggle file</span>
+              <strong>{multiWindowStatus?.state_path ?? "chat-multi-window-enabled.txt"}</strong>
+            </div>
+          </div>
+
+          <div className="admin-tracing__actions">
+            <button
+              className={`admin-switch${multiWindowEnabled ? " admin-switch--on" : ""}`}
+              type="button"
+              role="switch"
+              aria-checked={multiWindowEnabled}
+              disabled={multiWindowLoading || multiWindowSaving}
+              onClick={() => void updateMultiWindow(!multiWindowEnabled)}
+            >
+              <span className="admin-switch__track" aria-hidden="true">
+                <span className="admin-switch__thumb" />
+              </span>
+              <span className="admin-switch__label">{multiWindowEnabled ? "On" : "Off"}</span>
             </button>
           </div>
         </section>

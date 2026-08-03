@@ -156,6 +156,37 @@ def test_admin_can_read_and_update_chat_tracing(tmp_path: Path) -> None:
         app.dependency_overrides.clear()
 
 
+def test_admin_can_read_and_update_chat_multi_window(tmp_path: Path) -> None:
+    session = make_session()
+    state_path = tmp_path / "chat-multi-window-enabled.txt"
+
+    def override_session():
+        try:
+            yield session
+        finally:
+            pass
+
+    def override_settings():
+        return Settings(chat_multi_window_state_path=state_path, _env_file=None)
+
+    app.dependency_overrides[admin_module.get_session] = override_session
+    app.dependency_overrides[admin_module.get_settings] = override_settings
+    client = TestClient(app)
+
+    try:
+        get_response = client.get("/api/admin/chat-multi-window")
+        assert get_response.status_code == 200
+        assert get_response.json()["enabled"] is True
+
+        update_response = client.put("/api/admin/chat-multi-window", json={"enabled": False})
+        assert update_response.status_code == 200
+        updated = update_response.json()
+        assert updated["enabled"] is False
+        assert state_path.read_text(encoding="utf-8").strip() == "0"
+    finally:
+        app.dependency_overrides.clear()
+
+
 def test_admin_prompt_can_be_read_and_updated(tmp_path: Path) -> None:
     session = make_session()
     prompt_path = tmp_path / "prompt.md"

@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     chat_tool_max_iterations: int = 4
     chat_tracing_log_path: Path = Path("chat-tracing-log.txt")
     chat_tracing_state_path: Path = Path("chat-tracing-enabled.txt")
+    chat_multi_window_state_path: Path = Path("chat-multi-window-enabled.txt")
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_redirect_uri: str | None = None
