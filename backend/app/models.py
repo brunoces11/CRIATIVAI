@@ -33,6 +33,7 @@ class Conversation(Base):
     )
 
     messages: Mapped[list["Message"]] = relationship(back_populates="conversation", cascade="all, delete-orphan", order_by="Message.id")
+    project_briefings: Mapped[list["ProjectBriefing"]] = relationship(back_populates="conversation", cascade="all, delete-orphan")
 
 
 class Message(Base):
@@ -68,6 +69,29 @@ class Booking(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class ProjectBriefing(Base):
+    __tablename__ = "project_briefings"
+
+    briefing_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id", ondelete="CASCADE"), index=True, nullable=False)
+    briefing_title: Mapped[str] = mapped_column(String(220), nullable=False)
+    briefing_markdown: Mapped[str] = mapped_column(Text, nullable=False)
+    briefing_status: Mapped[str] = mapped_column(String(32), default="created", nullable=False)
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
+    owner_email_status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
+    client_email_status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
+    email_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    briefing_created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
+    briefing_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    briefing_updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
+    )
+
+    conversation: Mapped[Conversation] = relationship(back_populates="project_briefings")
 
 
 class OAuthState(Base):

@@ -26,6 +26,8 @@ def test_calendar_tools_are_strict_and_closed() -> None:
         "calendar_lookup_bookings",
         "calendar_update_event",
         "calendar_cancel_event",
+        "chat_capture_contact",
+        "project_briefing_send_email",
     }
     for tool in CALENDAR_TOOLS:
         assert tool["type"] == "function"

@@ -189,7 +189,7 @@ def stream_openai_text_with_calendar_tools(
         for tool_call in tool_calls:
             if trace is not None:
                 trace.log("calendar_tool_call", iteration=_iteration + 1, name=tool_call["name"], arguments=tool_call["arguments"])
-            yield PublicToolStatus()
+            yield PublicToolStatus(tool_status_message(tool_call["name"]))
             output = execute_calendar_tool_safely(tool_call, session=session, conversation=conversation, settings=settings)
             if trace is not None:
                 trace.log("calendar_tool_output", iteration=_iteration + 1, name=tool_call["name"], output=output)
@@ -234,6 +234,16 @@ def execute_calendar_tool_safely(
         if isinstance(exc.detail, dict):
             error["error"].update(exc.detail)
         return error
+
+
+def tool_status_message(tool_name: str) -> str:
+    if tool_name.startswith("calendar_"):
+        return "Working with the calendar..."
+    if tool_name == "chat_capture_contact":
+        return "Saving contact details..."
+    if tool_name == "project_briefing_send_email":
+        return "Sending the project briefing..."
+    return "Working on that..."
 
 
 def extract_function_calls(response) -> list[dict[str, Any]]:
