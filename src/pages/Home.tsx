@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 
+import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
+import { serviceCatalog } from "../data/serviceCatalog";
+
 const groundingTopics = [
   {
     title: "Custom RAG Setups",
@@ -56,35 +59,6 @@ const customDevelopmentTopics = [
   "Operational Dashboards",
   "Process-Specific UX",
   "No Vendor Lock-In",
-];
-
-const services = [
-  {
-    index: "01",
-    title: "Product Design + Enterprise Knowledge Systems",
-    text: "Human-centered product design connected to enterprise knowledge architecture, giving AI experiences clear interfaces, verified context, and a reliable source of truth.",
-    featured: true,
-  },
-  {
-    index: "02",
-    title: "Increase Lead Generation + Conversion Rate with AI",
-    text: "AI-assisted acquisition systems for lead capture, qualification, nurturing, personalization, and conversion improvements across the customer journey.",
-  },
-  {
-    index: "03",
-    title: "System Design",
-    text: "Technical architecture and system planning for scalable digital products and AI-powered applications.",
-  },
-  {
-    index: "04",
-    title: "AI Automations",
-    text: "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence.",
-  },
-  {
-    index: "05",
-    title: "Smart Agents",
-    text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
-  },
 ];
 
 const expertise = [
@@ -245,40 +219,36 @@ export default function Home() {
               <span>10 capabilities</span>
             </div>
             <div className="topic-list" role="list">
-              {(["left", "right"] as const).map((columnId) => (
-                <div className="topic-list-column" key={columnId}>
-                  {groundingTopics.map((topic, index) => {
-                    if ((columnId === "left" && index % 2 !== 0) || (columnId === "right" && index % 2 === 0)) return null;
+              <div className="topic-list-column">
+                {groundingTopics.map((topic, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topic.title;
+                  const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
+                  const detailId = `grounding-topic-${index}`;
 
-                    const isExpanded = expandedGroundingTopic?.columnId === columnId && expandedGroundingTopic.title === topic.title;
-                    const isCompact = expandedGroundingTopic?.columnId === columnId && !isExpanded;
-                    const detailId = `grounding-topic-${index}`;
-
-                    return (
-                      <div
-                        role="listitem"
-                        className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
-                        key={topic.title}
+                  return (
+                    <div
+                      role="listitem"
+                      className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                      key={topic.title}
+                    >
+                      <button
+                        type="button"
+                        className="topic-list-button"
+                        aria-expanded={isExpanded}
+                        aria-controls={detailId}
+                        onClick={() => toggleGroundingTopic("single", topic.title)}
                       >
-                        <button
-                          type="button"
-                          className="topic-list-button"
-                          aria-expanded={isExpanded}
-                          aria-controls={detailId}
-                          onClick={() => toggleGroundingTopic(columnId, topic.title)}
-                        >
-                          <span className="topic-list-toggle" aria-hidden="true" />
-                          <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
-                          <span className="topic-list-title">{topic.title}</span>
-                          <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
-                            {topic.description}
-                          </span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+                        <span className="topic-list-toggle" aria-hidden="true" />
+                        <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="topic-list-title">{topic.title}</span>
+                        <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                          {topic.description}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -374,16 +344,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="services-grid">
-            {services.map((service) => (
-              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.title}>
-                <div className="service-topline">
-                  <span>{service.index}</span>
-                  <i aria-hidden="true"><b /></i>
-                </div>
-                <h3>{service.title}</h3>
-                <p>{service.text}</p>
-              </article>
+          <div className="services-grid services-page-grid">
+            {serviceCatalog.map((service) => (
+              <ServiceCatalogCard key={service.id} service={service} />
             ))}
           </div>
         </div>

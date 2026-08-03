@@ -1,79 +1,9 @@
-import { type ReactNode } from "react";
 import { SiteHeader } from "../components/SiteHeader";
-import { openAssistantChat } from "../lib/chatContext";
+import { type ReactNode } from "react";
 
-const services = [
-  {
-    id: "product-design",
-    index: "01",
-    title: "Product Design",
-    text: "Human-centered digital product and UI/UX design focused on usability, accessibility, conversion, and exceptional user experiences.",
-    icon: "product",
-  },
-  {
-    id: "refined-websites",
-    index: "02",
-    title: "Refined Websites",
-    text: "Fast, accessible, refined websites for large-scale corporate platforms or simple landing pages built to convert, with clean infrastructure, continuous deployment, and code your team can own.",
-    icon: "websites",
-  },
-  {
-    id: "custom-software",
-    index: "03",
-    title: "Custom Software",
-    text: "Purpose-built software shaped around your workflows, users, data, and operational constraints, combining AI-assisted architecture, development, testing, deployment, and optimized delivery across the full build process.",
-    icon: "software",
-  },
-  {
-    id: "ai-client-acquisition",
-    index: "04",
-    title: "AI Client Acquisition",
-    text: "AI-assisted acquisition flows that qualify leads, capture context, personalize follow-ups, and help turn visitor intent into real commercial opportunities.",
-    icon: "acquisition",
-  },
-  {
-    id: "ai-customer-service",
-    index: "05",
-    title: "AI Customer Service",
-    text: "AI customer service agents that respond instantly, assemble requests inside the conversation, route orders or tickets to operations, and keep customers updated automatically.",
-    icon: "support",
-  },
-  {
-    id: "ai-automations",
-    index: "06",
-    title: "AI Automations",
-    text: "AI-powered business process automation that eliminates repetitive tasks, connects tools and approvals, and increases operational efficiency.",
-    icon: "automation",
-  },
-  {
-    id: "smart-ai-agents",
-    index: "07",
-    title: "Smart AI Agents",
-    text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
-    icon: "agents",
-  },
-  {
-    id: "enterprise-knowledge-systems",
-    index: "08",
-    title: "Enterprise Knowledge Systems",
-    text: "Enterprise knowledge architecture that gives AI agents a single source of truth through knowledge lakes, custom RAG setups, GraphRAG, process context, and traceable business data relationships.",
-    icon: "knowledge",
-  },
-  {
-    id: "enterprise-consulting",
-    index: "09",
-    title: "Enterprise Consulting",
-    text: "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization.",
-    icon: "consulting",
-  },
-  {
-    id: "ai-training",
-    index: "10",
-    title: "AI Training",
-    text: "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities.",
-    icon: "training",
-  },
-] as const;
+import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
+import { serviceCatalog } from "../data/serviceCatalog";
+import { openAssistantChat } from "../lib/chatContext";
 
 const steps = [
   {
@@ -200,109 +130,10 @@ function Brand() {
   );
 }
 
-type Service = (typeof services)[number];
 type Step = (typeof steps)[number];
-
-function openServiceCardChat(service: Service, buttonKey: "ask-my-ai-assistant" | "i-want-it") {
-  openAssistantChat({ welcomeKey: `services/service-catalog/${service.id}/${buttonKey}` });
-}
 
 function openProcessCardChat(step: Step) {
   openAssistantChat({ welcomeKey: step.welcomeKey });
-}
-
-function ServiceIcon({ type }: { type: string }) {
-  const iconPaths: Record<string, ReactNode> = {
-    product: (
-      <>
-        <circle cx="12" cy="12" r="8" />
-        <circle cx="12" cy="12" r="4" />
-        <circle cx="12" cy="12" r="1.2" />
-      </>
-    ),
-    knowledge: (
-      <>
-        <path d="M6 5h9a3 3 0 0 1 3 3v11H8a3 3 0 0 1-3-3V5Z" />
-        <path d="M8 9h7" />
-        <path d="M8 13h5" />
-      </>
-    ),
-    system: (
-      <>
-        <path d="M12 3 4.5 7.2v9.6L12 21l7.5-4.2V7.2L12 3Z" />
-        <path d="M12 12 4.8 7.8" />
-        <path d="M12 12v8.5" />
-        <path d="m12 12 7.2-4.2" />
-      </>
-    ),
-    automation: (
-      <>
-        <path d="M6 12a6 6 0 0 1 10.2-4.3" />
-        <path d="M16 4v4h-4" />
-        <path d="M18 12a6 6 0 0 1-10.2 4.3" />
-        <path d="M8 20v-4h4" />
-      </>
-    ),
-    agents: (
-      <>
-        <circle cx="12" cy="8" r="3" />
-        <path d="M5 20a7 7 0 0 1 14 0" />
-        <path d="M4 9h2" />
-        <path d="M18 9h2" />
-      </>
-    ),
-    acquisition: (
-      <>
-        <path d="M4 18V6" />
-        <path d="M4 18h16" />
-        <path d="m7 15 4-4 3 3 5-7" />
-        <path d="M15 7h4v4" />
-      </>
-    ),
-    support: (
-      <>
-        <path d="M5 12a7 7 0 0 1 14 0v3a3 3 0 0 1-3 3h-2" />
-        <path d="M5 12v3a2 2 0 0 0 2 2h1v-6H7a2 2 0 0 0-2 1Z" />
-        <path d="M19 12v3a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 1Z" />
-      </>
-    ),
-    websites: (
-      <>
-        <rect x="3.5" y="5" width="17" height="13" rx="2" />
-        <path d="M3.5 9h17" />
-        <path d="M7 14h5" />
-        <path d="M15 14h2" />
-      </>
-    ),
-    software: (
-      <>
-        <path d="m8 9-4 3 4 3" />
-        <path d="m16 9 4 3-4 3" />
-        <path d="m14 5-4 14" />
-      </>
-    ),
-    training: (
-      <>
-        <path d="M4 7.5 12 4l8 3.5-8 3.5-8-3.5Z" />
-        <path d="M7 10v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V10" />
-        <path d="M20 8v5" />
-      </>
-    ),
-    consulting: (
-      <>
-        <path d="M5 17.5 9.5 13l3 3L19 9.5" />
-        <path d="M15 9h4v4" />
-        <path d="M4 5h8" />
-        <path d="M4 9h5" />
-      </>
-    ),
-  };
-
-  return (
-    <svg className="service-title-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      {iconPaths[type] ?? iconPaths.system}
-    </svg>
-  );
 }
 
 export default function ServicesPage() {
@@ -346,20 +177,8 @@ export default function ServicesPage() {
           </div>
 
           <div className="services-page-grid">
-            {services.map((service) => (
-              <article className="services-page-card" key={service.title}>
-                <div className="services-page-card-body">
-                  <div className="services-page-title-row">
-                    <ServiceIcon type={service.icon} />
-                    <h3 className={service.title === "Enterprise Knowledge Systems" ? "services-page-title--compact" : undefined}>{service.title}</h3>
-                  </div>
-                  <p>{service.text}</p>
-                </div>
-                <div className="services-page-card-actions">
-                  <button type="button" onClick={() => openServiceCardChat(service, "ask-my-ai-assistant")}>Ask my Ai Assistant</button>
-                  <button type="button" onClick={() => openServiceCardChat(service, "i-want-it")}>I want It</button>
-                </div>
-              </article>
+            {serviceCatalog.map((service) => (
+              <ServiceCatalogCard key={service.id} service={service} />
             ))}
           </div>
         </div>

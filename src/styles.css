@@ -913,17 +913,13 @@ img {
   display: grid;
   padding: 0;
   margin: 0;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
 }
 
 .topic-list-column {
   display: grid;
   align-content: start;
   min-height: 320px;
-}
-
-.topic-list-column:first-child {
-  border-right: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 .topic-list-item {
@@ -1208,6 +1204,11 @@ img {
   transform: translateY(-54px);
 }
 
+.service-catalog-card:hover .services-page-card-body,
+.service-catalog-card:focus-within .services-page-card-body {
+  transform: translateY(-54px);
+}
+
 .services-page-card-actions {
   position: absolute;
   z-index: 2;
@@ -1225,6 +1226,13 @@ img {
 
 .services-page-card:hover .services-page-card-actions,
 .services-page-card:focus-within .services-page-card-actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.service-catalog-card:hover .services-page-card-actions,
+.service-catalog-card:focus-within .services-page-card-actions {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -1784,6 +1792,7 @@ img {
     padding: 142px 0 74px;
   }
 
+  .services-grid.services-page-grid,
   .services-page-grid,
   .services-process-grid {
     grid-template-columns: 1fr;
@@ -1846,6 +1855,49 @@ img {
 
   .services-faq-answer {
     padding-right: 0;
+  }
+}
+
+@media (hover: none) {
+  .services-page-card:hover,
+  .services-page-card:focus,
+  .services-page-card:focus-within,
+  .hr-benefits-card:hover,
+  .hr-benefits-card:focus,
+  .hr-benefits-card:focus-within {
+    transform: translateY(0);
+  }
+
+  .services-page-card:hover .services-page-card-body,
+  .services-page-card:focus .services-page-card-body,
+  .services-page-card:focus-within .services-page-card-body,
+  .hr-benefits-card:hover .hr-benefits-card-body,
+  .hr-benefits-card:focus .hr-benefits-card-body,
+  .hr-benefits-card:focus-within .hr-benefits-card-body {
+    transform: none;
+  }
+
+  .services-page-card-actions,
+  .hr-benefits-card-actions {
+    position: static;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    display: none;
+    justify-content: flex-start;
+    margin-top: 18px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .services-page-card:hover .services-page-card-actions,
+  .services-page-card:focus .services-page-card-actions,
+  .services-page-card:focus-within .services-page-card-actions,
+  .hr-benefits-card:hover .hr-benefits-card-actions,
+  .hr-benefits-card:focus .hr-benefits-card-actions,
+  .hr-benefits-card:focus-within .hr-benefits-card-actions {
+    display: flex;
   }
 }
 
@@ -3087,6 +3139,7 @@ img {
   .grounding-grid { gap: 48px; }
   .services-grid { grid-template-columns: repeat(2, 1fr); }
   .service-card:nth-child(n) { min-height: 280px; grid-column: span 1; }
+  .services-grid .services-page-card:nth-child(n) { grid-column: span 1; }
   .service-card:last-child { grid-column: 1 / -1; }
   .about-image-wrap { min-height: 700px; }
 }
@@ -3155,6 +3208,7 @@ img {
   .services-grid { grid-template-columns: 1fr; }
   .service-card:last-child { grid-column: auto; }
   .service-card { min-height: 220px !important; padding: 22px; }
+  .services-grid .services-page-card:nth-child(n) { grid-column: auto; }
   .about-image-wrap { min-height: 540px; }
   .about-image-meta { right: 18px; bottom: 18px; left: 18px; }
   .about-lead { font-size: 2.32rem; }
