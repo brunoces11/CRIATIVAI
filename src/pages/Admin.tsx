@@ -406,114 +406,116 @@ export default function AdminPage() {
           </section>
         ) : null}
 
-        <section className="admin-google" aria-label="Google Calendar admin">
-          <div className="admin-google__copy">
-            <p className="admin-kicker">Google Calendar</p>
-            <h2>Connection status</h2>
-            <p>{googleLoading ? "Checking the current calendar connection..." : describeGoogleStatus(googleStatus)}</p>
-            <div className="admin-google__meta">
-              <span>Calendar</span>
-              <strong>{googleStatus?.calendar_id ?? "Not configured"}</strong>
-            </div>
-            {googleStatus?.scopes?.length ? (
+        <div className="admin-controls">
+          <section className="admin-google" aria-label="Google Calendar admin">
+            <div className="admin-google__copy">
+              <p className="admin-kicker">Google Calendar</p>
+              <h2>Connection status</h2>
+              <p>{googleLoading ? "Checking the current calendar connection..." : describeGoogleStatus(googleStatus)}</p>
               <div className="admin-google__meta">
-                <span>Scopes</span>
-                <strong>{googleStatus.scopes.length} permission(s) configured</strong>
+                <span>Calendar</span>
+                <strong>{googleStatus?.calendar_id ?? "Not configured"}</strong>
               </div>
-            ) : null}
-          </div>
+              {googleStatus?.scopes?.length ? (
+                <div className="admin-google__meta">
+                  <span>Scopes</span>
+                  <strong>{googleStatus.scopes.length} permission(s) configured</strong>
+                </div>
+              ) : null}
+            </div>
 
-          <div className="admin-google__actions">
-            <span className={`admin-badge admin-badge--${normalizeGoogleStatus(googleStatus?.status)}`}>
-              {labelGoogleStatus(googleStatus?.status, googleLoading)}
-            </span>
+            <div className="admin-google__actions">
+              <span className={`admin-badge admin-badge--${normalizeGoogleStatus(googleStatus?.status)}`}>
+                {labelGoogleStatus(googleStatus?.status, googleLoading)}
+              </span>
 
-            <a className="button button--ghost admin-google__button" href="/api/admin/google/connect">
-              {googleStatus?.status === "connected" ? "Reconnect Google" : "Connect Google"}
-            </a>
+              <a className="button button--ghost admin-google__button" href="/api/admin/google/connect">
+                {googleStatus?.status === "connected" ? "Reconnect Google" : "Connect Google"}
+              </a>
 
-            {googleFeedback === "connected" ? <p className="admin-notice admin-notice--success">Google Calendar connected successfully.</p> : null}
-            {googleFeedback === "error" ? (
-              <p className="admin-notice admin-notice--error">
-                Google Calendar connection could not be completed.
-                {googleErrorReason ? <span> Reason: {googleErrorReason}.</span> : null}
-                {googleErrorDetail ? <span> Detail: {googleErrorDetail}</span> : null}
+              {googleFeedback === "connected" ? <p className="admin-notice admin-notice--success">Google Calendar connected successfully.</p> : null}
+              {googleFeedback === "error" ? (
+                <p className="admin-notice admin-notice--error">
+                  Google Calendar connection could not be completed.
+                  {googleErrorReason ? <span> Reason: {googleErrorReason}.</span> : null}
+                  {googleErrorDetail ? <span> Detail: {googleErrorDetail}</span> : null}
+                </p>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="admin-tracing" aria-label="Chat tracing">
+            <div className="admin-tracing__copy">
+              <p className="admin-kicker">Chat tracing</p>
+              <h2>Tool use debug log</h2>
+              <p>
+                {tracingLoading
+                  ? "Checking chat tracing..."
+                  : "When enabled, each chat turn appends a JSON line to the root-level tracing file so we can inspect prompt behavior and tool calls later."}
               </p>
-            ) : null}
-          </div>
-        </section>
-
-        <section className="admin-tracing" aria-label="Chat tracing">
-          <div className="admin-tracing__copy">
-            <p className="admin-kicker">Chat tracing</p>
-            <h2>Tool use debug log</h2>
-            <p>
-              {tracingLoading
-                ? "Checking chat tracing..."
-                : "When enabled, each chat turn appends a JSON line to the root-level tracing file so we can inspect prompt behavior and tool calls later."}
-            </p>
-            <div className="admin-tracing__meta">
-              <span>Log file</span>
-              <strong>{tracingStatus?.log_path ?? "chat-tracing-log.txt"}</strong>
+              <div className="admin-tracing__meta">
+                <span>Log file</span>
+                <strong>{tracingStatus?.log_path ?? "chat-tracing-log.txt"}</strong>
+              </div>
+              <div className="admin-tracing__meta">
+                <span>Toggle file</span>
+                <strong>{tracingStatus?.state_path ?? "chat-tracing-enabled.txt"}</strong>
+              </div>
+              <div className="admin-tracing__meta">
+                <span>Current size</span>
+                <strong>{tracingStatus ? `${formatBytes(tracingStatus.log_size_bytes)}${tracingStatus.log_exists ? "" : " (not created yet)"}` : "0 B"}</strong>
+              </div>
             </div>
-            <div className="admin-tracing__meta">
-              <span>Toggle file</span>
-              <strong>{tracingStatus?.state_path ?? "chat-tracing-enabled.txt"}</strong>
-            </div>
-            <div className="admin-tracing__meta">
-              <span>Current size</span>
-              <strong>{tracingStatus ? `${formatBytes(tracingStatus.log_size_bytes)}${tracingStatus.log_exists ? "" : " (not created yet)"}` : "0 B"}</strong>
-            </div>
-          </div>
 
-          <div className="admin-tracing__actions">
-            <button
-              className={`admin-switch${tracingEnabled ? " admin-switch--on" : ""}`}
-              type="button"
-              role="switch"
-              aria-checked={tracingEnabled}
-              disabled={tracingLoading || tracingSaving}
-              onClick={() => void updateTracing(!tracingEnabled)}
-            >
-              <span className="admin-switch__track" aria-hidden="true">
-                <span className="admin-switch__thumb" />
-              </span>
-              <span className="admin-switch__label">{tracingEnabled ? "On" : "Off"}</span>
-            </button>
-          </div>
-        </section>
-
-        <section className="admin-tracing" aria-label="New chat button toggle">
-          <div className="admin-tracing__copy">
-            <p className="admin-kicker">Chat multi-window</p>
-            <h2>New chat button</h2>
-            <p>
-              {multiWindowLoading
-                ? "Checking the new chat button status..."
-                : "When enabled, the live chat header shows a round New Chat button that opens a fresh chat window with the standard icebreakers."}
-            </p>
-            <div className="admin-tracing__meta">
-              <span>Toggle file</span>
-              <strong>{multiWindowStatus?.state_path ?? "chat-multi-window-enabled.txt"}</strong>
+            <div className="admin-tracing__actions">
+              <button
+                className={`admin-switch${tracingEnabled ? " admin-switch--on" : ""}`}
+                type="button"
+                role="switch"
+                aria-checked={tracingEnabled}
+                disabled={tracingLoading || tracingSaving}
+                onClick={() => void updateTracing(!tracingEnabled)}
+              >
+                <span className="admin-switch__track" aria-hidden="true">
+                  <span className="admin-switch__thumb" />
+                </span>
+                <span className="admin-switch__label">{tracingEnabled ? "On" : "Off"}</span>
+              </button>
             </div>
-          </div>
+          </section>
 
-          <div className="admin-tracing__actions">
-            <button
-              className={`admin-switch${multiWindowEnabled ? " admin-switch--on" : ""}`}
-              type="button"
-              role="switch"
-              aria-checked={multiWindowEnabled}
-              disabled={multiWindowLoading || multiWindowSaving}
-              onClick={() => void updateMultiWindow(!multiWindowEnabled)}
-            >
-              <span className="admin-switch__track" aria-hidden="true">
-                <span className="admin-switch__thumb" />
-              </span>
-              <span className="admin-switch__label">{multiWindowEnabled ? "On" : "Off"}</span>
-            </button>
-          </div>
-        </section>
+          <section className="admin-tracing" aria-label="New chat button toggle">
+            <div className="admin-tracing__copy">
+              <p className="admin-kicker">Chat multi-window</p>
+              <h2>New chat button</h2>
+              <p>
+                {multiWindowLoading
+                  ? "Checking the new chat button status..."
+                  : "When enabled, the live chat header shows a round New Chat button that opens a fresh chat window with the standard icebreakers."}
+              </p>
+              <div className="admin-tracing__meta">
+                <span>Toggle file</span>
+                <strong>{multiWindowStatus?.state_path ?? "chat-multi-window-enabled.txt"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-tracing__actions">
+              <button
+                className={`admin-switch${multiWindowEnabled ? " admin-switch--on" : ""}`}
+                type="button"
+                role="switch"
+                aria-checked={multiWindowEnabled}
+                disabled={multiWindowLoading || multiWindowSaving}
+                onClick={() => void updateMultiWindow(!multiWindowEnabled)}
+              >
+                <span className="admin-switch__track" aria-hidden="true">
+                  <span className="admin-switch__thumb" />
+                </span>
+                <span className="admin-switch__label">{multiWindowEnabled ? "On" : "Off"}</span>
+              </button>
+            </div>
+          </section>
+        </div>
 
         <div className="admin-grid">
           <aside className="admin-list" aria-label="Conversation list">

@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 const navigation = [
-  { label: "Hire me", href: "/hire-me" },
+  { label: "Hire me", href: "/hire-me", adminOnly: true },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "#projects", adminOnly: true },
   { label: "About", href: "/about-me" },
-  { label: "Human Resources", href: "/human-resources" },
+  { label: "Human Resources", href: "/human-resources", adminOnly: true },
   { label: "Video", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style", adminOnly: true },

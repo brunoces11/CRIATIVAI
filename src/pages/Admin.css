@@ -77,6 +77,12 @@
   gap: 18px;
 }
 
+.admin-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
 .admin-prompt {
   display: grid;
   gap: 18px;
@@ -332,6 +338,19 @@
   align-content: center;
   justify-items: start;
   gap: 14px;
+}
+
+.admin-controls .admin-google,
+.admin-controls .admin-tracing {
+  min-height: 100%;
+  grid-template-columns: 1fr;
+  align-content: start;
+}
+
+.admin-controls .admin-google__actions,
+.admin-controls .admin-tracing__actions {
+  padding-top: 18px;
+  align-content: end;
 }
 
 .admin-google__button {
@@ -678,6 +697,10 @@
   }
 
   .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-controls {
     grid-template-columns: 1fr;
   }
 
