@@ -17,6 +17,7 @@ from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_
 
 from backend.app.calendar_availability import calendar_check_availability, ensure_aware_utc, load_timezone, to_rfc3339
 from backend.app.calendar_availability import build_calendar_service
+from backend.app.admin_records import sync_admin_record
 from backend.app.config import Settings, get_settings
 from backend.app.emailer import send_email
 from backend.app.models import Booking, Conversation
@@ -108,6 +109,16 @@ def calendar_create_event(
     session.add(booking)
     session.commit()
     session.refresh(booking)
+    sync_admin_record(
+        session,
+        user_from="booking",
+        source_record_id=booking.id,
+        name=booking.participant_name or conversation.visitor_name,
+        email=booking.participant_email,
+        company=conversation.visitor_company,
+        timezone=booking.timezone,
+        conversation_id=conversation.id,
+    )
     result = booking_result(booking, event=event)
     send_calendar_owner_notification(settings=resolved_settings, action="created", booking=result)
     return result

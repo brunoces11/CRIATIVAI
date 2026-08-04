@@ -648,40 +648,36 @@ export default function VideoPage() {
               <span>10 capabilities</span>
             </div>
             <div className="topic-list" role="list">
-              {(["left", "right"] as const).map((columnId) => (
-                <div className="topic-list-column" key={columnId}>
-                  {groundingTopics.map((topic, index) => {
-                    if ((columnId === "left" && index % 2 !== 0) || (columnId === "right" && index % 2 === 0)) return null;
+              <div className="topic-list-column">
+                {groundingTopics.map((topic, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topic.title;
+                  const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
+                  const detailId = `grounding-topic-${index}`;
 
-                    const isExpanded = expandedGroundingTopic?.columnId === columnId && expandedGroundingTopic.title === topic.title;
-                    const isCompact = expandedGroundingTopic?.columnId === columnId && !isExpanded;
-                    const detailId = `grounding-topic-${index}`;
-
-                    return (
-                      <div
-                        role="listitem"
-                        className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
-                        key={topic.title}
+                  return (
+                    <div
+                      role="listitem"
+                      className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                      key={topic.title}
+                    >
+                      <button
+                        type="button"
+                        className="topic-list-button"
+                        aria-expanded={isExpanded}
+                        aria-controls={detailId}
+                        onClick={() => toggleGroundingTopic("single", topic.title)}
                       >
-                        <button
-                          type="button"
-                          className="topic-list-button"
-                          aria-expanded={isExpanded}
-                          aria-controls={detailId}
-                          onClick={() => toggleGroundingTopic(columnId, topic.title)}
-                        >
-                          <span className="topic-list-toggle" aria-hidden="true" />
-                          <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
-                          <span className="topic-list-title">{topic.title}</span>
-                          <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
-                            {topic.description}
-                          </span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+                        <span className="topic-list-toggle" aria-hidden="true" />
+                        <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="topic-list-title">{topic.title}</span>
+                        <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                          {topic.description}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

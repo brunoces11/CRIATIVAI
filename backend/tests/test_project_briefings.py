@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.config import Settings
 from backend.app.emailer import EmailDeliveryResult
-from backend.app.models import Base, Conversation, ProjectBriefing
+from backend.app.models import Base, AdminRecord, Conversation, ProjectBriefing
 from backend.app.project_briefings import build_briefing_idempotency_key, chat_capture_contact, project_briefing_send_email
 
 
@@ -163,6 +163,7 @@ def test_project_briefing_send_email_creates_briefing_and_sends_both_emails(monk
     assert briefing.owner_email_status == "sent"
     assert briefing.client_email_status == "sent"
     assert briefing.briefing_sent_at is not None
+    assert session.query(AdminRecord).count() == 1
     assert len(email_calls) == 2
     assert email_calls[0]["to_email"] == "bruno@criativai.site"
     assert email_calls[0]["reply_to"] == "cliente@example.com"

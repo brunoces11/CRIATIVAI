@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AdminRecordModal, type AdminRecordDetail } from "../components/AdminRecordModal";
 import { MarkdownText } from "../components/MarkdownText";
 import { SiteHeader } from "../components/SiteHeader";
 import "./Admin.css";
@@ -44,6 +45,8 @@ type AdminPromptResponse = {
   content: string;
 };
 
+type AdminRecordSummary = Omit<AdminRecordDetail, "payload">;
+
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
@@ -53,9 +56,17 @@ function Brand() {
 }
 
 export default function AdminPage() {
+  const [activeView, setActiveView] = useState<"chat" | "leads">("chat");
   const [conversations, setConversations] = useState<AdminConversationSummary[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [detail, setDetail] = useState<AdminConversationDetail | null>(null);
+  const [records, setRecords] = useState<AdminRecordSummary[]>([]);
+  const [recordsLoading, setRecordsLoading] = useState(true);
+  const [recordsError, setRecordsError] = useState("");
+  const [selectedRecordId, setSelectedRecordId] = useState<number | null>(null);
+  const [recordDetail, setRecordDetail] = useState<AdminRecordDetail | null>(null);
+  const [recordDetailLoading, setRecordDetailLoading] = useState(false);
+  const [recordDetailError, setRecordDetailError] = useState("");
   const [loadingList, setLoadingList] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [error, setError] = useState("");
@@ -83,7 +94,6 @@ export default function AdminPage() {
   const googleErrorDetail = googleFeedbackParams.get("detail");
   const tracingEnabled = tracingStatus?.enabled ?? true;
   const multiWindowEnabled = multiWindowStatus?.enabled ?? true;
-
   useEffect(() => {
     const controller = new AbortController();
     setLoadingList(true);
@@ -102,6 +112,28 @@ export default function AdminPage() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoadingList(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setRecordsLoading(true);
+    setRecordsError("");
+
+    fetch("/api/admin/records", { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load records.");
+        return response.json() as Promise<AdminRecordSummary[]>;
+      })
+      .then(setRecords)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setRecordsError(loadError instanceof Error ? loadError.message : "Unable to load records.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRecordsLoading(false);
       });
 
     return () => controller.abort();
@@ -172,6 +204,34 @@ export default function AdminPage() {
 
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    if (selectedRecordId === null) {
+      setRecordDetail(null);
+      setRecordDetailError("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setRecordDetailLoading(true);
+    setRecordDetailError("");
+
+    fetch(`/api/admin/records/${selectedRecordId}`, { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load record detail.");
+        return response.json() as Promise<AdminRecordDetail>;
+      })
+      .then(setRecordDetail)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setRecordDetailError(loadError instanceof Error ? loadError.message : "Unable to load record detail.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRecordDetailLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [selectedRecordId]);
 
   useEffect(() => {
     if (selectedId === null) {
@@ -260,7 +320,16 @@ export default function AdminPage() {
         method: "DELETE",
         headers: { accept: "application/json" },
       });
-      if (!response.ok) throw new Error("Unable to delete the conversation.");
+      if (!response.ok) {
+        let message = "Unable to delete the conversation.";
+        try {
+          const payload = (await response.json()) as { detail?: string };
+          if (payload.detail) message = payload.detail;
+        } catch {
+          // Keep the default message when the response body is not JSON.
+        }
+        throw new Error(message);
+      }
 
       const remaining = conversations.filter((conversation) => conversation.id !== conversationId);
       setConversations(remaining);
@@ -517,102 +586,212 @@ export default function AdminPage() {
           </section>
         </div>
 
-        <div className="admin-grid">
-          <aside className="admin-list" aria-label="Conversation list">
-            {loadingList ? <p className="admin-muted">Loading conversations...</p> : null}
-            {!loadingList && conversations.length === 0 ? <p className="admin-muted">No conversations yet.</p> : null}
-            {conversations.map((conversation) => (
-              <div key={conversation.id} className={`admin-list-item${conversation.id === selectedId ? " admin-list-item--active" : ""}`}>
-                <button className="admin-list-item__body" type="button" onClick={() => setSelectedId(conversation.id)}>
-                  <span>{conversation.visitor_label}</span>
-                  <small>{formatDate(conversation.last_activity_at)}</small>
-                  <em>{conversation.summary ?? "No summary yet"}</em>
-                </button>
-                <button
-                  className="admin-list-item__delete"
-                  type="button"
-                  aria-label={`Delete conversation ${conversation.visitor_label}`}
-                  title="Delete conversation"
-                  disabled={deletingId === conversation.id}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    void deleteConversation(conversation.id);
-                  }}
-                >
-                  <TrashIcon />
-                </button>
-              </div>
-            ))}
-          </aside>
+        <div className="admin-section-switch" role="tablist" aria-label="Admin views">
+          <button
+            className={`admin-section-switch__button${activeView === "chat" ? " admin-section-switch__button--active" : ""}`}
+            type="button"
+            role="tab"
+            aria-selected={activeView === "chat"}
+            onClick={() => setActiveView("chat")}
+          >
+            Chat history
+          </button>
+          <button
+            className={`admin-section-switch__button${activeView === "leads" ? " admin-section-switch__button--active" : ""}`}
+            type="button"
+            role="tab"
+            aria-selected={activeView === "leads"}
+            onClick={() => setActiveView("leads")}
+          >
+            Leads
+          </button>
+        </div>
 
-          <section className="admin-detail" aria-label="Conversation detail">
-            {loadingDetail ? <p className="admin-muted">Loading detail...</p> : null}
-            {!loadingDetail && !detail ? <p className="admin-muted">Select a conversation.</p> : null}
-            {detail ? (
-              <>
-                <div className="admin-chat-head">
-                  <div className="admin-chat-identity">
-                    <img className="admin-chat-avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
-                    <div>
-                      <p className="admin-kicker">{detail.status}</p>
-                      <h2>Talk with CriativAI</h2>
+        {activeView !== "chat" ? (
+          <RecordsPane
+            title="Leads"
+            records={records}
+            loading={recordsLoading}
+            error={recordsError}
+            emptyMessage="No lead records yet."
+            onOpenRecord={(recordId) => setSelectedRecordId(recordId)}
+          />
+        ) : null}
+
+        {activeView === "chat" ? (
+          <div className="admin-grid">
+            <aside className="admin-list" aria-label="Conversation list">
+              {loadingList ? <p className="admin-muted">Loading conversations...</p> : null}
+              {!loadingList && conversations.length === 0 ? <p className="admin-muted">No conversations yet.</p> : null}
+              {conversations.map((conversation) => (
+                <div key={conversation.id} className={`admin-list-item${conversation.id === selectedId ? " admin-list-item--active" : ""}`}>
+                  <button className="admin-list-item__body" type="button" onClick={() => setSelectedId(conversation.id)}>
+                    <span>{conversation.visitor_label}</span>
+                    <small>{formatDate(conversation.last_activity_at)}</small>
+                    <em>{conversation.summary ?? "No summary yet"}</em>
+                  </button>
+                  <button
+                    className="admin-list-item__delete"
+                    type="button"
+                    aria-label={`Delete conversation ${conversation.visitor_label}`}
+                    title="Delete conversation"
+                    disabled={deletingId === conversation.id}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      void deleteConversation(conversation.id);
+                    }}
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
+              ))}
+            </aside>
+
+            <section className="admin-detail" aria-label="Conversation detail">
+              {loadingDetail ? <p className="admin-muted">Loading detail...</p> : null}
+              {!loadingDetail && !detail ? <p className="admin-muted">Select a conversation.</p> : null}
+              {detail ? (
+                <>
+                  <div className="admin-chat-head">
+                    <div className="admin-chat-identity">
+                      <img className="admin-chat-avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
+                      <div>
+                        <p className="admin-kicker">{detail.status}</p>
+                        <h2>Talk with CriativAI</h2>
+                      </div>
+                    </div>
+
+                    <div className="admin-chat-select-wrap">
+                      <label className="sr-only" htmlFor="admin-conversation-select">
+                        Select conversation
+                      </label>
+                      <select
+                        id="admin-conversation-select"
+                        value={selectedId ?? ""}
+                        onChange={(event) => setSelectedId(Number(event.target.value))}
+                      >
+                        {conversations.map((conversation) => (
+                          <option key={conversation.id} value={conversation.id}>
+                            {conversation.visitor_label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
-                  <div className="admin-chat-select-wrap">
-                    <label className="sr-only" htmlFor="admin-conversation-select">
-                      Select conversation
-                    </label>
-                    <select
-                      id="admin-conversation-select"
-                      value={selectedId ?? ""}
-                      onChange={(event) => setSelectedId(Number(event.target.value))}
-                    >
-                      {conversations.map((conversation) => (
-                        <option key={conversation.id} value={conversation.id}>
-                          {conversation.visitor_label}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="admin-detail-head">
+                    <div>
+                      <p className="admin-kicker">Selected conversation</p>
+                      <h2>{detail.visitor_label}</h2>
+                    </div>
+                    <time>{formatDate(detail.last_activity_at)}</time>
                   </div>
-                </div>
 
-                <div className="admin-detail-head">
-                  <div>
-                    <p className="admin-kicker">Selected conversation</p>
-                    <h2>{detail.visitor_label}</h2>
+                  <div className="admin-conversation-meta">
+                    <div>
+                      <span>Status</span>
+                      <strong>{detail.status}</strong>
+                    </div>
+                    <div>
+                      <span>Booking</span>
+                      <strong>{detail.booking_state ?? "No booking yet"}</strong>
+                    </div>
                   </div>
-                  <time>{formatDate(detail.last_activity_at)}</time>
-                </div>
 
-                <div className="admin-conversation-meta">
-                  <div>
-                    <span>Status</span>
-                    <strong>{detail.status}</strong>
+                  {detail.summary ? <p className="admin-summary">{detail.summary}</p> : null}
+
+                  <div className="admin-messages">
+                    {detail.messages.map((message, index) => (
+                      <article key={`${message.created_at ?? index}-${index}`} className={`admin-message admin-message--${message.role}`}>
+                        <span>{message.role}</span>
+                        <MarkdownText text={message.content} />
+                        <small>{message.status}</small>
+                      </article>
+                    ))}
                   </div>
-                  <div>
-                    <span>Booking</span>
-                    <strong>{detail.booking_state ?? "No booking yet"}</strong>
-                  </div>
-                </div>
+                </>
+              ) : null}
+            </section>
+          </div>
+        ) : null}
 
-                {detail.summary ? <p className="admin-summary">{detail.summary}</p> : null}
-
-                <div className="admin-messages">
-                  {detail.messages.map((message, index) => (
-                    <article key={`${message.created_at ?? index}-${index}`} className={`admin-message admin-message--${message.role}`}>
-                      <span>{message.role}</span>
-                      <MarkdownText text={message.content} />
-                      <small>{message.status}</small>
-                    </article>
-                  ))}
-                </div>
-              </>
-            ) : null}
-          </section>
-        </div>
+        <AdminRecordModal
+          open={selectedRecordId !== null}
+          loading={recordDetailLoading}
+          error={recordDetailError}
+          record={recordDetail}
+          onClose={() => {
+            setSelectedRecordId(null);
+            setRecordDetail(null);
+            setRecordDetailError("");
+          }}
+        />
       </section>
     </main>
+  );
+}
+
+function RecordsPane({
+  title,
+  records,
+  loading,
+  error,
+  emptyMessage,
+  onOpenRecord,
+}: {
+  title: string;
+  records: AdminRecordSummary[];
+  loading: boolean;
+  error: string;
+  emptyMessage: string;
+  onOpenRecord: (recordId: number) => void;
+}) {
+  return (
+    <section className="admin-records" aria-label={title}>
+      <div className="admin-records__head">
+        <div>
+          <p className="admin-kicker">{title}</p>
+          <h2>{title}</h2>
+        </div>
+        <p>{loading ? "Loading records..." : `${records.length} record${records.length === 1 ? "" : "s"}`}</p>
+      </div>
+
+      {error ? <p className="admin-error">{error}</p> : null}
+      {!loading && !error && records.length === 0 ? <p className="admin-muted">{emptyMessage}</p> : null}
+
+      {!error && records.length > 0 ? (
+        <div className="admin-records__table-wrap">
+          <table className="admin-records__table">
+            <thead>
+              <tr>
+                <th scope="col">Created</th>
+                <th scope="col">User from</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Company</th>
+                <th scope="col">Timezone</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr key={record.id}>
+                  <td>{formatDate(record.created_at)}</td>
+                  <td>
+                    <button className="admin-records__source-button" type="button" onClick={() => onOpenRecord(record.id)}>
+                      {record.source_label}
+                    </button>
+                  </td>
+                  <td>{record.name ?? "Not informed"}</td>
+                  <td>{record.email ?? "Not informed"}</td>
+                  <td>{record.company ?? "Not informed"}</td>
+                  <td>{record.timezone ?? "Not informed"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </section>
   );
 }
 

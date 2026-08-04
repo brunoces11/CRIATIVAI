@@ -9,7 +9,8 @@ from sqlalchemy.pool import StaticPool
 from backend.app import admin as admin_module
 from backend.app.config import Settings
 from backend.app.main import app
-from backend.app.models import Base, Booking, Conversation, Message
+from backend.app.admin_records import sync_admin_record
+from backend.app.models import Base, AdminRecord, Booking, Conversation, Message, ProjectBriefing
 
 
 def make_session() -> Session:
@@ -118,6 +119,113 @@ def test_admin_can_delete_conversation_and_related_records() -> None:
         list_response = client.get("/api/admin/conversations")
         listed_ids = [item["id"] for item in list_response.json()]
         assert conversation.id not in listed_ids
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_admin_records_list_detail_and_conversation_retention() -> None:
+    session = make_session()
+    conversation = Conversation(
+        session_id="records_session_123456",
+        visitor_name="Ada",
+        visitor_email="ada@example.com",
+        visitor_company="Example Co",
+        visitor_timezone="America/Sao_Paulo",
+        last_activity_at=datetime.now(UTC),
+    )
+    session.add(conversation)
+    session.commit()
+
+    briefing = ProjectBriefing(
+        conversation_id=conversation.id,
+        briefing_title="Website redesign",
+        briefing_markdown="## Briefing\n\nRedesign the main site.",
+        briefing_status="sent",
+        idempotency_key="briefing-record-123456",
+        owner_email_status="sent",
+        client_email_status="sent",
+        briefing_created_at=datetime.now(UTC),
+        briefing_sent_at=datetime.now(UTC),
+    )
+    booking = Booking(
+        conversation_id=conversation.id,
+        participant_name="Ada",
+        participant_email="ada@example.com",
+        starts_at_utc=datetime.now(UTC),
+        ends_at_utc=datetime.now(UTC) + timedelta(minutes=30),
+        timezone="America/Sao_Paulo",
+        status="confirmed",
+        idempotency_key="booking-record-123456",
+    )
+    session.add_all([briefing, booking])
+    session.commit()
+
+    briefing_record = sync_admin_record(
+        session,
+        user_from="briefing",
+        source_record_id=briefing.briefing_id,
+        name=conversation.visitor_name,
+        email=conversation.visitor_email,
+        company=conversation.visitor_company,
+        timezone=conversation.visitor_timezone,
+        conversation_id=conversation.id,
+    )
+    sync_admin_record(
+        session,
+        user_from="contact_form",
+        source_record_id=101,
+        name="Contact Lead",
+        email="lead@example.com",
+        company=None,
+        timezone=None,
+    )
+    sync_admin_record(
+        session,
+        user_from="talent_preview",
+        source_record_id=202,
+        name="Talent Lead",
+        email="talent@example.com",
+        company=None,
+        timezone=None,
+    )
+    sync_admin_record(
+        session,
+        user_from="booking",
+        source_record_id=booking.id,
+        name=booking.participant_name,
+        email=booking.participant_email,
+        company=conversation.visitor_company,
+        timezone=booking.timezone,
+        conversation_id=conversation.id,
+    )
+
+    def override_session():
+        try:
+            yield session
+        finally:
+            pass
+
+    app.dependency_overrides[admin_module.get_session] = override_session
+    client = TestClient(app)
+
+    try:
+        list_response = client.get("/api/admin/records")
+        assert list_response.status_code == 200
+        listed = list_response.json()
+        assert len(listed) == 4
+        assert {item["source_label"] for item in listed} == {"Briefing", "Contact Form", "Talent Preview", "Booking"}
+
+        detail_response = client.get(f"/api/admin/records/{briefing_record.id}")
+        assert detail_response.status_code == 200
+        detail = detail_response.json()
+        assert detail["source_label"] == "Briefing"
+        assert detail["payload"]["briefing_title"] == "Website redesign"
+        assert detail["payload"]["visitor_email"] == "ada@example.com"
+
+        delete_response = client.delete(f"/api/admin/conversations/{conversation.id}")
+        assert delete_response.status_code == 409
+        assert session.get(Conversation, conversation.id) is not None
+        assert session.query(AdminRecord).filter(AdminRecord.conversation_id == conversation.id).count() == 2
     finally:
         app.dependency_overrides.clear()
 

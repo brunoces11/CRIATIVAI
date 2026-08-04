@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 import { openAssistantChat } from "../lib/chatContext";
 import type { ServiceCatalogItem } from "../data/serviceCatalog";
@@ -102,8 +102,21 @@ function ServiceIcon({ type }: { type: string }) {
 }
 
 export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem }) {
+  const [active, setActive] = useState(false);
+
   return (
-    <article className="services-page-card service-catalog-card" tabIndex={0}>
+    <article
+      className={`services-page-card service-catalog-card${active ? " service-catalog-card--active" : ""}`}
+      tabIndex={0}
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      onFocus={() => setActive(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setActive(false);
+        }
+      }}
+    >
       <div className="services-page-card-body">
         <span className="services-page-card-index">{service.index}</span>
         <div className="services-page-title-row">

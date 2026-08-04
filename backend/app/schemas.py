@@ -88,6 +88,22 @@ class AdminConversationDetail(AdminConversationSummary):
     messages: list[AdminConversationMessage]
 
 
+class AdminRecordSummary(BaseModel):
+    id: int
+    user_from: str
+    source_label: str
+    source_record_id: int
+    name: str | None
+    email: str | None
+    company: str | None
+    timezone: str | None
+    created_at: datetime | None
+
+
+class AdminRecordDetail(AdminRecordSummary):
+    payload: dict[str, object]
+
+
 class GoogleOAuthStatus(BaseModel):
     status: str
     calendar_id: str | None = None

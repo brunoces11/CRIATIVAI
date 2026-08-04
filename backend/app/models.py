@@ -25,7 +25,7 @@ class Conversation(Base):
     visitor_timezone_source: Mapped[str | None] = mapped_column(String(32), nullable=True)
     booking_state: Mapped[str | None] = mapped_column(String(64), nullable=True)
     last_activity_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, server_default=func.current_timestamp())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.current_timestamp(),
@@ -69,6 +69,21 @@ class Booking(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class AdminRecord(Base):
+    __tablename__ = "admin_records"
+    __table_args__ = (UniqueConstraint("user_from", "source_record_id", name="uq_admin_records_user_from_source_record_id"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_from: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    source_record_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    conversation_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    company: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    timezone: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.current_timestamp())
 
 
 class ProjectBriefing(Base):

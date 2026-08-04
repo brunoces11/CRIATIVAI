@@ -12,6 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
+from backend.app.admin_records import sync_admin_record
 from backend.app.config import Settings, get_settings
 from backend.app.emailer import send_email
 from backend.app.models import Conversation, ProjectBriefing
@@ -122,6 +123,16 @@ def project_briefing_send_email(
     session.add(briefing)
     session.commit()
     session.refresh(briefing)
+    sync_admin_record(
+        session,
+        user_from="briefing",
+        source_record_id=briefing.briefing_id,
+        name=conversation.visitor_name,
+        email=conversation.visitor_email,
+        company=conversation.visitor_company,
+        timezone=conversation.visitor_timezone,
+        conversation_id=conversation.id,
+    )
 
     owner_result = send_email(
         settings=resolved_settings,

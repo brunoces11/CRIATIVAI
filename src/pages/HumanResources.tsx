@@ -148,12 +148,13 @@ export default function HumanResourcesPage() {
               We design AI workflows, assessments, dashboards, and management systems around the way your recruitment company already works.
             </p>
             <div className="hero-actions">
-              <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
-                Request a Demo <span aria-hidden="true">{"\u2197"}</span>
-              </a>
-              <a className="hr-text-link" href="#overview">
-                Explore the overview <span aria-hidden="true">{"\u2193"}</span>
-              </a>
+              <button
+                className="button button--accent"
+                type="button"
+                onClick={() => openAssistantChat({ welcomeKey: "human-resources/hero/book-a-call" })}
+              >
+                Book a call <span aria-hidden="true">{"\u2197"}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -169,7 +170,7 @@ export default function HumanResourcesPage() {
             </div>
             <div className="hr-benefits-grid">
               {pillar.items.map((item) => (
-                <article className="hr-benefits-card" key={item}>
+                <article className="hr-benefits-card" key={item} tabIndex={0}>
                   <div className="hr-benefits-card-body">
                     <i aria-hidden="true" />
                     <p>{item}</p>

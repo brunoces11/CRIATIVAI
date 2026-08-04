@@ -11,10 +11,11 @@ from starlette.status import HTTP_404_NOT_FOUND
 
 from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
+from backend.app.admin_records import sync_existing_admin_records
 from backend.app.chat_multi_window import router as chat_multi_window_router
 from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
-from backend.app.db import get_session, initialize_database, ping_database
+from backend.app.db import SessionLocal, get_session, initialize_database, ping_database
 from backend.app.chat_tracing import router as chat_tracing_router
 from backend.app.forms import router as forms_router
 from backend.app.google_oauth import admin_router as google_admin_router
@@ -28,6 +29,8 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     initialize_database()
+    with SessionLocal() as session:
+        sync_existing_admin_records(session)
     yield
 
 
