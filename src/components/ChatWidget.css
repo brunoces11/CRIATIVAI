@@ -287,23 +287,24 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(169, 128, 110, 0.32);
+  border: 1px solid rgba(79, 143, 184, 0.32);
   border-radius: 6px;
-  background: rgba(200, 162, 143, 0.14);
-  color: var(--blue-black);
+  background: rgba(79, 143, 184, 0.20);
+  color: rgba(128, 128, 128, 0.70);
   cursor: pointer;
   font: inherit;
   font-size: 1.06rem;
   font-weight: 600;
   line-height: 1.22;
   text-align: left;
-  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .chat-panel__ice-breakers button:hover,
 .chat-panel__ice-breakers button:focus-visible {
-  border-color: rgba(169, 128, 110, 0.55);
-  background: rgba(200, 162, 143, 0.24);
+  border-color: rgba(79, 143, 184, 0.55);
+  background: rgba(79, 143, 184, 0.35);
+  color: rgba(128, 128, 128, 0.88);
   transform: translateY(-1px);
 }
 

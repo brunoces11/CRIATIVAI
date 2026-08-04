@@ -15,6 +15,29 @@ O agente possui acesso a **7 tools principais**, divididas em 3 categorias:
 
 ---
 
+## 📑 Índice Rápido de Tools
+
+### 🗓️ Calendar Tools
+
+| # | Tool | Função |
+|---|------|--------|
+| 1 | **`calendar_check_availability`** | Buscar horários disponíveis no calendário para uma data/período específico |
+| 2 | **`calendar_create_event`** | Criar novo evento confirmado no Google Calendar com participante e Google Meet |
+| 3 | **`calendar_lookup_bookings`** | Listar todos os eventos futuros de um participante para verificar ou modificar |
+| 4 | **`calendar_update_event`** | Remarcar um evento existente para nova data/hora |
+| 5 | **`calendar_cancel_event`** | Cancelar um evento existente no calendário |
+
+### 📝 Contact & Briefing Tools
+
+| # | Tool | Função |
+|---|------|--------|
+| 6 | **`chat_capture_contact`** | Salvar dados do visitante (nome, email, empresa) na conversa atual |
+| 7 | **`project_briefing_send_email`** | Criar briefing de projeto e enviar por email para Bruno e cliente |
+
+---
+
+---
+
 ## 🗓️ CALENDAR TOOLS
 
 ### Tool 1: `calendar_check_availability`
