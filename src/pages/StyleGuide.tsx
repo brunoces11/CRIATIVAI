@@ -218,9 +218,9 @@ export default function StyleGuide() {
             <p>Live routes that apply this system in practice, including the new recruitment intake landing page.</p>
           </div>
           <div className="style-page-links">
-            <a className="style-page-link" href="/human-resources">
+            <a className="style-page-link" href="/for-recrutiers">
               <span className="micro-label">Recruitment offer</span>
-              <strong>Human Resources</strong>
+              <strong>For Recrutiers</strong>
               <em>Open the service page {ARROW_NE}</em>
             </a>
             <a className="style-page-link style-page-link--featured" href="/talent-preview">

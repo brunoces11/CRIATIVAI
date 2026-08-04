@@ -17,44 +17,39 @@ const HERO_TOPIC_REVEAL_SPAN = 0.12;
 
 const groundingTopics = [
   {
-    title: "Custom RAG Setups",
-    description: "Connect private knowledge to AI answers with retrieval tailored to your business rules.",
+    title: "Custom RAG Setups | Knowledge Graphs | GraphRAG",
+    description:
+      "Connect private knowledge to AI answers with tailored retrieval while mapping relationships, entities, and dependencies so agents keep context grounded across the full knowledge layer.",
   },
   {
-    title: "Knowledge Graphs | GraphRAG",
-    description: "Map relationships across your data so agents understand context, entities, and dependencies.",
-  },
-  {
-    title: "Prompt Engineering Research",
-    description: "Design tested prompts and reasoning patterns for clearer, more predictable AI behavior.",
-  },
-  {
-    title: "Context Engineering",
-    description: "Control the exact information your agents receive before they answer or act.",
+    title: "Prompt Engineering Research | Context Engineering",
+    description:
+      "Design tested prompts and reasoning patterns while controlling the exact information your agents receive before they answer or act, keeping outputs clearer and more predictable.",
   },
   {
     title: "Enterprise Knowledge Systems",
-    description: "Turn scattered company information into a reliable intelligence layer for people and AI.",
+    description:
+      "Turn scattered company information into a reliable intelligence layer for people and AI, giving your team a more structured and actionable source of truth.",
   },
   {
     title: "Multi Agent Architecture",
-    description: "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows.",
+    description:
+      "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows with cleaner orchestration across the full system.",
   },
   {
-    title: "ETL, Data Processing",
-    description: "Clean, transform, and structure multi-source data so it becomes useful AI-ready knowledge.",
+    title: "ETL, Data Processing | Context Enrichment",
+    description:
+      "Clean, transform, structure, and enrich multi-source data so it becomes useful AI-ready knowledge with better metadata, relationships, and meaning for retrieval.",
   },
   {
-    title: "Context Enrichment",
-    description: "Add metadata, relationships, and business meaning to improve retrieval and answer quality.",
+    title: "Smart Chunk Processing",
+    description:
+      "Split knowledge into precise chunks that preserve meaning, reduce noisy retrieval, and keep your AI responses aligned with the most relevant source material.",
   },
   {
-    title: "Smart Chunk processing",
-    description: "Split knowledge into precise chunks that preserve meaning and reduce noisy retrieval.",
-  },
-  {
-    title: "Guard rails | Observability",
-    description: "Monitor, constrain, and improve agent behavior with clearer controls and visibility.",
+    title: "Guard Rails | Observability",
+    description:
+      "Monitor, constrain, and improve agent behavior with clearer controls, better visibility, and more reliable operational feedback.",
   },
 ] as const;
 
@@ -828,7 +823,7 @@ export default function VideoPage() {
               <p className="micro-label">Navigation</p>
               <a href="#services">Services</a>
               <a href="#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
+              <a href="/for-recrutiers">For Recrutiers</a>
               <a href="/contact">Contact</a>
             </div>
             <div>

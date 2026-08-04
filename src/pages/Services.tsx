@@ -238,7 +238,10 @@ export default function ServicesPage() {
         <div className="site-container final-cta-inner">
           <p className="eyebrow">Start building</p>
           <h2 id="services-cta-title">
-            <span className="services-cta-title-strong">What idea do you want</span>
+            <span className="services-cta-title-strong">
+              <span>What idea</span>
+              <span className="services-cta-title-strong-line2">do you want</span>
+            </span>
             <span className="services-cta-title-accent">to bring to life?</span>
             <span className="services-cta-title-strong">Let&apos;s make it real.</span>
           </h2>

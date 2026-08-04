@@ -19,7 +19,7 @@ function Page() {
   const pathname = window.location.pathname.replace(/\/$/, "") || "/";
 
   if (isSitesFrontendOnly && pathname === "/adm") return <VideoPageLazy />;
-  if (pathname === "/human-resources") return <HumanResourcesPage />;
+  if (pathname === "/for-recrutiers" || pathname === "/human-resources") return <HumanResourcesPage />;
   if (pathname === "/services") return <ServicesPageLazy />;
   if (pathname === "/style") return <StyleGuide />;
   if (pathname === "/talent-preview") return <TalentPreviewPageLazy />;

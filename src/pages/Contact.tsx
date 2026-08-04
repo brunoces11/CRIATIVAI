@@ -161,7 +161,7 @@ export default function ContactPage() {
               <p className="micro-label">Navigation</p>
               <a href="/#services">Services</a>
               <a href="/#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
+              <a href="/for-recrutiers">For Recrutiers</a>
               <a href="/style">Style</a>
             </div>
             <div>

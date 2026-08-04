@@ -116,9 +116,8 @@ export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem })
           setActive(false);
         }
       }}
-    >
+      >
       <div className="services-page-card-body">
-        <span className="services-page-card-index">{service.index}</span>
         <div className="services-page-title-row">
           <ServiceIcon type={service.icon} />
           <h3 className={service.title === "Enterprise Knowledge Systems" ? "services-page-title--compact" : undefined}>{service.title}</h3>

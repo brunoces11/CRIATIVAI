@@ -6,8 +6,8 @@ const navigation = [
   { label: "Hire me", href: "/hire-me", adminOnly: true },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "#projects", adminOnly: true },
+  { label: "For Recrutiers", href: "/for-recrutiers" },
   { label: "About", href: "/about-me" },
-  { label: "Human Resources", href: "/human-resources", adminOnly: true },
   { label: "Video", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style", adminOnly: true },
@@ -15,7 +15,7 @@ const navigation = [
 
 const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm", string>> = {
   style: "/style",
-  "human-resources": "/human-resources",
+  "human-resources": "/for-recrutiers",
   contact: "/contact",
   "about-me": "/about-me",
   services: "/services",

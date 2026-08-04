@@ -208,7 +208,9 @@ export default function HumanResourcesPage() {
         <div className="site-container final-cta-inner">
           <p className="eyebrow">A broader, more strategic view</p>
           <h2 id="demo-title">
-            Build the recruitment company <span>you want to run.</span>
+            <span className="hr-demo-title-line hr-demo-title-line--light">Build the</span>
+            <span className="hr-demo-title-line hr-demo-title-line--semi-bold">recruitment company</span>
+            <span className="hr-demo-title-line">you want to run.</span>
           </h2>
           <p>
             From talent intelligence to operations and outbound growth, we can shape AI around the way your team actually works.
