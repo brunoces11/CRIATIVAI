@@ -545,9 +545,11 @@ export default function VideoPage() {
                 "AI-Powered Client Acquisition",
                 "AI-Powered Customer Service",
                 "Refined Websites",
+                "High Conversion Landing Pages",
+                "Custom System Development",
                 "Corporate Knowledge Systems",
-                "Custom Software",
-                "Business Process Automation",
+                "Prompt Engineering Research",
+                "Business Automation",
               ].map((topic) => (
                 <li key={topic}>
                   <span className="video-hero-topic-cube" aria-hidden="true" />

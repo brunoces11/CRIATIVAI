@@ -4022,8 +4022,8 @@ h1.hero-title .hero-line {
   display: grid;
   max-width: 640px;
   padding: 0 0 0 40px;
-  margin: 64px 0 0;
-  gap: 37.2px;
+  margin: 51.2px 0 0;
+  gap: 40.92px;
   list-style: none;
 }
 
@@ -4252,7 +4252,7 @@ h1.hero-title .hero-line {
   }
 
   .video-hero-topics {
-    gap: 25px;
+    gap: 27.5px;
   }
 
   .video-hero-topics li {
