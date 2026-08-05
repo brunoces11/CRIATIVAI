@@ -203,9 +203,7 @@ export default function ServicesPage() {
                 <span>{step.index}</span>
                 <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{step.title}</h3>
                 <p>{step.text}</p>
-                <EditableCta welcomeKey={step.welcomeKey}>
-                  <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{step.ctaLabel}</button>
-                </EditableCta>
+                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{step.ctaLabel}</button>
               </article>
             ))}
           </div>

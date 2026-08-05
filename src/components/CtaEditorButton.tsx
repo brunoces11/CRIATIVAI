@@ -96,8 +96,13 @@ function CtaEditorModal({ welcomeKey, onClose }: { welcomeKey: string; onClose: 
         setWelcomeMessage(messages.welcome_message);
         setContextMessage(messages.context_message);
       })
-      .catch((loadError: unknown) => {
-        setError(loadError instanceof Error ? loadError.message : "Unable to load CTA messages.");
+      .catch(async (loadError: unknown) => {
+        const errorMessage = loadError instanceof Error ? loadError.message : "Unable to load CTA messages.";
+        if (controller.signal.aborted || isAbortErrorMessage(errorMessage)) {
+          if (await canShowDebugAlert()) setError(errorMessage);
+          return;
+        }
+        setError(errorMessage);
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
@@ -181,4 +186,22 @@ function CtaEditorModal({ welcomeKey, onClose }: { welcomeKey: string; onClose: 
       </section>
     </div>
   );
+}
+
+function isAbortErrorMessage(message: string) {
+  return message.toLowerCase().includes("aborted");
+}
+
+async function canShowDebugAlert() {
+  try {
+    const response = await fetch("/api/admin/chat-tracing", {
+      cache: "no-store",
+      headers: { accept: "application/json" },
+    });
+    if (!response.ok) return false;
+    const status = (await response.json()) as { enabled?: boolean };
+    return status.enabled === true;
+  } catch {
+    return false;
+  }
 }

@@ -108,7 +108,7 @@ def test_build_instructions_appends_hidden_cta_context(tmp_path: Path) -> None:
 
     assert "Default SDR prompt" in instructions
     assert "Visitor asked about automation." in instructions
-    assert "CTA hidden context for this first turn only:" in instructions
+    assert "[SEMPRE_ACESSE_ESSE_CONTEXTO_DE_CHAT_PERMANENTE_ANTES_DE_RESPONDER_AO_USUARIO]" in instructions
     assert "Pergunte sobre prazo e escopo" in instructions
 
 

@@ -310,7 +310,7 @@ def build_instructions(path: Path, summary: str | None, *, cta_context: str | No
     if summary:
         parts.append(f"Current conversation summary for continuity:\n{summary}")
     if cta_context:
-        parts.append(f"CTA hidden context for this first turn only:\n{cta_context}")
+        parts.append(f"[SEMPRE_ACESSE_ESSE_CONTEXTO_DE_CHAT_PERMANENTE_ANTES_DE_RESPONDER_AO_USUARIO]\n{cta_context}")
     return "\n\n".join(parts)
 
 
