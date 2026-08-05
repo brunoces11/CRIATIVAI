@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { EditableCta } from "../components/CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
 
 const pillars = [
@@ -148,13 +149,15 @@ export default function HumanResourcesPage() {
               We design AI workflows, assessments, dashboards, and management systems around the way your recruitment company already works.
             </p>
             <div className="hero-actions">
-              <button
-                className="button button--accent"
-                type="button"
-                onClick={() => openAssistantChat({ welcomeKey: "human-resources/hero/book-a-call" })}
-              >
-                Book a call <span aria-hidden="true">{"\u2197"}</span>
-              </button>
+              <EditableCta welcomeKey="human-resources/hero/book-a-call">
+                <button
+                  className="button button--accent"
+                  type="button"
+                  onClick={() => openAssistantChat({ welcomeKey: "human-resources/hero/book-a-call" })}
+                >
+                  Book a call <span aria-hidden="true">{"\u2197"}</span>
+                </button>
+              </EditableCta>
             </div>
           </div>
         </div>
@@ -176,8 +179,12 @@ export default function HumanResourcesPage() {
                     <p>{item}</p>
                   </div>
                   <div className="hr-benefits-card-actions">
-                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "ask-my-agents")}>Ask my Agents</button>
-                    <button type="button" onClick={() => openBenefitCardChat(pillar, item, "i-want-it")}>I want It</button>
+                    <EditableCta welcomeKey={`human-resources/${pillar.id}/${benefitCardIds[item]}/ask-my-agents`}>
+                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "ask-my-agents")}>Ask my Agents</button>
+                    </EditableCta>
+                    <EditableCta welcomeKey={`human-resources/${pillar.id}/${benefitCardIds[item]}/i-want-it`}>
+                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "i-want-it")}>I want It</button>
+                    </EditableCta>
                   </div>
                 </article>
               ))}

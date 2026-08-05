@@ -42,10 +42,8 @@ class ChatRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_welcome_context(self) -> "ChatRequest":
-        has_welcome_key = bool(self.welcome_key)
-        has_welcome_message = bool(self.welcome_message)
-        if has_welcome_key != has_welcome_message:
-            raise ValueError("welcome_key and welcome_message must be provided together")
+        if self.welcome_message and not self.welcome_key:
+            raise ValueError("welcome_message requires welcome_key")
         return self
 
 
@@ -55,7 +53,7 @@ class ChatWelcomeRequest(BaseModel):
 
 class ChatWelcomeResponse(BaseModel):
     session_id: str | None = None
-    message: str
+    message: str | None
 
 
 class ConversationMessage(BaseModel):

@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react";
 
+import { EditableCta } from "./CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
 import type { ServiceCatalogItem } from "../data/serviceCatalog";
 
@@ -125,8 +126,12 @@ export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem })
         <p>{service.text}</p>
       </div>
       <div className="services-page-card-actions">
-        <button type="button" onClick={() => openServiceCardChat(service, "ask-my-ai-assistant")}>Ask my Ai Assistant</button>
-        <button type="button" onClick={() => openServiceCardChat(service, "i-want-it")}>I want It</button>
+        <EditableCta welcomeKey={`services/service-catalog/${service.id}/ask-my-ai-assistant`}>
+          <button type="button" onClick={() => openServiceCardChat(service, "ask-my-ai-assistant")}>Ask my Ai Assistant</button>
+        </EditableCta>
+        <EditableCta welcomeKey={`services/service-catalog/${service.id}/i-want-it`}>
+          <button type="button" onClick={() => openServiceCardChat(service, "i-want-it")}>I want It</button>
+        </EditableCta>
       </div>
     </article>
   );

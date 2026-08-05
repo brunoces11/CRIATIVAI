@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { EditableCta } from "../components/CtaEditorButton";
 import { SiteHeader } from "../components/SiteHeader";
 import { openAssistantChat } from "../lib/chatContext";
 
@@ -332,9 +333,11 @@ export default function AboutMePage() {
               into useful, understandable, and carefully crafted digital products.
             </p>
             <div className="hero-actions about-me-actions">
-              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-ai-assistant-and-book-a-call" })}>
-                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
-              </button>
+              <EditableCta welcomeKey="about-me/hero/bruno-profile/ask-my-ai-assistant-and-book-a-call">
+                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-ai-assistant-and-book-a-call" })}>
+                  Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
+                </button>
+              </EditableCta>
               <a className="button button--ghost" href="/contact">
                 Drop Me a Message <span aria-hidden="true">-&gt;</span>
               </a>
@@ -600,9 +603,11 @@ export default function AboutMePage() {
             availability, and the best next step for your project.
           </p>
           <div className="hero-actions about-me-cta-actions">
-            <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/ask-my-ai-assistant-and-book-a-call" })}>
-              Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
-            </button>
+            <EditableCta welcomeKey="about-me/final-cta/build-with-confidence/ask-my-ai-assistant-and-book-a-call">
+              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/ask-my-ai-assistant-and-book-a-call" })}>
+                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
+              </button>
+            </EditableCta>
             <a className="button button--ghost" href="/contact">
               Contact Bruno <span aria-hidden="true">-&gt;</span>
             </a>

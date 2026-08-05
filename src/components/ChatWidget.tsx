@@ -245,9 +245,15 @@ export function ChatWidget() {
 
       if (controller.signal.aborted || welcomeRunRef.current !== runId) return;
 
+      const visibleWelcome = welcome.message?.trim() ? welcome.message : null;
       setWelcomeLoading(false);
-      setPendingWelcome({ key: welcomeKey, message: welcome.message });
-      streamWelcomeMessage(welcome.message, runId);
+      setPendingWelcome({ key: welcomeKey, message: visibleWelcome });
+      if (visibleWelcome) {
+        streamWelcomeMessage(visibleWelcome, runId);
+      } else {
+        setMessages(initialMessages);
+        setWelcomeRequesting(false);
+      }
     } catch (welcomeError: unknown) {
       if (controller.signal.aborted || welcomeRunRef.current !== runId) return;
       setError(welcomeError instanceof Error ? welcomeError.message : "Unable to prepare the chat welcome message.");
@@ -323,7 +329,6 @@ export function ChatWidget() {
         if (streamEvent.event === "session_start") {
           setSessionId(streamEvent.session_id);
           storeSessionId(streamEvent.session_id);
-          setPendingWelcome(null);
           return;
         }
 
@@ -352,6 +357,12 @@ export function ChatWidget() {
         if (streamEvent.event === "done" && streamEvent.session_id) {
           setSessionId(streamEvent.session_id);
           storeSessionId(streamEvent.session_id);
+          setPendingWelcome(null);
+          return;
+        }
+
+        if (streamEvent.event === "done") {
+          setPendingWelcome(null);
         }
       });
     } catch (sendError: unknown) {

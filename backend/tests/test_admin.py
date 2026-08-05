@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+import json
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -7,6 +8,9 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app import admin as admin_module
+from backend.app import chat_context as context_module
+from backend.app import chat_welcome as welcome_module
+from backend.app import cta_editor as cta_editor_module
 from backend.app.config import Settings
 from backend.app.main import app
 from backend.app.admin_records import sync_admin_record
@@ -292,6 +296,84 @@ def test_admin_can_read_and_update_chat_multi_window(tmp_path: Path) -> None:
         assert updated["enabled"] is False
         assert state_path.read_text(encoding="utf-8").strip() == "0"
     finally:
+        app.dependency_overrides.clear()
+
+
+def test_cta_editor_is_disabled_by_default_and_issues_token(tmp_path: Path) -> None:
+    state_path = tmp_path / "cta-editor-enabled.txt"
+
+    def override_settings():
+        return Settings(cta_editor_state_path=state_path, _env_file=None)
+
+    app.dependency_overrides[cta_editor_module.get_settings] = override_settings
+    client = TestClient(app)
+
+    try:
+        cta_editor_module.clear_cta_editor_token()
+        get_response = client.get("/api/admin/cta-editor")
+        assert get_response.status_code == 200
+        assert get_response.json()["enabled"] is False
+        assert get_response.json()["token_valid"] is False
+
+        update_response = client.put("/api/admin/cta-editor", json={"enabled": True})
+        assert update_response.status_code == 200
+        updated = update_response.json()
+        assert updated["enabled"] is True
+        assert updated["token"]
+        stored = json.loads(state_path.read_text(encoding="utf-8"))
+        assert stored["enabled"] is True
+        assert stored["token_hash"]
+        assert stored["token_expires_at"]
+
+        token_response = client.get("/api/admin/cta-editor", headers={"x-cta-editor-token": updated["token"]})
+        assert token_response.status_code == 200
+        assert token_response.json()["token_valid"] is True
+    finally:
+        cta_editor_module.clear_cta_editor_token()
+        app.dependency_overrides.clear()
+
+
+def test_cta_editor_messages_require_token_and_update_both_catalogs(monkeypatch, tmp_path: Path) -> None:
+    state_path = tmp_path / "cta-editor-enabled.txt"
+    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    context_path = tmp_path / "Chat-Context-Messages.json"
+    welcome_key = "services/process/planning-call/book-a-call"
+    welcome_path.write_text('{"services/process/planning-call/book-a-call":"Old welcome","other/key/value":"Keep"}', encoding="utf-8")
+    context_path.write_text('{"services/process/planning-call/book-a-call":"Old context","other/key/value":"Keep"}', encoding="utf-8")
+    monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
+    monkeypatch.setattr(context_module, "CONTEXT_MESSAGES_PATH", context_path)
+    monkeypatch.setattr(cta_editor_module, "WELCOME_MESSAGES_PATH", welcome_path)
+    monkeypatch.setattr(cta_editor_module, "CONTEXT_MESSAGES_PATH", context_path)
+
+    def override_settings():
+        return Settings(cta_editor_state_path=state_path, _env_file=None)
+
+    app.dependency_overrides[cta_editor_module.get_settings] = override_settings
+    client = TestClient(app)
+
+    try:
+        cta_editor_module.clear_cta_editor_token()
+        denied = client.get(f"/api/admin/cta-editor/messages/{welcome_key}")
+        assert denied.status_code == 403
+
+        token = client.put("/api/admin/cta-editor", json={"enabled": True}).json()["token"]
+        get_response = client.get(f"/api/admin/cta-editor/messages/{welcome_key}", headers={"x-cta-editor-token": token})
+        assert get_response.status_code == 200
+        assert get_response.json()["welcome_message"] == "Old welcome"
+        assert get_response.json()["context_message"] == "Old context"
+
+        update_response = client.put(
+            f"/api/admin/cta-editor/messages/{welcome_key}",
+            headers={"x-cta-editor-token": token},
+            json={"welcome_message": "", "context_message": "New context"},
+        )
+        assert update_response.status_code == 200
+        assert '"services/process/planning-call/book-a-call": ""' in welcome_path.read_text(encoding="utf-8")
+        assert '"services/process/planning-call/book-a-call": "New context"' in context_path.read_text(encoding="utf-8")
+        assert '"other/key/value": "Keep"' in welcome_path.read_text(encoding="utf-8")
+        assert '"other/key/value": "Keep"' in context_path.read_text(encoding="utf-8")
+    finally:
+        cta_editor_module.clear_cta_editor_token()
         app.dependency_overrides.clear()
 
 

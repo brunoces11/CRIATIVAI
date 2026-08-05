@@ -11,6 +11,7 @@ from time import monotonic
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from backend.app.chat_context import get_context_message
 from backend.app.config import get_settings
 from backend.app.chat_tracing import ChatTraceContext, create_chat_trace_sink
 from backend.app.models import Conversation, Message
@@ -115,11 +116,13 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     try:
         recent_history = _recent_completed_messages(history, settings.chat_context_recent_messages)
         model_history, model_user_message = _build_model_context_for_request(recent_history, request.message)
+        cta_context = get_context_message(request.welcome_key)
         for delta in _stream_openai_text(
             settings,
             model_history,
             model_user_message,
             conversation.summary,
+            cta_context=cta_context,
             session=session,
             conversation=conversation,
             turn_id=turn_id,
@@ -354,6 +357,7 @@ def _stream_openai_text(
     history,
     user_message,
     summary,
+    cta_context,
     *,
     session: Session,
     conversation: Conversation,
@@ -366,6 +370,7 @@ def _stream_openai_text(
             history,
             user_message,
             summary,
+            cta_context=cta_context,
             session=session,
             conversation=conversation,
             turn_id=turn_id,
@@ -380,6 +385,7 @@ def _stream_openai_text(
                 history,
                 user_message,
                 summary,
+                cta_context=cta_context,
                 session=session,
                 conversation=conversation,
                 trace=trace,
@@ -387,4 +393,9 @@ def _stream_openai_text(
         except TypeError as inner_exc:
             if "unexpected keyword argument" not in str(inner_exc):
                 raise
-            return stream_openai_text(settings, history, user_message, summary)
+            try:
+                return stream_openai_text(settings, history, user_message, summary, cta_context)
+            except TypeError as positional_exc:
+                if "positional argument" not in str(positional_exc) and "were given" not in str(positional_exc):
+                    raise
+                return stream_openai_text(settings, history, user_message, summary)

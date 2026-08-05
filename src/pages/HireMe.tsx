@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { EditableCta } from "../components/CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
 
 const positions = [
@@ -116,9 +117,11 @@ export default function HireMePage() {
                 <h3>{position.title}</h3>
                 <p>{position.text}</p>
                 <p>{position.detail}</p>
-                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: position.welcomeKey })}>
-                  {position.action} <span aria-hidden="true">-&gt;</span>
-                </button>
+                <EditableCta welcomeKey={position.welcomeKey}>
+                  <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: position.welcomeKey })}>
+                    {position.action} <span aria-hidden="true">-&gt;</span>
+                  </button>
+                </EditableCta>
               </article>
             ))}
           </div>

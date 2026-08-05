@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app import chat as chat_module
+from backend.app import chat_context as context_module
 from backend.app import chat_welcome as welcome_module
 from backend.app.config import Settings
 from backend.app.models import Base, Conversation, Message
@@ -234,6 +235,16 @@ def test_create_welcome_conversation_returns_message_without_persisting(monkeypa
     assert session.scalars(select(Message)).all() == []
 
 
+def test_create_welcome_conversation_returns_null_when_key_is_missing(monkeypatch, tmp_path) -> None:
+    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path.write_text(json.dumps({}), encoding="utf-8")
+    monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
+
+    response = welcome_module.create_welcome_conversation("services/process/planning-call/book-a-call")
+
+    assert response.message is None
+
+
 def test_first_user_message_after_cta_welcome_sends_welcome_context_to_model(monkeypatch, tmp_path) -> None:
     session = make_session()
     welcome_key = "services/service-catalog/product-design/ask-my-ai-assistant"
@@ -286,6 +297,79 @@ def test_first_user_message_after_cta_welcome_sends_welcome_context_to_model(mon
         ("user", "Quero entender custo e prazo."),
         ("assistant", "model answer"),
     ]
+
+
+def test_first_user_message_after_cta_adds_hidden_context_to_model_instructions(monkeypatch, tmp_path) -> None:
+    session = make_session()
+    welcome_key = "services/service-catalog/product-design/ask-my-ai-assistant"
+    context_text = "FAQ interna do CTA.\nPergunte sobre objetivos, prazo e escopo antes de propor solucao."
+    context_path = tmp_path / "Chat-Context-Messages.json"
+    context_path.write_text(json.dumps({welcome_key: context_text}), encoding="utf-8")
+    monkeypatch.setattr(context_module, "CONTEXT_MESSAGES_PATH", context_path)
+    monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="unused", _env_file=None))
+    captured_inputs = []
+
+    def capture_model_input(_settings, history, user_message, _summary, cta_context=None, **_kwargs):
+        captured_inputs.append(
+            {
+                "history": list(history),
+                "user_message": user_message,
+                "cta_context": cta_context,
+            }
+        )
+        yield "model answer"
+
+    monkeypatch.setattr(chat_module, "stream_openai_text", capture_model_input)
+
+    events = list(chat_module.stream_chat(
+        session,
+        ChatRequest(
+            message="Quero entender custo e prazo.",
+            welcome_key=welcome_key,
+        ),
+    ))
+
+    assert any('"event": "done"' in event for event in events)
+    first_input = captured_inputs[0]
+    assert first_input["history"] == []
+    assert first_input["user_message"] == "Quero entender custo e prazo."
+    assert first_input["cta_context"] == context_text
+    messages = session.scalars(select(Message).order_by(Message.id)).all()
+    assert [(message.role, message.content) for message in messages] == [
+        ("user", "Quero entender custo e prazo."),
+        ("assistant", "model answer"),
+    ]
+
+
+def test_first_user_message_after_cta_works_without_welcome_or_context(monkeypatch, tmp_path) -> None:
+    session = make_session()
+    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    context_path = tmp_path / "Chat-Context-Messages.json"
+    welcome_path.write_text(json.dumps({}), encoding="utf-8")
+    context_path.write_text(json.dumps({}), encoding="utf-8")
+    monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
+    monkeypatch.setattr(context_module, "CONTEXT_MESSAGES_PATH", context_path)
+    monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="unused", _env_file=None))
+    captured_inputs = []
+
+    def capture_model_input(_settings, history, user_message, _summary, cta_context=None, **_kwargs):
+        captured_inputs.append({"history": list(history), "user_message": user_message, "cta_context": cta_context})
+        yield "model answer"
+
+    monkeypatch.setattr(chat_module, "stream_openai_text", capture_model_input)
+
+    list(chat_module.stream_chat(
+        session,
+        ChatRequest(
+            message="Mensagem normal sem contexto.",
+            welcome_key="services/process/missing/cta",
+        ),
+    ))
+
+    first_input = captured_inputs[0]
+    assert first_input["history"] == []
+    assert first_input["user_message"] == "Mensagem normal sem contexto."
+    assert first_input["cta_context"] is None
 
 
 def json_event(line: str) -> dict:

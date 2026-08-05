@@ -15,6 +15,7 @@ from backend.app.admin_records import sync_existing_admin_records
 from backend.app.chat_multi_window import router as chat_multi_window_router
 from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
+from backend.app.cta_editor import router as cta_editor_router
 from backend.app.db import SessionLocal, get_session, initialize_database, ping_database
 from backend.app.chat_tracing import router as chat_tracing_router
 from backend.app.forms import router as forms_router
@@ -38,6 +39,7 @@ app = FastAPI(title="CriativAI API", lifespan=lifespan)
 app.include_router(admin_router)
 app.include_router(chat_tracing_router)
 app.include_router(chat_multi_window_router)
+app.include_router(cta_editor_router)
 app.include_router(google_admin_router)
 app.include_router(google_callback_router)
 app.include_router(forms_router)
@@ -46,8 +48,8 @@ if settings.cors_origins:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
-        allow_methods=["GET", "POST"],
-        allow_headers=["content-type"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["content-type", "x-cta-editor-token"],
         allow_credentials=False,
     )
 

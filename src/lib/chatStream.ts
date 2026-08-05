@@ -17,12 +17,12 @@ export type ConversationResponse = {
 
 export type ChatWelcomeResponse = {
   session_id?: string | null;
-  message: string;
+  message: string | null;
 };
 
 export type PendingWelcomeContext = {
   key: string;
-  message: string;
+  message: string | null;
 };
 
 export async function* parseNdjsonStream(stream: ReadableStream<Uint8Array>): AsyncGenerator<ChatStreamEvent> {
@@ -94,8 +94,8 @@ export async function sendChatMessage(
       message,
       session_id: sessionId,
       turn_id: turnId,
-      welcome_key: sessionId ? null : pendingWelcome?.key ?? null,
-      welcome_message: sessionId ? null : pendingWelcome?.message ?? null,
+      welcome_key: pendingWelcome?.key ?? null,
+      welcome_message: sessionId || !pendingWelcome?.message?.trim() ? null : pendingWelcome.message,
       client_timezone: clientTimezone,
       client_locale: clientLocale,
     }),
@@ -126,9 +126,6 @@ export async function createWelcomeConversation(welcomeKey: string, signal: Abor
     throw buildNetworkError(endpoint, error);
   });
 
-  if (response.status === 404) {
-    throw new Error("Welcome message not found for this CTA.");
-  }
   if (!response.ok) {
     throw new Error("Unable to prepare the chat welcome message.");
   }

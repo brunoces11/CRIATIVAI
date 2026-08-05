@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AdminRecordModal, type AdminRecordDetail } from "../components/AdminRecordModal";
 import { MarkdownText } from "../components/MarkdownText";
 import { SiteHeader } from "../components/SiteHeader";
+import { clearCtaEditorToken, fetchCtaEditorStatus, storeCtaEditorToken, type CtaEditorStatus } from "../lib/ctaEditor";
 import "./Admin.css";
 
 type AdminConversationSummary = {
@@ -40,10 +41,7 @@ type ChatMultiWindowStatus = {
   enabled: boolean;
   state_path: string;
 };
-
-type AdminPromptResponse = {
-  content: string;
-};
+type AdminPromptResponse = { content: string };
 
 type AdminRecordSummary = Omit<AdminRecordDetail, "payload">;
 
@@ -81,6 +79,10 @@ export default function AdminPage() {
   const [multiWindowLoading, setMultiWindowLoading] = useState(true);
   const [multiWindowSaving, setMultiWindowSaving] = useState(false);
   const [multiWindowError, setMultiWindowError] = useState("");
+  const [ctaEditorStatus, setCtaEditorStatus] = useState<CtaEditorStatus | null>(null);
+  const [ctaEditorLoading, setCtaEditorLoading] = useState(true);
+  const [ctaEditorSaving, setCtaEditorSaving] = useState(false);
+  const [ctaEditorError, setCtaEditorError] = useState("");
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptDraft, setPromptDraft] = useState("");
   const [promptLoading, setPromptLoading] = useState(false);
@@ -94,6 +96,7 @@ export default function AdminPage() {
   const googleErrorDetail = googleFeedbackParams.get("detail");
   const tracingEnabled = tracingStatus?.enabled ?? true;
   const multiWindowEnabled = multiWindowStatus?.enabled ?? true;
+  const ctaEditorEnabled = ctaEditorStatus?.enabled ?? false;
   useEffect(() => {
     const controller = new AbortController();
     setLoadingList(true);
@@ -200,6 +203,41 @@ export default function AdminPage() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setMultiWindowLoading(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setCtaEditorLoading(true);
+    setCtaEditorError("");
+
+    fetchCtaEditorStatus(controller.signal)
+      .then(async (status) => {
+        setCtaEditorStatus(status);
+        if (!status.enabled || status.token_valid) return;
+
+        const response = await fetch("/api/admin/cta-editor", {
+          method: "PUT",
+          signal: controller.signal,
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ enabled: true }),
+        });
+        if (!response.ok) throw new Error("Unable to renew CTA editor token.");
+        const renewed = (await response.json()) as CtaEditorStatus;
+        setCtaEditorStatus(renewed);
+        if (renewed.token) storeCtaEditorToken(renewed.token);
+      })
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setCtaEditorError(loadError instanceof Error ? loadError.message : "Unable to load CTA editor status.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCtaEditorLoading(false);
       });
 
     return () => controller.abort();
@@ -396,6 +434,36 @@ export default function AdminPage() {
     }
   }
 
+  async function updateCtaEditor(enabled: boolean) {
+    if (ctaEditorSaving) return;
+
+    setCtaEditorSaving(true);
+    setCtaEditorError("");
+
+    try {
+      const response = await fetch("/api/admin/cta-editor", {
+        method: "PUT",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!response.ok) throw new Error("Unable to update CTA editor mode.");
+      const payload = (await response.json()) as CtaEditorStatus;
+      setCtaEditorStatus(payload);
+      if (enabled && payload.token) {
+        storeCtaEditorToken(payload.token);
+      } else {
+        clearCtaEditorToken();
+      }
+    } catch (saveError: unknown) {
+      setCtaEditorError(saveError instanceof Error ? saveError.message : "Unable to update CTA editor mode.");
+    } finally {
+      setCtaEditorSaving(false);
+    }
+  }
+
   return (
     <main className="admin-page">
       <SiteHeader brand={<Brand />} page="adm" />
@@ -417,6 +485,7 @@ export default function AdminPage() {
         {googleError ? <p className="admin-error">{googleError}</p> : null}
         {tracingError ? <p className="admin-error">{tracingError}</p> : null}
         {multiWindowError ? <p className="admin-error">{multiWindowError}</p> : null}
+        {ctaEditorError ? <p className="admin-error">{ctaEditorError}</p> : null}
         {promptError ? <p className="admin-error">{promptError}</p> : null}
 
         {promptOpen ? (
@@ -581,6 +650,42 @@ export default function AdminPage() {
                   <span className="admin-switch__thumb" />
                 </span>
                 <span className="admin-switch__label">{multiWindowEnabled ? "On" : "Off"}</span>
+              </button>
+            </div>
+          </section>
+
+          <section className="admin-tracing" aria-label="CTA editor mode toggle">
+            <div className="admin-tracing__copy">
+              <p className="admin-kicker">CTA editor</p>
+              <h2>Red edit buttons</h2>
+              <p>
+                {ctaEditorLoading
+                  ? "Checking CTA editor mode..."
+                  : "When enabled, this browser receives a temporary edit token and can edit mapped CTA welcome/context messages directly on the site."}
+              </p>
+              <div className="admin-tracing__meta">
+                <span>Toggle file</span>
+                <strong>{ctaEditorStatus?.state_path ?? "cta-editor-enabled.txt"}</strong>
+              </div>
+              <div className="admin-tracing__meta">
+                <span>This browser token</span>
+                <strong>{ctaEditorStatus?.token_valid ? "Valid" : "Not active"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-tracing__actions">
+              <button
+                className={`admin-switch${ctaEditorEnabled ? " admin-switch--on" : ""}`}
+                type="button"
+                role="switch"
+                aria-checked={ctaEditorEnabled}
+                disabled={ctaEditorLoading || ctaEditorSaving}
+                onClick={() => void updateCtaEditor(!ctaEditorEnabled)}
+              >
+                <span className="admin-switch__track" aria-hidden="true">
+                  <span className="admin-switch__thumb" />
+                </span>
+                <span className="admin-switch__label">{ctaEditorEnabled ? "On" : "Off"}</span>
               </button>
             </div>
           </section>

@@ -1,6 +1,7 @@
 import { SiteHeader } from "../components/SiteHeader";
 import { type ReactNode } from "react";
 
+import { EditableCta } from "../components/CtaEditorButton";
 import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
 import { serviceCatalog } from "../data/serviceCatalog";
 import { openAssistantChat } from "../lib/chatContext";
@@ -202,7 +203,9 @@ export default function ServicesPage() {
                 <span>{step.index}</span>
                 <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{step.title}</h3>
                 <p>{step.text}</p>
-                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{step.ctaLabel}</button>
+                <EditableCta welcomeKey={step.welcomeKey}>
+                  <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{step.ctaLabel}</button>
+                </EditableCta>
               </article>
             ))}
           </div>
@@ -249,9 +252,11 @@ export default function ServicesPage() {
             Bring the rough idea, the messy process, or the opportunity you keep postponing. We turn it into a scoped
             plan, a buildable system, and a real delivery path.
           </p>
-          <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "services/global/project-conversation/start-project-conversation" })}>
-            Start the Project Conversation <span aria-hidden="true">-&gt;</span>
-          </button>
+          <EditableCta welcomeKey="services/global/project-conversation/start-project-conversation">
+            <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "services/global/project-conversation/start-project-conversation" })}>
+              Start the Project Conversation <span aria-hidden="true">-&gt;</span>
+            </button>
+          </EditableCta>
         </div>
       </section>
     </main>

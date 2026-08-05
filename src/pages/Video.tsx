@@ -1,4 +1,5 @@
 ﻿import { type ReactNode, useEffect, useRef, useState } from "react";
+import { EditableCta } from "../components/CtaEditorButton";
 import { SiteHeader } from "../components/SiteHeader";
 import { openAssistantChat } from "../lib/chatContext";
 
@@ -583,9 +584,11 @@ export default function VideoPage() {
               unlocking new opportunities, accelerating your initiatives, and driving better results.
             </p>
             <div className="hero-actions video-hero-next-actions">
-              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call" })}>
-                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
-              </button>
+              <EditableCta welcomeKey="video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call">
+                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call" })}>
+                  Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
+                </button>
+              </EditableCta>
               <a className="button button--ghost" href="/contact">
                 Drop Me a Message <span aria-hidden="true">-&gt;</span>
               </a>

@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     chat_tracing_log_path: Path = Path("chat-tracing-log.txt")
     chat_tracing_state_path: Path = Path("chat-tracing-enabled.txt")
     chat_multi_window_state_path: Path = Path("chat-multi-window-enabled.txt")
+    cta_editor_state_path: Path = Path("cta-editor-enabled.txt")
+    cta_editor_token_ttl_seconds: int = 3600
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_redirect_uri: str | None = None

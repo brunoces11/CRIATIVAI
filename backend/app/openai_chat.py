@@ -73,6 +73,7 @@ def stream_openai_text(
     history: Sequence[Message],
     user_message: str,
     summary: str | None = None,
+    cta_context: str | None = None,
     *,
     session: Session | None = None,
     conversation: Conversation | None = None,
@@ -102,6 +103,7 @@ def stream_openai_text(
                 history,
                 user_message,
                 summary,
+                cta_context,
                 turn_id=turn_id,
                 trace=trace,
             )
@@ -109,7 +111,7 @@ def stream_openai_text(
 
         with client.responses.stream(
             model=settings.openai_model,
-            instructions=build_instructions(settings.sdr_prompt_path, summary),
+            instructions=build_instructions(settings.sdr_prompt_path, summary, cta_context=cta_context),
             input=build_response_input(history, user_message, settings.chat_context_recent_messages),
             store=False,
         ) as stream:
@@ -141,6 +143,7 @@ def stream_openai_text_with_calendar_tools(
     history: Sequence[Message],
     user_message: str,
     summary: str | None,
+    cta_context: str | None = None,
     *,
     turn_id: str | None = None,
     trace: ChatTraceSink | None = None,
@@ -149,6 +152,7 @@ def stream_openai_text_with_calendar_tools(
     instructions = build_calendar_instructions(
         settings.sdr_prompt_path,
         summary,
+        cta_context=cta_context,
         recent_visitor_email=most_recent_visitor_email(session, conversation.id),
         client_temporal_context=build_client_temporal_context(conversation, settings),
     )
@@ -300,17 +304,21 @@ def build_response_input(history: Sequence[Message], user_message: str, recent_l
     return items
 
 
-def build_instructions(path: Path, summary: str | None) -> str:
+def build_instructions(path: Path, summary: str | None, *, cta_context: str | None = None) -> str:
     prompt = load_sdr_prompt(path)
-    if not summary:
-        return prompt
-    return f"{prompt}\n\nCurrent conversation summary for continuity:\n{summary}"
+    parts = [prompt]
+    if summary:
+        parts.append(f"Current conversation summary for continuity:\n{summary}")
+    if cta_context:
+        parts.append(f"CTA hidden context for this first turn only:\n{cta_context}")
+    return "\n\n".join(parts)
 
 
 def build_calendar_instructions(
     path: Path,
     summary: str | None,
     *,
+    cta_context: str | None = None,
     recent_visitor_email: str | None = None,
     client_temporal_context: str | None = None,
 ) -> str:
@@ -322,7 +330,7 @@ def build_calendar_instructions(
             "This is context, not permission to act: ask the visitor to confirm it before using it for lookup, booking, rescheduling, or cancellation."
         )
     temporal_context = f"\n\n{client_temporal_context}" if client_temporal_context else ""
-    return f"{build_instructions(path, summary)}\n\n{CALENDAR_TOOL_INSTRUCTIONS}{temporal_context}{contact_context}"
+    return f"{build_instructions(path, summary, cta_context=cta_context)}\n\n{CALENDAR_TOOL_INSTRUCTIONS}{temporal_context}{contact_context}"
 
 
 def build_client_temporal_context(conversation: Conversation, settings: Settings, *, now: datetime | None = None) -> str:
