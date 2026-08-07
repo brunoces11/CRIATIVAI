@@ -330,6 +330,7 @@ def test_first_user_message_after_cta_adds_hidden_context_to_model_instructions(
     ))
 
     assert any('"event": "done"' in event for event in events)
+    session_id = next(json_event(event)["session_id"] for event in events if '"event": "session_start"' in event)
     first_input = captured_inputs[0]
     assert first_input["history"] == []
     assert first_input["user_message"] == "Quero entender custo e prazo."
@@ -339,6 +340,15 @@ def test_first_user_message_after_cta_adds_hidden_context_to_model_instructions(
         ("user", "Quero entender custo e prazo."),
         ("assistant", "model answer"),
     ]
+
+    list(chat_module.stream_chat(
+        session,
+        ChatRequest(message="Agora quero falar sobre investimento.", session_id=session_id, welcome_key=welcome_key),
+    ))
+
+    second_input = captured_inputs[1]
+    assert second_input["user_message"] == "Agora quero falar sobre investimento."
+    assert second_input["cta_context"] == context_text
 
 
 def test_first_user_message_after_cta_works_without_welcome_or_context(monkeypatch, tmp_path) -> None:

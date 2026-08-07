@@ -11,6 +11,7 @@ type Message = {
 };
 
 const SESSION_STORAGE_KEY = "chat_session_id";
+const WELCOME_KEY_STORAGE_KEY = "chat_welcome_key";
 const CHAT_QUERY_PARAM = "chat";
 const CHAT_QUERY_NEW_VALUE = "new";
 
@@ -68,6 +69,7 @@ export function ChatWidget() {
   const [toolStatus, setToolStatus] = useState("");
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(() => readStoredSessionId());
+  const [activeWelcomeKey, setActiveWelcomeKey] = useState<string | null>(() => readStoredWelcomeKey());
   const [pendingWelcome, setPendingWelcome] = useState<PendingWelcomeContext | null>(null);
   const [panelSize, setPanelSize] = useState(() => clampChatPanelSize(CHAT_PANEL_DEFAULT_SIZE));
   const [newChatEnabled, setNewChatEnabled] = useState(true);
@@ -153,7 +155,9 @@ export function ChatWidget() {
       .then((conversation) => {
         if (!conversation) {
           clearStoredSessionId();
+          clearStoredWelcomeKey();
           setSessionId(null);
+          setActiveWelcomeKey(null);
           setPendingWelcome(null);
           setMessages(initialMessages);
           return;
@@ -218,7 +222,9 @@ export function ChatWidget() {
     welcomeAbortRef.current = controller;
     restoredRef.current = true;
     clearStoredSessionId();
+    clearStoredWelcomeKey();
     setSessionId(null);
+    setActiveWelcomeKey(null);
     setMessages([]);
     setDraft("");
     setError("");
@@ -247,6 +253,8 @@ export function ChatWidget() {
 
       const visibleWelcome = welcome.message?.trim() ? welcome.message : null;
       setWelcomeLoading(false);
+      setActiveWelcomeKey(welcomeKey);
+      storeWelcomeKey(welcomeKey);
       setPendingWelcome({ key: welcomeKey, message: visibleWelcome });
       if (visibleWelcome) {
         streamWelcomeMessage(visibleWelcome, runId);
@@ -325,7 +333,7 @@ export function ChatWidget() {
 
     try {
       let assistantText = "";
-      await sendChatMessage(message, sessionId, turnId, controller.signal, pendingWelcome, (streamEvent) => {
+      await sendChatMessage(message, sessionId, turnId, controller.signal, activeWelcomeKey ?? pendingWelcome?.key ?? null, pendingWelcome, (streamEvent) => {
         if (streamEvent.event === "session_start") {
           setSessionId(streamEvent.session_id);
           storeSessionId(streamEvent.session_id);
@@ -414,8 +422,10 @@ export function ChatWidget() {
     welcomeAbortRef.current?.abort();
     stopWelcomeStream();
     clearStoredSessionId();
+    clearStoredWelcomeKey();
     restoredRef.current = false;
     setSessionId(null);
+    setActiveWelcomeKey(null);
     setPendingWelcome(null);
     setMessages(initialMessages);
     setDraft("");
@@ -621,6 +631,18 @@ function storeSessionId(sessionId: string) {
 function clearStoredSessionId() {
   window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
   window.localStorage.removeItem(SESSION_STORAGE_KEY);
+}
+
+function readStoredWelcomeKey() {
+  return window.sessionStorage.getItem(WELCOME_KEY_STORAGE_KEY);
+}
+
+function storeWelcomeKey(welcomeKey: string) {
+  window.sessionStorage.setItem(WELCOME_KEY_STORAGE_KEY, welcomeKey);
+}
+
+function clearStoredWelcomeKey() {
+  window.sessionStorage.removeItem(WELCOME_KEY_STORAGE_KEY);
 }
 
 function shouldStartFreshChatWindow() {

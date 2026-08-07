@@ -77,6 +77,7 @@ export async function sendChatMessage(
   sessionId: string | null,
   turnId: string,
   signal: AbortSignal,
+  welcomeKey: string | null,
   pendingWelcome: PendingWelcomeContext | null,
   onEvent: (event: ChatStreamEvent) => void,
 ): Promise<void> {
@@ -94,7 +95,7 @@ export async function sendChatMessage(
       message,
       session_id: sessionId,
       turn_id: turnId,
-      welcome_key: pendingWelcome?.key ?? null,
+      welcome_key: welcomeKey,
       welcome_message: sessionId || !pendingWelcome?.message?.trim() ? null : pendingWelcome.message,
       client_timezone: clientTimezone,
       client_locale: clientLocale,

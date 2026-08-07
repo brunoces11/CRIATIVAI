@@ -281,12 +281,12 @@
 
 .chat-panel__ice-breakers button {
   display: grid;
-  height: 84px;
+  height: 71.4px;
   min-width: 0;
   grid-template-columns: 42px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border: 1px solid rgba(79, 143, 184, 0.32);
   border-radius: 6px;
   background: rgba(79, 143, 184, 0.20);
@@ -539,7 +539,7 @@
   }
 
   .chat-panel__ice-breakers button {
-    height: 78px;
+    height: 66.3px;
     font-size: 1rem;
   }
 }
