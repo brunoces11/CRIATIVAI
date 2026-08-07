@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { RecruitmentAiConsole } from "../components/RecruitmentAiConsole";
 import { SiteHeader } from "../components/SiteHeader";
 
 const colors = [
@@ -20,7 +21,7 @@ const colors = [
 ] as const;
 
 const headings = [
-  ["H1", "Creative intelligence", "Anton", "clamp(3.6rem, 18vw, 7rem)"],
+  ["H1", "Creative intelligence", "Roboto Condensed Semi-bold", "clamp(3.6rem, 18vw, 7rem)"],
   ["H2", "A clear visual hierarchy", "Anton", "clamp(2.6rem, 6vw, 5rem)"],
   ["H3", "Human-centered systems", "Inter", "clamp(1.8rem, 2.5vw, 2.45rem)"],
   ["H4", "Component detail", "Inter", "1.25rem"],
@@ -67,6 +68,10 @@ const fontFamilies = [
   },
 ] as const;
 
+const MIDDOT = "\u00B7";
+const TIMES = "\u00D7";
+const ARROW_NE = "\u2197";
+
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
@@ -105,7 +110,7 @@ export default function StyleGuide() {
             {colors.map(([name, token, value]) => (
               <article className="color-card" key={token}>
                 <div className="color-swatch" style={{ backgroundColor: `var(${token})` }} />
-                <div><h3>{name}</h3><Spec>{token} · {value}</Spec></div>
+                <div><h3>{name}</h3><Spec>{token} {MIDDOT} {value}</Spec></div>
               </article>
             ))}
           </div>
@@ -129,9 +134,9 @@ export default function StyleGuide() {
             ))}
           </div>
           <div className="body-samples">
-            <article><p className="micro-label">Body / Inter</p><p>Clear, considered copy for complex ideas. Default body text uses 16px with a 1.55 line-height.</p><Spec>16px · 400 · line-height 1.55</Spec></article>
-            <article><p className="micro-label">Eyebrow / Inter</p><p className="eyebrow">Design × Engineering × Strategy</p><Spec>0.72rem · 500 · 0.15em tracking</Spec></article>
-            <article><p className="micro-label">Brand serif / Cormorant Garamond</p><p className="serif-sample">Thoughtful, human, precise.</p><Spec>600–700 · brand moments</Spec></article>
+            <article><p className="micro-label">Body / Inter</p><p>Clear, considered copy for complex ideas. Default body text uses 16px with a 1.55 line-height.</p><Spec>16px {MIDDOT} 400 {MIDDOT} line-height 1.55</Spec></article>
+            <article><p className="micro-label">Eyebrow / Inter</p><p className="eyebrow">Design {TIMES} Engineering {TIMES} Strategy</p><Spec>0.72rem {MIDDOT} 500 {MIDDOT} 0.15em tracking</Spec></article>
+            <article><p className="micro-label">Brand serif / Cormorant Garamond</p><p className="serif-sample">Thoughtful, human, precise.</p><Spec>600-700 {MIDDOT} brand moments</Spec></article>
           </div>
         </div>
       </section>
@@ -148,7 +153,7 @@ export default function StyleGuide() {
                 <div className="font-family-head">
                   <p className="micro-label">{family.role}</p>
                   <h3 style={{ fontFamily: `var(${family.variable})` }}>{family.name}</h3>
-                  <Spec>{family.variable} · {family.stack}</Spec>
+                  <Spec>{family.variable} {MIDDOT} {family.stack}</Spec>
                 </div>
                 <div className="font-weight-list">
                   {family.weights.map(([weight, label]) => (
@@ -179,9 +184,9 @@ export default function StyleGuide() {
             <p>Interactions are quiet by default and respond with the accent color, movement, and clear keyboard focus.</p>
           </div>
           <div className="action-grid">
-            <article className="specimen-card"><p className="micro-label">Primary button</p><a className="button button--light" href="#actions-title">Let&apos;s Talk <span>↗</span></a><Spec>46px min-height · 22px horizontal padding · 2px radius</Spec></article>
-            <article className="specimen-card"><p className="micro-label">Accent button</p><a className="button button--accent" href="#actions-title">Start a Project <span>↗</span></a><Spec>Accent gradient · hover lift −2px</Spec></article>
-            <article className="specimen-card"><p className="micro-label">Text link</p><a className="style-text-link" href="#actions-title">Explore the system <span>↗</span></a><Spec>0.75rem · 0.08em tracking · accent on hover</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Primary button</p><a className="button button--light" href="#actions-title">Let&apos;s Talk <span>{ARROW_NE}</span></a><Spec>46px min-height {MIDDOT} 22px horizontal padding {MIDDOT} 2px radius</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Accent button</p><a className="button button--accent" href="#actions-title">Start a Project <span>{ARROW_NE}</span></a><Spec>Accent gradient {MIDDOT} hover lift -2px</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Text link</p><a className="style-text-link" href="#actions-title">Explore the system <span>{ARROW_NE}</span></a><Spec>0.75rem {MIDDOT} 0.08em tracking {MIDDOT} accent on hover</Spec></article>
           </div>
         </div>
       </section>
@@ -193,15 +198,15 @@ export default function StyleGuide() {
             <p>Reusable surfaces, borders, labels, and feedback patterns used to make the interface feel coherent.</p>
           </div>
           <div className="component-grid">
-            <article className="component-card"><p className="project-index">01 / Card</p><h3>Surface card</h3><p>Layered dark gradients give modules depth while preserving a calm reading surface.</p><Spec>12px radius · 1px border · 14px / 36px shadow</Spec></article>
-            <article className="component-card component-card--label"><p className="micro-label">System label</p><h3>Technical foundation</h3><p>Uppercase labels establish context without competing with the main message.</p><Spec>0.72rem · uppercase · 0.15em tracking</Spec></article>
-            <article className="component-card"><div className="component-status"><i /> Grounded system</div><h3>Accent signal</h3><p>Use warm accent marks to indicate priority, active states, and confidence.</p><Spec>#C8A28F · subtle glow · never body copy</Spec></article>
+            <article className="component-card"><p className="project-index">01 / Card</p><h3>Surface card</h3><p>Layered dark gradients give modules depth while preserving a calm reading surface.</p><Spec>12px radius {MIDDOT} 1px border {MIDDOT} 14px / 36px shadow</Spec></article>
+            <article className="component-card component-card--label"><p className="micro-label">System label</p><h3>Technical foundation</h3><p>Uppercase labels establish context without competing with the main message.</p><Spec>0.72rem {MIDDOT} uppercase {MIDDOT} 0.15em tracking</Spec></article>
+            <article className="component-card"><div className="component-status"><i /> Grounded system</div><h3>Accent signal</h3><p>Use warm accent marks to indicate priority, active states, and confidence.</p><Spec>#C8A28F {MIDDOT} subtle glow {MIDDOT} never body copy</Spec></article>
           </div>
           <div className="style-rules">
             <div><span>Layout</span><strong>1,300px maximum content width</strong></div>
-            <div><span>Spacing</span><strong>16px base rhythm · 72px section spacing</strong></div>
-            <div><span>Motion</span><strong>220–300ms ease transitions</strong></div>
-            <div><span>Focus</span><strong>2px accent-light outline · 4px offset</strong></div>
+            <div><span>Spacing</span><strong>16px base rhythm {MIDDOT} 72px section spacing</strong></div>
+            <div><span>Motion</span><strong>220-300ms ease transitions</strong></div>
+            <div><span>Focus</span><strong>2px accent-light outline {MIDDOT} 4px offset</strong></div>
           </div>
         </div>
       </section>
@@ -213,27 +218,42 @@ export default function StyleGuide() {
             <p>Live routes that apply this system in practice, including the new recruitment intake landing page.</p>
           </div>
           <div className="style-page-links">
-            <a className="style-page-link" href="/human-resources">
+            <a className="style-page-link" href="/for-recrutiers">
               <span className="micro-label">Recruitment offer</span>
-              <strong>Human Resources</strong>
-              <em>Open the service page ↗</em>
+              <strong>For Recrutiers</strong>
+              <em>Open the service page {ARROW_NE}</em>
             </a>
             <a className="style-page-link style-page-link--featured" href="/talent-preview">
               <span className="micro-label">Free shortlist request</span>
               <strong>Talent Preview</strong>
-              <em>Open the promotional intake page ↗</em>
+              <em>Open the promotional intake page {ARROW_NE}</em>
             </a>
             <a className="style-page-link" href="/contact">
               <span className="micro-label">Direct inquiry</span>
               <strong>Contact</strong>
-              <em>Open the contact form ↗</em>
+              <em>Open the contact form {ARROW_NE}</em>
             </a>
           </div>
         </div>
       </section>
 
+      <section className="style-section style-section--surface" aria-labelledby="console-component-title">
+        <div className="site-container">
+          <div className="style-section-head">
+            <div><p className="eyebrow">07 / Extracted component</p><h2 id="console-component-title">Recruitment AI console</h2></div>
+            <p>The illustration panel removed from the Human Resources hero now lives here as a standalone reference component.</p>
+          </div>
+          <div className="style-component-showcase">
+            <div className="style-component-shell">
+              <p className="micro-label">Component / RecruitmentAiConsole</p>
+              <RecruitmentAiConsole />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer className="style-footer">
-        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home ↗</a></div>
+        <div className="site-container"><span>CRIATIVAI / Style guide</span><a href="/">Return to home {ARROW_NE}</a></div>
       </footer>
     </main>
   );
@@ -250,7 +270,7 @@ function HeadingSample({ tag, text, font, size }: HeadingSampleProps) {
   const Tag = tag.toLowerCase() as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   return (
     <article className="type-row">
-      <div className="type-meta"><span>{tag}</span><Spec>{font} · {size}</Spec></div>
+      <div className="type-meta"><span>{tag}</span><Spec>{font} {MIDDOT} {size}</Spec></div>
       <Tag className={`type-sample type-sample--${tag.toLowerCase()}`}>{text}</Tag>
     </article>
   );

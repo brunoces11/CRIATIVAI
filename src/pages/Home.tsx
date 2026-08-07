@@ -1,45 +1,64 @@
-import { SiteHeader } from "../components/SiteHeader";
+﻿import { SiteHeader } from "../components/SiteHeader";
+
+import { useState } from "react";
+
+import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
+import { serviceCatalog } from "../data/serviceCatalog";
 
 const groundingTopics = [
-  "Retrieval-Augmented Generation (RAG)",
-  "GraphRAG",
-  "Knowledge Graphs",
-  "Context Engineering",
-  "Business Intelligence",
-  "Enterprise Knowledge Bases",
-  "Long-Term Memory",
-  "Multi-Agent Architectures",
-  "Private Knowledge Integration",
-  "Structured Data Integration",
-];
+  {
+    title: "Custom RAG Setups",
+    description: "Connect private knowledge to AI answers with retrieval tailored to your business rules.",
+  },
+  {
+    title: "Knowledge Graphs | GraphRAG",
+    description: "Map relationships across your data so agents understand context, entities, and dependencies.",
+  },
+  {
+    title: "Prompt Engineering Research",
+    description: "Design tested prompts and reasoning patterns for clearer, more predictable AI behavior.",
+  },
+  {
+    title: "Context Engineering",
+    description: "Control the exact information your agents receive before they answer or act.",
+  },
+  {
+    title: "Enterprise Knowledge Systems",
+    description: "Turn scattered company information into a reliable intelligence layer for people and AI.",
+  },
+  {
+    title: "Multi Agent Architecture",
+    description: "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows.",
+  },
+  {
+    title: "ETL, Data Processing",
+    description: "Clean, transform, and structure multi-source data so it becomes useful AI-ready knowledge.",
+  },
+  {
+    title: "Context Enrichment",
+    description: "Add metadata, relationships, and business meaning to improve retrieval and answer quality.",
+  },
+  {
+    title: "Smart Chunk processing",
+    description: "Split knowledge into precise chunks that preserve meaning and reduce noisy retrieval.",
+  },
+  {
+    title: "Guard rails | Observability",
+    description: "Monitor, constrain, and improve agent behavior with clearer controls and visibility.",
+  },
+] as const;
 
-const services = [
-  {
-    index: "01",
-    title: "UI/UX Design",
-    text: "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences.",
-    featured: true,
-  },
-  {
-    index: "02",
-    title: "Enterprise Knowledge System",
-    text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
-  },
-  {
-    index: "03",
-    title: "System Design",
-    text: "Technical architecture and system planning for scalable digital products and AI-powered applications.",
-  },
-  {
-    index: "04",
-    title: "AI Automations",
-    text: "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence.",
-  },
-  {
-    index: "05",
-    title: "Smart Agents",
-    text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
-  },
+const customDevelopmentTopics = [
+  "Intelligence Hubs",
+  "Custom CRM Systems",
+  "Tailored ERP Operations",
+  "High-Conversion Landing Pages",
+  "AI-Powered Internal Tools",
+  "Custom Workflow Automations",
+  "Business-Critical Integrations",
+  "Operational Dashboards",
+  "Process-Specific UX",
+  "No Vendor Lock-In",
 ];
 
 const expertise = [
@@ -64,10 +83,10 @@ function Brand() {
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
   const src =
     type === "hr"
-      ? "/project-visuals/project-human-resources.svg"
+      ? "/tub_dashboard_inteligence.png"
       : type === "trading"
-        ? "/project-visuals/project-trading.svg"
-        : "/project-visuals/project-dante.svg";
+        ? "/tub_ai-first-trading-plataform.png"
+        : "/tub_dante_ai_legal_system.png";
 
   if (type === "hr") {
     return (
@@ -99,6 +118,14 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function Home() {
+  const [expandedGroundingTopic, setExpandedGroundingTopic] = useState<{ columnId: string; title: string } | null>(null);
+
+  const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
+    setExpandedGroundingTopic((currentTopic) =>
+      currentTopic?.columnId === columnId && currentTopic.title === topicTitle ? null : { columnId, title: topicTitle },
+    );
+  };
+
   return (
     <main id="top">
       <SiteHeader brand={<Brand />} />
@@ -107,7 +134,7 @@ export default function Home() {
         <div className="hero-atmosphere" aria-hidden="true" />
         <div className="site-container hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow hero-eyebrow"><span /> Design × Engineering × Strategy</p>
+            <p className="eyebrow hero-eyebrow"><span /> Design {"\u00D7"} Engineering {"\u00D7"} Strategy</p>
             <h1 id="hero-title" className="hero-title">
               <span className="hero-line hero-line--one">CREATIVE</span>
               <span className="hero-line hero-line--two">AI SOLUTIONS</span>
@@ -118,7 +145,7 @@ export default function Home() {
                 engineering, and business strategy to solve real-world challenges.
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
+                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">{"\u2197"}</span></a>
               </div>
             </div>
           </div>
@@ -141,6 +168,118 @@ export default function Home() {
         </a>
       </section>
 
+
+      <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="custom-development-title">Custom Development</h2>
+            <h3>Accessible custom software built around the way your business actually operates.</h3>
+            <p>
+              Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
+              operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit
+              your workflow, your goals, and the way your business actually runs.
+            </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href="/contact">I WANT BUILD</a>
+              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+            </div>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
+              alt="Custom software development"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="grounding-title">Knowledge Grounding</h2>
+            <h3>Building AI systems that truly understand your business.</h3>
+            <p>
+              With the mission of transforming business information into actionable business knowledge, this layer helps
+              AI agents answer with precision and predictability inside your project constraints, processing multi-source
+              data into a reliable context retrieval system that gives you clear control over what your agents consume
+              and consistently improves the quality of their responses.
+            </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href="/contact">I WANT BUILD</a>
+              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+            </div>
+          </div>
+          <div className="grounding-panel">
+            <div className="grounding-panel-head">
+              <span>Enterprise intelligence layer</span>
+              <span>10 capabilities</span>
+            </div>
+            <div className="topic-list" role="list">
+              <div className="topic-list-column">
+                {groundingTopics.map((topic, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topic.title;
+                  const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
+                  const detailId = `grounding-topic-${index}`;
+
+                  return (
+                    <div
+                      role="listitem"
+                      className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                      key={topic.title}
+                    >
+                      <button
+                        type="button"
+                        className="topic-list-button"
+                        aria-expanded={isExpanded}
+                        aria-controls={detailId}
+                        onClick={() => toggleGroundingTopic("single", topic.title)}
+                      >
+                        <span className="topic-list-toggle" aria-hidden="true" />
+                        <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="topic-list-title">{topic.title}</span>
+                        <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                          {topic.description}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section grounding-section--lead-gen" id="lead-generation" aria-labelledby="lead-generation-title">
+        <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="lead-generation-title">AI Lead Generation and Convertion Agents</h2>
+            <h3>Increase revenue with better qualified leads and smarter conversion.</h3>
+            <p>
+              Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate
+              outbound actions that expand your conversion potential and drive more revenue.
+            </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href="/contact">I want it</a>
+              <a className="button button--ghost" href="/contact">Book a call</a>
+            </div>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/LEAD_FUNNEL.png"
+              alt="Lead generation funnel placeholder"
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="section projects-section" id="projects" aria-labelledby="projects-title">
         <div className="site-container">
           <div className="section-heading section-heading--split">
@@ -155,13 +294,12 @@ export default function Home() {
               <div className="project-overlay" />
               <div className="project-content">
                 <p className="project-index">01 / Automation</p>
-                <h3>Human Resources Automations</h3>
+                <h3>Inteliggence Dashboard</h3>
                 <p>
-                  End-to-end recruitment automation, including candidate sourcing, qualification, ranking, workflow
-                  automation, report generation, and AI-assisted hiring.
+                  Gain a clearer view of your business with personalized smart dashboards, fully connected to your
+                  business knowledge and focused exactly on your precise operational needs.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
             </article>
 
             <article className="project-card">
@@ -175,7 +313,6 @@ export default function Home() {
                   automation, and decision support.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
             </article>
 
             <article className="project-card">
@@ -189,39 +326,7 @@ export default function Home() {
                   reasoning, and enterprise knowledge systems.
                 </p>
               </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
             </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="section grounding-section" id="grounding" aria-labelledby="grounding-title">
-        <div className="grounding-orbit" aria-hidden="true" />
-        <div className="site-container grounding-grid">
-          <div className="grounding-copy">
-            <p className="eyebrow">Technical foundation</p>
-            <h2 id="grounding-title">Knowledge Grounding</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
-            <p>
-              Foundation models are powerful, but generic knowledge is not enough for business-critical work.
-              Grounding connects AI to your organization&apos;s verified data, context, processes, and relationships—so
-              every answer is more relevant, traceable, and reliable.
-            </p>
-          </div>
-          <div className="grounding-panel">
-            <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
-            </div>
-            <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}><span>{String(index + 1).padStart(2, "0")}</span>{topic}</li>
-              ))}
-            </ul>
-            <p className="grounding-note">
-              Proprietary knowledge turns a general-purpose model into a system aligned with how your business
-              actually operates.
-            </p>
           </div>
         </div>
       </section>
@@ -239,47 +344,10 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="services-grid">
-            {services.map((service) => (
-              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.title}>
-                <div className="service-topline">
-                  <span>{service.index}</span>
-                  <i aria-hidden="true"><b /></i>
-                </div>
-                <h3>{service.title}</h3>
-                <p>{service.text}</p>
-              </article>
+          <div className="services-grid services-page-grid">
+            {serviceCatalog.map((service) => (
+              <ServiceCatalogCard key={service.id} service={service} />
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section about-section" id="about" aria-labelledby="about-title">
-        <div className="site-container about-grid">
-          <div className="about-image-wrap">
-            <img src="/bruno-portrait.png" alt="Bruno, founder of CriativAI" className="about-image" />
-            <div className="about-image-meta">
-              <span>Bruno</span>
-              <span>Founder / Designer / AI Engineer</span>
-            </div>
-          </div>
-          <div className="about-copy">
-            <p className="eyebrow">The human behind the systems</p>
-            <h2 id="about-title">About</h2>
-            <p className="about-lead">
-              Technology is most valuable when it amplifies human judgment—not when it gets in the way.
-            </p>
-            <p>
-              Bruno works at the intersection of product design, artificial intelligence, and business strategy.
-              His practice combines two decades of creative experience with a systems mindset to turn complex ideas
-              into useful, understandable, and carefully crafted digital products.
-            </p>
-            <div className="expertise-block">
-              <p className="micro-label">Areas of expertise</p>
-              <ul className="expertise-list">
-                {expertise.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -289,13 +357,16 @@ export default function Home() {
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
           <p className="eyebrow">Start a conversation</p>
-          <h2 id="contact-title">Ready to Build Your Next <span>AI Product?</span></h2>
+          <h2 id="contact-title">
+            <span>Ready to Build Your</span>
+            <span>Next AI Product?</span>
+          </h2>
           <p>
             Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
             business challenges.
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">↗</span>
+            Start a Project <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -305,26 +376,26 @@ export default function Home() {
           <div className="footer-brand">
             <a href="#top" aria-label="CriativAI home"><Brand /></a>
             <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
               <p className="micro-label">Navigation</p>
               <a href="#services">Services</a>
               <a href="#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
+              <a href="/for-recrutiers">For Recrutiers</a>
               <a href="/contact">Contact</a>
             </div>
             <div>
               <p className="micro-label">Social Media</p>
-              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</a>
+              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>YouTube</a>
               <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</a>
+              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>Behance</a>
               <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top {"\u2191"}</a></div>
       </footer>
     </main>
   );

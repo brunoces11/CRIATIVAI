@@ -2,6 +2,7 @@ import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { FormSuccessModal } from "../components/FormSuccessModal";
 import { SiteHeader } from "../components/SiteHeader";
 import { submitContact } from "../lib/forms";
+import { buildMailtoHref, isSitesFrontendOnly } from "../lib/sitesRuntime";
 
 type ContactState = {
   name: string;
@@ -56,6 +57,19 @@ export default function ContactPage() {
     event.preventDefault();
     if (!isValid || submitting) return;
 
+    if (isSitesFrontendOnly) {
+      window.location.href = buildMailtoHref({
+        subject: form.subject.trim() || "CriativAI contact request",
+        lines: [
+          `Name: ${form.name.trim() || "-"}`,
+          `Email: ${form.email.trim() || "-"}`,
+          "",
+          form.message.trim() || "I would like to discuss a project.",
+        ],
+      });
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
@@ -80,10 +94,12 @@ export default function ContactPage() {
           <div className="form-hero-copy contact-hero-copy">
             <h1 id="contact-page-title">Start a <span>conversation.</span></h1>
             <p className="form-hero-lead">
-              Tell us what you are building, automating, or exploring—and we will get back to you directly.
+              Tell us what you are building, automating, or exploring and we will get back to you directly.
             </p>
             <p className="form-hero-detail">
-              This form sends your message to Bruno at CriativAI and stores the submission for reliable follow-up inside the project database.
+              {isSitesFrontendOnly
+                ? "This public test site uses a direct email handoff so your message can be sent without a live backend."
+                : "This form sends your message to Bruno at CriativAI and stores the submission for reliable follow-up inside the project database."}
             </p>
           </div>
 
@@ -116,12 +132,17 @@ export default function ContactPage() {
 
             <input type="hidden" name="started_at_ms" value={form.started_at_ms} />
 
+            {isSitesFrontendOnly ? (
+              <p className="form-feedback form-feedback--notice">
+                Public test mode: submitting this form opens your email app with the message prefilled.
+              </p>
+            ) : null}
             {error ? <p className="form-feedback form-feedback--error">{error}</p> : null}
 
             <div className="form-actions">
               <button type="reset" className="button button--ghost">Clean Form</button>
               <button type="submit" className="button button--accent" disabled={!isValid || submitting}>
-                {submitting ? "Sending..." : "Send"} <span aria-hidden="true">↗</span>
+                {isSitesFrontendOnly ? "Continue by Email" : submitting ? "Sending..." : "Send"} <span aria-hidden="true">-&gt;</span>
               </button>
             </div>
           </form>
@@ -133,14 +154,14 @@ export default function ContactPage() {
           <div className="footer-brand">
             <a href="/" aria-label="CriativAI home"><Brand /></a>
             <p>AI-powered products, automations, and grounded systems designed for real business work.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
               <p className="micro-label">Navigation</p>
               <a href="/#services">Services</a>
               <a href="/#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
+              <a href="/for-recrutiers">For Recrutiers</a>
               <a href="/style">Style</a>
             </div>
             <div>
@@ -149,7 +170,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Direct contact, with context preserved.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>Direct contact, with context preserved.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top</a></div>
       </footer>
 
       <FormSuccessModal

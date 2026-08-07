@@ -96,6 +96,22 @@ def test_build_instructions_appends_summary_without_changing_messages(tmp_path: 
     assert "Visitor asked about automation." in instructions
 
 
+def test_build_instructions_appends_hidden_cta_context(tmp_path: Path) -> None:
+    prompt_path = tmp_path / "prompt.md"
+    prompt_path.write_text("Default SDR prompt", encoding="utf-8")
+
+    instructions = build_instructions(
+        prompt_path,
+        "Visitor asked about automation.",
+        cta_context="Pergunte sobre prazo e escopo antes de sugerir uma proposta.",
+    )
+
+    assert "Default SDR prompt" in instructions
+    assert "Visitor asked about automation." in instructions
+    assert "[SEMPRE_ACESSE_ESSE_CONTEXTO_DE_CHAT_PERMANENTE_ANTES_DE_RESPONDER_AO_USUARIO]" in instructions
+    assert "Pergunte sobre prazo e escopo" in instructions
+
+
 def test_stream_openai_text_uses_responses_stream_with_store_false(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     prompt_path = tmp_path / "prompt.md"
     prompt_path.write_text("Prompt without secrets", encoding="utf-8")

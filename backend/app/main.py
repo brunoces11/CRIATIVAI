@@ -11,14 +11,18 @@ from starlette.status import HTTP_404_NOT_FOUND
 
 from backend.app.admin import router as admin_router
 from backend.app.chat import stream_chat
+from backend.app.admin_records import sync_existing_admin_records
+from backend.app.chat_multi_window import router as chat_multi_window_router
+from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
-from backend.app.db import get_session, initialize_database, ping_database
+from backend.app.cta_editor import router as cta_editor_router
+from backend.app.db import SessionLocal, get_session, initialize_database, ping_database
 from backend.app.chat_tracing import router as chat_tracing_router
 from backend.app.forms import router as forms_router
 from backend.app.google_oauth import admin_router as google_admin_router
 from backend.app.google_oauth import callback_router as google_callback_router
 from backend.app.models import Conversation
-from backend.app.schemas import SESSION_ID_PATTERN, ChatRequest, ConversationMessage, ConversationResponse, HealthResponse
+from backend.app.schemas import SESSION_ID_PATTERN, ChatRequest, ChatWelcomeRequest, ChatWelcomeResponse, ConversationMessage, ConversationResponse, HealthResponse
 
 settings = get_settings()
 
@@ -26,12 +30,16 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     initialize_database()
+    with SessionLocal() as session:
+        sync_existing_admin_records(session)
     yield
 
 
 app = FastAPI(title="CriativAI API", lifespan=lifespan)
 app.include_router(admin_router)
 app.include_router(chat_tracing_router)
+app.include_router(chat_multi_window_router)
+app.include_router(cta_editor_router)
 app.include_router(google_admin_router)
 app.include_router(google_callback_router)
 app.include_router(forms_router)
@@ -40,8 +48,8 @@ if settings.cors_origins:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
-        allow_methods=["GET", "POST"],
-        allow_headers=["content-type"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["content-type", "x-cta-editor-token"],
         allow_credentials=False,
     )
 
@@ -63,6 +71,11 @@ def chat(request: ChatRequest, session: Session = Depends(get_session)) -> Strea
         media_type="application/x-ndjson",
         headers={"Cache-Control": "no-store"},
     )
+
+
+@app.post("/api/chat/welcome", response_model=ChatWelcomeResponse)
+def chat_welcome(request: ChatWelcomeRequest) -> ChatWelcomeResponse:
+    return create_welcome_conversation(request.welcome_key)
 
 
 @app.get("/api/conversations/current", response_model=ConversationResponse)

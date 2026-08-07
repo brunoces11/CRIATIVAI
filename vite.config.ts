@@ -6,6 +6,7 @@ import react from "@vitejs/plugin-react";
 import { findVenvPython } from "./scripts/runtime.mjs";
 
 const root = resolve(fileURLToPath(new URL(".", import.meta.url)));
+const isSitesFrontendOnlyBuild = process.env.VITE_SITES_FRONTEND_ONLY === "1";
 let backendProcess: ReturnType<typeof spawn> | null = null;
 let backendStartup: Promise<void> | null = null;
 
@@ -30,9 +31,9 @@ async function ensureBackendStarted() {
       ["-m", "uvicorn", "backend.app.main:app", "--reload", "--host", "127.0.0.1", "--port", "8000"],
       {
         cwd: root,
-        stdio: "inherit",
-        shell: process.platform === "win32",
         env: process.env,
+        shell: process.platform === "win32",
+        stdio: "inherit",
       },
     );
 
@@ -60,22 +61,38 @@ process.once("exit", () => {
   }
 });
 
-export default defineConfig({
-  plugins: [
-    react(),
-    {
-      name: "criativai-auto-backend",
-      configureServer() {
-        void ensureBackendStarted();
-      },
-    },
-  ],
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:8000",
-        changeOrigin: true,
-      },
-    },
-  },
+export default defineConfig(async () => {
+  const cloudflarePlugin = isSitesFrontendOnlyBuild
+    ? (await import("@cloudflare/vite-plugin")).cloudflare()
+    : null;
+
+  return {
+    plugins: [
+      react(),
+      cloudflarePlugin,
+      !isSitesFrontendOnlyBuild
+        ? {
+            name: "criativai-auto-backend",
+            configureServer() {
+            void ensureBackendStarted();
+          },
+        }
+        : null,
+    ],
+    build: isSitesFrontendOnlyBuild
+      ? {
+          outDir: "dist",
+        }
+      : undefined,
+    server: !isSitesFrontendOnlyBuild
+      ? {
+          proxy: {
+            "/api": {
+              target: "http://127.0.0.1:8000",
+              changeOrigin: true,
+            },
+          },
+        }
+      : undefined,
+  };
 });

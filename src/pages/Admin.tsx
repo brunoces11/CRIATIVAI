@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { AdminRecordModal, type AdminRecordDetail } from "../components/AdminRecordModal";
 import { MarkdownText } from "../components/MarkdownText";
 import { SiteHeader } from "../components/SiteHeader";
+import { clearCtaEditorToken, fetchCtaEditorStatus, storeCtaEditorToken, type CtaEditorStatus } from "../lib/ctaEditor";
 import "./Admin.css";
 
 type AdminConversationSummary = {
@@ -35,9 +37,13 @@ type ChatTracingStatus = {
   log_size_bytes: number;
 };
 
-type AdminPromptResponse = {
-  content: string;
+type ChatMultiWindowStatus = {
+  enabled: boolean;
+  state_path: string;
 };
+type AdminPromptResponse = { content: string };
+
+type AdminRecordSummary = Omit<AdminRecordDetail, "payload">;
 
 function Brand() {
   return (
@@ -48,9 +54,17 @@ function Brand() {
 }
 
 export default function AdminPage() {
+  const [activeView, setActiveView] = useState<"chat" | "leads">("chat");
   const [conversations, setConversations] = useState<AdminConversationSummary[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [detail, setDetail] = useState<AdminConversationDetail | null>(null);
+  const [records, setRecords] = useState<AdminRecordSummary[]>([]);
+  const [recordsLoading, setRecordsLoading] = useState(true);
+  const [recordsError, setRecordsError] = useState("");
+  const [selectedRecordId, setSelectedRecordId] = useState<number | null>(null);
+  const [recordDetail, setRecordDetail] = useState<AdminRecordDetail | null>(null);
+  const [recordDetailLoading, setRecordDetailLoading] = useState(false);
+  const [recordDetailError, setRecordDetailError] = useState("");
   const [loadingList, setLoadingList] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [error, setError] = useState("");
@@ -61,6 +75,14 @@ export default function AdminPage() {
   const [tracingLoading, setTracingLoading] = useState(true);
   const [tracingSaving, setTracingSaving] = useState(false);
   const [tracingError, setTracingError] = useState("");
+  const [multiWindowStatus, setMultiWindowStatus] = useState<ChatMultiWindowStatus | null>(null);
+  const [multiWindowLoading, setMultiWindowLoading] = useState(true);
+  const [multiWindowSaving, setMultiWindowSaving] = useState(false);
+  const [multiWindowError, setMultiWindowError] = useState("");
+  const [ctaEditorStatus, setCtaEditorStatus] = useState<CtaEditorStatus | null>(null);
+  const [ctaEditorLoading, setCtaEditorLoading] = useState(true);
+  const [ctaEditorSaving, setCtaEditorSaving] = useState(false);
+  const [ctaEditorError, setCtaEditorError] = useState("");
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptDraft, setPromptDraft] = useState("");
   const [promptLoading, setPromptLoading] = useState(false);
@@ -73,7 +95,8 @@ export default function AdminPage() {
   const googleErrorReason = googleFeedbackParams.get("reason");
   const googleErrorDetail = googleFeedbackParams.get("detail");
   const tracingEnabled = tracingStatus?.enabled ?? true;
-
+  const multiWindowEnabled = multiWindowStatus?.enabled ?? true;
+  const ctaEditorEnabled = ctaEditorStatus?.enabled ?? false;
   useEffect(() => {
     const controller = new AbortController();
     setLoadingList(true);
@@ -92,6 +115,28 @@ export default function AdminPage() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoadingList(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setRecordsLoading(true);
+    setRecordsError("");
+
+    fetch("/api/admin/records", { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load records.");
+        return response.json() as Promise<AdminRecordSummary[]>;
+      })
+      .then(setRecords)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setRecordsError(loadError instanceof Error ? loadError.message : "Unable to load records.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRecordsLoading(false);
       });
 
     return () => controller.abort();
@@ -140,6 +185,91 @@ export default function AdminPage() {
 
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setMultiWindowLoading(true);
+    setMultiWindowError("");
+
+    fetch("/api/admin/chat-multi-window", { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load new chat button status.");
+        return response.json() as Promise<ChatMultiWindowStatus>;
+      })
+      .then(setMultiWindowStatus)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setMultiWindowError(loadError instanceof Error ? loadError.message : "Unable to load new chat button status.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setMultiWindowLoading(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setCtaEditorLoading(true);
+    setCtaEditorError("");
+
+    fetchCtaEditorStatus(controller.signal)
+      .then(async (status) => {
+        setCtaEditorStatus(status);
+        if (!status.enabled || status.token_valid) return;
+
+        const response = await fetch("/api/admin/cta-editor", {
+          method: "PUT",
+          signal: controller.signal,
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ enabled: true }),
+        });
+        if (!response.ok) throw new Error("Unable to renew CTA editor token.");
+        const renewed = (await response.json()) as CtaEditorStatus;
+        setCtaEditorStatus(renewed);
+        if (renewed.token) storeCtaEditorToken(renewed.token);
+      })
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setCtaEditorError(loadError instanceof Error ? loadError.message : "Unable to load CTA editor status.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCtaEditorLoading(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (selectedRecordId === null) {
+      setRecordDetail(null);
+      setRecordDetailError("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setRecordDetailLoading(true);
+    setRecordDetailError("");
+
+    fetch(`/api/admin/records/${selectedRecordId}`, { signal: controller.signal, headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load record detail.");
+        return response.json() as Promise<AdminRecordDetail>;
+      })
+      .then(setRecordDetail)
+      .catch((loadError: unknown) => {
+        if (controller.signal.aborted) return;
+        setRecordDetailError(loadError instanceof Error ? loadError.message : "Unable to load record detail.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRecordDetailLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [selectedRecordId]);
 
   useEffect(() => {
     if (selectedId === null) {
@@ -228,7 +358,16 @@ export default function AdminPage() {
         method: "DELETE",
         headers: { accept: "application/json" },
       });
-      if (!response.ok) throw new Error("Unable to delete the conversation.");
+      if (!response.ok) {
+        let message = "Unable to delete the conversation.";
+        try {
+          const payload = (await response.json()) as { detail?: string };
+          if (payload.detail) message = payload.detail;
+        } catch {
+          // Keep the default message when the response body is not JSON.
+        }
+        throw new Error(message);
+      }
 
       const remaining = conversations.filter((conversation) => conversation.id !== conversationId);
       setConversations(remaining);
@@ -270,6 +409,61 @@ export default function AdminPage() {
     }
   }
 
+  async function updateMultiWindow(enabled: boolean) {
+    if (multiWindowSaving) return;
+
+    setMultiWindowSaving(true);
+    setMultiWindowError("");
+
+    try {
+      const response = await fetch("/api/admin/chat-multi-window", {
+        method: "PUT",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!response.ok) throw new Error("Unable to update the new chat button status.");
+      const payload = (await response.json()) as ChatMultiWindowStatus;
+      setMultiWindowStatus(payload);
+    } catch (saveError: unknown) {
+      setMultiWindowError(saveError instanceof Error ? saveError.message : "Unable to update the new chat button status.");
+    } finally {
+      setMultiWindowSaving(false);
+    }
+  }
+
+  async function updateCtaEditor(enabled: boolean) {
+    if (ctaEditorSaving) return;
+
+    setCtaEditorSaving(true);
+    setCtaEditorError("");
+
+    try {
+      const response = await fetch("/api/admin/cta-editor", {
+        method: "PUT",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!response.ok) throw new Error("Unable to update CTA editor mode.");
+      const payload = (await response.json()) as CtaEditorStatus;
+      setCtaEditorStatus(payload);
+      if (enabled && payload.token) {
+        storeCtaEditorToken(payload.token);
+      } else {
+        clearCtaEditorToken();
+      }
+    } catch (saveError: unknown) {
+      setCtaEditorError(saveError instanceof Error ? saveError.message : "Unable to update CTA editor mode.");
+    } finally {
+      setCtaEditorSaving(false);
+    }
+  }
+
   return (
     <main className="admin-page">
       <SiteHeader brand={<Brand />} page="adm" />
@@ -290,6 +484,8 @@ export default function AdminPage() {
         {error ? <p className="admin-error">{error}</p> : null}
         {googleError ? <p className="admin-error">{googleError}</p> : null}
         {tracingError ? <p className="admin-error">{tracingError}</p> : null}
+        {multiWindowError ? <p className="admin-error">{multiWindowError}</p> : null}
+        {ctaEditorError ? <p className="admin-error">{ctaEditorError}</p> : null}
         {promptError ? <p className="admin-error">{promptError}</p> : null}
 
         {promptOpen ? (
@@ -348,179 +544,359 @@ export default function AdminPage() {
           </section>
         ) : null}
 
-        <section className="admin-google" aria-label="Google Calendar admin">
-          <div className="admin-google__copy">
-            <p className="admin-kicker">Google Calendar</p>
-            <h2>Connection status</h2>
-            <p>{googleLoading ? "Checking the current calendar connection..." : describeGoogleStatus(googleStatus)}</p>
-            <div className="admin-google__meta">
-              <span>Calendar</span>
-              <strong>{googleStatus?.calendar_id ?? "Not configured"}</strong>
-            </div>
-            {googleStatus?.scopes?.length ? (
+        <div className="admin-controls">
+          <section className="admin-google" aria-label="Google Calendar admin">
+            <div className="admin-google__copy">
+              <p className="admin-kicker">Google Calendar</p>
+              <h2>Connection status</h2>
+              <p>{googleLoading ? "Checking the current calendar connection..." : describeGoogleStatus(googleStatus)}</p>
               <div className="admin-google__meta">
-                <span>Scopes</span>
-                <strong>{googleStatus.scopes.length} permission(s) configured</strong>
+                <span>Calendar</span>
+                <strong>{googleStatus?.calendar_id ?? "Not configured"}</strong>
               </div>
-            ) : null}
-          </div>
-
-          <div className="admin-google__actions">
-            <span className={`admin-badge admin-badge--${normalizeGoogleStatus(googleStatus?.status)}`}>
-              {labelGoogleStatus(googleStatus?.status, googleLoading)}
-            </span>
-
-            <a className="button button--ghost admin-google__button" href="/api/admin/google/connect">
-              {googleStatus?.status === "connected" ? "Reconnect Google" : "Connect Google"}
-            </a>
-
-            {googleFeedback === "connected" ? <p className="admin-notice admin-notice--success">Google Calendar connected successfully.</p> : null}
-            {googleFeedback === "error" ? (
-              <p className="admin-notice admin-notice--error">
-                Google Calendar connection could not be completed.
-                {googleErrorReason ? <span> Reason: {googleErrorReason}.</span> : null}
-                {googleErrorDetail ? <span> Detail: {googleErrorDetail}</span> : null}
-              </p>
-            ) : null}
-          </div>
-        </section>
-
-        <section className="admin-tracing" aria-label="Chat tracing">
-          <div className="admin-tracing__copy">
-            <p className="admin-kicker">Chat tracing</p>
-            <h2>Tool use debug log</h2>
-            <p>
-              {tracingLoading
-                ? "Checking chat tracing..."
-                : "When enabled, each chat turn appends a JSON line to the root-level tracing file so we can inspect prompt behavior and tool calls later."}
-            </p>
-            <div className="admin-tracing__meta">
-              <span>Log file</span>
-              <strong>{tracingStatus?.log_path ?? "chat-tracing-log.txt"}</strong>
+              {googleStatus?.scopes?.length ? (
+                <div className="admin-google__meta">
+                  <span>Scopes</span>
+                  <strong>{googleStatus.scopes.length} permission(s) configured</strong>
+                </div>
+              ) : null}
             </div>
-            <div className="admin-tracing__meta">
-              <span>Toggle file</span>
-              <strong>{tracingStatus?.state_path ?? "chat-tracing-enabled.txt"}</strong>
-            </div>
-            <div className="admin-tracing__meta">
-              <span>Current size</span>
-              <strong>{tracingStatus ? `${formatBytes(tracingStatus.log_size_bytes)}${tracingStatus.log_exists ? "" : " (not created yet)"}` : "0 B"}</strong>
-            </div>
-          </div>
 
-          <div className="admin-tracing__actions">
-            <button
-              className={`admin-switch${tracingEnabled ? " admin-switch--on" : ""}`}
-              type="button"
-              role="switch"
-              aria-checked={tracingEnabled}
-              disabled={tracingLoading || tracingSaving}
-              onClick={() => void updateTracing(!tracingEnabled)}
-            >
-              <span className="admin-switch__track" aria-hidden="true">
-                <span className="admin-switch__thumb" />
+            <div className="admin-google__actions">
+              <span className={`admin-badge admin-badge--${normalizeGoogleStatus(googleStatus?.status)}`}>
+                {labelGoogleStatus(googleStatus?.status, googleLoading)}
               </span>
-              <span className="admin-switch__label">{tracingEnabled ? "On" : "Off"}</span>
-            </button>
-          </div>
-        </section>
 
-        <div className="admin-grid">
-          <aside className="admin-list" aria-label="Conversation list">
-            {loadingList ? <p className="admin-muted">Loading conversations...</p> : null}
-            {!loadingList && conversations.length === 0 ? <p className="admin-muted">No conversations yet.</p> : null}
-            {conversations.map((conversation) => (
-              <div key={conversation.id} className={`admin-list-item${conversation.id === selectedId ? " admin-list-item--active" : ""}`}>
-                <button className="admin-list-item__body" type="button" onClick={() => setSelectedId(conversation.id)}>
-                  <span>{conversation.visitor_label}</span>
-                  <small>{formatDate(conversation.last_activity_at)}</small>
-                  <em>{conversation.summary ?? "No summary yet"}</em>
-                </button>
-                <button
-                  className="admin-list-item__delete"
-                  type="button"
-                  aria-label={`Delete conversation ${conversation.visitor_label}`}
-                  title="Delete conversation"
-                  disabled={deletingId === conversation.id}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    void deleteConversation(conversation.id);
-                  }}
-                >
-                  <TrashIcon />
-                </button>
+              <a className="button button--ghost admin-google__button" href="/api/admin/google/connect">
+                {googleStatus?.status === "connected" ? "Reconnect Google" : "Connect Google"}
+              </a>
+
+              {googleFeedback === "connected" ? <p className="admin-notice admin-notice--success">Google Calendar connected successfully.</p> : null}
+              {googleFeedback === "error" ? (
+                <p className="admin-notice admin-notice--error">
+                  Google Calendar connection could not be completed.
+                  {googleErrorReason ? <span> Reason: {googleErrorReason}.</span> : null}
+                  {googleErrorDetail ? <span> Detail: {googleErrorDetail}</span> : null}
+                </p>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="admin-tracing" aria-label="Chat tracing">
+            <div className="admin-tracing__copy">
+              <p className="admin-kicker">Chat tracing</p>
+              <h2>Tool use debug log</h2>
+              <p>
+                {tracingLoading
+                  ? "Checking chat tracing..."
+                  : "When enabled, each chat turn appends a JSON line to the root-level tracing file so we can inspect prompt behavior and tool calls later."}
+              </p>
+              <div className="admin-tracing__meta">
+                <span>Log file</span>
+                <strong>{tracingStatus?.log_path ?? "chat-tracing-log.txt"}</strong>
               </div>
-            ))}
-          </aside>
+              <div className="admin-tracing__meta">
+                <span>Toggle file</span>
+                <strong>{tracingStatus?.state_path ?? "chat-tracing-enabled.txt"}</strong>
+              </div>
+              <div className="admin-tracing__meta">
+                <span>Current size</span>
+                <strong>{tracingStatus ? `${formatBytes(tracingStatus.log_size_bytes)}${tracingStatus.log_exists ? "" : " (not created yet)"}` : "0 B"}</strong>
+              </div>
+            </div>
 
-          <section className="admin-detail" aria-label="Conversation detail">
-            {loadingDetail ? <p className="admin-muted">Loading detail...</p> : null}
-            {!loadingDetail && !detail ? <p className="admin-muted">Select a conversation.</p> : null}
-            {detail ? (
-              <>
-                <div className="admin-chat-head">
-                  <div className="admin-chat-identity">
-                    <img className="admin-chat-avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
-                    <div>
-                      <p className="admin-kicker">{detail.status}</p>
-                      <h2>Talk with CriativAI</h2>
+            <div className="admin-tracing__actions">
+              <button
+                className={`admin-switch${tracingEnabled ? " admin-switch--on" : ""}`}
+                type="button"
+                role="switch"
+                aria-checked={tracingEnabled}
+                disabled={tracingLoading || tracingSaving}
+                onClick={() => void updateTracing(!tracingEnabled)}
+              >
+                <span className="admin-switch__track" aria-hidden="true">
+                  <span className="admin-switch__thumb" />
+                </span>
+                <span className="admin-switch__label">{tracingEnabled ? "On" : "Off"}</span>
+              </button>
+            </div>
+          </section>
+
+          <section className="admin-tracing" aria-label="New chat button toggle">
+            <div className="admin-tracing__copy">
+              <p className="admin-kicker">Chat multi-window</p>
+              <h2>New chat button</h2>
+              <p>
+                {multiWindowLoading
+                  ? "Checking the new chat button status..."
+                  : "When enabled, the live chat header shows a round New Chat button that opens a fresh chat window with the standard icebreakers."}
+              </p>
+              <div className="admin-tracing__meta">
+                <span>Toggle file</span>
+                <strong>{multiWindowStatus?.state_path ?? "chat-multi-window-enabled.txt"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-tracing__actions">
+              <button
+                className={`admin-switch${multiWindowEnabled ? " admin-switch--on" : ""}`}
+                type="button"
+                role="switch"
+                aria-checked={multiWindowEnabled}
+                disabled={multiWindowLoading || multiWindowSaving}
+                onClick={() => void updateMultiWindow(!multiWindowEnabled)}
+              >
+                <span className="admin-switch__track" aria-hidden="true">
+                  <span className="admin-switch__thumb" />
+                </span>
+                <span className="admin-switch__label">{multiWindowEnabled ? "On" : "Off"}</span>
+              </button>
+            </div>
+          </section>
+
+          <section className="admin-tracing" aria-label="CTA editor mode toggle">
+            <div className="admin-tracing__copy">
+              <p className="admin-kicker">CTA editor</p>
+              <h2>Red edit buttons</h2>
+              <p>
+                {ctaEditorLoading
+                  ? "Checking CTA editor mode..."
+                  : "When enabled, this browser receives a temporary edit token and can edit mapped CTA welcome/context messages directly on the site."}
+              </p>
+              <div className="admin-tracing__meta">
+                <span>Toggle file</span>
+                <strong>{ctaEditorStatus?.state_path ?? "cta-editor-enabled.txt"}</strong>
+              </div>
+              <div className="admin-tracing__meta">
+                <span>This browser token</span>
+                <strong>{ctaEditorStatus?.token_valid ? "Valid" : "Not active"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-tracing__actions">
+              <button
+                className={`admin-switch${ctaEditorEnabled ? " admin-switch--on" : ""}`}
+                type="button"
+                role="switch"
+                aria-checked={ctaEditorEnabled}
+                disabled={ctaEditorLoading || ctaEditorSaving}
+                onClick={() => void updateCtaEditor(!ctaEditorEnabled)}
+              >
+                <span className="admin-switch__track" aria-hidden="true">
+                  <span className="admin-switch__thumb" />
+                </span>
+                <span className="admin-switch__label">{ctaEditorEnabled ? "On" : "Off"}</span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <div className="admin-section-switch" role="tablist" aria-label="Admin views">
+          <button
+            className={`admin-section-switch__button${activeView === "chat" ? " admin-section-switch__button--active" : ""}`}
+            type="button"
+            role="tab"
+            aria-selected={activeView === "chat"}
+            onClick={() => setActiveView("chat")}
+          >
+            Chat history
+          </button>
+          <button
+            className={`admin-section-switch__button${activeView === "leads" ? " admin-section-switch__button--active" : ""}`}
+            type="button"
+            role="tab"
+            aria-selected={activeView === "leads"}
+            onClick={() => setActiveView("leads")}
+          >
+            Leads
+          </button>
+        </div>
+
+        {activeView !== "chat" ? (
+          <RecordsPane
+            title="Leads"
+            records={records}
+            loading={recordsLoading}
+            error={recordsError}
+            emptyMessage="No lead records yet."
+            onOpenRecord={(recordId) => setSelectedRecordId(recordId)}
+          />
+        ) : null}
+
+        {activeView === "chat" ? (
+          <div className="admin-grid">
+            <aside className="admin-list" aria-label="Conversation list">
+              {loadingList ? <p className="admin-muted">Loading conversations...</p> : null}
+              {!loadingList && conversations.length === 0 ? <p className="admin-muted">No conversations yet.</p> : null}
+              {conversations.map((conversation) => (
+                <div key={conversation.id} className={`admin-list-item${conversation.id === selectedId ? " admin-list-item--active" : ""}`}>
+                  <button className="admin-list-item__body" type="button" onClick={() => setSelectedId(conversation.id)}>
+                    <span>{conversation.visitor_label}</span>
+                    <small>{formatDate(conversation.last_activity_at)}</small>
+                    <em>{conversation.summary ?? "No summary yet"}</em>
+                  </button>
+                  <button
+                    className="admin-list-item__delete"
+                    type="button"
+                    aria-label={`Delete conversation ${conversation.visitor_label}`}
+                    title="Delete conversation"
+                    disabled={deletingId === conversation.id}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      void deleteConversation(conversation.id);
+                    }}
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
+              ))}
+            </aside>
+
+            <section className="admin-detail" aria-label="Conversation detail">
+              {loadingDetail ? <p className="admin-muted">Loading detail...</p> : null}
+              {!loadingDetail && !detail ? <p className="admin-muted">Select a conversation.</p> : null}
+              {detail ? (
+                <>
+                  <div className="admin-chat-head">
+                    <div className="admin-chat-identity">
+                      <img className="admin-chat-avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
+                      <div>
+                        <p className="admin-kicker">{detail.status}</p>
+                        <h2>Talk with CriativAI</h2>
+                      </div>
+                    </div>
+
+                    <div className="admin-chat-select-wrap">
+                      <label className="sr-only" htmlFor="admin-conversation-select">
+                        Select conversation
+                      </label>
+                      <select
+                        id="admin-conversation-select"
+                        value={selectedId ?? ""}
+                        onChange={(event) => setSelectedId(Number(event.target.value))}
+                      >
+                        {conversations.map((conversation) => (
+                          <option key={conversation.id} value={conversation.id}>
+                            {conversation.visitor_label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
-                  <div className="admin-chat-select-wrap">
-                    <label className="sr-only" htmlFor="admin-conversation-select">
-                      Select conversation
-                    </label>
-                    <select
-                      id="admin-conversation-select"
-                      value={selectedId ?? ""}
-                      onChange={(event) => setSelectedId(Number(event.target.value))}
-                    >
-                      {conversations.map((conversation) => (
-                        <option key={conversation.id} value={conversation.id}>
-                          {conversation.visitor_label}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="admin-detail-head">
+                    <div>
+                      <p className="admin-kicker">Selected conversation</p>
+                      <h2>{detail.visitor_label}</h2>
+                    </div>
+                    <time>{formatDate(detail.last_activity_at)}</time>
                   </div>
-                </div>
 
-                <div className="admin-detail-head">
-                  <div>
-                    <p className="admin-kicker">Selected conversation</p>
-                    <h2>{detail.visitor_label}</h2>
+                  <div className="admin-conversation-meta">
+                    <div>
+                      <span>Status</span>
+                      <strong>{detail.status}</strong>
+                    </div>
+                    <div>
+                      <span>Booking</span>
+                      <strong>{detail.booking_state ?? "No booking yet"}</strong>
+                    </div>
                   </div>
-                  <time>{formatDate(detail.last_activity_at)}</time>
-                </div>
 
-                <div className="admin-conversation-meta">
-                  <div>
-                    <span>Status</span>
-                    <strong>{detail.status}</strong>
+                  {detail.summary ? <p className="admin-summary">{detail.summary}</p> : null}
+
+                  <div className="admin-messages">
+                    {detail.messages.map((message, index) => (
+                      <article key={`${message.created_at ?? index}-${index}`} className={`admin-message admin-message--${message.role}`}>
+                        <span>{message.role}</span>
+                        <MarkdownText text={message.content} />
+                        <small>{message.status}</small>
+                      </article>
+                    ))}
                   </div>
-                  <div>
-                    <span>Booking</span>
-                    <strong>{detail.booking_state ?? "No booking yet"}</strong>
-                  </div>
-                </div>
+                </>
+              ) : null}
+            </section>
+          </div>
+        ) : null}
 
-                {detail.summary ? <p className="admin-summary">{detail.summary}</p> : null}
-
-                <div className="admin-messages">
-                  {detail.messages.map((message, index) => (
-                    <article key={`${message.created_at ?? index}-${index}`} className={`admin-message admin-message--${message.role}`}>
-                      <span>{message.role}</span>
-                      <MarkdownText text={message.content} />
-                      <small>{message.status}</small>
-                    </article>
-                  ))}
-                </div>
-              </>
-            ) : null}
-          </section>
-        </div>
+        <AdminRecordModal
+          open={selectedRecordId !== null}
+          loading={recordDetailLoading}
+          error={recordDetailError}
+          record={recordDetail}
+          onClose={() => {
+            setSelectedRecordId(null);
+            setRecordDetail(null);
+            setRecordDetailError("");
+          }}
+        />
       </section>
     </main>
+  );
+}
+
+function RecordsPane({
+  title,
+  records,
+  loading,
+  error,
+  emptyMessage,
+  onOpenRecord,
+}: {
+  title: string;
+  records: AdminRecordSummary[];
+  loading: boolean;
+  error: string;
+  emptyMessage: string;
+  onOpenRecord: (recordId: number) => void;
+}) {
+  return (
+    <section className="admin-records" aria-label={title}>
+      <div className="admin-records__head">
+        <div>
+          <p className="admin-kicker">{title}</p>
+          <h2>{title}</h2>
+        </div>
+        <p>{loading ? "Loading records..." : `${records.length} record${records.length === 1 ? "" : "s"}`}</p>
+      </div>
+
+      {error ? <p className="admin-error">{error}</p> : null}
+      {!loading && !error && records.length === 0 ? <p className="admin-muted">{emptyMessage}</p> : null}
+
+      {!error && records.length > 0 ? (
+        <div className="admin-records__table-wrap">
+          <table className="admin-records__table">
+            <thead>
+              <tr>
+                <th scope="col">Created</th>
+                <th scope="col">User from</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Company</th>
+                <th scope="col">Timezone</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr key={record.id}>
+                  <td>{formatDate(record.created_at)}</td>
+                  <td>
+                    <button className="admin-records__source-button" type="button" onClick={() => onOpenRecord(record.id)}>
+                      {record.source_label}
+                    </button>
+                  </td>
+                  <td>{record.name ?? "Not informed"}</td>
+                  <td>{record.email ?? "Not informed"}</td>
+                  <td>{record.company ?? "Not informed"}</td>
+                  <td>{record.timezone ?? "Not informed"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </section>
   );
 }
 

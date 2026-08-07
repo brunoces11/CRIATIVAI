@@ -10,7 +10,7 @@ from sqlalchemy.pool import StaticPool
 from backend.app import forms as forms_module
 from backend.app.config import Settings
 from backend.app.main import app
-from backend.app.models import Base
+from backend.app.models import Base, AdminRecord
 
 
 def make_session() -> Session:
@@ -67,6 +67,7 @@ def test_contact_submission_returns_pending_config_without_smtp(tmp_path) -> Non
         response = client.post("/api/forms/contact", json=contact_payload())
         assert response.status_code == 201
         assert response.json()["notification_email_status"] == "pending_config"
+        assert session.query(AdminRecord).count() == 1
     finally:
         app.dependency_overrides.clear()
 
@@ -168,6 +169,7 @@ def test_talent_preview_submission_accepts_optional_fields_as_blank(tmp_path) ->
         )
         assert response.status_code == 201
         assert response.json()["notification_email_status"] == "pending_config"
+        assert session.query(AdminRecord).count() == 1
     finally:
         app.dependency_overrides.clear()
 

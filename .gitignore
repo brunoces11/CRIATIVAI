@@ -30,6 +30,7 @@ yarn-error.log*
 .codex-dev-*
 chat-tracing-log.txt
 chat-tracing-enabled.txt
+cta-editor-enabled.txt
 
 # env files (can opt-in for committing if needed)
 .env*

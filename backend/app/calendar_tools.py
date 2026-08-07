@@ -13,6 +13,7 @@ from backend.app.calendar_availability import calendar_check_availability
 from backend.app.calendar_booking import calendar_cancel_event, calendar_create_event, calendar_lookup_bookings, calendar_update_event
 from backend.app.config import Settings
 from backend.app.models import Conversation
+from backend.app.project_briefings import build_briefing_idempotency_key, chat_capture_contact, project_briefing_send_email
 
 
 class CalendarCheckAvailabilityArgs(BaseModel):
@@ -61,6 +62,23 @@ class CalendarCancelEventArgs(BaseModel):
     confirmed: bool
 
 
+class ChatCaptureContactArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=200)
+    email: str = Field(min_length=3, max_length=320, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    company: str | None = Field(default=None, max_length=200)
+    confirmed: bool
+
+
+class ProjectBriefingSendEmailArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    briefing_title: str = Field(min_length=1, max_length=220)
+    briefing_markdown: str = Field(min_length=1, max_length=40000)
+    confirmed: bool
+
+
 def function_tool(*, name: str, description: str, model: type[BaseModel]) -> dict[str, Any]:
     schema = model.model_json_schema()
     schema["additionalProperties"] = False
@@ -80,6 +98,8 @@ TOOL_ARGUMENT_MODELS: dict[str, type[BaseModel]] = {
     "calendar_lookup_bookings": CalendarLookupBookingsArgs,
     "calendar_update_event": CalendarUpdateEventArgs,
     "calendar_cancel_event": CalendarCancelEventArgs,
+    "chat_capture_contact": ChatCaptureContactArgs,
+    "project_briefing_send_email": ProjectBriefingSendEmailArgs,
 }
 
 
@@ -109,6 +129,16 @@ CALENDAR_TOOLS: list[dict[str, Any]] = [
         description="Cancel a confirmed CriativAI booking using the participant email first, or booking_id if already known. If several confirmed bookings share the same email, the tool returns candidates for clarification.",
         model=CalendarCancelEventArgs,
     ),
+    function_tool(
+        name="chat_capture_contact",
+        description="Save the current visitor's confirmed contact details on the active chat conversation. Use only after the visitor explicitly confirms the name and email to store. Company may be null.",
+        model=ChatCaptureContactArgs,
+    ),
+    function_tool(
+        name="project_briefing_send_email",
+        description="Create a confirmed project briefing for the active chat conversation and email it to Bruno and the visitor. briefing_title must be a short LLM-created phrase describing the briefing. Use only after the visitor explicitly confirms the contact details and final briefing content.",
+        model=ProjectBriefingSendEmailArgs,
+    ),
 ]
 
 
@@ -119,6 +149,7 @@ def execute_calendar_tool(
     session: Session,
     conversation: Conversation,
     settings: Settings,
+    turn_id: str | None = None,
 ) -> dict[str, Any]:
     model = TOOL_ARGUMENT_MODELS.get(name)
     if model is None:
@@ -182,6 +213,32 @@ def execute_calendar_tool(
                 settings=settings,
             )
         ),
+        "chat_capture_contact": lambda parsed: serialize_contact_capture(
+            chat_capture_contact(
+                session,
+                conversation_id=conversation.id,
+                name=parsed.name,  # type: ignore[attr-defined]
+                email=parsed.email,  # type: ignore[attr-defined]
+                company=parsed.company,  # type: ignore[attr-defined]
+                confirmed=parsed.confirmed,  # type: ignore[attr-defined]
+            )
+        ),
+        "project_briefing_send_email": lambda parsed: serialize_project_briefing(
+            project_briefing_send_email(
+                session,
+                conversation_id=conversation.id,
+                briefing_title=parsed.briefing_title,  # type: ignore[attr-defined]
+                briefing_markdown=parsed.briefing_markdown,  # type: ignore[attr-defined]
+                idempotency_key=build_briefing_idempotency_key(
+                    conversation_id=conversation.id,
+                    turn_id=turn_id or "unknown-turn",
+                    briefing_title=parsed.briefing_title,  # type: ignore[attr-defined]
+                    briefing_markdown=parsed.briefing_markdown,  # type: ignore[attr-defined]
+                ),
+                confirmed=parsed.confirmed,  # type: ignore[attr-defined]
+                settings=settings,
+            )
+        ),
     }
     return handlers[name](args)
 
@@ -210,4 +267,26 @@ def serialize_booking(booking) -> dict[str, Any]:
         "participant_email": getattr(booking, "participant_email", None),
         "conversation_summary": getattr(booking, "conversation_summary", None),
         "meet_link": booking.meet_link,
+    }
+
+
+def serialize_contact_capture(contact) -> dict[str, Any]:
+    return {
+        "conversation_id": contact.conversation_id,
+        "visitor_name": contact.visitor_name,
+        "visitor_email": contact.visitor_email,
+        "visitor_company": contact.visitor_company,
+    }
+
+
+def serialize_project_briefing(briefing) -> dict[str, Any]:
+    return {
+        "briefing_id": briefing.briefing_id,
+        "conversation_id": briefing.conversation_id,
+        "briefing_title": briefing.briefing_title,
+        "briefing_status": briefing.briefing_status,
+        "owner_email_status": briefing.owner_email_status,
+        "client_email_status": briefing.client_email_status,
+        "email_error": briefing.email_error,
+        "briefing_sent_at": briefing.briefing_sent_at.isoformat() if briefing.briefing_sent_at else None,
     }

@@ -3,18 +3,29 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 const navigation = [
+  { label: "Hire me", href: "/hire-me", adminOnly: true },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "#projects", adminOnly: true },
-  { label: "About Me", href: "/about-me" },
-  { label: "Human Resources", href: "/human-resources", adminOnly: true },
-  { label: "Vídeo", href: "/", adminOnly: true },
+  { label: "For Recrutiers", href: "/for-recrutiers" },
+  { label: "About", href: "/about-me" },
+  { label: "Video", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style", adminOnly: true },
 ];
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "adm" }) {
+const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm", string>> = {
+  style: "/style",
+  "human-resources": "/for-recrutiers",
+  contact: "/contact",
+  "about-me": "/about-me",
+  services: "/services",
+  "hire-me": "/hire-me",
+};
+
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm" }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const activeHref = pageToHref[page];
 
   useEffect(() => {
     let frameId = 0;
@@ -75,7 +86,8 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
           <nav className="primary-nav" aria-label="Primary navigation">
             {navigation.filter((item) => !item.adminOnly || page === "adm").map((item) => {
               const href = page !== "home" && item.href.startsWith("#") ? `/${item.href}` : item.href;
-              return <a key={item.href} href={href} onClick={() => setMenuOpen(false)}>{item.label}</a>;
+              const isActive = activeHref === href;
+              return <a key={item.href} href={href} aria-current={isActive ? "page" : undefined} onClick={() => setMenuOpen(false)}>{item.label}</a>;
             })}
           </nav>
           <div className="language-selector" aria-label="Language selector">
@@ -83,9 +95,9 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
               <img className="language-option__icon" src="/icons/flag-uk.svg" alt="" aria-hidden="true" width="18" height="18" />
               <span className="sr-only">English</span>
             </button>
-            <button type="button" className="language-option" disabled title="Portuguese — coming soon">
+            <button type="button" className="language-option" disabled title="Portuguese - coming soon">
               <img className="language-option__icon" src="/icons/flag-brazil.svg" alt="" aria-hidden="true" width="18" height="18" />
-              <span className="sr-only">Portuguese — coming soon</span>
+              <span className="sr-only">Portuguese - coming soon</span>
             </button>
           </div>
         </div>

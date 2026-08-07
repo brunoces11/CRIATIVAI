@@ -18,6 +18,8 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
     session_id: str | None = Field(default=None, min_length=16, max_length=64, pattern=SESSION_ID_PATTERN)
     turn_id: str | None = Field(default=None, min_length=16, max_length=96, pattern=TURN_ID_PATTERN)
+    welcome_key: str | None = Field(default=None, min_length=8, max_length=260, pattern=r"^[a-z0-9-]+(?:/[a-z0-9-]+)+$")
+    welcome_message: str | None = Field(default=None, min_length=1, max_length=12000)
     client_timezone: str | None = Field(default=None, min_length=1, max_length=80)
     client_locale: str | None = Field(default=None, min_length=2, max_length=40)
 
@@ -37,6 +39,21 @@ class ChatRequest(BaseModel):
     @classmethod
     def normalize_client_locale(cls, value: str | None) -> str | None:
         return value.strip() if value else None
+
+    @model_validator(mode="after")
+    def validate_welcome_context(self) -> "ChatRequest":
+        if self.welcome_message and not self.welcome_key:
+            raise ValueError("welcome_message requires welcome_key")
+        return self
+
+
+class ChatWelcomeRequest(BaseModel):
+    welcome_key: str = Field(min_length=8, max_length=260, pattern=r"^[a-z0-9-]+(?:/[a-z0-9-]+)+$")
+
+
+class ChatWelcomeResponse(BaseModel):
+    session_id: str | None = None
+    message: str | None
 
 
 class ConversationMessage(BaseModel):
@@ -67,6 +84,22 @@ class AdminConversationMessage(BaseModel):
 
 class AdminConversationDetail(AdminConversationSummary):
     messages: list[AdminConversationMessage]
+
+
+class AdminRecordSummary(BaseModel):
+    id: int
+    user_from: str
+    source_label: str
+    source_record_id: int
+    name: str | None
+    email: str | None
+    company: str | None
+    timezone: str | None
+    created_at: datetime | None
+
+
+class AdminRecordDetail(AdminRecordSummary):
+    payload: dict[str, object]
 
 
 class GoogleOAuthStatus(BaseModel):
