@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import "./MarkdownText.css";
 
@@ -6,7 +7,7 @@ export function MarkdownText({ text }: { text: string }) {
   return (
     <div className="markdown-text">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         skipHtml
         components={{
           a: ({ href, children, node: _node, ...props }) => (

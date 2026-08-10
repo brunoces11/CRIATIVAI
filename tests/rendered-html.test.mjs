@@ -140,6 +140,8 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatWidget, /welcomeRequesting/);
   assert.match(markdownText, /ReactMarkdown/);
   assert.match(markdownText, /remarkGfm/);
+  assert.match(markdownText, /remarkBreaks/);
+  assert.match(markdownText, /remarkPlugins=\{\[remarkGfm, remarkBreaks\]\}/);
   assert.match(markdownText, /skipHtml/);
   assert.match(markdownText, /target=\{isExternalHref\(href\) \? "_blank" : undefined\}/);
   assert.match(chatWidget, /src="\/icons\/chat-launcher\.svg"/);
