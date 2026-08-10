@@ -333,14 +333,19 @@ export default function AboutMePage() {
               into useful, understandable, and carefully crafted digital products.
             </p>
             <div className="hero-actions about-me-actions">
-              <EditableCta welcomeKey="about-me/hero/bruno-profile/ask-my-ai-assistant-and-book-a-call">
-                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-ai-assistant-and-book-a-call" })}>
-                  Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
-                </button>
-              </EditableCta>
               <a className="button button--ghost" href="/contact">
                 Drop Me a Message <span aria-hidden="true">-&gt;</span>
               </a>
+              <EditableCta welcomeKey="about-me/hero/bruno-profile/ask-my-assistant">
+                <button className="button button--light" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-assistant" })}>
+                  Ask my Assistant <span aria-hidden="true">-&gt;</span>
+                </button>
+              </EditableCta>
+              <EditableCta welcomeKey="about-me/hero/bruno-profile/book-a-call">
+                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/book-a-call" })}>
+                  Book a Call <span aria-hidden="true">-&gt;</span>
+                </button>
+              </EditableCta>
             </div>
           </div>
 
@@ -603,14 +608,19 @@ export default function AboutMePage() {
             availability, and the best next step for your project.
           </p>
           <div className="hero-actions about-me-cta-actions">
-            <EditableCta welcomeKey="about-me/final-cta/build-with-confidence/ask-my-ai-assistant-and-book-a-call">
-              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/ask-my-ai-assistant-and-book-a-call" })}>
-                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
-              </button>
-            </EditableCta>
             <a className="button button--ghost" href="/contact">
               Contact Bruno <span aria-hidden="true">-&gt;</span>
             </a>
+            <EditableCta welcomeKey="about-me/final-cta/build-with-confidence/ask-my-assistant">
+              <button className="button button--light" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/ask-my-assistant" })}>
+                Ask my Assistant <span aria-hidden="true">-&gt;</span>
+              </button>
+            </EditableCta>
+            <EditableCta welcomeKey="about-me/final-cta/build-with-confidence/book-a-call">
+              <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/book-a-call" })}>
+                Book a Call <span aria-hidden="true">-&gt;</span>
+              </button>
+            </EditableCta>
           </div>
         </div>
       </section>
