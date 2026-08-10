@@ -496,9 +496,8 @@ export function ChatWidget() {
           <div className="chat-panel__resize-handle chat-panel__resize-handle--top-left" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "top-left")} />
           <header className="chat-panel__header">
             <div className="chat-panel__identity">
-              <img className="chat-panel__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
               <div className="chat-panel__identity-copy">
-                <p className="chat-panel__eyebrow">BRUNO CESAR AI ASSISTANT</p>
+                <p className="chat-panel__eyebrow">BRUNO CESAR ASSISTANT</p>
                 <h2>Ask your questions and book a call</h2>
               </div>
             </div>

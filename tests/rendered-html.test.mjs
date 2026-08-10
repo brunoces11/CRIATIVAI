@@ -185,8 +185,7 @@ test("ships the chat widget wired to the backend stream", async () => {
   assert.match(chatStyles, /\.chat-widget--open \.chat-panel/);
   assert.match(chatStyles, /transform: scaleY\(0\.72\) translateY\(18px\)/);
   assert.match(chatStyles, /\.chat-panel__header[\s\S]*background: var\(--accent\)/);
-  assert.match(chatWidget, /className="chat-panel__avatar"/);
-  assert.match(chatWidget, /src="\/bruno-portrait\.png"/);
+  assert.match(chatWidget, /className="chat-panel__eyebrow">BRUNO CESAR ASSISTANT<\/p>/);
   assert.match(chatStyles, /\.chat-panel__avatar[\s\S]*transform: scaleX\(-1\)/);
   assert.match(chatStyles, /\.chat-panel__messages[\s\S]*background: #fff/);
   assert.match(chatStyles, /\.chat-panel__form[\s\S]*background: #fff/);
