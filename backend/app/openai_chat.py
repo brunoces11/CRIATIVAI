@@ -185,7 +185,10 @@ def stream_openai_text_with_calendar_tools(
                 tool_calls=[{"name": call["name"], "arguments": call["arguments"]} for call in tool_calls],
             )
 
-        if text:
+        # A response that includes tool calls is an intermediate model turn.
+        # Keep its prose out of the stream because the follow-up turn may
+        # repeat that preamble after receiving the tool result.
+        if text and not tool_calls:
             yield text
 
         if not tool_calls:
