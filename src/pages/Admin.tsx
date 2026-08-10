@@ -495,17 +495,32 @@ export default function AdminPage() {
                 <p className="admin-kicker">Chat agent prompt</p>
                 <h2>Configure the live prompt</h2>
               </div>
-              <button
-                className="admin-prompt__close"
-                type="button"
-                onClick={() => {
-                  setPromptOpen(false);
-                  setPromptError("");
-                  setPromptStatus("");
-                }}
-              >
-                Close
-              </button>
+              <div className="admin-prompt__head-actions">
+                <div className="admin-prompt__actions">
+                  <button
+                    className="button button--ghost"
+                    type="button"
+                    disabled={promptLoading || promptSaving}
+                    onClick={openPromptEditor}
+                  >
+                    Reload prompt
+                  </button>
+                  <button className="button button--light" type="button" disabled={!promptDraft.trim() || promptLoading || promptSaving} onClick={savePrompt}>
+                    {promptSaving ? "Saving..." : "Save prompt"}
+                  </button>
+                </div>
+                <button
+                  className="admin-prompt__close"
+                  type="button"
+                  onClick={() => {
+                    setPromptOpen(false);
+                    setPromptError("");
+                    setPromptStatus("");
+                  }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
 
             <p className="admin-prompt__intro">
@@ -527,20 +542,6 @@ export default function AdminPage() {
                 if (promptStatus) setPromptStatus("");
               }}
             />
-
-            <div className="admin-prompt__actions">
-              <button
-                className="button button--ghost"
-                type="button"
-                disabled={promptLoading || promptSaving}
-                onClick={openPromptEditor}
-              >
-                Reload prompt
-              </button>
-              <button className="button button--light" type="button" disabled={!promptDraft.trim() || promptLoading || promptSaving} onClick={savePrompt}>
-                {promptSaving ? "Saving..." : "Save prompt"}
-              </button>
-            </div>
           </section>
         ) : null}
 

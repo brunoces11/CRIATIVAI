@@ -138,6 +138,14 @@
   gap: 18px;
 }
 
+.admin-prompt__head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .admin-prompt__head h2 {
   margin: 0;
   color: var(--white);
@@ -983,6 +991,19 @@
   }
 
   .admin-prompt__actions > * {
+    width: 100%;
+  }
+
+  .admin-prompt__head-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .admin-prompt__head-actions .admin-prompt__actions {
+    width: 100%;
+  }
+
+  .admin-prompt__head-actions .admin-prompt__close {
     width: 100%;
   }
 }
