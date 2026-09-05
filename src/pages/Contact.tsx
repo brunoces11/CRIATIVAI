@@ -5,6 +5,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { submitContact } from "../lib/forms";
 import { buildMailtoHref, isSitesFrontendOnly } from "../lib/sitesRuntime";
 import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 type ContactState = {
   name: string;
@@ -36,6 +37,7 @@ function Brand() {
 
 export default function ContactPage() {
   const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const [form, setForm] = useState<ContactState>(() => createInitialState());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -81,7 +83,7 @@ export default function ContactPage() {
       setForm(createInitialState());
       setSuccessOpen(true);
     } catch (submissionError) {
-      setError(submissionError instanceof Error ? submissionError.message : "Unable to send your message right now.");
+      setError(submissionError instanceof Error ? submissionError.message : t("forms.sendError"));
     } finally {
       setSubmitting(false);
     }
@@ -155,16 +157,16 @@ export default function ContactPage() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="/" aria-label={t("header.home")}><Brand /></a>
+            <a href={localizedPath("/")} aria-label={t("header.home")}><Brand /></a>
             <p>{t("contact.footerLead")}</p>
-            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
               <p className="micro-label">{t("footer.navigation")}</p>
-              <a href="/#services">{t("header.services")}</a>
-              <a href="/#projects">{t("footer.projects")}</a>
-              {isAudienceEnabled("recruiters") ? <a href="/for-recrutiers">{t("footer.recruiters")}</a> : null}
+              <a href={localizedPath("/#services")}>{t("header.services")}</a>
+              <a href={localizedPath("/#projects")}>{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
             </div>
             <div>
               <p className="micro-label">{t("contact.destination")}</p>
@@ -172,7 +174,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>{t("contact.footerBottom")}</span><a className="footer-legal-link" href="/privacy">{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")}</a></div>
+        <div className="site-container footer-bottom"><span>{t("contact.footerBottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")}</a></div>
       </footer>
 
       <FormSuccessModal

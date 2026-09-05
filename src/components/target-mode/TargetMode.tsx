@@ -5,9 +5,12 @@ import "./target-mode.css";
 
 type TargetItem = {
   targetPath: string;
+  exactTarget: string;
   technicalElement: string;
+  activeLanguage?: string;
   visibleText?: string;
   semanticDescription?: string;
+  overrideInstruction?: string;
 };
 
 type OverlayBox = {
@@ -29,6 +32,10 @@ const DATA_INSPECT_LABEL = "data-inspect-label";
 const DATA_INSPECT_ELEMENT = "data-inspect-element";
 const DATA_INSPECT_DESCRIPTION = "data-inspect-description";
 const DATA_INSPECT_ASSOCIATED_TEXT = "data-inspect-associated-text";
+const DATA_DESIGN_SYSTEM = "data-design-system";
+const DATA_WEB_CONTAINER = "data-web-container";
+const DATA_UI_CONTAINER = "data-ui-container";
+const DATA_DS = "data-ds";
 const MIN_USEFUL_RECT_SIZE = 4;
 const MAX_LABEL_WIDTH = 320;
 const INTERACTIVE_SELECTOR = [
@@ -63,6 +70,22 @@ const SVG_INTERNAL_TAGS = new Set([
 
 function normalizeText(value: string | null | undefined): string {
   return value?.replace(/\s+/g, " ").trim() ?? "";
+}
+
+function getActiveDomLanguage(): string {
+  return normalizeText(document.documentElement.lang);
+}
+
+function withLanguageContext(targetPath: string, activeLanguage: string): string {
+  if (!activeLanguage) return targetPath;
+
+  const languageSegment = `language:'${activeLanguage}'`;
+
+  if (targetPath === languageSegment || targetPath.startsWith(`${languageSegment} > `)) {
+    return targetPath;
+  }
+
+  return `${languageSegment} > ${targetPath}`;
 }
 
 function quoteClipboardValue(value: string): string {
@@ -159,12 +182,6 @@ function getReadableText(element: Element): string {
   return text;
 }
 
-function getVisibleText(element: Element): string {
-  const text = normalizeText(element.textContent);
-  if (!text) return "";
-  return text.length > 140 ? `${text.slice(0, 137)}...` : text;
-}
-
 function getElementLabel(element: Element): string {
   const inputElement = element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement ? element : null;
   const imageElement = element instanceof HTMLImageElement ? element : null;
@@ -254,6 +271,12 @@ function getTargetPathSegment(target: Element): string {
   return `final-target:'${finalTarget}'`;
 }
 
+function getFinalTarget(target: Element): string {
+  const kind = getElementKind(target);
+  const elementId = getSemanticElementId(target);
+  return kind ? `${kind}:${elementId}` : elementId;
+}
+
 function getStructuredTargetPath(target: Element): string {
   const page = getClosestAttributeFromList(target, ["data-target-mode-page", "data-dev-page"]);
   const section = getClosestAttributeFromList(target, ["data-target-mode-section", "data-dev-section"]);
@@ -291,12 +314,12 @@ function getElementName(element: Element): string {
   return usefulClass ? `${getDomTarget(element)}.${usefulClass}` : getDomTarget(element);
 }
 
-function getTargetPath(element: Element): string {
+function getTargetPath(element: Element, activeLanguage = getActiveDomLanguage()): string {
   const explicitPath = normalizeText(element.getAttribute(DATA_INSPECT_PATH) || getClosestAttribute(element, DATA_INSPECT_PATH));
-  if (explicitPath) return explicitPath;
+  if (explicitPath) return withLanguageContext(explicitPath, activeLanguage);
 
   const structuredPath = getStructuredTargetPath(element);
-  if (structuredPath) return structuredPath;
+  if (structuredPath) return withLanguageContext(structuredPath, activeLanguage);
 
   const segments: string[] = [];
   let current = element.parentElement;
@@ -310,7 +333,7 @@ function getTargetPath(element: Element): string {
     current = current.parentElement;
   }
 
-  return [...segments, getTargetPathSegment(element)].filter(Boolean).join(" > ");
+  return withLanguageContext([...segments, getTargetPathSegment(element)].filter(Boolean).join(" > "), activeLanguage);
 }
 
 function getAssociatedVisibleText(target: Element): string {
@@ -319,15 +342,6 @@ function getAssociatedVisibleText(target: Element): string {
 
   const ownText = getReadableText(target);
   if (ownText) return ownText;
-
-  const semanticScope = getSemanticScope(target);
-  let current = target.parentElement;
-
-  while (current && current !== semanticScope && current !== document.body) {
-    const text = getVisibleText(current);
-    if (text && text.length <= 140) return text;
-    current = current.parentElement;
-  }
 
   return "";
 }
@@ -341,6 +355,18 @@ function getSemanticDescription(target: Element): string {
   if (!label || label === associatedText) return "";
 
   return label;
+}
+
+function getOverrideInstruction(target: Element): string {
+  const designSystem =
+    getClosestOptionalAttribute(target, DATA_DESIGN_SYSTEM) ||
+    getClosestOptionalAttribute(target, DATA_WEB_CONTAINER) ||
+    getClosestOptionalAttribute(target, DATA_UI_CONTAINER) ||
+    getClosestOptionalAttribute(target, DATA_DS);
+
+  if (!designSystem) return "";
+
+  return `When the pointed target is clearly within a design system or web container, use OVERRIDE/OVERHIDE instructions so only the UNICA E EXCLUSIVAMENTE selected exact target is modified, and nothing else. Context: ${designSystem}`;
 }
 
 function getTechnicalElement(element: Element): string {
@@ -372,14 +398,19 @@ function getOverlayLabel(element: Element): string {
 }
 
 function createTargetItem(element: Element): TargetItem {
+  const activeLanguage = getActiveDomLanguage();
   const visibleText = getAssociatedVisibleText(element);
   const semanticDescription = getSemanticDescription(element);
+  const overrideInstruction = getOverrideInstruction(element);
 
   return {
-    targetPath: getTargetPath(element),
+    targetPath: getTargetPath(element, activeLanguage),
+    exactTarget: getFinalTarget(element),
     technicalElement: getTechnicalElement(element),
+    ...(activeLanguage ? { activeLanguage } : {}),
     ...(visibleText ? { visibleText } : {}),
     ...(semanticDescription ? { semanticDescription } : {}),
+    ...(overrideInstruction ? { overrideInstruction } : {}),
   };
 }
 
@@ -411,7 +442,7 @@ function formatClipboard(items: TargetItem[]): string {
     items.length === 1
       ? formatSingleItem(items[0], 1)
       : [
-          "The user pointed to multiple objects. Each item has its own hierarchical targetPath; the last segment of the targetPath is always the exact final target to be modified.",
+          "The user pointed to multiple objects. Each item has its own hierarchical targetPath and exact final target; edit UNICA E EXCLUSIVAMENTE the exact final target of each item.",
           ...items.map((item, index) => formatSingleItem(item, index + 1)),
         ].join("\n\n");
 
@@ -421,15 +452,24 @@ function formatClipboard(items: TargetItem[]): string {
 function formatSingleItem(item: TargetItem, index: number): string {
   const fields = [
     `The Item ${index} pointed to by the user uses exactly the hierarchical targetPath: "${quoteClipboardValue(item.targetPath)}"`,
+    `the exact final target to modify UNICA E EXCLUSIVAMENTE is "${quoteClipboardValue(item.exactTarget)}"`,
     `the actual technical element clicked is "${quoteClipboardValue(item.technicalElement)}"`,
   ];
 
   if (item.visibleText) {
-    fields.push(`the visible text associated with the target is "${quoteClipboardValue(item.visibleText)}"`);
+    fields.push(`the visible text associated with the exact target is "${quoteClipboardValue(item.visibleText)}"`);
   }
 
   if (item.semanticDescription) {
     fields.push(`the semantic description of the target is "${quoteClipboardValue(item.semanticDescription)}"`);
+  }
+
+  if (item.overrideInstruction) {
+    fields.push(`the override instruction is "${quoteClipboardValue(item.overrideInstruction)}"`);
+  }
+
+  if (item.activeLanguage) {
+    fields.push(`the selected element belongs to the CSS for the active language "${quoteClipboardValue(item.activeLanguage)}"`);
   }
 
   return `${fields.join("; ")}.`;

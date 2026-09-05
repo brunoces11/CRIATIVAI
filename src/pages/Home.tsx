@@ -3,76 +3,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
 import { serviceCatalog } from "../data/serviceCatalog";
 
-const groundingTopics = [
-  {
-    title: "Custom RAG Setups",
-    description: "Connect private knowledge to AI answers with retrieval tailored to your business rules.",
-  },
-  {
-    title: "Knowledge Graphs | GraphRAG",
-    description: "Map relationships across your data so agents understand context, entities, and dependencies.",
-  },
-  {
-    title: "Prompt Engineering Research",
-    description: "Design tested prompts and reasoning patterns for clearer, more predictable AI behavior.",
-  },
-  {
-    title: "Context Engineering",
-    description: "Control the exact information your agents receive before they answer or act.",
-  },
-  {
-    title: "Enterprise Knowledge Systems",
-    description: "Turn scattered company information into a reliable intelligence layer for people and AI.",
-  },
-  {
-    title: "Multi Agent Architecture",
-    description: "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows.",
-  },
-  {
-    title: "ETL, Data Processing",
-    description: "Clean, transform, and structure multi-source data so it becomes useful AI-ready knowledge.",
-  },
-  {
-    title: "Context Enrichment",
-    description: "Add metadata, relationships, and business meaning to improve retrieval and answer quality.",
-  },
-  {
-    title: "Smart Chunk processing",
-    description: "Split knowledge into precise chunks that preserve meaning and reduce noisy retrieval.",
-  },
-  {
-    title: "Guard rails | Observability",
-    description: "Monitor, constrain, and improve agent behavior with clearer controls and visibility.",
-  },
-] as const;
-
-const customDevelopmentTopics = [
-  "Intelligence Hubs",
-  "Custom CRM Systems",
-  "Tailored ERP Operations",
-  "High-Conversion Landing Pages",
-  "AI-Powered Internal Tools",
-  "Custom Workflow Automations",
-  "Business-Critical Integrations",
-  "Operational Dashboards",
-  "Process-Specific UX",
-  "No Vendor Lock-In",
-];
-
-const expertise = [
-  "Product Design",
-  "UI/UX Design",
-  "AI Engineering",
-  "Context Engineering",
-  "Prompt Engineering",
-  "Enterprise Automation",
-  "Knowledge Systems",
-  "Human-Centered AI",
-];
+const groundingTopicIds = Array.from({ length: 10 }, (_, index) => String(index + 1).padStart(2, "0"));
 
 function Brand() {
   return (
@@ -121,6 +57,7 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 
 export default function Home() {
   const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const [expandedGroundingTopic, setExpandedGroundingTopic] = useState<{ columnId: string; title: string } | null>(null);
 
   const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
@@ -137,19 +74,19 @@ export default function Home() {
         <div className="hero-atmosphere" aria-hidden="true" />
         <div className="site-container hero-grid">
           <div className="hero-copy">
-            <span className="sr-only">Product Design + Enterprise Knowledge Systems</span>
-            <span className="sr-only">Increase Lead Generation + Conversion Rate with AI</span>
+            <span className="sr-only">{t("home.servicesCoverage")}</span>
+            <span className="sr-only">{t("home.leadCoverage")}</span>
             <p className="eyebrow hero-eyebrow"><span /> {t("home.heroEyebrow")}</p>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">CREATIVE</span>
-              <span className="hero-line hero-line--two">AI SOLUTIONS</span>
+              <span className="hero-line hero-line--one">{t("video.creative")}</span>
+              <span className="hero-line hero-line--two">{t("video.aiSolutions")}</span>
             </h1>
             <div className="hero-intro">
               <p>
                 {t("home.heroLead")}
               </p>
               <div className="hero-actions">
-                    <a className="button button--light" href="/contact">{t("home.talk")} <span aria-hidden="true">{"\u2197"}</span></a>
+                    <a className="button button--light" href={localizedPath("/contact")}>{t("home.talk")} <span aria-hidden="true">{"\u2197"}</span></a>
               </div>
             </div>
           </div>
@@ -160,14 +97,14 @@ export default function Home() {
             <div className="hero-portrait-frame">
               <img
                 src="/bruno-portrait.png"
-                alt="Portrait of Bruno wearing round orange-tinted glasses"
+                alt={t("home.portraitAlt")}
                 className="hero-portrait"
               />
               <div className="hero-portrait-shade" aria-hidden="true" />
             </div>
           </div>
         </div>
-        <a className="scroll-cue" href="#projects" aria-label="Scroll to featured projects">
+        <a className="scroll-cue" href="#projects" aria-label={t("video.scrollProjects")}>
           <span>{t("home.scroll")}</span><i aria-hidden="true" />
         </a>
       </section>
@@ -178,21 +115,17 @@ export default function Home() {
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
             <h2 id="custom-development-title">{t("home.customDevelopment")}</h2>
-            <h3>Accessible custom software built around the way your business actually operates.</h3>
-            <p>
-              Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
-              operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit
-              your workflow, your goals, and the way your business actually runs.
-            </p>
+            <h3>{t("home.customLead")}</h3>
+            <p>{t("home.customText")}</p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">I WANT BUILD</a>
-              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
             <img
               src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
-              alt="Custom software development"
+              alt={t("home.customImageAlt")}
               className="grounding-panel-image"
               loading="lazy"
             />
@@ -205,27 +138,22 @@ export default function Home() {
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
             <h2 id="grounding-title">{t("home.knowledgeGrounding")}</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
-            <p>
-              With the mission of transforming business information into actionable business knowledge, this layer helps
-              AI agents answer with precision and predictability inside your project constraints, processing multi-source
-              data into a reliable context retrieval system that gives you clear control over what your agents consume
-              and consistently improves the quality of their responses.
-            </p>
+            <h3>{t("home.groundingLead")}</h3>
+            <p>{t("home.groundingText")}</p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">I WANT BUILD</a>
-              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel">
             <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
+              <span>{t("video.enterpriseLayer")}</span>
+              <span>{t("video.capabilitiesCount")}</span>
             </div>
             <div className="topic-list" role="list">
               <div className="topic-list-column">
-                {groundingTopics.map((topic, index) => {
-                  const isExpanded = expandedGroundingTopic?.title === topic.title;
+                {groundingTopicIds.map((topicId, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topicId;
                   const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
                   const detailId = `grounding-topic-${index}`;
 
@@ -233,20 +161,20 @@ export default function Home() {
                     <div
                       role="listitem"
                       className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
-                      key={topic.title}
+                      key={topicId}
                     >
                       <button
                         type="button"
                         className="topic-list-button"
                         aria-expanded={isExpanded}
                         aria-controls={detailId}
-                        onClick={() => toggleGroundingTopic("single", topic.title)}
+                        onClick={() => toggleGroundingTopic("single", topicId)}
                       >
                         <span className="topic-list-toggle" aria-hidden="true" />
                         <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
-                        <span className="topic-list-title">{topic.title}</span>
+                        <span className="topic-list-title">{t(`home.groundingTopics.${topicId}.title`)}</span>
                         <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
-                          {topic.description}
+                          {t(`home.groundingTopics.${topicId}.description`)}
                         </span>
                       </button>
                     </div>
@@ -262,21 +190,18 @@ export default function Home() {
         <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <h2 id="lead-generation-title">AI Lead Generation and Convertion Agents</h2>
-            <h3>Increase revenue with better qualified leads and smarter conversion.</h3>
-            <p>
-              Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate
-              outbound actions that expand your conversion potential and drive more revenue.
-            </p>
+            <h2 id="lead-generation-title">{t("video.leadTitle")}</h2>
+            <h3>{t("video.leadSubtitle")}</h3>
+            <p>{t("video.leadText")}</p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">I want it</a>
-              <a className="button button--ghost" href="/contact">Book a call</a>
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("services.iWantIt")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
             <img
               src="/LEAD_FUNNEL.png"
-              alt="Lead generation funnel placeholder"
+              alt={t("home.leadImageAlt")}
               className="grounding-panel-image"
               loading="lazy"
             />
@@ -297,12 +222,9 @@ export default function Home() {
               <ProjectVisual type="hr" />
               <div className="project-overlay" />
               <div className="project-content">
-                <p className="project-index">01 / Automation</p>
-                <h3>Inteliggence Dashboard</h3>
-                <p>
-                  Gain a clearer view of your business with personalized smart dashboards, fully connected to your
-                  business knowledge and focused exactly on your precise operational needs.
-                </p>
+                <p className="project-index">01 / {t("video.automation")}</p>
+                <h3>{t("video.projectDashboard")}</h3>
+                <p>{t("video.projectDashboardText")}</p>
               </div>
             </article>
 
@@ -310,12 +232,9 @@ export default function Home() {
               <ProjectVisual type="trading" />
               <div className="project-overlay" />
               <div className="project-content">
-                <p className="project-index">02 / Fintech</p>
-                <h3>AI-First Trading Platform</h3>
-                <p>
-                  An AI-native trading platform designed around intelligent agents, predictive analytics,
-                  automation, and decision support.
-                </p>
+                <p className="project-index">02 / {t("video.fintech")}</p>
+                <h3>{t("video.projectTrading")}</h3>
+                <p>{t("video.projectTradingText")}</p>
               </div>
             </article>
 
@@ -323,12 +242,9 @@ export default function Home() {
               <ProjectVisual type="dante" />
               <div className="project-overlay" />
               <div className="project-content">
-                <p className="project-index">03 / Legal AI</p>
-                <h3>Dante <span>Legal AI Platform</span></h3>
-                <p>
-                  An AI solution for the legal industry built with intelligent agents, RAG, GraphRAG, contextual
-                  reasoning, and enterprise knowledge systems.
-                </p>
+                <p className="project-index">03 / {t("video.legalAi")}</p>
+                <h3>Dante <span>{t("video.legalAiPlatform")}</span></h3>
+                <p>{t("video.projectDanteText")}</p>
               </div>
             </article>
           </div>
@@ -339,13 +255,10 @@ export default function Home() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">What we build</p>
+              <p className="eyebrow">{t("video.whatWeBuild")}</p>
               <h2 id="services-title">{t("home.services")}</h2>
             </div>
-            <p className="section-intro">
-              From the first interface decision to the intelligence layer behind it, every engagement connects
-              design quality with technical depth.
-            </p>
+            <p className="section-intro">{t("video.servicesLead")}</p>
           </div>
 
           <div className="services-grid services-page-grid">
@@ -362,14 +275,11 @@ export default function Home() {
         <div className="site-container final-cta-inner">
           <p className="eyebrow">{t("home.startConversation")}</p>
           <h2 id="contact-title">
-            <span>Ready to Build Your</span>
-            <span>Next AI Product?</span>
+            <span>{t("video.readyToBuild")}</span>
+            <span>{t("video.nextAiProduct")}</span>
           </h2>
-          <p>
-            Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
-            business challenges.
-          </p>
-          <a className="button button--accent" href="/contact">
+          <p>{t("video.finalLead")}</p>
+          <a className="button button--accent" href={localizedPath("/contact")}>
             {t("home.startProject")} <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
@@ -378,28 +288,28 @@ export default function Home() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="#top" aria-label="CriativAI home"><Brand /></a>
-            <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <a href="#top" aria-label={t("header.home")}><Brand /></a>
+            <p>{t("footer.productLead")}</p>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
-              <p className="micro-label">Navigation</p>
-              <a href="#services">Services</a>
-              <a href="#projects">Projects</a>
-              {isAudienceEnabled("recruiters") ? <a href="/for-recrutiers">For Recrutiers</a> : null}
-              <a href="/contact">Contact</a>
+              <p className="micro-label">{t("footer.navigation")}</p>
+              <a href="#services">{t("header.services")}</a>
+              <a href="#projects">{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
+              <a href={localizedPath("/contact")}>{t("header.contact")}</a>
             </div>
             <div>
-              <p className="micro-label">Social Media</p>
-              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>YouTube</a>
-              <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>Behance</a>
-              <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
+              <p className="micro-label">{t("footer.social")}</p>
+              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>{t("footer.youtube")}</a>
+              <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>{t("footer.linkedin")}</a>
+              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>{t("footer.behance")}</a>
+              <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>{t("footer.github")}</a>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top {"\u2191"}</a></div>
+        <div className="site-container footer-bottom"><span>{t("footer.bottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")} {"\u2191"}</a></div>
       </footer>
     </main>
   );

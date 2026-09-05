@@ -1,40 +1,750 @@
 {
-  "header": { "hireMe": "Hire me", "services": "Services", "projects": "Projects", "about": "About", "video": "Video", "contact": "Contact", "style": "Style", "solutions": "Solutions", "recruiters": "For Recruiters", "founders": "For Founders SDR", "primaryNavigation": "Primary navigation", "languageSelector": "Language selector", "openMenu": "Open menu", "closeMenu": "Close menu", "english": "English", "portuguese": "Portuguese", "home": "CriativAI home", "navigation": "Navigation", "backToTop": "Back to top" },
-  "chat": { "aria": "AI chat assistant", "conversation": "Chat conversation", "title": "Ask your questions and book a call", "newChat": "Open a new chat window", "collapse": "Collapse chat", "restoring": "Restoring conversation...", "starters": "Conversation starters", "askBelow": "Ask your question below", "contacting": "Contacting Agent...", "preparing": "Assistant is preparing a response", "message": "Message", "placeholder": "Type your message", "send": "Send message", "open": "Open AI chat", "intro": "Hi. I can help you think through AI opportunities and next steps.", "iceBreakers": ["I want to discuss my project idea.", "I want to increase my lead capture and conversion.", "I want to automate my business operations.", "I want to book a call with Bruno.", "I want to build a customer support agent.", "I want to hire consulting or personalized training."] }
-  ,"home": { "heroEyebrow": "Design × Engineering × Strategy", "heroLead": "Building AI-powered products, intelligent automations, and custom software that combine design, engineering, and business strategy to solve real-world challenges.", "talk": "Let's Talk", "scroll": "Scroll to explore", "customDevelopment": "Custom Development", "knowledgeGrounding": "Knowledge Grounding", "projects": "Featured Projects", "services": "Services", "startConversation": "Start a conversation", "startProject": "Start a Project" },
-  "services": { "askAssistant": "Ask my AI Assistant", "iWantIt": "I want it", "catalog": {
-    "product-design": { "title": "Product Design", "text": "Human-centered digital product and UI/UX design focused on usability, accessibility, conversion, and exceptional user experiences." },
-    "refined-websites": { "title": "Refined Websites", "text": "Fast, accessible, refined websites for corporate platforms or landing pages built to convert, with clean infrastructure and code your team can own." },
-    "custom-software": { "title": "Custom Software", "text": "Purpose-built software shaped around your workflows, users, data, and operational constraints, combining AI-assisted architecture, development, testing, deployment, and optimized delivery." },
-    "ai-client-acquisition": { "title": "AI Client Acquisition", "text": "AI-assisted acquisition flows that qualify leads, capture context, personalize follow-ups, and turn visitor intent into commercial opportunities." },
-    "ai-customer-service": { "title": "AI Customer Service", "text": "AI customer service agents that respond instantly, assemble requests, route orders or tickets, and keep customers updated automatically." },
-    "ai-automations": { "title": "AI Automations", "text": "AI-powered business process automation that eliminates repetitive tasks, connects tools and approvals, and increases operational efficiency." },
-    "smart-ai-agents": { "title": "Smart AI Agents", "text": "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously." },
-    "enterprise-knowledge-systems": { "title": "Enterprise Knowledge Systems", "text": "Enterprise knowledge architecture that gives AI agents a single source of truth through knowledge lakes, RAG, GraphRAG, process context, and traceable business data relationships." },
-    "enterprise-consulting": { "title": "Enterprise Consulting", "text": "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization." },
-    "ai-training": { "title": "AI Training", "text": "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities." }
-  }, "whatWeBuild": "What we build", "heroTitle": "AI services for products, operations, and growth.", "heroLead": "A unified service portfolio connecting refined product design, custom software, enterprise knowledge, AI agents, automation, and customer-facing AI experiences.", "stackTitle": "A single AI delivery stack", "stackLead": "Each service can stand alone, but the strongest projects combine strategy, interface quality, automation, and grounded intelligence into one coherent system.", "fromIdea": "From idea to delivery", "stepsTitle": "Three practical steps", "stepsLead": "A lean process to move from initial idea to a scoped, reviewable, and deliverable project.", "faqTitle": "Frequently Asked Questions", "startBuilding": "Start building", "ctaWhatIdea": "What idea", "ctaDoYouWant": "do you want", "ctaBringToLife": "to bring to life?", "ctaMakeReal": "Let's make it real.", "ctaLead": "Bring the rough idea, the messy process, or the opportunity you keep postponing. We turn it into a scoped plan, a buildable system, and a real delivery path.", "startConversation": "Start the Project Conversation" }
-  ,"contact": { "title": "Start a", "titleAccent": "conversation.", "lead": "Tell us what you are building, automating, or exploring and we will get back to you directly.", "publicDetail": "This public test site uses a direct email handoff so your message can be sent without a live backend.", "backendDetail": "This form sends your message to Bruno at CriativAI and stores the submission for reliable follow-up inside the project database." },
-  "forms": { "name": "Name", "yourName": "Your name", "email": "Email", "subject": "Subject", "leaveEmpty": "Leave this field empty", "publicNotice": "Public test mode: submitting this form opens your email app with the message prefilled.", "subjectPlaceholder": "What would you like to discuss?", "message": "Message", "messagePlaceholder": "Share the context, goal, or challenge.", "clean": "Clean Form", "continueEmail": "Continue by Email", "sending": "Sending...", "send": "Send", "submissionConfirmed": "Submission confirmed", "close": "Close", "successTitle": "Message sent successfully.", "successMessage": "Thanks for reaching out. Your message has been received and will be reviewed as soon as possible." }
-  ,"hire": { "eyebrow": "Hire Bruno", "title": "Open positions, choose the best for you.", "lead": "Flexible hiring formats for companies and founders who need senior AI architecture, product design, implementation strategy, and hands-on delivery without forcing the work into a generic engagement model.", "openPositions": "Open positions", "chooseModel": "Choose the right working model", "modelLead": "Each option is designed around a different level of commitment, from full-time leadership to strategic consulting, training, and focused custom builds." },
-  "legal": { "eyebrow": "Privacy & Terms", "title": "CriativAI Privacy & Terms", "updated": "Last updated: July 24, 2026", "privacy": "Privacy", "terms": "Terms" },
-  "founding": { "eyebrow": "Founding SDR / San Francisco", "titleOne": "Don't Just Sell", "titleTwo": "for a Company.", "titleThree": "Build One.", "lead": "We're selecting a small number of ambitious sales professionals in San Francisco to help grow CriativAI's local operation.", "detail": "Start as a Founding SDR. Build clients, generate revenue and unlock the opportunity to become a partner in the San Francisco operation you helped create.", "apply": "Apply to Become a Founding SDR", "seeHow": "See How It Works", "opportunity": "The opportunity", "opportunityTitle": "This Is More Than a Sales Role.", "opportunityLead": "Most sales positions reward you for the next deal.", "opportunityReward": "This opportunity is designed to reward you for the market you help build.", "opportunitySupport": "You prospect, open relationships and bring new clients. We provide the technical team, AI expertise, automation, product design, software development and delivery.", "mantra": "Find opportunities. Build relationships. Create revenue.", "growth": "As the operation grows, your position can grow with it.", "path": "The path", "pathTitle": "From SDR to Local Partner.", "pathLead": "The model is designed around performance. Your growth is directly connected to the value you create.", "asset": "You stop being only a salesperson and start building an asset.", "stages": { "01": { "title": "Founding SDR", "text": "Represent CriativAI in San Francisco, prospect companies, identify opportunities and earn commission from the clients you generate." }, "02": { "title": "Build the Market", "text": "Reach the defined commercial milestone and establish a recurring client base in the region." }, "03": { "title": "Become a Partner", "text": "After reaching the partnership threshold, become part of the San Francisco operation you helped build." } } }
-  ,"hr": { "eyebrow": "AI for recruitment companies", "era": "The era of hyper-personalization", "valueTitle": "Design fully customized recruitment workflows", "broader": "A broader, more strategic view" },
-  "about": { "fullCycle": "Full Product Cycle", "techStack": "Tech Stack", "awards": "Awards", "professional": "Professional", "buildConfidence": "BUILD WITH CONFIDENCE" }
-  ,"talent": { "complimentary": "Complimentary shortlist request", "title": "Talent", "titleAccent": "Preview.", "lead": "Share one open role and receive a curated shortlist of up to 20 relevant professionals within 24 hours.", "detail": "A no-cost diagnostic for specialized recruitment teams that want to test the quality and speed of an AI-supported search before expanding the workflow.", "startRequest": "Start the Request", "whatGives": "What this gives you", "benefitsTitle": "A fast, evidence-led sample of your search.", "benefitsLead": "Useful for executive search firms, boutique consultancies, independent recruiters, and specialist talent teams.", "formEyebrow": "Free request form", "formTitle": "Describe the role. We structure the search.", "formLead": "Give us the live vacancy and the main search signal. You can also add an exclusion characteristic and one differentiator if they help sharpen the shortlist." }
-,
-  "footer": { "productLead": "AI-powered products, intelligent automations, and human-centered digital experiences.", "navigation": "Navigation", "projects": "Projects", "recruiters": "For Recruiters", "social": "Social Media", "bottom": "Creative intelligence, grounded in reality." },
-  "video": { "heroEyebrow": "Product Design — AI Engineering — Strategy", "creative": "CREATIVE", "aiSolutions": "AI SOLUTIONS", "topicsAria": "Featured AI solution topics", "topic1": "AI-Powered Client Acquisition", "topic2": "AI-Powered Customer Service", "topic3": "Refined Websites", "topic4": "High Conversion Landing Pages", "topic5": "Custom System Development", "topic6": "Corporate Knowledge Systems", "topic7": "Prompt Engineering Research", "topic8": "Business Automation", "scrollProjects": "Scroll to featured projects", "welcome": "WELCOME TO", "hyper": "THE", "personalization": "HYPER-PERSONALIZATION", "era": "ERA", "nextLead": "Now it's your turn to leverage AI and build digital solutions tailored precisely to your business, unlocking new opportunities, accelerating your initiatives, and driving better results.", "askBook": "Ask My AI Assistant and Book a Call", "enterpriseLayer": "Enterprise intelligence layer", "capabilitiesCount": "10 capabilities", "leadTitle": "AI Lead Generation and Conversion Agents", "leadSubtitle": "Increase revenue with better qualified leads and smarter conversion.", "leadText": "Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate outbound actions that expand your conversion potential and drive more revenue.", "automation": "Automation", "fintech": "Fintech", "legalAi": "Legal AI", "legalAiPlatform": "Legal AI Platform", "projectDashboard": "Intelligence Dashboard", "projectDashboardText": "Gain a clearer view of your business with personalized smart dashboards, fully connected to your business knowledge and focused exactly on your precise operational needs.", "projectTrading": "AI-First Trading Platform", "projectTradingText": "An AI-native trading platform designed around intelligent agents, predictive analytics, automation, and decision support.", "projectDanteText": "An AI solution for the legal industry built with intelligent agents, RAG, GraphRAG, contextual reasoning, and enterprise knowledge systems.", "whatWeBuild": "What we build", "servicesLead": "From the first interface decision to the intelligence layer behind it, every engagement connects design quality with technical depth.", "readyToBuild": "Ready to Build Your", "nextAiProduct": "Next AI Product?", "finalLead": "Let's create intelligent software that combines design, automation, and business strategy to solve real business challenges.", "startProject": "Start a Project", "services": { "01": { "title": "Product Design", "text": "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences." }, "02": { "title": "Enterprise Knowledge System", "text": "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems." }, "03": { "title": "System Design", "text": "Technical architecture and system planning for scalable digital products and AI-powered applications." }, "04": { "title": "AI Automations", "text": "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence." }, "05": { "title": "Smart Agents", "text": "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously." }, "06": { "title": "Refined Websites", "text": "Refined design for large-scale corporate websites and simple landing pages built to convert with clarity, elegance, and performance." }, "07": { "title": "Custom AI Training", "text": "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities." }, "08": { "title": "Enterprise AI Consulting", "text": "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization." } } },
-  "home": { "heroEyebrow": "Design × Engineering × Strategy", "heroLead": "Building AI-powered products, intelligent automations, and custom software that combine design, engineering, and business strategy to solve real-world challenges.", "talk": "Let's Talk", "scroll": "Scroll to explore", "customDevelopment": "Custom Development", "customLead": "Accessible custom software built around the way your business actually operates.", "customText": "Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit your workflow, your goals, and the way your business actually runs.", "iWantBuild": "I WANT BUILD", "knowledgeGrounding": "Knowledge Grounding", "groundingLead": "Building AI systems that truly understand your business.", "groundingText": "Transform business information into actionable knowledge. This layer helps AI agents answer with precision and predictability inside your project constraints, using reliable context retrieval and giving you clear control over what your agents consume.", "projects": "Featured Projects", "services": "Services", "startConversation": "Start a conversation", "startProject": "Start a Project" },
-  "about": { "fullCycle": "Full Product Cycle", "techStack": "Tech Stack", "awards": "Awards", "professional": "Professional", "buildConfidence": "BUILD WITH CONFIDENCE", "heroTitle": "GenAI Architect", "heroSubtitle": "Context Prompt Engineer", "heroRole": "with Creative Design Background", "heroLead": "Bruno works at the intersection of product design, artificial intelligence, and business strategy. His practice combines two decades of creative experience with a systems mindset to turn complex ideas into useful, understandable, and carefully crafted digital products.", "dropMessage": "Drop Me a Message", "bookCall": "Book a Call", "portraitMeta": "AI Architecture / Design / Strategy", "oneProfessional": "One Professional,", "fullProductCycle": "Full Product Cycle", "cycleLead": "AI, design, and engineering combined into one brain.", "capabilitiesTitle": "Capabilities: What Bruno Builds", "capabilities": "Capabilities", "capabilitiesLead": "From deep creative AI background to solid technical knowledge of GenAI and related technologies.", "clickDetails": "Click to view details", "awardsTitle": "Awards: Prompt Engineering", "promptEngineering": "Prompt Engineering", "awardsLead": "International recognition in prompt engineering, agent design, prompt-app concepts, and built-in ChatGPT games.", "resultsPage": "Results Page", "openProject": "Open Project", "experienceTitle": "Professional Experience", "experience": "Experience", "experienceLead": "20+ years building interactive systems, from a deep creative design background to modern AI development.", "contactBruno": "Contact Bruno" },
-  "founding": { "eyebrow": "Founding SDR / San Francisco", "titleOne": "Don't Just Sell", "titleTwo": "for a Company.", "titleThree": "Build One.", "lead": "We're selecting a small number of ambitious sales professionals in San Francisco to help grow CriativAI's local operation.", "detail": "Start as a Founding SDR. Build clients, generate revenue and unlock the opportunity to become a partner in the San Francisco operation you helped create.", "apply": "Apply to Become a Founding SDR", "seeHow": "See How It Works", "oneMarket": "ONE MARKET", "oneOpportunity": "ONE OPPORTUNITY", "opportunity": "The opportunity", "opportunityTitle": "This Is More Than a Sales Role.", "opportunityLead": "Most sales positions reward you for the next deal.", "opportunityReward": "This opportunity is designed to reward you for the market you help build.", "opportunitySupport": "You prospect, open relationships and bring new clients. We provide the technical team, AI expertise, automation, product design, software development and delivery.", "mantra": "Find opportunities. Build relationships. Create revenue.", "growth": "As the operation grows, your position can grow with it.", "path": "The path", "pathTitle": "From SDR to Local Partner.", "pathLead": "The model is designed around performance. Your growth is directly connected to the value you create.", "asset": "You stop being only a salesperson and start building an asset.", "offer": "The offer", "selling": "What You'll Be Selling.", "offerLead": "CriativAI helps startups and SMBs build technology without the cost and complexity of assembling an entire internal team.", "offerStrong": "Clients gain access to multidisciplinary technology capabilities at a fraction of the cost of building the same team internally.", "profile": "The profile", "looking": "Who We're Looking For.", "profileLead": "We are looking for someone who sees sales as more than a job.", "profileStrong": "We care more about drive, commercial ability, initiative and results.", "difference": "The difference", "bringMarket": "Bring the market.", "buildOperation": "Build the operation.", "differenceLead": "A traditional SDR creates revenue for someone else's company. Here, exceptional performance can create a path toward ownership in the market you develop.", "sanFrancisco": "San Francisco", "oneMarketTitle": "One Market.", "oneOpportunityTitle": "One Opportunity.", "sfLead": "We are currently building this model specifically for the San Francisco market. The first commercial professional will help establish and grow the operation locally.", "nextMove": "Your next move", "buildMore": "Build More Than", "yourPipeline": "Your Pipeline.", "buildMarket": "Build Your Market.", "finalLead": "If you believe you can open doors, generate business and help build a technology operation in San Francisco, we want to talk.", "applyOpportunity": "Apply for the Founding SDR Opportunity" },
-  "hr": { "eyebrow": "AI for recruitment companies", "streamline": "STREAMLINE", "your": "YOUR", "recruitment": "RECRUITMENT", "operations": "OPERATIONS", "with": "WITH", "ai": "AI", "heroLead": "Your methods. Your criteria. Your tools.", "heroDetail": "We design AI workflows, assessments, dashboards, and management systems around the way your recruitment company already works.", "era": "The era of hyper-personalization", "valueTitle": "Design fully customized recruitment workflows", "valueLead": "This is no longer about a one-size-fits-all tool. It is about building precise systems around your methodology, business rules, and operating reality.", "valueStrong": "What matters is not generic automation. What matters is a stack that fits your company.", "broader": "A broader, more strategic view", "buildThe": "Build the", "recruitmentCompany": "recruitment company", "youRun": "you want to run.", "finalLead": "From talent intelligence to operations and outbound growth, we can shape AI around the way your team actually works.", "requestDemo": "Request a Demo", "talkUseCase": "Talk about your use case" },
-  "chat": { "aria": "AI chat assistant", "conversation": "Chat conversation", "title": "Ask your questions and book a call", "newChat": "Open a new chat window", "collapse": "Collapse chat", "restoring": "Restoring conversation...", "starters": "Conversation starters", "askBelow": "Ask your question below", "contacting": "Contacting Agent...", "preparing": "Assistant is preparing a response", "message": "Message", "placeholder": "Type your message", "send": "Send message", "open": "Open AI chat", "intro": "Hi. I can help you think through AI opportunities and next steps.", "askAssistant": "Ask my Assistant", "askAgents": "Ask my Agents", "iceBreakers": ["I want to discuss my project idea.", "I want to increase my lead capture and conversion.", "I want to automate my business operations.", "I want to book a call with Bruno.", "I want to build a customer support agent.", "I want to hire consulting or personalized training."] },
-  "contact": { "title": "Start a", "titleAccent": "conversation.", "lead": "Tell us what you are building, automating, or exploring and we will get back to you directly.", "publicDetail": "This public test site uses a direct email handoff so your message can be sent without a live backend.", "backendDetail": "This form sends your message to Bruno at CriativAI and stores the submission for reliable follow-up inside the project database.", "emailPlaceholder": "name@company.com", "mailtoSubject": "CriativAI contact request", "mailtoName": "Name", "mailtoEmail": "Email", "mailtoFallback": "I would like to discuss a project.", "footerLead": "AI-powered products, automations, and grounded systems designed for real business work.", "destination": "Destination", "footerBottom": "Direct contact, with context preserved." },
-  "legal": { "eyebrow": "Privacy & Terms", "title": "CriativAI Privacy & Terms", "updated": "Last updated: July 24, 2026", "privacy": "Privacy", "terms": "Terms", "privacyOne": "CriativAI uses contact, chat, form, and calendar information only to respond to requests, support scheduling, and provide the services chosen by the user.", "privacyTwo": "When Google Calendar is connected, CriativAI may check availability and create, update, or cancel calendar events with Google Meet links. Calendar data is used only for scheduling and is not sold.", "privacyThree": "Access tokens and operational data are stored only as needed to run the service. Access can be revoked by disconnecting the app from the Google account permissions page or by contacting CriativAI.", "termsOne": "By using CriativAI, you agree to use the site and scheduling features lawfully and only for legitimate business communication.", "termsTwo": "AI-generated responses and scheduling suggestions should be reviewed before relying on them for final business decisions. CriativAI may update or disable features to improve reliability, security, or compliance.", "termsThree": "For privacy, terms, or data access questions, contact bruno@criativai.site." },
-  "hire": { "eyebrow": "Hire Bruno", "title": "Open positions, choose the best for you.", "lead": "Flexible hiring formats for companies and founders who need senior AI architecture, product design, implementation strategy, and hands-on delivery without forcing the work into a generic engagement model.", "openPositions": "Open positions", "chooseModel": "Choose the right working model", "modelLead": "Each option is designed around a different level of commitment, from full-time leadership to strategic consulting, training, and focused custom builds." },
-  "talent": { "complimentary": "Complimentary shortlist request", "title": "Talent", "titleAccent": "Preview.", "lead": "Share one open role and receive a curated shortlist of up to 20 relevant professionals within 24 hours.", "detail": "A no-cost diagnostic for specialized recruitment teams that want to test the quality and speed of an AI-supported search before expanding the workflow.", "startRequest": "Start the Request", "whatGives": "What this gives you", "benefitsTitle": "A fast, evidence-led sample of your search.", "benefitsLead": "Useful for executive search firms, boutique consultancies, independent recruiters, and specialist talent teams.", "formEyebrow": "Free request form", "formTitle": "Describe the role. We structure the search.", "formLead": "Give us the live vacancy and the main search signal. You can also add an exclusion characteristic and one differentiator if they help sharpen the shortlist.", "visualAria": "Preview of a curated candidate shortlist", "visualPreview": "PREVIEW / LIVE ROLE", "free": "FREE", "turnaround": "turnaround target", "visualRole": "Role title and search intent", "visualBrief": "One primary search brief in multiline format", "visualSignals": "Optional exclusion and differentiator signals", "output": "OUTPUT", "visualOutput": "Up to 20 aligned candidate profiles", "publicNotice": "Public test mode: your brief is handed off through your email app instead of a live backend form.", "backendNotice": "We review the brief and respond to the requester by email within 24 hours.", "roleTitle": "Open role title", "searchCriterion": "Relevant search criterion 01", "searchPlaceholder": "Describe the single main search signal, in multiline form if needed.", "exclusion": "Exclusion characteristic", "exclusionPlaceholder": "Optional: example of what should disqualify a profile", "differentiator": "Differentiator", "differentiatorPlaceholder": "Optional: a strong plus that would elevate the shortlist", "formPublicNotice": "Public test mode: submitting this form opens your email app with the role brief prefilled.", "footerLead": "AI-supported recruiting systems designed to help teams find stronger candidates, faster.", "quickLinks": "Quick links", "requestForm": "Request form", "footerBottom": "Recruitment intelligence, grounded in clear criteria.", "successTitle": "Your request is confirmed.", "successMessage": "Thank you for sharing the role brief. We will review it and send your shortlist within 24 hours.", "successDetail": "The automatic confirmation email will start sending as soon as the Mailjet SMTP credentials are added to the environment." },
-  "servicesCoverage": "Product Design + Enterprise Knowledge Systems"
-,
-  "videoServices": { "01": { "title": "Product Design", "text": "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences." }, "02": { "title": "Enterprise Knowledge System", "text": "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems." }, "03": { "title": "System Design", "text": "Technical architecture and system planning for scalable digital products and AI-powered applications." }, "04": { "title": "AI Automations", "text": "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence." }, "05": { "title": "Smart Agents", "text": "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously." }, "06": { "title": "Refined Websites", "text": "Refined design for large-scale corporate websites and simple landing pages built to convert with clarity, elegance, and performance." }, "07": { "title": "Custom AI Training", "text": "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities." }, "08": { "title": "Enterprise AI Consulting", "text": "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization." } }
+  "meta": {
+    "title": "CriativAI — Creative Artificial Intelligence",
+    "description": "AI-powered products, intelligent automations, and custom software shaped by design, engineering, and business strategy.",
+    "ogLocale": "en_US"
+  },
+  "header": {
+    "hireMe": "Hire me",
+    "services": "Services",
+    "projects": "Projects",
+    "about": "About",
+    "video": "Video",
+    "contact": "Contact",
+    "style": "Style",
+    "solutions": "Solutions",
+    "recruiters": "For Recruiters",
+    "founders": "For Founders SDR",
+    "primaryNavigation": "Primary navigation",
+    "languageSelector": "Language selector",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "english": "English",
+    "portuguese": "Portuguese",
+    "home": "CriativAI home",
+    "navigation": "Navigation",
+    "backToTop": "Back to top",
+    "solutionsSubmenu": "Solutions submenu"
+  },
+  "chat": {
+    "aria": "AI chat assistant",
+    "conversation": "Chat conversation",
+    "title": "Ask your questions and book a call",
+    "newChat": "Open a new chat window",
+    "collapse": "Collapse chat",
+    "restoring": "Restoring conversation...",
+    "starters": "Conversation starters",
+    "askBelow": "Ask your question below",
+    "contacting": "Contacting Agent...",
+    "preparing": "Assistant is preparing a response",
+    "message": "Message",
+    "placeholder": "Type your message",
+    "send": "Send message",
+    "open": "Open AI chat",
+    "intro": "Hi. I can help you think through AI opportunities and next steps.",
+    "askAssistant": "Ask my Assistant",
+    "askAgents": "Ask my Agents",
+    "iceBreakers": [
+      "I want to discuss my project idea.",
+      "I want to increase my lead capture and conversion.",
+      "I want to automate my business operations.",
+      "I want to book a call with Bruno.",
+      "I want to build a customer support agent.",
+      "I want to hire consulting or personalized training."
+    ],
+    "assistantName": "BRUNO CESAR ASSISTANT",
+    "errors": {
+      "multiWindowStatus": "Unable to load chat multi-window status.",
+      "restore": "Unable to restore the conversation.",
+      "welcome": "Unable to prepare the chat welcome message.",
+      "send": "Unable to reach the assistant.",
+      "network": "Unable to connect to the chat service. Confirm that the application server is running and try again.",
+      "invalidStream": "The assistant returned an invalid response.",
+      "unsupportedStream": "The assistant returned an unsupported response."
+    }
+  },
+  "sitesFallback": {
+    "subject": "CriativAI project inquiry",
+    "greeting": "Hi Bruno,",
+    "intro": "I came from the public CriativAI test site and would like to discuss a project.",
+    "context": "Project context:",
+    "signoff": "Best,"
+  },
+  "home": {
+    "heroEyebrow": "Design × Engineering × Strategy",
+    "heroLead": "Building AI-powered products, intelligent automations, and custom software that combine design, engineering, and business strategy to solve real-world challenges.",
+    "talk": "Let's Talk",
+    "scroll": "Scroll to explore",
+    "customDevelopment": "Custom Development",
+    "customLead": "Accessible custom software built around the way your business actually operates.",
+    "customText": "Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit your workflow, your goals, and the way your business actually runs.",
+    "iWantBuild": "I WANT BUILD",
+    "knowledgeGrounding": "Knowledge Grounding",
+    "groundingLead": "Building AI systems that truly understand your business.",
+    "groundingText": "Transform business information into actionable knowledge. This layer helps AI agents answer with precision and predictability inside your project constraints, using reliable context retrieval and giving you clear control over what your agents consume.",
+    "projects": "Featured Projects",
+    "services": "Services",
+    "startConversation": "Start a conversation",
+    "startProject": "Start a Project",
+    "servicesCoverage": "Product Design + Enterprise Knowledge Systems",
+    "leadCoverage": "Increase Lead Generation + Conversion Rate with AI",
+    "portraitAlt": "Portrait of Bruno wearing round orange-tinted glasses",
+    "customImageAlt": "Custom software development",
+    "leadImageAlt": "Lead generation funnel",
+    "groundingTopics": {
+      "10": {
+        "title": "Guardrails | Observability",
+        "description": "Monitor, constrain, and improve agent behavior with clearer controls and visibility."
+      },
+      "01": {
+        "title": "Custom RAG Setups",
+        "description": "Connect private knowledge to AI answers with retrieval tailored to your business rules."
+      },
+      "02": {
+        "title": "Knowledge Graphs | GraphRAG",
+        "description": "Map relationships across your data so agents understand context, entities, and dependencies."
+      },
+      "03": {
+        "title": "Prompt Engineering Research",
+        "description": "Design tested prompts and reasoning patterns for clearer, more predictable AI behavior."
+      },
+      "04": {
+        "title": "Context Engineering",
+        "description": "Control the exact information your agents receive before they answer or act."
+      },
+      "05": {
+        "title": "Enterprise Knowledge Systems",
+        "description": "Turn scattered company information into a reliable intelligence layer for people and AI."
+      },
+      "06": {
+        "title": "Multi Agent Architecture",
+        "description": "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows."
+      },
+      "07": {
+        "title": "ETL, Data Processing",
+        "description": "Clean, transform, and structure multi-source data so it becomes useful AI-ready knowledge."
+      },
+      "08": {
+        "title": "Context Enrichment",
+        "description": "Add metadata, relationships, and business meaning to improve retrieval and answer quality."
+      },
+      "09": {
+        "title": "Smart Chunk Processing",
+        "description": "Split knowledge into precise chunks that preserve meaning and reduce noisy retrieval."
+      }
+    }
+  },
+  "services": {
+    "askAssistant": "Ask my AI Assistant",
+    "iWantIt": "I want it",
+    "catalog": {
+      "product-design": {
+        "title": "Product Design",
+        "text": "Human-centered digital product and UI/UX design focused on usability, accessibility, conversion, and exceptional user experiences."
+      },
+      "refined-websites": {
+        "title": "Refined Websites",
+        "text": "Fast, accessible, refined websites for corporate platforms or landing pages built to convert, with clean infrastructure and code your team can own."
+      },
+      "custom-software": {
+        "title": "Custom Software",
+        "text": "Purpose-built software shaped around your workflows, users, data, and operational constraints, combining AI-assisted architecture, development, testing, deployment, and optimized delivery."
+      },
+      "ai-client-acquisition": {
+        "title": "AI Client Acquisition",
+        "text": "AI-assisted acquisition flows that qualify leads, capture context, personalize follow-ups, and turn visitor intent into commercial opportunities."
+      },
+      "ai-customer-service": {
+        "title": "AI Customer Service",
+        "text": "AI customer service agents that respond instantly, assemble requests, route orders or tickets, and keep customers updated automatically."
+      },
+      "ai-automations": {
+        "title": "AI Automations",
+        "text": "AI-powered business process automation that eliminates repetitive tasks, connects tools and approvals, and increases operational efficiency."
+      },
+      "smart-ai-agents": {
+        "title": "Smart AI Agents",
+        "text": "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously."
+      },
+      "enterprise-knowledge-systems": {
+        "title": "Enterprise Knowledge Systems",
+        "text": "Enterprise knowledge architecture that gives AI agents a single source of truth through knowledge lakes, RAG, GraphRAG, process context, and traceable business data relationships."
+      },
+      "enterprise-consulting": {
+        "title": "Enterprise Consulting",
+        "text": "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization."
+      },
+      "ai-training": {
+        "title": "AI Training",
+        "text": "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities."
+      }
+    },
+    "whatWeBuild": "What we build",
+    "heroTitle": "AI services for products, operations, and growth.",
+    "heroLead": "A unified service portfolio connecting refined product design, custom software, enterprise knowledge, AI agents, automation, and customer-facing AI experiences.",
+    "stackTitle": "A single AI delivery stack",
+    "stackLead": "Each service can stand alone, but the strongest projects combine strategy, interface quality, automation, and grounded intelligence into one coherent system.",
+    "fromIdea": "From idea to delivery",
+    "stepsTitle": "Three practical steps",
+    "stepsLead": "A lean process to move from initial idea to a scoped, reviewable, and deliverable project.",
+    "faqTitle": "Frequently Asked Questions",
+    "startBuilding": "Start building",
+    "ctaWhatIdea": "What idea",
+    "ctaDoYouWant": "do you want",
+    "ctaBringToLife": "to bring to life?",
+    "ctaMakeReal": "Let's make it real.",
+    "ctaLead": "Bring the rough idea, the messy process, or the opportunity you keep postponing. We turn it into a scoped plan, a buildable system, and a real delivery path.",
+    "startConversation": "Start the Project Conversation",
+    "faqEyebrow": "FAQ",
+    "steps": {
+      "01": {
+        "title": "Initial AI Briefing",
+        "text": "With our AI assistant, you describe the initial scope of your idea so we can collect the first briefing and understand the business context.",
+        "cta": "Start AI Briefing Now"
+      },
+      "02": {
+        "title": "Planning Call",
+        "text": "You schedule a call with our AI-assisted process so we can refine the plan, discuss ideas, define priorities, and shape the budget.",
+        "cta": "Book a Call"
+      },
+      "03": {
+        "title": "Design & Delivery",
+        "text": "We start development with key stages shared for your review, including follow-up meetings and iteration rounds until delivery.",
+        "cta": "Ask My Agent"
+      }
+    },
+    "faqs": {
+      "01": {
+        "question": "Where can our projects be hosted?",
+        "answer": "The infrastructure is fully adaptable. Projects can be deployed on cloud platforms, dedicated servers, the client's own infrastructure, or another environment required by the project."
+      },
+      "02": {
+        "question": "What does your delivery include?",
+        "answer": "Our work can cover the entire process, from the initial idea to development, deployment, and ongoing maintenance. We can also adapt the delivery model to the client's specific structure and requirements."
+      },
+      "03": {
+        "question": "How does the development process work?",
+        "answer": "The process is divided into three simple stages:",
+        "steps": {
+          "01": "The client completes an initial briefing with our AI agent.",
+          "02": "We schedule a call to align requirements, details, scope, and budget.",
+          "03": "We develop, deliver, and deploy the solution."
+        }
+      },
+      "04": {
+        "question": "Can you integrate the project with our existing systems?",
+        "answer": "Yes. We can integrate solutions through APIs, MCP, webhooks, databases, third-party platforms, or other formats required by the client's infrastructure."
+      },
+      "05": {
+        "question": "How does communication work across different time zones?",
+        "answer": "We are fully aligned with American time zones and friendly to European schedules. We normally recommend meetings during the European afternoon, but extended or 24-hour availability can be discussed for specific projects."
+      },
+      "06": {
+        "question": "Do you provide support after delivery?",
+        "answer": "Yes. Support requirements are defined according to each project's complexity and operational needs. Regular support can be provided through a monthly maintenance plan."
+      },
+      "07": {
+        "question": "How do you ensure application security?",
+        "answer": "Projects go through technical testing and specialized security reviews, following established market practices for architecture, access control, credentials, integrations, dependencies, and data protection."
+      },
+      "08": {
+        "question": "Why hire your agency instead of a European agency?",
+        "answer": "We combine quality, efficient delivery, integrated services, and a more accessible operational structure. This allows us to deliver high-value solutions with a favorable balance between expertise, quality, and cost, supported by the multidisciplinary experience of our founder."
+      },
+      "09": {
+        "question": "Does a more competitive price mean lower quality?",
+        "answer": "No. Quality, engineering, and security come first. Our pricing is more competitive because we use AI efficiently to optimize research, development, testing, and documentation while preserving human oversight, functionality, and professional standards."
+      }
+    }
+  },
+  "contact": {
+    "title": "Start a",
+    "titleAccent": "conversation.",
+    "lead": "Tell us what you are building, automating, or exploring and we will get back to you directly.",
+    "publicDetail": "This public test site uses a direct email handoff so your message can be sent without a live backend.",
+    "backendDetail": "This form sends your message to Bruno at CriativAI and stores the submission for reliable follow-up inside the project database.",
+    "emailPlaceholder": "name@company.com",
+    "mailtoSubject": "CriativAI contact request",
+    "mailtoName": "Name",
+    "mailtoEmail": "Email",
+    "mailtoFallback": "I would like to discuss a project.",
+    "footerLead": "AI-powered products, automations, and grounded systems designed for real business work.",
+    "destination": "Destination",
+    "footerBottom": "Direct contact, with context preserved."
+  },
+  "forms": {
+    "name": "Name",
+    "yourName": "Your name",
+    "email": "Email",
+    "subject": "Subject",
+    "leaveEmpty": "Leave this field empty",
+    "publicNotice": "Public test mode: submitting this form opens your email app with the message prefilled.",
+    "subjectPlaceholder": "What would you like to discuss?",
+    "message": "Message",
+    "messagePlaceholder": "Share the context, goal, or challenge.",
+    "clean": "Clean Form",
+    "continueEmail": "Continue by Email",
+    "sending": "Sending...",
+    "send": "Send",
+    "submissionConfirmed": "Submission confirmed",
+    "close": "Close",
+    "successTitle": "Message sent successfully.",
+    "successMessage": "Thanks for reaching out. Your message has been received and will be reviewed as soon as possible.",
+    "sendError": "Unable to send your message right now."
+  },
+  "hire": {
+    "eyebrow": "Hire Bruno",
+    "title": "Open positions, choose the best for you.",
+    "lead": "Flexible hiring formats for companies and founders who need senior AI architecture, product design, implementation strategy, and hands-on delivery without forcing the work into a generic engagement model.",
+    "openPositions": "Open positions",
+    "chooseModel": "Choose the right working model",
+    "modelLead": "Each option is designed around a different level of commitment, from full-time leadership to strategic consulting, training, and focused custom builds.",
+    "positions": {
+      "full-time": {
+        "eyebrow": "Employment",
+        "title": "FULL TIME",
+        "status": "Negotiable",
+        "action": "Hire Me Full Time",
+        "text": "For companies that want Bruno fully embedded in the team, leading AI architecture, product thinking, design, and delivery with long-term commitment.",
+        "detail": "Available for fully remote, hybrid, or on-site work anywhere in the world, depending on the scope, seniority, compensation, and strategic fit."
+      },
+      "dedicated-part-time": {
+        "eyebrow": "Dedicated capacity",
+        "title": "Dedicated Part Time",
+        "status": "Open positions 1/3",
+        "action": "Reserve Part-Time Capacity",
+        "text": "The strongest cost-benefit model for serious execution: high-quality delivery, dedicated focus, predictable progress, and flexible commitment.",
+        "detail": "Ideal for businesses that need senior AI, product, and engineering capability without the cost of a full-time executive or internal team."
+      },
+      "project-design": {
+        "eyebrow": "Custom build",
+        "title": "Project Design",
+        "status": "Scoped by project",
+        "action": "Start a Custom Build",
+        "text": "Hire Bruno on demand for a specific project, with budget, planning, and development organized as a clear custom-build engagement.",
+        "detail": "Best for intelligence hubs, internal platforms, AI agents, CRMs, operational tools, and product experiences that need focused delivery."
+      },
+      "discovery-consulting": {
+        "eyebrow": "Strategic session",
+        "title": "Discovery Consultant Sessions",
+        "status": "Available",
+        "action": "Book Discovery Session",
+        "text": "A focused consulting model for teams that want to define a topic, share the intended scope, and receive a practical AI adoption or build strategy.",
+        "detail": "Bruno researches the path to the target and presents a sharp 1h30 call with strategic direction, practical evaluation, and next-step recommendations."
+      },
+      "specialized-training": {
+        "eyebrow": "Training",
+        "title": "Specialized Training",
+        "status": "For teams or individuals",
+        "action": "Plan Training",
+        "text": "Specialized AI, product, prompt engineering, and workflow training for individuals, teams, or companies that want practical capability fast.",
+        "detail": "Sessions can be shaped around your tools, maturity level, business goals, and the exact AI systems or practices your team needs to adopt."
+      }
+    }
+  },
+  "legal": {
+    "eyebrow": "Privacy & Terms",
+    "title": "CriativAI Privacy & Terms",
+    "updated": "Last updated: July 24, 2026",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "privacyOne": "CriativAI uses contact, chat, form, and calendar information only to respond to requests, support scheduling, and provide the services chosen by the user.",
+    "privacyTwo": "When Google Calendar is connected, CriativAI may check availability and create, update, or cancel calendar events with Google Meet links. Calendar data is used only for scheduling and is not sold.",
+    "privacyThree": "Access tokens and operational data are stored only as needed to run the service. Access can be revoked by disconnecting the app from the Google account permissions page or by contacting CriativAI.",
+    "termsOne": "By using CriativAI, you agree to use the site and scheduling features lawfully and only for legitimate business communication.",
+    "termsTwo": "AI-generated responses and scheduling suggestions should be reviewed before relying on them for final business decisions. CriativAI may update or disable features to improve reliability, security, or compliance.",
+    "termsThree": "For privacy, terms, or data access questions, contact bruno@criativai.site."
+  },
+  "founding": {
+    "eyebrow": "Founding SDR / San Francisco",
+    "titleOne": "Don't Just Sell",
+    "titleTwo": "for a Company.",
+    "titleThree": "Build One.",
+    "lead": "We're selecting a small number of ambitious sales professionals in San Francisco to help grow CriativAI's local operation.",
+    "detail": "Start as a Founding SDR. Build clients, generate revenue and unlock the opportunity to become a partner in the San Francisco operation you helped create.",
+    "apply": "Apply to Become a Founding SDR",
+    "seeHow": "See How It Works",
+    "oneMarket": "ONE MARKET",
+    "oneOpportunity": "ONE OPPORTUNITY",
+    "opportunity": "The opportunity",
+    "opportunityTitle": "This Is More Than a Sales Role.",
+    "opportunityLead": "Most sales positions reward you for the next deal.",
+    "opportunityReward": "This opportunity is designed to reward you for the market you help build.",
+    "opportunitySupport": "You prospect, open relationships and bring new clients. We provide the technical team, AI expertise, automation, product design, software development and delivery.",
+    "mantra": "Find opportunities. Build relationships. Create revenue.",
+    "growth": "As the operation grows, your position can grow with it.",
+    "path": "The path",
+    "pathTitle": "From SDR to Local Partner.",
+    "pathLead": "The model is designed around performance. Your growth is directly connected to the value you create.",
+    "asset": "You stop being only a salesperson and start building an asset.",
+    "offer": "The offer",
+    "selling": "What You'll Be Selling.",
+    "offerLead": "CriativAI helps startups and SMBs build technology without the cost and complexity of assembling an entire internal team.",
+    "offerStrong": "Clients gain access to multidisciplinary technology capabilities at a fraction of the cost of building the same team internally.",
+    "profile": "The profile",
+    "looking": "Who We're Looking For.",
+    "profileLead": "We are looking for someone who sees sales as more than a job.",
+    "profileStrong": "We care more about drive, commercial ability, initiative and results.",
+    "difference": "The difference",
+    "bringMarket": "Bring the market.",
+    "buildOperation": "Build the operation.",
+    "differenceLead": "A traditional SDR creates revenue for someone else's company. Here, exceptional performance can create a path toward ownership in the market you develop.",
+    "sanFrancisco": "San Francisco",
+    "oneMarketTitle": "One Market.",
+    "oneOpportunityTitle": "One Opportunity.",
+    "sfLead": "We are currently building this model specifically for the San Francisco market. The first commercial professional will help establish and grow the operation locally.",
+    "nextMove": "Your next move",
+    "buildMore": "Build More Than",
+    "yourPipeline": "Your Pipeline.",
+    "buildMarket": "Build Your Market.",
+    "finalLead": "If you believe you can open doors, generate business and help build a technology operation in San Francisco, we want to talk.",
+    "applyOpportunity": "Apply for the Founding SDR Opportunity",
+    "solutions": {
+      "01": "AI & Automation",
+      "02": "AI Agents",
+      "03": "Custom Software",
+      "04": "Web & App Development",
+      "05": "Product Design",
+      "06": "System Design",
+      "07": "Business Process Automation",
+      "08": "Integrations & Deployment"
+    },
+    "traits": {
+      "01": "Strong hunter mentality",
+      "02": "Experience with B2B outbound",
+      "03": "Confidence approaching founders and business owners",
+      "04": "Interest in AI, automation and technology",
+      "05": "Entrepreneurial ambition",
+      "06": "Strong motivation to earn based on performance",
+      "07": "Desire to build something instead of simply occupying a position"
+    },
+    "productLine": "AI • Automation • Software • Digital Products"
+  },
+  "hr": {
+    "eyebrow": "AI for recruitment companies",
+    "streamline": "STREAMLINE",
+    "your": "YOUR",
+    "recruitment": "RECRUITMENT",
+    "operations": "OPERATIONS",
+    "with": "WITH",
+    "ai": "AI",
+    "heroLead": "Your methods. Your criteria. Your tools.",
+    "heroDetail": "We design AI workflows, assessments, dashboards, and management systems around the way your recruitment company already works.",
+    "era": "The era of hyper-personalization",
+    "valueTitle": "Design fully customized recruitment workflows",
+    "valueLead": "This is no longer about a one-size-fits-all tool. It is about building precise systems around your methodology, business rules, and operating reality.",
+    "valueStrong": "What matters is not generic automation. What matters is a stack that fits your company.",
+    "broader": "A broader, more strategic view",
+    "buildThe": "Build the",
+    "recruitmentCompany": "recruitment company",
+    "youRun": "you want to run.",
+    "finalLead": "From talent intelligence to operations and outbound growth, we can shape AI around the way your team actually works.",
+    "requestDemo": "Request a Demo",
+    "talkUseCase": "Talk about your use case",
+    "demoEmailSubject": "Request a Recruitment Demo",
+    "useCaseEmailSubject": "Talk about AI for Recruitment",
+    "footerHomeAria": "CriativAI Human Resources home",
+    "footerLead": "AI systems for recruitment companies that want more precision, more capacity, and more control.",
+    "overview": "Overview",
+    "footerBottom": "Recruitment intelligence, with human control.",
+    "pillars": {
+      "digital-operations": {
+        "title": "Digital Operations",
+        "intro": "Replace fragmented tools and repetitive workflows with systems designed around your operation.",
+        "items": {
+          "administrative-process-automation": "Automate repetitive administrative and operational processes.",
+          "recruitment-support-ai-agents": "Deploy AI agents to support recruiters, clients, and candidates.",
+          "custom-management-systems": "Build custom management systems for your workflows and business rules.",
+          "performance-operations-dashboards": "Create dashboards to monitor roles, talent, teams, and performance.",
+          "custom-operational-tools": "Develop custom tools for specific operational challenges.",
+          "business-tool-integration": "Integrate ATS, CRM, spreadsheets, forms, and calendars."
+        }
+      },
+      "business-discovery": {
+        "title": "Business Discovery & Outbound",
+        "intro": "Find the right companies, reach the right people, and turn market research into new business opportunities.",
+        "items": {
+          "company-prospecting": "Discover and qualify companies by market, industry, and potential.",
+          "decision-maker-identification": "Identify relevant decision-makers and professional contacts.",
+          "lead-data-enrichment": "Enrich leads with verified data, context, and sources.",
+          "evidence-based-personalized-messaging": "Create personalized messages based on real business evidence.",
+          "campaign-automation-and-tracking": "Automate campaigns, follow-ups, and sales tracking.",
+          "ai-sdr-agents": "Deploy AI SDR agents to engage and qualify leads.",
+          "calendar-scheduling-integration": "Integrate calendars for direct meeting scheduling."
+        }
+      },
+      "recruitment-intelligence": {
+        "title": "Recruitment Intelligence",
+        "intro": "Turn hours of manual research into a recruitment process shaped around your own methodology, criteria, and critical roles.",
+        "items": {
+          "multi-source-talent-search": "Search for professionals across multiple public and specialized sources.",
+          "candidate-fit-ranking": "Pre-qualify and rank professionals by level of fit.",
+          "evidence-based-shortlists": "Create evidence-based shortlists ready for recruiter review.",
+          "custom-qualification-tests": "Build custom qualification tests for specific roles and skills.",
+          "standardized-assessments": "Run standardized assessments at scale using your own evaluation criteria.",
+          "outreach-and-screening": "Create personalized outreach messages and screening questions."
+        }
+      }
+    },
+    "console": {
+      "aria": "Illustration of AI opportunities for recruitment companies",
+      "heading": "AI / RECRUITMENT",
+      "custom": "CUSTOM",
+      "areas": "Three strategic areas",
+      "scope": "Talent · Operations · Business growth",
+      "ai": "AI",
+      "items": {
+        "01": {
+          "name": "Recruitment Intelligence",
+          "note": "Search, qualify, shortlist"
+        },
+        "02": {
+          "name": "Digital Operations",
+          "note": "Systems, dashboards, agents"
+        },
+        "03": {
+          "name": "Business Discovery",
+          "note": "Leads, outreach, meetings"
+        }
+      },
+      "footerLabel": "MACRO VIEW",
+      "footerText": "Adapted to your process"
+    }
+  },
+  "about": {
+    "fullCycle": "Full Product Cycle",
+    "techStack": "Tech Stack",
+    "awards": "Awards",
+    "professional": "Professional",
+    "buildConfidence": "BUILD WITH CONFIDENCE",
+    "heroTitle": "GenAI Architect",
+    "heroSubtitle": "Context Prompt Engineer",
+    "heroRole": "with Creative Design Background",
+    "heroLead": "Bruno works at the intersection of product design, artificial intelligence, and business strategy. His practice combines two decades of creative experience with a systems mindset to turn complex ideas into useful, understandable, and carefully crafted digital products.",
+    "dropMessage": "Drop Me a Message",
+    "bookCall": "Book a Call",
+    "portraitMeta": "AI Architecture / Design / Strategy",
+    "oneProfessional": "One Professional,",
+    "fullProductCycle": "Full Product Cycle",
+    "cycleLead": "AI, design, and engineering combined into one brain.",
+    "capabilitiesTitle": "Capabilities: What Bruno Builds",
+    "capabilities": "Capabilities",
+    "capabilitiesLead": "From deep creative AI background to solid technical knowledge of GenAI and related technologies.",
+    "clickDetails": "Click to view details",
+    "awardsTitle": "Awards: Prompt Engineering",
+    "promptEngineering": "Prompt Engineering",
+    "awardsLead": "International recognition in prompt engineering, agent design, prompt-app concepts, and built-in ChatGPT games.",
+    "resultsPage": "Results Page",
+    "openProject": "Open Project",
+    "experienceTitle": "Professional Experience",
+    "experience": "Experience",
+    "experienceLead": "20+ years building interactive systems, from a deep creative design background to modern AI development.",
+    "contactBruno": "Contact Bruno",
+    "portraitAlt": "Bruno Cesar, GenAI Architect and Context Prompt Engineer",
+    "portraitName": "BRUNO CESAR",
+    "socialAria": "Bruno Cesar social links",
+    "statsAria": "Experience and key numbers",
+    "stats": {
+      "01": "Years of Experience",
+      "02": "Interactive Projects Delivered",
+      "03": "Followers Across Social Platforms",
+      "04": "International Prompt Engineering Hackathon Awards"
+    },
+    "productCycle": {
+      "01": { "title": "Ideation", "text": "I can join from the earliest idea stage, helping clarify requirements, collect the briefing, and turn loose goals into a practical product direction." },
+      "02": { "title": "Planning", "text": "A simple, effective onboarding process: you define the objective, I help expand the vision, then we shape the right plan for your business." },
+      "03": { "title": "Design", "text": "More than 20 years of product design experience, strengthened by AI, from the Macromedia Flash era to refined React web applications focused on great user experience." },
+      "04": { "title": "Agentic Development", "text": "From harness to production system. I do not reinvent the wheel; I use AI intelligently to build reliable, efficient systems with strong delivery and accessible cost." },
+      "05": { "title": "Delivery", "text": "Infrastructure and deployment adapted to the project, from corporate environments to your own server, with availability and reliability aligned with serious production standards." }
+    },
+    "features": {
+      "01": { "title": "AI Architecture", "items": { "01": "DevOps", "02": "Docker, Swarm, Kubernetes, GitHub", "03": "Observability, Tracing, Langfuse, Grafana", "04": "Bash, Shell Script, PowerShell, Terminal", "05": "CLI, SSH, SFTP, SystemD, Cron", "06": "VPS, GCP, AWS" } },
+      "02": { "title": "UI/UX Product Design", "items": { "01": "Design System", "02": "Web Design", "03": "Content Automation", "04": "Product Vision & Branding", "05": "Human-Centered AI", "06": "LoRA, Weave, Flora, ComfyUI" } },
+      "03": { "title": "AI Engineering", "items": { "01": "Frontend & Backend Development", "02": "ETL, Data Processing, Custom RAGs | GraphRAG", "03": "Supabase, Postgres, Mongo, Big Data", "04": "Python, Next.js, Node, React, TypeScript", "05": "API Integration, FastAPI, MCP, CLI" } }
+    },
+    "awardItems": [
+      { "result": "1st place at Chipp.ai", "category": "Prompt Engineer Hackathon", "title": "AgentOS, Multi-Tasking AI Agent", "description": "AgentOS is a personalized multi-tasking AI agent designed to execute multiple internal and external functions from a single prompt input." },
+      { "result": "1st place at FlowGPT", "category": "Original Prompt Engineering Technique", "title": "Concatenated Prompt Technique", "description": "An advanced prompt engineering method that lets ChatGPT run multiple prompt layers in a single input, expanding complex interactions into prompt-app experiences." },
+      { "result": "2nd place at FlowGPT Hackathon S3", "category": "Prompt Engineer, Judge Category", "title": "AI Judgen", "description": "A prompt evaluation agent that grades creativity, clarity, precision, originality, syntax consistency, logical structure, and improvement opportunities." },
+      { "result": "1st place at FlowGPT Prompt Battle", "category": "Past and Future", "title": "Track to the Future", "description": "An innovative built-in ChatGPT game about quantum travel, hidden life secrets, and speculative scenarios for humanity's future." },
+      { "result": "3rd place at FlowGPT Hackathon S2", "category": "Creative Category", "title": "GPTinder", "description": "A creative dating advisor prompt that generates personalized conversation lines and topics for dating apps based on user and match context." },
+      { "result": "3rd place at FlowGPT Hackathon S2", "category": "Software Development", "title": "ICON Machine", "description": "A Unicode icon discovery tool for ChatGPT that finds related icons, official names, and deployment-ready icon tables from any reference." },
+      { "result": "Finalist at FlowGPT Prompt Battle", "category": "Innovative Built-In ChatGPT Game", "title": "Minecraft Mashup Game", "description": "A ChatGPT game experience built around an epic journey beyond The End, hidden messages, iconic game characters, and a mystery-driven adventure." },
+      { "result": "Finalist at FlowGPT Prompt Battle", "category": "Innovative ChatGPT Built-In Game", "title": "Sherlock Hoax", "description": "A themed investigation game with expert characters designed to explore complex theories from multiple perspectives inside a conversational experience." }
+    ],
+    "skillsAria": "Key skills at {{company}}",
+    "experienceItems": [
+      { "company": "DANTE IA", "role": "CTO | AI Architect", "period": "Apr 2025 - Present", "location": "Blumenau, Santa Catarina, Brazil", "workMode": "Hybrid | Part-time", "skills": ["SSH", "Ontologies", "AI Architecture", "Knowledge Systems"] },
+      { "company": "DANTE IA", "role": "Prompt Engineer | UX Designer", "period": "Oct 2024 - Apr 2025", "location": "Brazil", "workMode": "Remote | Part-time", "skills": ["UX Design", "Front-end Design", "Prompt Engineering", "Product Design"] },
+      { "company": "EcoFactor", "role": "Team Lead | Prompt Engineer", "period": "Mar 2024 - Mar 2025", "location": "Brazil", "workMode": "Remote | Part-time", "description": "Led the development team across the full AI platform lifecycle and designed the architecture of an intelligent manufacturing system focused on industrial optimization, ESG compliance, and sustainable product research.", "skills": ["Context Prompt Engineering", "Ontologies", "AI Platform Architecture"] },
+      { "company": "Prompt-Master.org", "role": "Creative Prompt Engineer", "period": "Jan 2023 - Present", "location": "Rio de Janeiro, Brazil", "workMode": "Remote | Part-time", "skills": ["Design Thinking", "Prompt Engineering Research", "Context Engineering"] },
+      { "company": "TutorialMaster.org", "role": "Owner | Founder | Instructor", "period": "Jan 2013 - 2020", "location": "Vidigal, Rio de Janeiro, Brazil", "workMode": "Part-time", "description": "Founded a technology, creativity, and design-thinking education community that, together with its YouTube channel, reached more than 150,000 followers and students.", "skills": ["UX Design", "Design Thinking", "Creative Education", "Digital Content"] },
+      { "company": "CA Comunicacao", "role": "Senior Art Director", "period": "Jan 2009 - Dec 2012", "location": "Brazil", "description": "Led creative work for clients including Chevrolet, TIM, Unimed, Vale, Sebrae, and the State Government, while directing special projects for interactive media and promotional websites.", "skills": ["Art Direction", "Interactive Media", "Product Launches"] },
+      { "company": "Instituto Infnet", "role": "Professor of Computer Graphics and UI/UX Design", "period": "Jan 2007 - Dec 2008", "location": "Rio de Janeiro, Brazil", "description": "Taught computer graphics and design at Rio de Janeiro's first authorized Adobe training center, strengthening expertise in teaching methodology, communication, and Adobe creative software.", "skills": ["UI/UX Design", "Computer Graphics", "Teaching", "Adobe Software"] },
+      { "company": "Copacabana Brasil", "role": "Art Director", "period": "Oct 2005 - Aug 2007", "location": "Rio de Janeiro, Brazil", "description": "Managed strategic accounts, creative direction, remote client support, and internal production, building deep experience in advertising operations and production workflows.", "skills": ["UX Design", "GUI Design", "Creative Management", "Production"] },
+      { "company": "Comunique-se S/A", "role": "UI / UX / Web Designer", "period": "Jan 2004 - Jul 2005", "location": "Brazil", "description": "Planned user experiences and new digital products for a large communications portal, creating online press rooms, email campaigns, advertising, and institutional materials.", "skills": ["UX Design", "GUI Design", "Web Design", "Digital Products"] },
+      { "company": "Visiva Comunicacao Visual", "role": "Graphic Designer", "period": "Aug 2001 - Apr 2003", "location": "Rio de Janeiro, Brazil", "description": "Created visual identities, stationery, annual reports, and institutional print systems for organizations including Petrobras, Vale, and Fundacao Getulio Vargas.", "skills": ["Graphic Design", "Visual Identity", "Editorial Design", "Print Production"] },
+      { "company": "IDS - Interactive Design System", "role": "Multimedia Designer | UI/UX Designer", "period": "Jan 1998 - Dec 2000", "location": "Rio de Janeiro, Brazil", "description": "Began a career in interactive design at one of Brazil's pioneering multimedia companies, learning the usability principles that continue to guide every product today.", "skills": ["UX Design", "GUI Design", "Multimedia", "Usability"] }
+    ],
+    "finalTitle": "Technology is most valuable when it amplifies human capabilities",
+    "finalLead": "Let's build amazing things together. Send a message through the form or ask the AI assistant about ideas, availability, and the best next step for your project.",
+    "footerHomeAria": "CriativAI About Me home"
+  },
+  "talent": {
+    "complimentary": "Complimentary shortlist request",
+    "title": "Talent",
+    "titleAccent": "Preview.",
+    "lead": "Share one open role and receive a curated shortlist of up to 20 relevant professionals within 24 hours.",
+    "detail": "A no-cost diagnostic for specialized recruitment teams that want to test the quality and speed of an AI-supported search before expanding the workflow.",
+    "startRequest": "Start the Request",
+    "whatGives": "What this gives you",
+    "benefitsTitle": "A fast, evidence-led sample of your search.",
+    "benefitsLead": "Useful for executive search firms, boutique consultancies, independent recruiters, and specialist talent teams.",
+    "formEyebrow": "Free request form",
+    "formTitle": "Describe the role. We structure the search.",
+    "formLead": "Give us the live vacancy and the main search signal. You can also add an exclusion characteristic and one differentiator if they help sharpen the shortlist.",
+    "visualAria": "Preview of a curated candidate shortlist",
+    "visualPreview": "PREVIEW / LIVE ROLE",
+    "free": "FREE",
+    "turnaround": "turnaround target",
+    "visualRole": "Role title and search intent",
+    "visualBrief": "One primary search brief in multiline format",
+    "visualSignals": "Optional exclusion and differentiator signals",
+    "output": "OUTPUT",
+    "visualOutput": "Up to 20 aligned candidate profiles",
+    "publicNotice": "Public test mode: your brief is handed off through your email app instead of a live backend form.",
+    "backendNotice": "We review the brief and respond to the requester by email within 24 hours.",
+    "roleTitle": "Open role title",
+    "searchCriterion": "Relevant search criterion 01",
+    "searchPlaceholder": "Describe the single main search signal, in multiline form if needed.",
+    "exclusion": "Exclusion characteristic",
+    "exclusionPlaceholder": "Optional: example of what should disqualify a profile",
+    "differentiator": "Differentiator",
+    "differentiatorPlaceholder": "Optional: a strong plus that would elevate the shortlist",
+    "formPublicNotice": "Public test mode: submitting this form opens your email app with the role brief prefilled.",
+    "footerLead": "AI-supported recruiting systems designed to help teams find stronger candidates, faster.",
+    "quickLinks": "Quick links",
+    "requestForm": "Request form",
+    "footerBottom": "Recruitment intelligence, grounded in clear criteria.",
+    "successTitle": "Your request is confirmed.",
+    "successMessage": "Thank you for sharing the role brief. We will review it and send your shortlist within 24 hours.",
+    "successDetail": "The automatic confirmation email will start sending as soon as the Mailjet SMTP credentials are added to the environment.",
+    "sendError": "Unable to send your request right now.",
+    "rolePlaceholder": "Example: VP of AI Product",
+    "mailtoSubject": "Talent Preview Request",
+    "mailtoRequester": "Requester",
+    "mailtoRole": "Role",
+    "mailtoPrimaryCriterion": "Primary search criterion",
+    "benefits": {
+      "01": {
+        "title": "Up to 20 aligned profiles",
+        "text": "A shortlist that helps you evaluate search quality quickly before committing to a broader rollout."
+      },
+      "02": {
+        "title": "Delivered within 24 hours",
+        "text": "A fast first signal for live roles that need structured research, prioritization, and initial fit analysis."
+      },
+      "03": {
+        "title": "Built around your criteria",
+        "text": "We translate your brief into search requirements, exclusion rules, and one differentiating signal."
+      }
+    }
+  },
+  "footer": {
+    "productLead": "AI-powered products, intelligent automations, and human-centered digital experiences.",
+    "navigation": "Navigation",
+    "projects": "Projects",
+    "recruiters": "For Recruiters",
+    "social": "Social Media",
+    "bottom": "Creative intelligence, grounded in reality.",
+    "rights": "All rights reserved.",
+    "youtube": "YouTube",
+    "linkedin": "LinkedIn",
+    "behance": "Behance",
+    "github": "GitHub"
+  },
+  "video": {
+    "heroEyebrow": "Product Design — AI Engineering — Strategy",
+    "creative": "CREATIVE",
+    "aiSolutions": "AI SOLUTIONS",
+    "topicsAria": "Featured AI solution topics",
+    "topic1": "AI-Powered Client Acquisition",
+    "topic2": "AI-Powered Customer Service",
+    "topic3": "Refined Websites",
+    "topic4": "High Conversion Landing Pages",
+    "topic5": "Custom System Development",
+    "topic6": "Corporate Knowledge Systems",
+    "topic7": "Prompt Engineering Research",
+    "topic8": "Business Automation",
+    "scrollProjects": "Scroll to featured projects",
+    "welcome": "WELCOME TO",
+    "hyper": "THE",
+    "personalization": "HYPER-PERSONALIZATION",
+    "era": "ERA",
+    "nextLead": "Now it's your turn to leverage AI and build digital solutions tailored precisely to your business, unlocking new opportunities, accelerating your initiatives, and driving better results.",
+    "askBook": "Ask My AI Assistant and Book a Call",
+    "enterpriseLayer": "Enterprise intelligence layer",
+    "capabilitiesCount": "10 capabilities",
+    "leadTitle": "AI Lead Generation and Conversion Agents",
+    "leadSubtitle": "Increase revenue with better qualified leads and smarter conversion.",
+    "leadText": "Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate outbound actions that expand your conversion potential and drive more revenue.",
+    "automation": "Automation",
+    "fintech": "Fintech",
+    "legalAi": "Legal AI",
+    "legalAiPlatform": "Legal AI Platform",
+    "projectDashboard": "Intelligence Dashboard",
+    "projectDashboardText": "Gain a clearer view of your business with personalized smart dashboards, fully connected to your business knowledge and focused exactly on your precise operational needs.",
+    "projectTrading": "AI-First Trading Platform",
+    "projectTradingText": "An AI-native trading platform designed around intelligent agents, predictive analytics, automation, and decision support.",
+    "projectDanteText": "An AI solution for the legal industry built with intelligent agents, RAG, GraphRAG, contextual reasoning, and enterprise knowledge systems.",
+    "whatWeBuild": "What we build",
+    "servicesLead": "From the first interface decision to the intelligence layer behind it, every engagement connects design quality with technical depth.",
+    "readyToBuild": "Ready to Build Your",
+    "nextAiProduct": "Next AI Product?",
+    "finalLead": "Let's create intelligent software that combines design, automation, and business strategy to solve real business challenges.",
+    "startProject": "Start a Project",
+    "groundingTopics": {
+      "01": { "title": "Custom RAG Setups | Knowledge Graphs | GraphRAG", "description": "Connect private knowledge to AI answers with tailored retrieval while mapping relationships, entities, and dependencies so agents keep context grounded across the full knowledge layer." },
+      "02": { "title": "Prompt Engineering Research | Context Engineering", "description": "Design tested prompts and reasoning patterns while controlling the exact information your agents receive before they answer or act, keeping outputs clearer and more predictable." },
+      "03": { "title": "Enterprise Knowledge Systems", "description": "Turn scattered company information into a reliable intelligence layer for people and AI, giving your team a more structured and actionable source of truth." },
+      "04": { "title": "Multi Agent Architecture", "description": "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows with cleaner orchestration across the full system." },
+      "05": { "title": "ETL, Data Processing | Context Enrichment", "description": "Clean, transform, structure, and enrich multi-source data so it becomes useful AI-ready knowledge with better metadata, relationships, and meaning for retrieval." },
+      "06": { "title": "Smart Chunk Processing", "description": "Split knowledge into precise chunks that preserve meaning, reduce noisy retrieval, and keep your AI responses aligned with the most relevant source material." },
+      "07": { "title": "Guardrails | Observability", "description": "Monitor, constrain, and improve agent behavior with clearer controls, better visibility, and more reliable operational feedback." }
+    }
+  },
+  "videoServices": {
+    "01": {
+      "title": "Product Design",
+      "text": "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences."
+    },
+    "02": {
+      "title": "Enterprise Knowledge System",
+      "text": "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems."
+    },
+    "03": {
+      "title": "System Design",
+      "text": "Technical architecture and system planning for scalable digital products and AI-powered applications."
+    },
+    "04": {
+      "title": "AI Automations",
+      "text": "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence."
+    },
+    "05": {
+      "title": "Smart Agents",
+      "text": "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously."
+    },
+    "06": {
+      "title": "Refined Websites",
+      "text": "Refined design for large-scale corporate websites and simple landing pages built to convert with clarity, elegance, and performance."
+    },
+    "07": {
+      "title": "Custom AI Training",
+      "text": "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities."
+    },
+    "08": {
+      "title": "Enterprise AI Consulting",
+      "text": "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization."
+    }
+  }
 }

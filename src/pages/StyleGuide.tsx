@@ -22,12 +22,12 @@ const colors = [
 ] as const;
 
 const headings = [
-  ["H1", "Creative intelligence", "Roboto Condensed Semi-bold", "clamp(3.6rem, 18vw, 7rem)"],
-  ["H2", "A clear visual hierarchy", "Anton", "clamp(2.6rem, 6vw, 5rem)"],
-  ["H3", "Human-centered systems", "Inter", "clamp(1.8rem, 2.5vw, 2.45rem)"],
-  ["H4", "Component detail", "Inter", "1.25rem"],
-  ["H5", "Supporting information", "Inter", "1rem"],
-  ["H6", "Metadata and labels", "Inter", "0.76rem"],
+  ["H1", "Creative intelligence", "Orbitron Regular", "3rem"],
+  ["H2", "A clear visual hierarchy", "Orbitron Regular", "2.25rem"],
+  ["H3", "Human-centered systems", "Orbitron Regular", "1.5rem"],
+  ["H4", "Component detail", "Orbitron Regular", "inherit"],
+  ["H5", "Supporting information", "Orbitron Regular", "inherit"],
+  ["H6", "Metadata and labels", "Orbitron Regular", "inherit"],
 ] as const;
 
 const fontFamilies = [
@@ -67,6 +67,15 @@ const fontFamilies = [
     styles: ["normal", "italic"],
     weights: [[100, "Thin"], [200, "Extra Light"], [300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"], [800, "Extra Bold"], [900, "Black"]],
   },
+  {
+    role: "Quinary / Condensed alternate",
+    name: "Rajdhani",
+    variable: "--font-rajdhani",
+    stack: "Rajdhani, with sans-serif fallback",
+    sample: "Condensed interface sample",
+    styles: ["normal"],
+    weights: [[300, "Light"], [400, "Regular"], [500, "Medium"], [600, "Semibold"], [700, "Bold"]],
+  },
 ] as const;
 
 const MIDDOT = "\u00B7";
@@ -101,6 +110,19 @@ export default function StyleGuide() {
         </div>
       </section>
 
+      <section className="style-neon-section" aria-labelledby="neon-title">
+        <div className="site-container">
+          <div className="style-section-head">
+            <div><p className="eyebrow">00 / Motion study</p><h2 id="neon-title">Neon short-circuit</h2></div>
+            <p>A restrained study of an illuminated neon wordmark: a stable glow, occasional electrical discharges, and no page-wide flash.</p>
+          </div>
+          <div className="neon-specimen-grid">
+            <NeonSpecimen variant="light" label="Light / 300" />
+            <NeonSpecimen variant="regular" label="Regular / 400" />
+          </div>
+        </div>
+      </section>
+
       <section className="style-section" aria-labelledby="colors-title">
         <div className="site-container">
           <div className="style-section-head">
@@ -127,7 +149,7 @@ export default function StyleGuide() {
         <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">02 / Type scale</p><h2 id="type-title">Heading hierarchy</h2></div>
-            <p>Anton powers the display headings through the shared font stack. Inter keeps interfaces direct and legible. Cormorant adds a human note to the brand.</p>
+            <p>Orbitron powers the neon heading treatment. Inter keeps interfaces direct and legible. Cormorant adds a human note to the brand.</p>
           </div>
           <div className="type-list">
             {headings.map(([tag, text, font, size]) => (
@@ -146,7 +168,7 @@ export default function StyleGuide() {
         <div className="site-container">
           <div className="style-section-head">
             <div><p className="eyebrow">03 / Font families</p><h2 id="typography-title">Typography</h2></div>
-            <p>Every font loaded by the site, with the exact weights and stack behavior available for product and brand use.</p>
+            <p>Every font loaded by the site, with the exact weights and stack behavior available for product and brand use. Rajdhani is included here as an alternate condensed system font.</p>
           </div>
           <div className="font-family-list">
             {fontFamilies.map((family) => (
@@ -275,6 +297,27 @@ function HeadingSample({ tag, text, font, size }: HeadingSampleProps) {
     <article className="type-row">
       <div className="type-meta"><span>{tag}</span><Spec>{font} {MIDDOT} {size}</Spec></div>
       <Tag className={`type-sample type-sample--${tag.toLowerCase()}`}>{text}</Tag>
+    </article>
+  );
+}
+
+function NeonSpecimen({ variant, label }: { variant: "light" | "regular"; label: string }) {
+  return (
+    <article className={`neon-specimen neon-specimen--${variant}`}>
+      <p className="micro-label">{label}</p>
+      <div className="neon-wordmark" role="img" aria-label={`Neon short-circuit, ${label}`}>
+        <svg viewBox="0 0 440 140" aria-hidden="true">
+          <text className="neon-glow" x="220" y="96" textAnchor="middle">NEON</text>
+          <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
+          <g className="neon-arcs">
+            <path className="neon-arc neon-arc--one" d="M101 95 L99 88 L95 82 L89 77 L117 69 L104 42" />
+            <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L181 51 L153 64 L171 79" />
+            <path className="neon-arc neon-arc--three" d="M286 45 L294 49 L298 52 L304 55 L277 70 L291 92" />
+            <path className="neon-arc neon-arc--four" d="M334 95 L331 90 L330 88 L322 80 L350 66 L337 42" />
+          </g>
+        </svg>
+      </div>
+      <p className="style-spec">Four anchored discharges · each segment leaves and returns to the letter outline</p>
     </article>
   );
 }

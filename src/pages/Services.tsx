@@ -1,6 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
 import { useTranslation } from "react-i18next";
-import { type ReactNode } from "react";
 
 import { EditableCta } from "../components/CtaEditorButton";
 import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
@@ -11,118 +10,21 @@ const steps = [
   {
     welcomeKey: "services/process/initial-ai-briefing/start-ai-briefing-now",
     index: "01",
-    title: "Initial AI Briefing",
-    text: "With our AI assistant, you describe the initial scope of your idea so we can collect the first briefing and understand the business context.",
-    ctaLabel: "Start Ai Briefing Now",
     compactTitle: false,
   },
   {
     welcomeKey: "services/process/planning-call/book-a-call",
     index: "02",
-    title: "Planning Call",
-    text: "You schedule a call with our AI-assisted process so we can refine the plan, discuss ideas, define priorities, and shape the budget.",
-    ctaLabel: "Book a call",
     compactTitle: false,
   },
   {
     welcomeKey: "services/process/design-and-delivery/ask-my-agent",
     index: "03",
-    title: "Design & Delivery",
-    text: "We start development with key stages shared for your review, including follow-up meetings and iteration rounds until delivery.",
-    ctaLabel: "Ask my Agent",
     compactTitle: true,
   },
 ] as const;
 
-const faqs: Array<{ question: string; answer: ReactNode }> = [
-  {
-    question: "Where can our projects be hosted?",
-    answer: (
-      <p>
-        The infrastructure is fully adaptable. Projects can be deployed on cloud platforms, dedicated servers, the
-        client&apos;s own infrastructure, or another environment required by the project.
-      </p>
-    ),
-  },
-  {
-    question: "What does your delivery include?",
-    answer: (
-      <p>
-        Our work can cover the entire process, from the initial idea to development, deployment, and ongoing
-        maintenance. We can also adapt the delivery model to the client&apos;s specific structure and requirements.
-      </p>
-    ),
-  },
-  {
-    question: "How does the development process work?",
-    answer: (
-      <>
-        <p>The process is divided into three simple stages:</p>
-        <ol>
-          <li>The client completes an initial briefing with our AI agent.</li>
-          <li>We schedule a call to align requirements, details, scope, and budget.</li>
-          <li>We develop, deliver, and deploy the solution.</li>
-        </ol>
-      </>
-    ),
-  },
-  {
-    question: "Can you integrate the project with our existing systems?",
-    answer: (
-      <p>
-        Yes. We can integrate solutions through APIs, MCP, webhooks, databases, third-party platforms, or other formats
-        required by the client&apos;s infrastructure.
-      </p>
-    ),
-  },
-  {
-    question: "How does communication work across different time zones?",
-    answer: (
-      <p>
-        We are fully aligned with American time zones and friendly to European schedules. We normally recommend meetings
-        during the European afternoon, but extended or 24-hour availability can be discussed for specific projects.
-      </p>
-    ),
-  },
-  {
-    question: "Do you provide support after delivery?",
-    answer: (
-      <p>
-        Yes. Support requirements are defined according to each project&apos;s complexity and operational needs. Regular
-        support can be provided through a monthly maintenance plan.
-      </p>
-    ),
-  },
-  {
-    question: "How do you ensure application security?",
-    answer: (
-      <p>
-        Projects go through technical testing and specialized security reviews, following established market practices
-        for architecture, access control, credentials, integrations, dependencies, and data protection.
-      </p>
-    ),
-  },
-  {
-    question: "Why hire your agency instead of a European agency?",
-    answer: (
-      <p>
-        We combine quality, efficient delivery, integrated services, and a more accessible operational structure. This
-        allows us to deliver high-value solutions with a favorable balance between expertise, quality, and cost,
-        supported by the multidisciplinary experience of our founder.
-      </p>
-    ),
-  },
-  {
-    question: "Does a more competitive price mean lower quality?",
-    answer: (
-      <p>
-        No. Quality, engineering, and security come first. Our pricing is more competitive because we use AI efficiently
-        to optimize research, development, testing, and documentation while preserving human oversight, functionality,
-        and professional standards.
-      </p>
-    ),
-  },
-];
+const faqIds = Array.from({ length: 9 }, (_, index) => String(index + 1).padStart(2, "0"));
 
 function Brand() {
   return (
@@ -200,11 +102,11 @@ export default function ServicesPage() {
 
           <div className="services-process-grid">
             {steps.map((step) => (
-              <article className="services-process-card" key={step.title}>
+              <article className="services-process-card" key={step.index}>
                 <span>{step.index}</span>
-                <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{t(`services.steps.${step.index}.title`, step.title)}</h3>
-                <p>{t(`services.steps.${step.index}.text`, step.text)}</p>
-                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{t(`services.steps.${step.index}.cta`, step.ctaLabel)}</button>
+                <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{t(`services.steps.${step.index}.title`)}</h3>
+                <p>{t(`services.steps.${step.index}.text`)}</p>
+                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{t(`services.steps.${step.index}.cta`)}</button>
               </article>
             ))}
           </div>
@@ -215,19 +117,26 @@ export default function ServicesPage() {
         <div className="site-container services-faq-inner">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">FAQ</p>
+              <p className="eyebrow">{t("services.faqEyebrow")}</p>
               <h2 id="services-faq-title">{t("services.faqTitle")}</h2>
             </div>
           </div>
 
           <div className="services-faq-list">
-            {faqs.map((faq, index) => (
-              <details className="services-faq-item" key={faq.question} name="services-faq">
+            {faqIds.map((faqId, index) => (
+              <details className="services-faq-item" key={faqId} name="services-faq">
                 <summary>
-                  <h4>{faq.question}</h4>
+                  <h4>{t(`services.faqs.${faqId}.question`)}</h4>
                   <i aria-hidden="true">{String(index + 1).padStart(2, "0")}</i>
                 </summary>
-                <div className="services-faq-answer">{faq.answer}</div>
+                <div className="services-faq-answer">
+                  <p>{t(`services.faqs.${faqId}.answer`)}</p>
+                  {faqId === "03" ? (
+                    <ol>
+                      {["01", "02", "03"].map((stepId) => <li key={stepId}>{t(`services.faqs.03.steps.${stepId}`)}</li>)}
+                    </ol>
+                  ) : null}
+                </div>
               </details>
             ))}
           </div>

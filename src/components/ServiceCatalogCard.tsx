@@ -106,8 +106,8 @@ function ServiceIcon({ type }: { type: string }) {
 export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem }) {
   const { t } = useTranslation();
   const [active, setActive] = useState(false);
-  const title = t(`services.catalog.${service.id}.title`, { defaultValue: service.title });
-  const description = t(`services.catalog.${service.id}.text`, { defaultValue: service.text });
+  const title = t(`services.catalog.${service.id}.title`);
+  const description = t(`services.catalog.${service.id}.text`);
 
   return (
     <article
@@ -125,7 +125,7 @@ export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem })
       <div className="services-page-card-body">
         <div className="services-page-title-row">
           <ServiceIcon type={service.icon} />
-          <h3 className={title === "Enterprise Knowledge Systems" || service.id === "enterprise-knowledge-systems" ? "services-page-title--compact" : undefined}>{title}</h3>
+          <h3 className={service.id === "enterprise-knowledge-systems" ? "services-page-title--compact" : undefined}>{title}</h3>
         </div>
         <p>{description}</p>
       </div>

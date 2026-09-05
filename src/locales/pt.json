@@ -1,39 +1,750 @@
 {
-  "header": { "hireMe": "Contrate-me", "services": "Serviços", "projects": "Projetos", "about": "Sobre", "video": "Vídeo", "contact": "Contato", "style": "Estilo", "solutions": "Soluções", "recruiters": "Para Recrutadores", "founders": "Founders SDR", "primaryNavigation": "Navegação principal", "languageSelector": "Seletor de idioma", "openMenu": "Abrir menu", "closeMenu": "Fechar menu", "english": "Inglês", "portuguese": "Português", "home": "Página inicial CriativAI", "navigation": "Navegação", "backToTop": "Voltar ao topo" },
-  "chat": { "aria": "assistente de chat com IA", "conversation": "Conversa do chat", "title": "Faça perguntas e agende uma conversa", "newChat": "Abrir uma nova janela de chat", "collapse": "Recolher chat", "restoring": "Restaurando conversa...", "starters": "Sugestões para começar", "askBelow": "Faça sua pergunta abaixo", "contacting": "Conectando ao agente...", "preparing": "O assistente está preparando uma resposta", "message": "Mensagem", "placeholder": "Digite sua mensagem", "send": "Enviar mensagem", "open": "Abrir chat com IA", "intro": "Olá. Posso ajudar você a explorar oportunidades com IA e os próximos passos.", "iceBreakers": ["Quero conversar sobre a ideia do meu projeto.", "Quero aumentar a captura e conversão de leads.", "Quero automatizar as operações do meu negócio.", "Quero agendar uma conversa com Bruno.", "Quero criar um agente de suporte ao cliente.", "Quero contratar consultoria ou treinamento personalizado."] }
-  ,"home": { "heroEyebrow": "Design × Engenharia × Estratégia", "heroLead": "Construindo produtos com IA, automações inteligentes e software sob medida que combinam design, engenharia e estratégia de negócios para resolver desafios reais.", "talk": "Vamos conversar", "scroll": "Role para explorar", "customDevelopment": "Desenvolvimento sob medida", "knowledgeGrounding": "Fundamentação de conhecimento", "projects": "Projetos em destaque", "services": "Serviços", "startConversation": "Comece uma conversa", "startProject": "Iniciar um projeto" },
-  "services": { "askAssistant": "Pergunte ao meu assistente de IA", "iWantIt": "Quero isso", "catalog": {
-    "product-design": { "title": "Design de Produto", "text": "Design digital de produtos e UI/UX centrado em pessoas, com foco em usabilidade, acessibilidade, conversão e experiências excepcionais." },
-    "refined-websites": { "title": "Sites Refinados", "text": "Sites rápidos, acessíveis e refinados para plataformas corporativas ou landing pages de conversão, com infraestrutura limpa e código sob seu controle." },
-    "custom-software": { "title": "Software Sob Medida", "text": "Software construído para seus fluxos, usuários, dados e restrições operacionais, combinando arquitetura assistida por IA, desenvolvimento, testes e entrega." },
-    "ai-client-acquisition": { "title": "Aquisição de Clientes com IA", "text": "Fluxos de aquisição assistidos por IA que qualificam leads, capturam contexto, personalizam follow-ups e transformam intenção em oportunidades comerciais." },
-    "ai-customer-service": { "title": "Atendimento ao Cliente com IA", "text": "Agentes de atendimento que respondem rapidamente, organizam solicitações, encaminham pedidos ou tickets e mantêm clientes atualizados." },
-    "ai-automations": { "title": "Automações com IA", "text": "Automação de processos com IA que elimina tarefas repetitivas, conecta ferramentas e aprovações e aumenta a eficiência operacional." },
-    "smart-ai-agents": { "title": "Agentes Inteligentes de IA", "text": "Agentes de IA sob medida capazes de raciocinar, usar ferramentas, recuperar conhecimento e executar processos complexos de forma autônoma." },
-    "enterprise-knowledge-systems": { "title": "Sistemas de Conhecimento Empresarial", "text": "Arquitetura de conhecimento que oferece uma fonte única de verdade para agentes de IA por meio de RAG, GraphRAG, contexto e relações de dados rastreáveis." },
-    "enterprise-consulting": { "title": "Consultoria Empresarial", "text": "Consultoria especializada em IA para identificar oportunidades, definir caminhos de implementação e levar capacidades práticas à organização." },
-    "ai-training": { "title": "Treinamento em IA", "text": "Programas de treinamento em IA desenhados para as ferramentas, fluxos, maturidade e prioridades do seu time." }
-  }, "whatWeBuild": "O que construímos", "heroTitle": "Serviços de IA para produtos, operações e crescimento.", "heroLead": "Um portfólio integrado conectando design de produto, software sob medida, conhecimento empresarial, agentes de IA, automação e experiências de IA para clientes.", "stackTitle": "Uma única estrutura de entrega de IA", "stackLead": "Cada serviço pode existir sozinho, mas os melhores projetos combinam estratégia, qualidade de interface, automação e inteligência fundamentada em um sistema coerente.", "fromIdea": "Da ideia à entrega", "stepsTitle": "Três passos práticos", "stepsLead": "Um processo enxuto para transformar a ideia inicial em um projeto definido, revisável e entregável.", "faqTitle": "Perguntas frequentes", "startBuilding": "Comece a construir", "ctaWhatIdea": "Que ideia", "ctaDoYouWant": "você quer", "ctaBringToLife": "dar vida?", "ctaMakeReal": "Vamos torná-la real.", "ctaLead": "Traga a ideia inicial, o processo confuso ou a oportunidade que você vem adiando. Nós transformamos isso em um plano definido, um sistema construível e um caminho real de entrega.", "startConversation": "Iniciar conversa sobre o projeto" }
-  ,"contact": { "title": "Comece uma", "titleAccent": "conversa.", "lead": "Conte o que você está construindo, automatizando ou explorando e responderemos diretamente.", "publicDetail": "Este site público usa um encaminhamento direto por e-mail para enviar sua mensagem sem um backend ativo.", "backendDetail": "Este formulário envia sua mensagem para Bruno na CriativAI e salva o envio para um acompanhamento confiável no banco do projeto." },
-  "forms": { "name": "Nome", "yourName": "Seu nome", "email": "E-mail", "subject": "Assunto", "leaveEmpty": "Deixe este campo vazio", "publicNotice": "Modo de teste público: enviar este formulário abrirá seu aplicativo de e-mail com a mensagem preenchida.", "subjectPlaceholder": "Sobre o que você gostaria de conversar?", "message": "Mensagem", "messagePlaceholder": "Compartilhe o contexto, objetivo ou desafio.", "clean": "Limpar formulário", "continueEmail": "Continuar por e-mail", "sending": "Enviando...", "send": "Enviar", "submissionConfirmed": "Envio confirmado", "close": "Fechar", "successTitle": "Mensagem enviada com sucesso.", "successMessage": "Obrigado pelo contato. Sua mensagem foi recebida e será analisada o quanto antes." }
-  ,"hire": { "eyebrow": "Contrate Bruno", "title": "Vagas abertas: escolha o melhor formato para você.", "lead": "Formatos flexíveis para empresas e fundadores que precisam de arquitetura de IA, design de produto, estratégia de implementação e execução prática em nível sênior.", "openPositions": "Formatos disponíveis", "chooseModel": "Escolha o modelo de trabalho ideal", "modelLead": "Cada opção foi desenhada para um nível de compromisso diferente, de liderança integral a consultoria estratégica, treinamento e projetos sob medida." },
-  "legal": { "eyebrow": "Privacidade e Termos", "title": "Privacidade e Termos da CriativAI", "updated": "Última atualização: 24 de julho de 2026", "privacy": "Privacidade", "terms": "Termos" },
-  "founding": { "eyebrow": "Founding SDR / São Francisco", "titleOne": "Não venda apenas", "titleTwo": "para uma empresa.", "titleThree": "Construa uma.", "lead": "Estamos selecionando profissionais de vendas ambiciosos em São Francisco para ajudar a expandir a operação local da CriativAI.", "detail": "Comece como Founding SDR. Conquiste clientes, gere receita e abra o caminho para se tornar parceiro da operação de São Francisco que você ajudou a criar.", "apply": "Candidate-se a Founding SDR", "seeHow": "Veja como funciona", "opportunity": "A oportunidade", "opportunityTitle": "É mais do que uma função de vendas.", "opportunityLead": "A maioria das posições de vendas recompensa o próximo negócio.", "opportunityReward": "Esta oportunidade recompensa o mercado que você ajuda a construir.", "opportunitySupport": "Você prospecta, abre relacionamentos e traz novos clientes. Nós oferecemos equipe técnica, conhecimento em IA, automação, design, software e entrega.", "mantra": "Encontre oportunidades. Construa relacionamentos. Gere receita.", "growth": "À medida que a operação cresce, sua posição também pode crescer.", "path": "O caminho", "pathTitle": "De SDR a parceiro local.", "pathLead": "O modelo é baseado em performance. Seu crescimento está diretamente ligado ao valor que você cria.", "asset": "Você deixa de ser apenas vendedor e começa a construir um ativo.", "stages": { "01": { "title": "Founding SDR", "text": "Represente a CriativAI em São Francisco, prospecte empresas, identifique oportunidades e ganhe comissão pelos clientes gerados." }, "02": { "title": "Construa o mercado", "text": "Alcance o marco comercial definido e estabeleça uma base recorrente de clientes na região." }, "03": { "title": "Torne-se parceiro", "text": "Depois de atingir o limite de parceria, faça parte da operação de São Francisco que você ajudou a construir." } } }
-  ,"hr": { "eyebrow": "IA para empresas de recrutamento", "era": "A era da hiperpersonalização", "valueTitle": "Desenhe fluxos de recrutamento totalmente personalizados", "broader": "Uma visão mais ampla e estratégica" },
-  "about": { "fullCycle": "Ciclo completo de produto", "techStack": "Stack tecnológica", "awards": "Prêmios", "professional": "Profissional", "buildConfidence": "CONSTRUA COM CONFIANÇA" }
-  ,"talent": { "complimentary": "Solicitação gratuita de shortlist", "title": "Talent", "titleAccent": "Preview.", "lead": "Compartilhe uma vaga aberta e receba uma shortlist selecionada com até 20 profissionais relevantes em 24 horas.", "detail": "Um diagnóstico gratuito para equipes de recrutamento especializado que querem testar a qualidade e velocidade de uma busca apoiada por IA.", "startRequest": "Iniciar solicitação", "whatGives": "O que você recebe", "benefitsTitle": "Uma amostra rápida e baseada em evidências da sua busca.", "benefitsLead": "Útil para empresas de executive search, consultorias, recrutadores independentes e equipes especializadas de talentos.", "formEyebrow": "Formulário gratuito", "formTitle": "Descreva a vaga. Nós estruturamos a busca.", "formLead": "Informe a vaga ativa e o principal critério de busca. Você também pode adicionar uma característica de exclusão e um diferencial." }
-,
-  "footer": { "productLead": "Produtos com IA, automações inteligentes e experiências digitais centradas em pessoas.", "navigation": "Navegação", "projects": "Projetos", "recruiters": "Para recrutadores", "social": "Redes sociais", "bottom": "Inteligência criativa, fundamentada na realidade." },
-  "video": { "heroEyebrow": "Design de Produto — Engenharia de IA — Estratégia", "creative": "CRIATIVAS", "aiSolutions": "SOLUÇÕES COM IA", "topicsAria": "Tópicos de soluções de IA em destaque", "topic1": "Aquisição de Clientes com IA", "topic2": "Atendimento ao Cliente com IA", "topic3": "Sites Refinados", "topic4": "Landing Pages de Alta Conversão", "topic5": "Desenvolvimento de Sistemas Sob Medida", "topic6": "Sistemas Corporativos de Conhecimento", "topic7": "Pesquisa de Engenharia de Prompt", "topic8": "Automação de Negócios", "scrollProjects": "Role até os projetos em destaque", "welcome": "BEM-VINDO À", "hyper": "ERA DA", "personalization": "HIPERPERSONALIZAÇÃO", "era": "", "nextLead": "Agora é sua vez de usar IA e criar soluções digitais sob medida para o seu negócio, abrindo oportunidades, acelerando iniciativas e gerando melhores resultados.", "askBook": "Fale com meu Assistente de IA e Agende uma Conversa", "enterpriseLayer": "Camada corporativa de inteligência", "capabilitiesCount": "10 capacidades", "leadTitle": "Agentes de IA para Geração e Conversão de Leads", "leadSubtitle": "Aumente a receita com leads mais qualificados e conversões mais inteligentes.", "leadText": "Capture leads relevantes, qualifique-os automaticamente, descubra exatamente com quem se conectar e automatize ações de prospecção que ampliam seu potencial de conversão e receita.", "automation": "Automação", "fintech": "Fintech", "legalAi": "IA Jurídica", "legalAiPlatform": "Plataforma de IA Jurídica", "projectDashboard": "Dashboard de Inteligência", "projectDashboardText": "Tenha uma visão mais clara do seu negócio com dashboards inteligentes e personalizados, conectados ao conhecimento da empresa e às necessidades operacionais.", "projectTrading": "Plataforma de Trading AI-First", "projectTradingText": "Uma plataforma de trading nativa em IA, desenvolvida com agentes inteligentes, análise preditiva, automação e apoio à decisão.", "projectDanteText": "Uma solução de IA para o setor jurídico construída com agentes inteligentes, RAG, GraphRAG, raciocínio contextual e sistemas corporativos de conhecimento.", "whatWeBuild": "O que construímos", "servicesLead": "Da primeira decisão de interface à camada de inteligência, cada projeto conecta qualidade de design e profundidade técnica.", "readyToBuild": "Pronto para Criar seu", "nextAiProduct": "Próximo Produto com IA?", "finalLead": "Vamos criar software inteligente que une design, automação e estratégia de negócios para resolver desafios reais.", "startProject": "Iniciar um Projeto" },
-  "home": { "heroEyebrow": "Design × Engenharia × Estratégia", "heroLead": "Construindo produtos com IA, automações inteligentes e software sob medida que combinam design, engenharia e estratégia de negócios para resolver desafios reais.", "talk": "Vamos Conversar", "scroll": "Role para explorar", "customDevelopment": "Desenvolvimento Sob Medida", "customLead": "Software sob medida e acessível, criado para a forma como sua empresa realmente opera.", "customText": "Pare de pagar por ferramentas rígidas, improvisos e dependência de fornecedores. Crie exatamente o que sua operação precisa: um hub de inteligência, CRM, ERP ou plataforma interna, alinhado aos seus fluxos e objetivos.", "iWantBuild": "QUERO CRIAR", "knowledgeGrounding": "Fundamentação de Conhecimento", "groundingLead": "Criando sistemas de IA que realmente entendem o seu negócio.", "groundingText": "Transforme informações da empresa em conhecimento acionável. Esta camada ajuda agentes de IA a responder com precisão e previsibilidade dentro das restrições do projeto, com recuperação de contexto confiável e controle claro sobre o que eles consomem.", "projects": "Projetos em Destaque", "services": "Serviços", "startConversation": "Comece uma conversa", "startProject": "Iniciar um Projeto" },
-  "about": { "fullCycle": "Ciclo Completo de Produto", "techStack": "Stack Tecnológica", "awards": "Prêmios", "professional": "Profissional", "buildConfidence": "CONSTRUA COM CONFIANÇA", "heroTitle": "Arquiteto de GenAI", "heroSubtitle": "Engenheiro de Contexto e Prompt", "heroRole": "com Bagagem em Design Criativo", "heroLead": "Bruno atua na interseção entre design de produto, inteligência artificial e estratégia de negócios. Sua prática combina duas décadas de experiência criativa com pensamento sistêmico para transformar ideias complexas em produtos digitais úteis, compreensíveis e bem construídos.", "dropMessage": "Envie uma Mensagem", "bookCall": "Agende uma Conversa", "portraitMeta": "Arquitetura de IA / Design / Estratégia", "oneProfessional": "Um Profissional,", "fullProductCycle": "Ciclo Completo de Produto", "cycleLead": "IA, design e engenharia combinados em uma única mente.", "capabilitiesTitle": "Capacidades: o que Bruno constrói", "capabilities": "Capacidades", "capabilitiesLead": "Da experiência profunda em IA criativa ao conhecimento técnico sólido em GenAI e tecnologias relacionadas.", "clickDetails": "Clique para ver os detalhes", "awardsTitle": "Prêmios: Engenharia de Prompt", "promptEngineering": "Engenharia de Prompt", "awardsLead": "Reconhecimento internacional em engenharia de prompt, design de agentes, conceitos de prompt-app e jogos integrados ao ChatGPT.", "resultsPage": "Página de Resultados", "openProject": "Abrir Projeto", "experienceTitle": "Experiência Profissional", "experience": "Experiência", "experienceLead": "Mais de 20 anos criando sistemas interativos, de uma sólida base em design criativo ao desenvolvimento moderno com IA.", "contactBruno": "Fale com Bruno" },
-  "founding": { "eyebrow": "Founding SDR / São Francisco", "titleOne": "Não Venda Apenas", "titleTwo": "para uma Empresa.", "titleThree": "Construa Uma.", "lead": "Estamos selecionando profissionais de vendas ambiciosos em São Francisco para ajudar a expandir a operação local da CriativAI.", "detail": "Comece como Founding SDR. Conquiste clientes, gere receita e abra o caminho para se tornar parceiro da operação de São Francisco que você ajudou a criar.", "apply": "Candidate-se a Founding SDR", "seeHow": "Veja Como Funciona", "oneMarket": "UM MERCADO", "oneOpportunity": "UMA OPORTUNIDADE", "opportunity": "A oportunidade", "opportunityTitle": "É Mais do que uma Função de Vendas.", "opportunityLead": "A maioria das posições de vendas recompensa o próximo negócio.", "opportunityReward": "Esta oportunidade recompensa o mercado que você ajuda a construir.", "opportunitySupport": "Você prospecta, abre relacionamentos e traz novos clientes. Nós oferecemos equipe técnica, conhecimento em IA, automação, design de produto, software e entrega.", "mantra": "Encontre oportunidades. Construa relacionamentos. Gere receita.", "growth": "À medida que a operação cresce, sua posição também pode crescer.", "path": "O caminho", "pathTitle": "De SDR a Parceiro Local.", "pathLead": "O modelo é baseado em performance. Seu crescimento está diretamente ligado ao valor que você cria.", "asset": "Você deixa de ser apenas vendedor e começa a construir um ativo.", "offer": "A oferta", "selling": "O que Você Vai Vender.", "offerLead": "A CriativAI ajuda startups e pequenas empresas a construir tecnologia sem o custo e a complexidade de montar uma equipe interna completa.", "offerStrong": "Clientes ganham acesso a capacidades multidisciplinares de tecnologia por uma fração do custo de criar a mesma equipe internamente.", "profile": "O perfil", "looking": "Quem Procuramos.", "profileLead": "Buscamos alguém que vê vendas como mais do que um emprego.", "profileStrong": "Valorizamos mais a iniciativa, a capacidade comercial e os resultados.", "difference": "A diferença", "bringMarket": "Traga o mercado.", "buildOperation": "Construa a operação.", "differenceLead": "Um SDR tradicional gera receita para a empresa de outra pessoa. Aqui, uma performance excepcional pode criar um caminho para participação no mercado que você desenvolve.", "sanFrancisco": "São Francisco", "oneMarketTitle": "Um Mercado.", "oneOpportunityTitle": "Uma Oportunidade.", "sfLead": "Estamos construindo este modelo especificamente para o mercado de São Francisco. O primeiro profissional comercial ajudará a estabelecer e expandir a operação local.", "nextMove": "Seu próximo passo", "buildMore": "Construa Mais que", "yourPipeline": "seu Pipeline.", "buildMarket": "Construa seu Mercado.", "finalLead": "Se você acredita que pode abrir portas, gerar negócios e ajudar a criar uma operação de tecnologia em São Francisco, queremos conversar.", "applyOpportunity": "Candidate-se à Oportunidade de Founding SDR" },
-  "hr": { "eyebrow": "IA para empresas de recrutamento", "streamline": "OTIMIZE", "your": "SUAS", "recruitment": "OPERAÇÕES", "operations": "DE RECRUTAMENTO", "with": "COM", "ai": "IA", "heroLead": "Seus métodos. Seus critérios. Suas ferramentas.", "heroDetail": "Desenhamos fluxos de IA, avaliações, dashboards e sistemas de gestão em torno da forma como sua empresa de recrutamento já trabalha.", "era": "A era da hiperpersonalização", "valueTitle": "Desenhe fluxos de recrutamento totalmente personalizados", "valueLead": "Não se trata mais de uma ferramenta genérica. Trata-se de construir sistemas precisos em torno da sua metodologia, regras de negócio e realidade operacional.", "valueStrong": "O importante não é automação genérica. É uma estrutura que se encaixa na sua empresa.", "broader": "Uma visão mais ampla e estratégica", "buildThe": "Construa a", "recruitmentCompany": "empresa de recrutamento", "youRun": "que você quer administrar.", "finalLead": "Da inteligência de talentos às operações e ao crescimento comercial, moldamos IA para a forma como seu time realmente trabalha.", "requestDemo": "Solicitar uma Demonstração", "talkUseCase": "Fale sobre seu caso de uso" },
-  "chat": { "aria": "assistente de chat com IA", "conversation": "Conversa do chat", "title": "Faça perguntas e agende uma conversa", "newChat": "Abrir uma nova janela de chat", "collapse": "Recolher chat", "restoring": "Restaurando conversa...", "starters": "Sugestões para começar", "askBelow": "Faça sua pergunta abaixo", "contacting": "Conectando ao agente...", "preparing": "O assistente está preparando uma resposta", "message": "Mensagem", "placeholder": "Digite sua mensagem", "send": "Enviar mensagem", "open": "Abrir chat com IA", "intro": "Olá. Posso ajudar você a explorar oportunidades com IA e os próximos passos.", "askAssistant": "Pergunte ao meu assistente", "askAgents": "Pergunte aos meus agentes", "iceBreakers": ["Quero conversar sobre a ideia do meu projeto.", "Quero aumentar a captura e conversão de leads.", "Quero automatizar as operações do meu negócio.", "Quero agendar uma conversa com Bruno.", "Quero criar um agente de suporte ao cliente.", "Quero contratar consultoria ou treinamento personalizado."] },
-  "contact": { "title": "Comece uma", "titleAccent": "conversa.", "lead": "Conte o que você está construindo, automatizando ou explorando e responderemos diretamente.", "publicDetail": "Este site público usa um encaminhamento direto por e-mail para enviar sua mensagem sem um backend ativo.", "backendDetail": "Este formulário envia sua mensagem para Bruno na CriativAI e salva o envio para um acompanhamento confiável no banco do projeto.", "emailPlaceholder": "nome@empresa.com", "mailtoSubject": "Contato pelo site CriativAI", "mailtoName": "Nome", "mailtoEmail": "E-mail", "mailtoFallback": "Gostaria de conversar sobre um projeto.", "footerLead": "Produtos com IA, automações e sistemas fundamentados, desenhados para o trabalho real das empresas.", "destination": "Destino", "footerBottom": "Contato direto, com o contexto preservado." },
-  "legal": { "eyebrow": "Privacidade e Termos", "title": "Privacidade e Termos da CriativAI", "updated": "Última atualização: 24 de julho de 2026", "privacy": "Privacidade", "terms": "Termos", "privacyOne": "A CriativAI usa informações de contato, chat, formulários e calendário somente para responder solicitações, apoiar agendamentos e prestar os serviços escolhidos pelo usuário.", "privacyTwo": "Quando o Google Calendar está conectado, a CriativAI pode verificar disponibilidade e criar, atualizar ou cancelar eventos com links do Google Meet. Os dados de calendário são usados somente para agendamento e não são vendidos.", "privacyThree": "Tokens de acesso e dados operacionais são armazenados apenas pelo tempo necessário para operar o serviço. O acesso pode ser revogado desconectando o aplicativo na página de permissões da conta Google ou entrando em contato com a CriativAI.", "termsOne": "Ao usar a CriativAI, você concorda em usar o site e os recursos de agendamento de forma lícita e apenas para comunicação comercial legítima.", "termsTwo": "Respostas geradas por IA e sugestões de agendamento devem ser revisadas antes de serem usadas em decisões comerciais finais. A CriativAI pode atualizar ou desativar recursos para melhorar confiabilidade, segurança ou conformidade.", "termsThree": "Para dúvidas sobre privacidade, termos ou acesso a dados, entre em contato: bruno@criativai.site." },
-  "hire": { "eyebrow": "Contrate Bruno", "title": "Formatos disponíveis: escolha o melhor para você.", "lead": "Formatos flexíveis para empresas e fundadores que precisam de arquitetura de IA, design de produto, estratégia de implementação e execução prática em nível sênior.", "openPositions": "Formatos disponíveis", "chooseModel": "Escolha o modelo de trabalho ideal", "modelLead": "Cada opção foi desenhada para um nível diferente de compromisso, de liderança integral a consultoria estratégica, treinamento e projetos sob medida." },
-  "talent": { "complimentary": "Solicitação gratuita de shortlist", "title": "Talent", "titleAccent": "Preview.", "lead": "Compartilhe uma vaga aberta e receba uma shortlist selecionada com até 20 profissionais relevantes em 24 horas.", "detail": "Um diagnóstico gratuito para equipes de recrutamento especializado que querem testar a qualidade e velocidade de uma busca apoiada por IA.", "startRequest": "Iniciar Solicitação", "whatGives": "O que você recebe", "benefitsTitle": "Uma amostra rápida e baseada em evidências da sua busca.", "benefitsLead": "Útil para empresas de executive search, consultorias, recrutadores independentes e equipes especializadas de talentos.", "formEyebrow": "Formulário gratuito", "formTitle": "Descreva a vaga. Nós estruturamos a busca.", "formLead": "Informe a vaga ativa e o principal critério de busca. Você também pode adicionar uma característica de exclusão e um diferencial.", "visualAria": "Prévia de uma shortlist selecionada de candidatos", "visualPreview": "PRÉVIA / VAGA ATIVA", "free": "GRÁTIS", "turnaround": "prazo previsto", "visualRole": "Título da vaga e intenção de busca", "visualBrief": "Um briefing principal de busca em formato multilinha", "visualSignals": "Sinais opcionais de exclusão e diferenciais", "output": "RESULTADO", "visualOutput": "Até 20 perfis de candidatos alinhados", "publicNotice": "Modo de teste público: seu briefing é encaminhado pelo aplicativo de e-mail em vez de um formulário com backend ativo.", "backendNotice": "Revisamos o briefing e respondemos ao solicitante por e-mail em até 24 horas.", "roleTitle": "Título da vaga aberta", "searchCriterion": "Critério relevante de busca 01", "searchPlaceholder": "Descreva o principal sinal de busca, em formato multilinha se necessário.", "exclusion": "Característica de exclusão", "exclusionPlaceholder": "Opcional: exemplo do que deve desqualificar um perfil", "differentiator": "Diferencial", "differentiatorPlaceholder": "Opcional: um ponto forte que eleva a shortlist", "formPublicNotice": "Modo de teste público: enviar este formulário abre seu aplicativo de e-mail com o briefing da vaga preenchido.", "footerLead": "Sistemas de recrutamento apoiados por IA para ajudar equipes a encontrar candidatos mais fortes com mais velocidade.", "quickLinks": "Links rápidos", "requestForm": "Formulário de solicitação", "footerBottom": "Inteligência de recrutamento, fundamentada em critérios claros.", "successTitle": "Sua solicitação foi confirmada.", "successMessage": "Obrigado por compartilhar o briefing da vaga. Vamos analisá-lo e enviar sua shortlist em até 24 horas.", "successDetail": "O e-mail de confirmação automática começará a ser enviado assim que as credenciais SMTP do Mailjet forem adicionadas ao ambiente." }
-,
-  "videoServices": { "01": { "title": "Design de Produto", "text": "Design de produto digital centrado nas pessoas, com foco em usabilidade, acessibilidade e experiências excepcionais." }, "02": { "title": "Sistema Corporativo de Conhecimento", "text": "Arquitetura centralizada de conhecimento corporativo que oferece aos agentes de IA uma fonte única de verdade, melhorando a qualidade das respostas e mantendo o contexto consistente." }, "03": { "title": "Design de Sistemas", "text": "Arquitetura técnica e planejamento de sistemas para produtos digitais escaláveis e aplicações com IA." }, "04": { "title": "Automações com IA", "text": "Automação de fluxos de trabalho que elimina tarefas repetitivas e aumenta a eficiência operacional com inteligência artificial." }, "05": { "title": "Agentes Inteligentes", "text": "Agentes de IA sob medida capazes de raciocinar, usar ferramentas, recuperar conhecimento e executar processos complexos de forma autônoma." }, "06": { "title": "Sites Refinados", "text": "Design refinado para sites corporativos e landing pages de conversão, com clareza, elegância e desempenho." }, "07": { "title": "Treinamento de IA Sob Medida", "text": "Programas de treinamento em IA desenhados para as ferramentas, fluxos, maturidade e prioridades do seu time." }, "08": { "title": "Consultoria Corporativa em IA", "text": "Consultoria especializada em IA para identificar oportunidades, definir caminhos de implementação e levar capacidades práticas à organização." } }
+  "meta": {
+    "title": "CriativAI — Inteligência Artificial Criativa",
+    "description": "Produtos com IA, automações inteligentes e software sob medida orientados por design, engenharia e estratégia de negócios.",
+    "ogLocale": "pt_BR"
+  },
+  "header": {
+    "hireMe": "Contrate-me",
+    "services": "Serviços",
+    "projects": "Projetos",
+    "about": "Sobre",
+    "video": "Vídeo",
+    "contact": "Contato",
+    "style": "Estilo",
+    "solutions": "Soluções",
+    "recruiters": "Para Recrutadores",
+    "founders": "Founders SDR",
+    "primaryNavigation": "Navegação principal",
+    "languageSelector": "Seletor de idioma",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "english": "Inglês",
+    "portuguese": "Português",
+    "home": "Página inicial CriativAI",
+    "navigation": "Navegação",
+    "backToTop": "Voltar ao topo",
+    "solutionsSubmenu": "Submenu de soluções"
+  },
+  "chat": {
+    "aria": "assistente de chat com IA",
+    "conversation": "Conversa do chat",
+    "title": "Faça perguntas e agende uma conversa",
+    "newChat": "Abrir uma nova janela de chat",
+    "collapse": "Recolher chat",
+    "restoring": "Restaurando conversa...",
+    "starters": "Sugestões para começar",
+    "askBelow": "Faça sua pergunta abaixo",
+    "contacting": "Conectando ao agente...",
+    "preparing": "O assistente está preparando uma resposta",
+    "message": "Mensagem",
+    "placeholder": "Digite sua mensagem",
+    "send": "Enviar mensagem",
+    "open": "Abrir chat com IA",
+    "intro": "Olá. Posso ajudar você a explorar oportunidades com IA e os próximos passos.",
+    "askAssistant": "Pergunte ao meu assistente",
+    "askAgents": "Pergunte aos meus agentes",
+    "iceBreakers": [
+      "Quero conversar sobre a ideia do meu projeto.",
+      "Quero aumentar a captura e conversão de leads.",
+      "Quero automatizar as operações do meu negócio.",
+      "Quero agendar uma conversa com Bruno.",
+      "Quero criar um agente de suporte ao cliente.",
+      "Quero contratar consultoria ou treinamento personalizado."
+    ],
+    "assistantName": "ASSISTENTE DE BRUNO CESAR",
+    "errors": {
+      "multiWindowStatus": "Não foi possível verificar o status do chat em múltiplas janelas.",
+      "restore": "Não foi possível restaurar a conversa.",
+      "welcome": "Não foi possível preparar a mensagem de boas-vindas do chat.",
+      "send": "Não foi possível acessar o assistente.",
+      "network": "Não foi possível conectar ao serviço de chat. Confirme que o servidor do aplicativo está ativo e tente novamente.",
+      "invalidStream": "O assistente retornou uma resposta inválida.",
+      "unsupportedStream": "O assistente retornou uma resposta não suportada."
+    }
+  },
+  "sitesFallback": {
+    "subject": "Consulta de projeto CriativAI",
+    "greeting": "Olá, Bruno,",
+    "intro": "Vim pelo site público de teste da CriativAI e gostaria de conversar sobre um projeto.",
+    "context": "Contexto do projeto:",
+    "signoff": "Atenciosamente,"
+  },
+  "home": {
+    "heroEyebrow": "Design × Engenharia × Estratégia",
+    "heroLead": "Construindo produtos com IA, automações inteligentes e software sob medida que combinam design, engenharia e estratégia de negócios para resolver desafios reais.",
+    "talk": "Vamos Conversar",
+    "scroll": "Role para explorar",
+    "customDevelopment": "Desenvolvimento Sob Medida",
+    "customLead": "Software sob medida e acessível, criado para a forma como sua empresa realmente opera.",
+    "customText": "Pare de pagar por ferramentas rígidas, improvisos e dependência de fornecedores. Crie exatamente o que sua operação precisa: um hub de inteligência, CRM, ERP ou plataforma interna, alinhado aos seus fluxos e objetivos.",
+    "iWantBuild": "QUERO CRIAR",
+    "knowledgeGrounding": "Fundamentação de Conhecimento",
+    "groundingLead": "Criando sistemas de IA que realmente entendem o seu negócio.",
+    "groundingText": "Transforme informações da empresa em conhecimento acionável. Esta camada ajuda agentes de IA a responder com precisão e previsibilidade dentro das restrições do projeto, com recuperação de contexto confiável e controle claro sobre o que eles consomem.",
+    "projects": "Projetos em Destaque",
+    "services": "Serviços",
+    "startConversation": "Comece uma conversa",
+    "startProject": "Iniciar um Projeto",
+    "servicesCoverage": "Design de Produto + Sistemas Corporativos de Conhecimento",
+    "leadCoverage": "Aumente a geração e a conversão de leads com IA",
+    "portraitAlt": "Retrato de Bruno usando óculos redondos com lentes alaranjadas",
+    "customImageAlt": "Desenvolvimento de software sob medida",
+    "leadImageAlt": "Funil de geração de leads",
+    "groundingTopics": {
+      "10": {
+        "title": "Proteções | Observabilidade",
+        "description": "Monitore, limite e aperfeiçoe o comportamento dos agentes com controles e visibilidade mais claros."
+      },
+      "01": {
+        "title": "Configurações RAG Sob Medida",
+        "description": "Conecte conhecimento privado às respostas de IA com recuperação adaptada às regras do seu negócio."
+      },
+      "02": {
+        "title": "Grafos de Conhecimento | GraphRAG",
+        "description": "Mapeie relações nos seus dados para que os agentes compreendam contexto, entidades e dependências."
+      },
+      "03": {
+        "title": "Pesquisa em Engenharia de Prompt",
+        "description": "Desenvolva prompts testados e padrões de raciocínio para um comportamento de IA mais claro e previsível."
+      },
+      "04": {
+        "title": "Engenharia de Contexto",
+        "description": "Controle as informações exatas que seus agentes recebem antes de responder ou agir."
+      },
+      "05": {
+        "title": "Sistemas Corporativos de Conhecimento",
+        "description": "Transforme informações dispersas da empresa em uma camada confiável de inteligência para pessoas e IA."
+      },
+      "06": {
+        "title": "Arquitetura Multiagente",
+        "description": "Coordene agentes especializados que planejam, recuperam, validam e executam fluxos complexos."
+      },
+      "07": {
+        "title": "ETL e Processamento de Dados",
+        "description": "Limpe, transforme e estruture dados de múltiplas fontes para criar conhecimento pronto para IA."
+      },
+      "08": {
+        "title": "Enriquecimento de Contexto",
+        "description": "Adicione metadados, relações e significado de negócio para melhorar a recuperação e a qualidade das respostas."
+      },
+      "09": {
+        "title": "Processamento Inteligente de Fragmentos",
+        "description": "Divida o conhecimento em fragmentos precisos que preservam o significado e reduzem recuperações irrelevantes."
+      }
+    }
+  },
+  "services": {
+    "askAssistant": "Pergunte ao meu assistente de IA",
+    "iWantIt": "Quero isso",
+    "catalog": {
+      "product-design": {
+        "title": "Design de Produto",
+        "text": "Design digital de produtos e UI/UX centrado em pessoas, com foco em usabilidade, acessibilidade, conversão e experiências excepcionais."
+      },
+      "refined-websites": {
+        "title": "Sites Refinados",
+        "text": "Sites rápidos, acessíveis e refinados para plataformas corporativas ou landing pages de conversão, com infraestrutura limpa e código sob seu controle."
+      },
+      "custom-software": {
+        "title": "Software Sob Medida",
+        "text": "Software construído para seus fluxos, usuários, dados e restrições operacionais, combinando arquitetura assistida por IA, desenvolvimento, testes e entrega."
+      },
+      "ai-client-acquisition": {
+        "title": "Aquisição de Clientes com IA",
+        "text": "Fluxos de aquisição assistidos por IA que qualificam leads, capturam contexto, personalizam follow-ups e transformam intenção em oportunidades comerciais."
+      },
+      "ai-customer-service": {
+        "title": "Atendimento ao Cliente com IA",
+        "text": "Agentes de atendimento que respondem rapidamente, organizam solicitações, encaminham pedidos ou tickets e mantêm clientes atualizados."
+      },
+      "ai-automations": {
+        "title": "Automações com IA",
+        "text": "Automação de processos com IA que elimina tarefas repetitivas, conecta ferramentas e aprovações e aumenta a eficiência operacional."
+      },
+      "smart-ai-agents": {
+        "title": "Agentes Inteligentes de IA",
+        "text": "Agentes de IA sob medida capazes de raciocinar, usar ferramentas, recuperar conhecimento e executar processos complexos de forma autônoma."
+      },
+      "enterprise-knowledge-systems": {
+        "title": "Sistemas de Conhecimento Empresarial",
+        "text": "Arquitetura de conhecimento que oferece uma fonte única de verdade para agentes de IA por meio de RAG, GraphRAG, contexto e relações de dados rastreáveis."
+      },
+      "enterprise-consulting": {
+        "title": "Consultoria Empresarial",
+        "text": "Consultoria especializada em IA para identificar oportunidades, definir caminhos de implementação e levar capacidades práticas à organização."
+      },
+      "ai-training": {
+        "title": "Treinamento em IA",
+        "text": "Programas de treinamento em IA desenhados para as ferramentas, fluxos, maturidade e prioridades do seu time."
+      }
+    },
+    "whatWeBuild": "O que construímos",
+    "heroTitle": "Serviços de IA para produtos, operações e crescimento.",
+    "heroLead": "Um portfólio integrado conectando design de produto, software sob medida, conhecimento empresarial, agentes de IA, automação e experiências de IA para clientes.",
+    "stackTitle": "Uma única estrutura de entrega de IA",
+    "stackLead": "Cada serviço pode existir sozinho, mas os melhores projetos combinam estratégia, qualidade de interface, automação e inteligência fundamentada em um sistema coerente.",
+    "fromIdea": "Da ideia à entrega",
+    "stepsTitle": "Três passos práticos",
+    "stepsLead": "Um processo enxuto para transformar a ideia inicial em um projeto definido, revisável e entregável.",
+    "faqTitle": "Perguntas frequentes",
+    "startBuilding": "Comece a construir",
+    "ctaWhatIdea": "Que ideia",
+    "ctaDoYouWant": "você quer",
+    "ctaBringToLife": "dar vida?",
+    "ctaMakeReal": "Vamos torná-la real.",
+    "ctaLead": "Traga a ideia inicial, o processo confuso ou a oportunidade que você vem adiando. Nós transformamos isso em um plano definido, um sistema construível e um caminho real de entrega.",
+    "startConversation": "Iniciar conversa sobre o projeto",
+    "faqEyebrow": "Perguntas frequentes",
+    "steps": {
+      "01": {
+        "title": "Briefing Inicial com IA",
+        "text": "Com nosso assistente de IA, você descreve o escopo inicial da ideia para coletarmos o primeiro briefing e entendermos o contexto do negócio.",
+        "cta": "Iniciar Briefing com IA"
+      },
+      "02": {
+        "title": "Conversa de Planejamento",
+        "text": "Você agenda uma conversa pelo processo assistido por IA para refinarmos o plano, discutirmos ideias, definirmos prioridades e estruturarmos o orçamento.",
+        "cta": "Agendar uma Conversa"
+      },
+      "03": {
+        "title": "Design e Entrega",
+        "text": "Iniciamos o desenvolvimento compartilhando etapas importantes para sua revisão, com reuniões de acompanhamento e ciclos de melhoria até a entrega.",
+        "cta": "Pergunte ao meu Agente"
+      }
+    },
+    "faqs": {
+      "01": {
+        "question": "Onde nossos projetos podem ser hospedados?",
+        "answer": "A infraestrutura é totalmente adaptável. Os projetos podem ser implantados em plataformas de nuvem, servidores dedicados, infraestrutura do próprio cliente ou outro ambiente exigido pelo projeto."
+      },
+      "02": {
+        "question": "O que está incluído na entrega?",
+        "answer": "Nosso trabalho pode abranger todo o processo, da ideia inicial ao desenvolvimento, implantação e manutenção contínua. Também adaptamos o modelo de entrega à estrutura e às necessidades específicas do cliente."
+      },
+      "03": {
+        "question": "Como funciona o processo de desenvolvimento?",
+        "answer": "O processo é dividido em três etapas simples:",
+        "steps": {
+          "01": "O cliente conclui um briefing inicial com nosso agente de IA.",
+          "02": "Agendamos uma conversa para alinhar requisitos, detalhes, escopo e orçamento.",
+          "03": "Desenvolvemos, entregamos e implantamos a solução."
+        }
+      },
+      "04": {
+        "question": "Vocês podem integrar o projeto aos nossos sistemas atuais?",
+        "answer": "Sim. Podemos integrar soluções por APIs, MCP, webhooks, bancos de dados, plataformas de terceiros ou outros formatos exigidos pela infraestrutura do cliente."
+      },
+      "05": {
+        "question": "Como funciona a comunicação entre fusos horários diferentes?",
+        "answer": "Estamos totalmente alinhados aos fusos horários americanos e somos compatíveis com os horários europeus. Normalmente recomendamos reuniões durante a tarde europeia, mas disponibilidade estendida ou de 24 horas pode ser discutida para projetos específicos."
+      },
+      "06": {
+        "question": "Vocês oferecem suporte após a entrega?",
+        "answer": "Sim. Os requisitos de suporte são definidos conforme a complexidade e as necessidades operacionais de cada projeto. O suporte regular pode ser oferecido por um plano mensal de manutenção."
+      },
+      "07": {
+        "question": "Como vocês garantem a segurança da aplicação?",
+        "answer": "Os projetos passam por testes técnicos e revisões especializadas de segurança, seguindo práticas de mercado para arquitetura, controle de acesso, credenciais, integrações, dependências e proteção de dados."
+      },
+      "08": {
+        "question": "Por que contratar sua agência em vez de uma agência europeia?",
+        "answer": "Combinamos qualidade, entrega eficiente, serviços integrados e uma estrutura operacional mais acessível. Assim entregamos soluções de alto valor com equilíbrio favorável entre experiência, qualidade e custo, apoiadas pela atuação multidisciplinar do fundador."
+      },
+      "09": {
+        "question": "Um preço mais competitivo significa menor qualidade?",
+        "answer": "Não. Qualidade, engenharia e segurança vêm em primeiro lugar. Nossos preços são mais competitivos porque usamos IA com eficiência para otimizar pesquisa, desenvolvimento, testes e documentação, preservando supervisão humana, funcionalidade e padrões profissionais."
+      }
+    }
+  },
+  "contact": {
+    "title": "Comece uma",
+    "titleAccent": "conversa.",
+    "lead": "Conte o que você está construindo, automatizando ou explorando e responderemos diretamente.",
+    "publicDetail": "Este site público usa um encaminhamento direto por e-mail para enviar sua mensagem sem um backend ativo.",
+    "backendDetail": "Este formulário envia sua mensagem para Bruno na CriativAI e salva o envio para um acompanhamento confiável no banco do projeto.",
+    "emailPlaceholder": "nome@empresa.com",
+    "mailtoSubject": "Contato pelo site CriativAI",
+    "mailtoName": "Nome",
+    "mailtoEmail": "E-mail",
+    "mailtoFallback": "Gostaria de conversar sobre um projeto.",
+    "footerLead": "Produtos com IA, automações e sistemas fundamentados, desenhados para o trabalho real das empresas.",
+    "destination": "Destino",
+    "footerBottom": "Contato direto, com o contexto preservado."
+  },
+  "forms": {
+    "name": "Nome",
+    "yourName": "Seu nome",
+    "email": "E-mail",
+    "subject": "Assunto",
+    "leaveEmpty": "Deixe este campo vazio",
+    "publicNotice": "Modo de teste público: enviar este formulário abrirá seu aplicativo de e-mail com a mensagem preenchida.",
+    "subjectPlaceholder": "Sobre o que você gostaria de conversar?",
+    "message": "Mensagem",
+    "messagePlaceholder": "Compartilhe o contexto, objetivo ou desafio.",
+    "clean": "Limpar formulário",
+    "continueEmail": "Continuar por e-mail",
+    "sending": "Enviando...",
+    "send": "Enviar",
+    "submissionConfirmed": "Envio confirmado",
+    "close": "Fechar",
+    "successTitle": "Mensagem enviada com sucesso.",
+    "successMessage": "Obrigado pelo contato. Sua mensagem foi recebida e será analisada o quanto antes.",
+    "sendError": "Não foi possível enviar sua mensagem agora."
+  },
+  "hire": {
+    "eyebrow": "Contrate Bruno",
+    "title": "Formatos disponíveis: escolha o melhor para você.",
+    "lead": "Formatos flexíveis para empresas e fundadores que precisam de arquitetura de IA, design de produto, estratégia de implementação e execução prática em nível sênior.",
+    "openPositions": "Formatos disponíveis",
+    "chooseModel": "Escolha o modelo de trabalho ideal",
+    "modelLead": "Cada opção foi desenhada para um nível diferente de compromisso, de liderança integral a consultoria estratégica, treinamento e projetos sob medida.",
+    "positions": {
+      "full-time": {
+        "eyebrow": "Emprego",
+        "title": "TEMPO INTEGRAL",
+        "status": "Negociável",
+        "action": "Contratar em tempo integral",
+        "text": "Para empresas que querem Bruno totalmente integrado ao time, liderando arquitetura de IA, pensamento de produto, design e entrega com compromisso de longo prazo.",
+        "detail": "Disponível para trabalho totalmente remoto, híbrido ou presencial em qualquer lugar do mundo, conforme escopo, senioridade, remuneração e alinhamento estratégico."
+      },
+      "dedicated-part-time": {
+        "eyebrow": "Capacidade dedicada",
+        "title": "Meio Período Dedicado",
+        "status": "1 de 3 posições abertas",
+        "action": "Reservar capacidade parcial",
+        "text": "O melhor custo-benefício para execução séria: entrega de alta qualidade, foco dedicado, progresso previsível e compromisso flexível.",
+        "detail": "Ideal para empresas que precisam de capacidade sênior em IA, produto e engenharia sem o custo de um executivo ou time interno em tempo integral."
+      },
+      "project-design": {
+        "eyebrow": "Projeto sob medida",
+        "title": "Design de Projeto",
+        "status": "Escopo por projeto",
+        "action": "Iniciar projeto sob medida",
+        "text": "Contrate Bruno sob demanda para um projeto específico, com orçamento, planejamento e desenvolvimento organizados como um trabalho sob medida e bem definido.",
+        "detail": "Ideal para hubs de inteligência, plataformas internas, agentes de IA, CRMs, ferramentas operacionais e experiências de produto que exigem entrega focada."
+      },
+      "discovery-consulting": {
+        "eyebrow": "Sessão estratégica",
+        "title": "Sessões de Consultoria de Descoberta",
+        "status": "Disponível",
+        "action": "Agendar sessão de descoberta",
+        "text": "Um modelo de consultoria focado para equipes que desejam definir um tema, compartilhar o escopo pretendido e receber uma estratégia prática de adoção ou construção com IA.",
+        "detail": "Bruno pesquisa o caminho até o objetivo e apresenta uma conversa precisa de 1h30 com direção estratégica, avaliação prática e recomendações para os próximos passos."
+      },
+      "specialized-training": {
+        "eyebrow": "Treinamento",
+        "title": "Treinamento Especializado",
+        "status": "Para equipes ou indivíduos",
+        "action": "Planejar treinamento",
+        "text": "Treinamento especializado em IA, produto, engenharia de prompt e fluxos de trabalho para pessoas, equipes ou empresas que precisam desenvolver capacidade prática rapidamente.",
+        "detail": "As sessões podem ser adaptadas às suas ferramentas, maturidade, objetivos de negócio e aos sistemas ou práticas de IA que sua equipe precisa adotar."
+      }
+    }
+  },
+  "legal": {
+    "eyebrow": "Privacidade e Termos",
+    "title": "Privacidade e Termos da CriativAI",
+    "updated": "Última atualização: 24 de julho de 2026",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "privacyOne": "A CriativAI usa informações de contato, chat, formulários e calendário somente para responder solicitações, apoiar agendamentos e prestar os serviços escolhidos pelo usuário.",
+    "privacyTwo": "Quando o Google Calendar está conectado, a CriativAI pode verificar disponibilidade e criar, atualizar ou cancelar eventos com links do Google Meet. Os dados de calendário são usados somente para agendamento e não são vendidos.",
+    "privacyThree": "Tokens de acesso e dados operacionais são armazenados apenas pelo tempo necessário para operar o serviço. O acesso pode ser revogado desconectando o aplicativo na página de permissões da conta Google ou entrando em contato com a CriativAI.",
+    "termsOne": "Ao usar a CriativAI, você concorda em usar o site e os recursos de agendamento de forma lícita e apenas para comunicação comercial legítima.",
+    "termsTwo": "Respostas geradas por IA e sugestões de agendamento devem ser revisadas antes de serem usadas em decisões comerciais finais. A CriativAI pode atualizar ou desativar recursos para melhorar confiabilidade, segurança ou conformidade.",
+    "termsThree": "Para dúvidas sobre privacidade, termos ou acesso a dados, entre em contato: bruno@criativai.site."
+  },
+  "founding": {
+    "eyebrow": "Founding SDR / São Francisco",
+    "titleOne": "Não Venda Apenas",
+    "titleTwo": "para uma Empresa.",
+    "titleThree": "Construa Uma.",
+    "lead": "Estamos selecionando profissionais de vendas ambiciosos em São Francisco para ajudar a expandir a operação local da CriativAI.",
+    "detail": "Comece como Founding SDR. Conquiste clientes, gere receita e abra o caminho para se tornar parceiro da operação de São Francisco que você ajudou a criar.",
+    "apply": "Candidate-se a Founding SDR",
+    "seeHow": "Veja Como Funciona",
+    "oneMarket": "UM MERCADO",
+    "oneOpportunity": "UMA OPORTUNIDADE",
+    "opportunity": "A oportunidade",
+    "opportunityTitle": "É Mais do que uma Função de Vendas.",
+    "opportunityLead": "A maioria das posições de vendas recompensa o próximo negócio.",
+    "opportunityReward": "Esta oportunidade recompensa o mercado que você ajuda a construir.",
+    "opportunitySupport": "Você prospecta, abre relacionamentos e traz novos clientes. Nós oferecemos equipe técnica, conhecimento em IA, automação, design de produto, software e entrega.",
+    "mantra": "Encontre oportunidades. Construa relacionamentos. Gere receita.",
+    "growth": "À medida que a operação cresce, sua posição também pode crescer.",
+    "path": "O caminho",
+    "pathTitle": "De SDR a Parceiro Local.",
+    "pathLead": "O modelo é baseado em performance. Seu crescimento está diretamente ligado ao valor que você cria.",
+    "asset": "Você deixa de ser apenas vendedor e começa a construir um ativo.",
+    "offer": "A oferta",
+    "selling": "O que Você Vai Vender.",
+    "offerLead": "A CriativAI ajuda startups e pequenas empresas a construir tecnologia sem o custo e a complexidade de montar uma equipe interna completa.",
+    "offerStrong": "Clientes ganham acesso a capacidades multidisciplinares de tecnologia por uma fração do custo de criar a mesma equipe internamente.",
+    "profile": "O perfil",
+    "looking": "Quem Procuramos.",
+    "profileLead": "Buscamos alguém que vê vendas como mais do que um emprego.",
+    "profileStrong": "Valorizamos mais a iniciativa, a capacidade comercial e os resultados.",
+    "difference": "A diferença",
+    "bringMarket": "Traga o mercado.",
+    "buildOperation": "Construa a operação.",
+    "differenceLead": "Um SDR tradicional gera receita para a empresa de outra pessoa. Aqui, uma performance excepcional pode criar um caminho para participação no mercado que você desenvolve.",
+    "sanFrancisco": "São Francisco",
+    "oneMarketTitle": "Um Mercado.",
+    "oneOpportunityTitle": "Uma Oportunidade.",
+    "sfLead": "Estamos construindo este modelo especificamente para o mercado de São Francisco. O primeiro profissional comercial ajudará a estabelecer e expandir a operação local.",
+    "nextMove": "Seu próximo passo",
+    "buildMore": "Construa Mais que",
+    "yourPipeline": "seu Pipeline.",
+    "buildMarket": "Construa seu Mercado.",
+    "finalLead": "Se você acredita que pode abrir portas, gerar negócios e ajudar a criar uma operação de tecnologia em São Francisco, queremos conversar.",
+    "applyOpportunity": "Candidate-se à Oportunidade de Founding SDR",
+    "solutions": {
+      "01": "IA e Automação",
+      "02": "Agentes de IA",
+      "03": "Software Sob Medida",
+      "04": "Desenvolvimento Web e de Aplicativos",
+      "05": "Design de Produto",
+      "06": "Design de Sistemas",
+      "07": "Automação de Processos de Negócio",
+      "08": "Integrações e Implantação"
+    },
+    "traits": {
+      "01": "Forte mentalidade de prospecção",
+      "02": "Experiência com outbound B2B",
+      "03": "Confiança para abordar fundadores e empresários",
+      "04": "Interesse em IA, automação e tecnologia",
+      "05": "Ambição empreendedora",
+      "06": "Grande motivação para ganhar por performance",
+      "07": "Desejo de construir algo em vez de apenas ocupar uma posição"
+    },
+    "productLine": "IA • Automação • Software • Produtos Digitais"
+  },
+  "hr": {
+    "eyebrow": "IA para empresas de recrutamento",
+    "streamline": "OTIMIZE",
+    "your": "SUAS",
+    "recruitment": "OPERAÇÕES",
+    "operations": "DE RECRUTAMENTO",
+    "with": "COM",
+    "ai": "IA",
+    "heroLead": "Seus métodos. Seus critérios. Suas ferramentas.",
+    "heroDetail": "Desenhamos fluxos de IA, avaliações, dashboards e sistemas de gestão em torno da forma como sua empresa de recrutamento já trabalha.",
+    "era": "A era da hiperpersonalização",
+    "valueTitle": "Desenhe fluxos de recrutamento totalmente personalizados",
+    "valueLead": "Não se trata mais de uma ferramenta genérica. Trata-se de construir sistemas precisos em torno da sua metodologia, regras de negócio e realidade operacional.",
+    "valueStrong": "O importante não é automação genérica. É uma estrutura que se encaixa na sua empresa.",
+    "broader": "Uma visão mais ampla e estratégica",
+    "buildThe": "Construa a",
+    "recruitmentCompany": "empresa de recrutamento",
+    "youRun": "que você quer administrar.",
+    "finalLead": "Da inteligência de talentos às operações e ao crescimento comercial, moldamos IA para a forma como seu time realmente trabalha.",
+    "requestDemo": "Solicitar uma Demonstração",
+    "talkUseCase": "Fale sobre seu caso de uso",
+    "demoEmailSubject": "Solicitação de demonstração de recrutamento",
+    "useCaseEmailSubject": "Conversa sobre IA para recrutamento",
+    "footerHomeAria": "Página inicial de Recursos Humanos da CriativAI",
+    "footerLead": "Sistemas de IA para empresas de recrutamento que buscam mais precisão, capacidade e controle.",
+    "overview": "Visão geral",
+    "footerBottom": "Inteligência de recrutamento, com controle humano.",
+    "pillars": {
+      "digital-operations": {
+        "title": "Operações Digitais",
+        "intro": "Substitua ferramentas fragmentadas e fluxos repetitivos por sistemas desenhados para sua operação.",
+        "items": {
+          "administrative-process-automation": "Automatize processos administrativos e operacionais repetitivos.",
+          "recruitment-support-ai-agents": "Implante agentes de IA para apoiar recrutadores, clientes e candidatos.",
+          "custom-management-systems": "Crie sistemas de gestão sob medida para seus fluxos e regras de negócio.",
+          "performance-operations-dashboards": "Crie dashboards para monitorar vagas, talentos, equipes e desempenho.",
+          "custom-operational-tools": "Desenvolva ferramentas sob medida para desafios operacionais específicos.",
+          "business-tool-integration": "Integre ATS, CRM, planilhas, formulários e calendários."
+        }
+      },
+      "business-discovery": {
+        "title": "Descoberta de Negócios e Outbound",
+        "intro": "Encontre as empresas certas, alcance as pessoas certas e transforme pesquisa de mercado em novas oportunidades de negócio.",
+        "items": {
+          "company-prospecting": "Descubra e qualifique empresas por mercado, setor e potencial.",
+          "decision-maker-identification": "Identifique decisores relevantes e contatos profissionais.",
+          "lead-data-enrichment": "Enriqueça leads com dados verificados, contexto e fontes.",
+          "evidence-based-personalized-messaging": "Crie mensagens personalizadas com base em evidências reais do negócio.",
+          "campaign-automation-and-tracking": "Automatize campanhas, acompanhamentos e rastreamento de vendas.",
+          "ai-sdr-agents": "Implante agentes SDR de IA para interagir e qualificar leads.",
+          "calendar-scheduling-integration": "Integre calendários para agendamento direto de reuniões."
+        }
+      },
+      "recruitment-intelligence": {
+        "title": "Inteligência de Recrutamento",
+        "intro": "Transforme horas de pesquisa manual em um processo de recrutamento moldado à sua metodologia, critérios e vagas críticas.",
+        "items": {
+          "multi-source-talent-search": "Pesquise profissionais em várias fontes públicas e especializadas.",
+          "candidate-fit-ranking": "Pré-qualifique e classifique profissionais pelo nível de aderência.",
+          "evidence-based-shortlists": "Crie shortlists baseadas em evidências e prontas para revisão do recrutador.",
+          "custom-qualification-tests": "Crie testes de qualificação sob medida para funções e habilidades específicas.",
+          "standardized-assessments": "Execute avaliações padronizadas em escala usando seus próprios critérios.",
+          "outreach-and-screening": "Crie mensagens personalizadas de abordagem e perguntas de triagem."
+        }
+      }
+    },
+    "console": {
+      "aria": "Ilustração de oportunidades de IA para empresas de recrutamento",
+      "heading": "IA / RECRUTAMENTO",
+      "custom": "SOB MEDIDA",
+      "areas": "Três áreas estratégicas",
+      "scope": "Talentos · Operações · Crescimento de negócios",
+      "ai": "IA",
+      "items": {
+        "01": {
+          "name": "Inteligência de Recrutamento",
+          "note": "Busca, qualificação e shortlist"
+        },
+        "02": {
+          "name": "Operações Digitais",
+          "note": "Sistemas, dashboards e agentes"
+        },
+        "03": {
+          "name": "Descoberta de Negócios",
+          "note": "Leads, abordagem e reuniões"
+        }
+      },
+      "footerLabel": "VISÃO MACRO",
+      "footerText": "Adaptado ao seu processo"
+    }
+  },
+  "about": {
+    "fullCycle": "Ciclo Completo de Produto",
+    "techStack": "Stack Tecnológica",
+    "awards": "Prêmios",
+    "professional": "Profissional",
+    "buildConfidence": "CONSTRUA COM CONFIANÇA",
+    "heroTitle": "Arquiteto de GenAI",
+    "heroSubtitle": "Engenheiro de Contexto e Prompt",
+    "heroRole": "com Bagagem em Design Criativo",
+    "heroLead": "Bruno atua na interseção entre design de produto, inteligência artificial e estratégia de negócios. Sua prática combina duas décadas de experiência criativa com pensamento sistêmico para transformar ideias complexas em produtos digitais úteis, compreensíveis e bem construídos.",
+    "dropMessage": "Envie uma Mensagem",
+    "bookCall": "Agende uma Conversa",
+    "portraitMeta": "Arquitetura de IA / Design / Estratégia",
+    "oneProfessional": "Um Profissional,",
+    "fullProductCycle": "Ciclo Completo de Produto",
+    "cycleLead": "IA, design e engenharia combinados em uma única mente.",
+    "capabilitiesTitle": "Capacidades: o que Bruno constrói",
+    "capabilities": "Capacidades",
+    "capabilitiesLead": "Da experiência profunda em IA criativa ao conhecimento técnico sólido em GenAI e tecnologias relacionadas.",
+    "clickDetails": "Clique para ver os detalhes",
+    "awardsTitle": "Prêmios: Engenharia de Prompt",
+    "promptEngineering": "Engenharia de Prompt",
+    "awardsLead": "Reconhecimento internacional em engenharia de prompt, design de agentes, conceitos de prompt-app e jogos integrados ao ChatGPT.",
+    "resultsPage": "Página de Resultados",
+    "openProject": "Abrir Projeto",
+    "experienceTitle": "Experiência Profissional",
+    "experience": "Experiência",
+    "experienceLead": "Mais de 20 anos criando sistemas interativos, de uma sólida base em design criativo ao desenvolvimento moderno com IA.",
+    "contactBruno": "Fale com Bruno",
+    "portraitAlt": "Bruno Cesar, arquiteto de GenAI e engenheiro de contexto e prompt",
+    "portraitName": "BRUNO CESAR",
+    "socialAria": "Links sociais de Bruno Cesar",
+    "statsAria": "Experiência e números principais",
+    "stats": {
+      "01": "Anos de Experiência",
+      "02": "Projetos Interativos Entregues",
+      "03": "Seguidores nas Plataformas Sociais",
+      "04": "Prêmios Internacionais em Hackathons de Engenharia de Prompt"
+    },
+    "productCycle": {
+      "01": { "title": "Ideação", "text": "Posso participar desde a etapa inicial da ideia, ajudando a esclarecer requisitos, coletar o briefing e transformar objetivos soltos em uma direção prática de produto." },
+      "02": { "title": "Planejamento", "text": "Um processo de integração simples e eficaz: você define o objetivo, eu ajudo a ampliar a visão e estruturamos o plano certo para o seu negócio." },
+      "03": { "title": "Design", "text": "Mais de 20 anos de experiência em design de produto, potencializada por IA, da era do Macromedia Flash a aplicações web refinadas em React com foco em ótima experiência do usuário." },
+      "04": { "title": "Desenvolvimento Agêntico", "text": "Do harness ao sistema em produção. Não reinvento a roda; uso IA de forma inteligente para criar sistemas confiáveis e eficientes, com entrega sólida e custo acessível." },
+      "05": { "title": "Entrega", "text": "Infraestrutura e implantação adaptadas ao projeto, de ambientes corporativos ao seu próprio servidor, com disponibilidade e confiabilidade alinhadas a padrões sérios de produção." }
+    },
+    "features": {
+      "01": { "title": "Arquitetura de IA", "items": { "01": "DevOps", "02": "Docker, Swarm, Kubernetes, GitHub", "03": "Observabilidade, Rastreamento, Langfuse, Grafana", "04": "Bash, Shell Script, PowerShell, Terminal", "05": "CLI, SSH, SFTP, SystemD, Cron", "06": "VPS, GCP, AWS" } },
+      "02": { "title": "Design de Produto UI/UX", "items": { "01": "Sistema de Design", "02": "Web Design", "03": "Automação de Conteúdo", "04": "Visão de Produto e Branding", "05": "IA Centrada em Pessoas", "06": "LoRA, Weave, Flora, ComfyUI" } },
+      "03": { "title": "Engenharia de IA", "items": { "01": "Desenvolvimento Frontend e Backend", "02": "ETL, Processamento de Dados, RAGs Sob Medida | GraphRAG", "03": "Supabase, Postgres, Mongo, Big Data", "04": "Python, Next.js, Node, React, TypeScript", "05": "Integração de APIs, FastAPI, MCP, CLI" } }
+    },
+    "awardItems": [
+      { "result": "1º lugar na Chipp.ai", "category": "Hackathon de Engenharia de Prompt", "title": "AgentOS, Agente de IA Multitarefa", "description": "AgentOS é um agente de IA multitarefa personalizado, criado para executar múltiplas funções internas e externas a partir de uma única entrada de prompt." },
+      { "result": "1º lugar na FlowGPT", "category": "Técnica Original de Engenharia de Prompt", "title": "Técnica de Prompt Concatenado", "description": "Um método avançado de engenharia de prompt que permite ao ChatGPT executar várias camadas de prompt em uma única entrada, expandindo interações complexas em experiências de prompt-app." },
+      { "result": "2º lugar no Hackathon S3 da FlowGPT", "category": "Engenharia de Prompt, Categoria Jurado", "title": "AI Judgen", "description": "Um agente de avaliação de prompts que pontua criatividade, clareza, precisão, originalidade, consistência sintática, estrutura lógica e oportunidades de melhoria." },
+      { "result": "1º lugar na Prompt Battle da FlowGPT", "category": "Passado e Futuro", "title": "Track to the Future", "description": "Um jogo inovador integrado ao ChatGPT sobre viagem quântica, segredos ocultos da vida e cenários especulativos para o futuro da humanidade." },
+      { "result": "3º lugar no Hackathon S2 da FlowGPT", "category": "Categoria Criativa", "title": "GPTinder", "description": "Um prompt criativo de aconselhamento para encontros que gera frases e assuntos personalizados para aplicativos de relacionamento com base no contexto do usuário e da conexão." },
+      { "result": "3º lugar no Hackathon S2 da FlowGPT", "category": "Desenvolvimento de Software", "title": "ICON Machine", "description": "Uma ferramenta de descoberta de ícones Unicode para o ChatGPT que encontra ícones relacionados, nomes oficiais e tabelas prontas para uso a partir de qualquer referência." },
+      { "result": "Finalista na Prompt Battle da FlowGPT", "category": "Jogo Inovador Integrado ao ChatGPT", "title": "Minecraft Mashup Game", "description": "Uma experiência de jogo no ChatGPT baseada em uma jornada épica além do The End, mensagens ocultas, personagens icônicos e uma aventura guiada por mistério." },
+      { "result": "Finalista na Prompt Battle da FlowGPT", "category": "Jogo Inovador Integrado ao ChatGPT", "title": "Sherlock Hoax", "description": "Um jogo temático de investigação com personagens especialistas, criado para explorar teorias complexas por várias perspectivas em uma experiência conversacional." }
+    ],
+    "skillsAria": "Principais habilidades na {{company}}",
+    "experienceItems": [
+      { "company": "DANTE IA", "role": "CTO | Arquiteto de IA", "period": "abr. de 2025 - atualmente", "location": "Blumenau, Santa Catarina, Brasil", "workMode": "Híbrido | Meio período", "skills": ["SSH", "Ontologias", "Arquitetura de IA", "Sistemas de Conhecimento"] },
+      { "company": "DANTE IA", "role": "Engenheiro de Prompt | Designer de UX", "period": "out. de 2024 - abr. de 2025", "location": "Brasil", "workMode": "Remoto | Meio período", "skills": ["Design de UX", "Design Frontend", "Engenharia de Prompt", "Design de Produto"] },
+      { "company": "EcoFactor", "role": "Líder de Equipe | Engenheiro de Prompt", "period": "mar. de 2024 - mar. de 2025", "location": "Brasil", "workMode": "Remoto | Meio período", "description": "Liderou a equipe de desenvolvimento em todo o ciclo de vida da plataforma de IA e projetou a arquitetura de um sistema inteligente de manufatura voltado à otimização industrial, conformidade ESG e pesquisa de produtos sustentáveis.", "skills": ["Engenharia de Contexto e Prompt", "Ontologias", "Arquitetura de Plataforma de IA"] },
+      { "company": "Prompt-Master.org", "role": "Engenheiro de Prompt Criativo", "period": "jan. de 2023 - atualmente", "location": "Rio de Janeiro, Brasil", "workMode": "Remoto | Meio período", "skills": ["Design Thinking", "Pesquisa em Engenharia de Prompt", "Engenharia de Contexto"] },
+      { "company": "TutorialMaster.org", "role": "Proprietário | Fundador | Instrutor", "period": "jan. de 2013 - 2020", "location": "Vidigal, Rio de Janeiro, Brasil", "workMode": "Meio período", "description": "Fundou uma comunidade de educação em tecnologia, criatividade e design thinking que, junto com seu canal no YouTube, alcançou mais de 150 mil seguidores e alunos.", "skills": ["Design de UX", "Design Thinking", "Educação Criativa", "Conteúdo Digital"] },
+      { "company": "CA Comunicação", "role": "Diretor de Arte Sênior", "period": "jan. de 2009 - dez. de 2012", "location": "Brasil", "description": "Liderou trabalhos criativos para clientes como Chevrolet, TIM, Unimed, Vale, Sebrae e Governo do Estado, além de dirigir projetos especiais para mídia interativa e sites promocionais.", "skills": ["Direção de Arte", "Mídia Interativa", "Lançamentos de Produtos"] },
+      { "company": "Instituto Infnet", "role": "Professor de Computação Gráfica e Design UI/UX", "period": "jan. de 2007 - dez. de 2008", "location": "Rio de Janeiro, Brasil", "description": "Lecionou computação gráfica e design no primeiro centro de treinamento autorizado da Adobe no Rio de Janeiro, fortalecendo sua experiência em metodologia de ensino, comunicação e softwares criativos da Adobe.", "skills": ["Design UI/UX", "Computação Gráfica", "Ensino", "Software Adobe"] },
+      { "company": "Copacabana Brasil", "role": "Diretor de Arte", "period": "out. de 2005 - ago. de 2007", "location": "Rio de Janeiro, Brasil", "description": "Gerenciou contas estratégicas, direção criativa, atendimento remoto a clientes e produção interna, desenvolvendo ampla experiência em operações publicitárias e fluxos de produção.", "skills": ["Design de UX", "Design de GUI", "Gestão Criativa", "Produção"] },
+      { "company": "Comunique-se S/A", "role": "Designer UI / UX / Web", "period": "jan. de 2004 - jul. de 2005", "location": "Brasil", "description": "Planejou experiências de usuário e novos produtos digitais para um grande portal de comunicação, criando salas de imprensa online, campanhas de e-mail, publicidade e materiais institucionais.", "skills": ["Design de UX", "Design de GUI", "Web Design", "Produtos Digitais"] },
+      { "company": "Visiva Comunicação Visual", "role": "Designer Gráfico", "period": "ago. de 2001 - abr. de 2003", "location": "Rio de Janeiro, Brasil", "description": "Criou identidades visuais, papelaria, relatórios anuais e sistemas gráficos institucionais para organizações como Petrobras, Vale e Fundação Getulio Vargas.", "skills": ["Design Gráfico", "Identidade Visual", "Design Editorial", "Produção Gráfica"] },
+      { "company": "IDS - Interactive Design System", "role": "Designer Multimídia | Designer UI/UX", "period": "jan. de 1998 - dez. de 2000", "location": "Rio de Janeiro, Brasil", "description": "Iniciou a carreira em design interativo em uma das empresas pioneiras de multimídia do Brasil, aprendendo os princípios de usabilidade que continuam orientando cada produto.", "skills": ["Design de UX", "Design de GUI", "Multimídia", "Usabilidade"] }
+    ],
+    "finalTitle": "A tecnologia é mais valiosa quando amplia as capacidades humanas",
+    "finalLead": "Vamos construir coisas incríveis juntos. Envie uma mensagem pelo formulário ou pergunte ao assistente de IA sobre ideias, disponibilidade e o melhor próximo passo para o seu projeto.",
+    "footerHomeAria": "Página Sobre Mim da CriativAI"
+  },
+  "talent": {
+    "complimentary": "Solicitação gratuita de shortlist",
+    "title": "Talent",
+    "titleAccent": "Preview.",
+    "lead": "Compartilhe uma vaga aberta e receba uma shortlist selecionada com até 20 profissionais relevantes em 24 horas.",
+    "detail": "Um diagnóstico gratuito para equipes de recrutamento especializado que querem testar a qualidade e velocidade de uma busca apoiada por IA.",
+    "startRequest": "Iniciar Solicitação",
+    "whatGives": "O que você recebe",
+    "benefitsTitle": "Uma amostra rápida e baseada em evidências da sua busca.",
+    "benefitsLead": "Útil para empresas de executive search, consultorias, recrutadores independentes e equipes especializadas de talentos.",
+    "formEyebrow": "Formulário gratuito",
+    "formTitle": "Descreva a vaga. Nós estruturamos a busca.",
+    "formLead": "Informe a vaga ativa e o principal critério de busca. Você também pode adicionar uma característica de exclusão e um diferencial.",
+    "visualAria": "Prévia de uma shortlist selecionada de candidatos",
+    "visualPreview": "PRÉVIA / VAGA ATIVA",
+    "free": "GRÁTIS",
+    "turnaround": "prazo previsto",
+    "visualRole": "Título da vaga e intenção de busca",
+    "visualBrief": "Um briefing principal de busca em formato multilinha",
+    "visualSignals": "Sinais opcionais de exclusão e diferenciais",
+    "output": "RESULTADO",
+    "visualOutput": "Até 20 perfis de candidatos alinhados",
+    "publicNotice": "Modo de teste público: seu briefing é encaminhado pelo aplicativo de e-mail em vez de um formulário com backend ativo.",
+    "backendNotice": "Revisamos o briefing e respondemos ao solicitante por e-mail em até 24 horas.",
+    "roleTitle": "Título da vaga aberta",
+    "searchCriterion": "Critério relevante de busca 01",
+    "searchPlaceholder": "Descreva o principal sinal de busca, em formato multilinha se necessário.",
+    "exclusion": "Característica de exclusão",
+    "exclusionPlaceholder": "Opcional: exemplo do que deve desqualificar um perfil",
+    "differentiator": "Diferencial",
+    "differentiatorPlaceholder": "Opcional: um ponto forte que eleva a shortlist",
+    "formPublicNotice": "Modo de teste público: enviar este formulário abre seu aplicativo de e-mail com o briefing da vaga preenchido.",
+    "footerLead": "Sistemas de recrutamento apoiados por IA para ajudar equipes a encontrar candidatos mais fortes com mais velocidade.",
+    "quickLinks": "Links rápidos",
+    "requestForm": "Formulário de solicitação",
+    "footerBottom": "Inteligência de recrutamento, fundamentada em critérios claros.",
+    "successTitle": "Sua solicitação foi confirmada.",
+    "successMessage": "Obrigado por compartilhar o briefing da vaga. Vamos analisá-lo e enviar sua shortlist em até 24 horas.",
+    "successDetail": "O e-mail de confirmação automática começará a ser enviado assim que as credenciais SMTP do Mailjet forem adicionadas ao ambiente.",
+    "sendError": "Não foi possível enviar sua solicitação agora.",
+    "rolePlaceholder": "Exemplo: VP de Produto de IA",
+    "mailtoSubject": "Solicitação de Talent Preview",
+    "mailtoRequester": "Solicitante",
+    "mailtoRole": "Vaga",
+    "mailtoPrimaryCriterion": "Critério principal de busca",
+    "benefits": {
+      "01": {
+        "title": "Até 20 perfis alinhados",
+        "text": "Uma shortlist que ajuda você a avaliar rapidamente a qualidade da busca antes de adotar um fluxo mais amplo."
+      },
+      "02": {
+        "title": "Entrega em até 24 horas",
+        "text": "Um primeiro sinal rápido para vagas ativas que precisam de pesquisa estruturada, priorização e análise inicial de aderência."
+      },
+      "03": {
+        "title": "Construída a partir dos seus critérios",
+        "text": "Traduzimos seu briefing em requisitos de busca, regras de exclusão e um sinal de diferenciação."
+      }
+    }
+  },
+  "footer": {
+    "productLead": "Produtos com IA, automações inteligentes e experiências digitais centradas em pessoas.",
+    "navigation": "Navegação",
+    "projects": "Projetos",
+    "recruiters": "Para recrutadores",
+    "social": "Redes sociais",
+    "bottom": "Inteligência criativa, fundamentada na realidade.",
+    "rights": "Todos os direitos reservados.",
+    "youtube": "YouTube",
+    "linkedin": "LinkedIn",
+    "behance": "Behance",
+    "github": "GitHub"
+  },
+  "video": {
+    "heroEyebrow": "Design de Produto — Engenharia de IA — Estratégia",
+    "creative": "CRIATIVAS",
+    "aiSolutions": "SOLUÇÕES COM IA",
+    "topicsAria": "Tópicos de soluções de IA em destaque",
+    "topic1": "Aquisição de Clientes com IA",
+    "topic2": "Atendimento ao Cliente com IA",
+    "topic3": "Sites Refinados",
+    "topic4": "Landing Pages de Alta Conversão",
+    "topic5": "Desenvolvimento de Sistemas Sob Medida",
+    "topic6": "Sistemas Corporativos de Conhecimento",
+    "topic7": "Pesquisa de Engenharia de Prompt",
+    "topic8": "Automação de Negócios",
+    "scrollProjects": "Role até os projetos em destaque",
+    "welcome": "BEM-VINDO À",
+    "hyper": "ERA DA",
+    "personalization": "HIPERPERSONALIZAÇÃO",
+    "era": "",
+    "nextLead": "Agora é sua vez de usar IA e criar soluções digitais sob medida para o seu negócio, abrindo oportunidades, acelerando iniciativas e gerando melhores resultados.",
+    "askBook": "Fale com meu Assistente de IA e Agende uma Conversa",
+    "enterpriseLayer": "Camada corporativa de inteligência",
+    "capabilitiesCount": "10 capacidades",
+    "leadTitle": "Agentes de IA para Geração e Conversão de Leads",
+    "leadSubtitle": "Aumente a receita com leads mais qualificados e conversões mais inteligentes.",
+    "leadText": "Capture leads relevantes, qualifique-os automaticamente, descubra exatamente com quem se conectar e automatize ações de prospecção que ampliam seu potencial de conversão e receita.",
+    "automation": "Automação",
+    "fintech": "Fintech",
+    "legalAi": "IA Jurídica",
+    "legalAiPlatform": "Plataforma de IA Jurídica",
+    "projectDashboard": "Dashboard de Inteligência",
+    "projectDashboardText": "Tenha uma visão mais clara do seu negócio com dashboards inteligentes e personalizados, conectados ao conhecimento da empresa e às necessidades operacionais.",
+    "projectTrading": "Plataforma de Trading AI-First",
+    "projectTradingText": "Uma plataforma de trading nativa em IA, desenvolvida com agentes inteligentes, análise preditiva, automação e apoio à decisão.",
+    "projectDanteText": "Uma solução de IA para o setor jurídico construída com agentes inteligentes, RAG, GraphRAG, raciocínio contextual e sistemas corporativos de conhecimento.",
+    "whatWeBuild": "O que construímos",
+    "servicesLead": "Da primeira decisão de interface à camada de inteligência, cada projeto conecta qualidade de design e profundidade técnica.",
+    "readyToBuild": "Pronto para Criar seu",
+    "nextAiProduct": "Próximo Produto com IA?",
+    "finalLead": "Vamos criar software inteligente que une design, automação e estratégia de negócios para resolver desafios reais.",
+    "startProject": "Iniciar um Projeto",
+    "groundingTopics": {
+      "01": { "title": "Configurações RAG Sob Medida | Grafos de Conhecimento | GraphRAG", "description": "Conecte conhecimento privado às respostas de IA com recuperação personalizada e mapeie relações, entidades e dependências para manter o contexto fundamentado em toda a camada de conhecimento." },
+      "02": { "title": "Pesquisa em Engenharia de Prompt | Engenharia de Contexto", "description": "Desenvolva prompts testados e padrões de raciocínio enquanto controla as informações exatas que os agentes recebem antes de responder ou agir, tornando os resultados mais claros e previsíveis." },
+      "03": { "title": "Sistemas Corporativos de Conhecimento", "description": "Transforme informações dispersas da empresa em uma camada confiável de inteligência para pessoas e IA, oferecendo ao time uma fonte de verdade mais estruturada e acionável." },
+      "04": { "title": "Arquitetura Multiagente", "description": "Coordene agentes especializados que planejam, recuperam, validam e executam fluxos complexos com uma orquestração mais organizada em todo o sistema." },
+      "05": { "title": "ETL, Processamento de Dados | Enriquecimento de Contexto", "description": "Limpe, transforme, estruture e enriqueça dados de múltiplas fontes para criar conhecimento pronto para IA, com melhores metadados, relações e significado para recuperação." },
+      "06": { "title": "Processamento Inteligente de Fragmentos", "description": "Divida o conhecimento em fragmentos precisos que preservam o significado, reduzem recuperações irrelevantes e mantêm as respostas alinhadas às fontes mais pertinentes." },
+      "07": { "title": "Proteções | Observabilidade", "description": "Monitore, limite e aprimore o comportamento dos agentes com controles mais claros, melhor visibilidade e retorno operacional mais confiável." }
+    }
+  },
+  "videoServices": {
+    "01": {
+      "title": "Design de Produto",
+      "text": "Design de produto digital centrado nas pessoas, com foco em usabilidade, acessibilidade e experiências excepcionais."
+    },
+    "02": {
+      "title": "Sistema Corporativo de Conhecimento",
+      "text": "Arquitetura centralizada de conhecimento corporativo que oferece aos agentes de IA uma fonte única de verdade, melhorando a qualidade das respostas e mantendo o contexto consistente."
+    },
+    "03": {
+      "title": "Design de Sistemas",
+      "text": "Arquitetura técnica e planejamento de sistemas para produtos digitais escaláveis e aplicações com IA."
+    },
+    "04": {
+      "title": "Automações com IA",
+      "text": "Automação de fluxos de trabalho que elimina tarefas repetitivas e aumenta a eficiência operacional com inteligência artificial."
+    },
+    "05": {
+      "title": "Agentes Inteligentes",
+      "text": "Agentes de IA sob medida capazes de raciocinar, usar ferramentas, recuperar conhecimento e executar processos complexos de forma autônoma."
+    },
+    "06": {
+      "title": "Sites Refinados",
+      "text": "Design refinado para sites corporativos e landing pages de conversão, com clareza, elegância e desempenho."
+    },
+    "07": {
+      "title": "Treinamento de IA Sob Medida",
+      "text": "Programas de treinamento em IA desenhados para as ferramentas, fluxos, maturidade e prioridades do seu time."
+    },
+    "08": {
+      "title": "Consultoria Corporativa em IA",
+      "text": "Consultoria especializada em IA para identificar oportunidades, definir caminhos de implementação e levar capacidades práticas à organização."
+    }
+  }
 }

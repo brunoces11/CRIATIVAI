@@ -6,22 +6,22 @@ import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage
 import { LANGUAGE_STORAGE_KEY, type Language } from "../i18n/constants";
 import { isAudienceEnabled, type Audience } from "../lib/audienceVisibility";
 
-type NavigationItem = { label: string; href: string; adminOnly?: boolean; audience?: Audience };
+type NavigationItem = { labelKey: string; href: string; adminOnly?: boolean; audience?: Audience };
 
 const navigation: NavigationItem[] = [
-  { label: "Hire me", href: "/hire-me", adminOnly: true },
-  { label: "Services", href: "/services" },
-  { label: "Projects", href: "#projects", adminOnly: true },
-  { label: "For Recruiters", href: "/for-recrutiers", audience: "recruiters" },
-  { label: "About", href: "/about-me" },
-  { label: "Video", href: "/", adminOnly: true },
-  { label: "Contact", href: "/contact" },
-  { label: "Style", href: "/style", adminOnly: true },
+  { labelKey: "hireMe", href: "/hire-me", adminOnly: true },
+  { labelKey: "services", href: "/services" },
+  { labelKey: "projects", href: "#projects", adminOnly: true },
+  { labelKey: "recruiters", href: "/for-recrutiers", audience: "recruiters" },
+  { labelKey: "about", href: "/about-me" },
+  { labelKey: "video", href: "/", adminOnly: true },
+  { labelKey: "contact", href: "/contact" },
+  { labelKey: "style", href: "/style", adminOnly: true },
 ];
 
 const solutionsNavigation = [
-  { label: "For Recruiters", href: "/for-recrutiers", page: "human-resources" },
-  { label: "For Founders SDR", href: "/founding-sdr", page: "founding-sdr" },
+  { href: "/for-recrutiers", page: "human-resources" },
+  { href: "/founding-sdr", page: "founding-sdr" },
 ] as const;
 
 const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm", string>> = {
@@ -48,7 +48,6 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
     window.sessionStorage.removeItem("chat_welcome_key");
     window.location.assign(getLocalizedPath(window.location.pathname + window.location.search + window.location.hash, language));
   };
-  const labels: Record<string, string> = { "Hire me": t("header.hireMe"), Services: t("header.services"), Projects: t("header.projects"), "For Recruiters": t("header.recruiters"), About: t("header.about"), Video: t("header.video"), Contact: t("header.contact"), Style: t("header.style") };
   const languageSelector = (variant: "desktop" | "mobile") => (
     <div className={`language-selector language-selector--${variant}`} aria-label={t("header.languageSelector")}>
       <button type="button" className={`language-option${currentLanguage === "pt" ? " language-option--active" : ""}`} aria-current={currentLanguage === "pt" ? "true" : undefined} title={t("header.portuguese")} onClick={() => changeLanguage("pt")}>
@@ -152,7 +151,7 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
               const href = page !== "home" && item.href.startsWith("#") ? `/${item.href}` : item.href;
               const localizedHref = href.startsWith("#") ? href : getLocalizedPath(href, currentLanguage);
               const isActive = activeHref === href;
-              return <a key={item.href} href={localizedHref} aria-current={isActive ? "page" : undefined} onClick={() => setMenuOpen(false)}>{labels[item.label] ?? item.label}</a>;
+              return <a key={item.href} href={localizedHref} aria-current={isActive ? "page" : undefined} onClick={() => setMenuOpen(false)}>{t(`header.${item.labelKey}`)}</a>;
             })}
             {page === "adm" ? (
               <div className={`solutions-menu${solutionsOpen ? " solutions-menu--open" : ""}`}>
@@ -166,7 +165,7 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
                   <span>{t("header.solutions")}</span>
                   <span className="solutions-menu__chevron" aria-hidden="true">v</span>
                 </button>
-                <div className="solutions-menu__panel" role="menu" aria-label="Solutions submenu">
+                <div className="solutions-menu__panel" role="menu" aria-label={t("header.solutionsSubmenu")}>
                   {solutionsNavigation.map((item) => (
                     <a
                       key={item.href}

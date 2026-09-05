@@ -2,77 +2,47 @@ import { SiteHeader } from "../components/SiteHeader";
 import { useTranslation } from "react-i18next";
 import { EditableCta } from "../components/CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 const pillars = [
   {
     id: "digital-operations",
     number: "02",
-    title: "Digital Operations",
-    intro:
-      "Replace fragmented tools and repetitive workflows with systems designed around your operation.",
-    items: [
-      "Automate repetitive administrative and operational processes.",
-      "Deploy AI agents to support recruiters, clients, and candidates.",
-      "Build custom management systems for your workflows and business rules.",
-      "Create dashboards to monitor roles, talent, teams, and performance.",
-      "Develop custom tools for specific operational challenges.",
-      "Integrate ATS, CRM, spreadsheets, forms, and calendars.",
+    itemIds: [
+      "administrative-process-automation",
+      "recruitment-support-ai-agents",
+      "custom-management-systems",
+      "performance-operations-dashboards",
+      "custom-operational-tools",
+      "business-tool-integration",
     ],
   },
   {
     id: "business-discovery",
     number: "03",
-    title: "Business Discovery & Outbound",
-    intro:
-      "Find the right companies, reach the right people, and turn market research into new business opportunities.",
-    items: [
-      "Discover and qualify companies by market, industry, and potential.",
-      "Identify relevant decision-makers and professional contacts.",
-      "Enrich leads with verified data, context, and sources.",
-      "Create personalized messages based on real business evidence.",
-      "Automate campaigns, follow-ups, and sales tracking.",
-      "Deploy AI SDR agents to engage and qualify leads.",
-      "Integrate calendars for direct meeting scheduling.",
+    itemIds: [
+      "company-prospecting",
+      "decision-maker-identification",
+      "lead-data-enrichment",
+      "evidence-based-personalized-messaging",
+      "campaign-automation-and-tracking",
+      "ai-sdr-agents",
+      "calendar-scheduling-integration",
     ],
   },
   {
     id: "recruitment-intelligence",
     number: "01",
-    title: "Recruitment Intelligence",
-    intro:
-      "Turn hours of manual research into a recruitment process shaped around your own methodology, criteria, and critical roles.",
-    items: [
-      "Search for professionals across multiple public and specialized sources.",
-      "Pre-qualify and rank professionals by level of fit.",
-      "Create evidence-based shortlists ready for recruiter review.",
-      "Build custom qualification tests for specific roles and skills.",
-      "Run standardized assessments at scale using your own evaluation criteria.",
-      "Create personalized outreach messages and screening questions.",
+    itemIds: [
+      "multi-source-talent-search",
+      "candidate-fit-ranking",
+      "evidence-based-shortlists",
+      "custom-qualification-tests",
+      "standardized-assessments",
+      "outreach-and-screening",
     ],
   },
 ] as const;
-
-const benefitCardIds: Record<string, string> = {
-  "Automate repetitive administrative and operational processes.": "administrative-process-automation",
-  "Deploy AI agents to support recruiters, clients, and candidates.": "recruitment-support-ai-agents",
-  "Build custom management systems for your workflows and business rules.": "custom-management-systems",
-  "Create dashboards to monitor roles, talent, teams, and performance.": "performance-operations-dashboards",
-  "Develop custom tools for specific operational challenges.": "custom-operational-tools",
-  "Integrate ATS, CRM, spreadsheets, forms, and calendars.": "business-tool-integration",
-  "Discover and qualify companies by market, industry, and potential.": "company-prospecting",
-  "Identify relevant decision-makers and professional contacts.": "decision-maker-identification",
-  "Enrich leads with verified data, context, and sources.": "lead-data-enrichment",
-  "Create personalized messages based on real business evidence.": "evidence-based-personalized-messaging",
-  "Automate campaigns, follow-ups, and sales tracking.": "campaign-automation-and-tracking",
-  "Deploy AI SDR agents to engage and qualify leads.": "ai-sdr-agents",
-  "Integrate calendars for direct meeting scheduling.": "calendar-scheduling-integration",
-  "Search for professionals across multiple public and specialized sources.": "multi-source-talent-search",
-  "Pre-qualify and rank professionals by level of fit.": "candidate-fit-ranking",
-  "Create evidence-based shortlists ready for recruiter review.": "evidence-based-shortlists",
-  "Build custom qualification tests for specific roles and skills.": "custom-qualification-tests",
-  "Run standardized assessments at scale using your own evaluation criteria.": "standardized-assessments",
-  "Create personalized outreach messages and screening questions.": "outreach-and-screening",
-};
 
 function Brand() {
   return (
@@ -84,39 +54,39 @@ function Brand() {
 
 type Pillar = (typeof pillars)[number];
 
-function openBenefitCardChat(pillar: Pillar, item: string, buttonKey: "ask-my-agents" | "i-want-it") {
-  const cardId = benefitCardIds[item];
-  if (!cardId) return;
-  openAssistantChat({ welcomeKey: `human-resources/${pillar.id}/${cardId}/${buttonKey}` });
+function openBenefitCardChat(pillar: Pillar, itemId: string, buttonKey: "ask-my-agents" | "i-want-it") {
+  openAssistantChat({ welcomeKey: `human-resources/${pillar.id}/${itemId}/${buttonKey}` });
 }
 
 function HrFooter() {
+  const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   return (
     <footer className="footer" id="footer">
       <div className="site-container footer-grid">
         <div className="footer-brand">
-          <a href="#top" aria-label="CriativAI Human Resources home"><Brand /></a>
-          <p>AI systems for recruitment companies that want more precision, more capacity, and more control.</p>
-          <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+          <a href="#top" aria-label={t("hr.footerHomeAria")}><Brand /></a>
+          <p>{t("hr.footerLead")}</p>
+          <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
         </div>
         <div className="footer-links-grid">
           <div>
-            <p className="micro-label">Navigation</p>
-            <a href="#overview">Overview</a>
-            <a href="#recruitment-intelligence">Recruitment intelligence</a>
-            <a href="#digital-operations">Digital operations</a>
-            <a href="#business-discovery">Business discovery</a>
+            <p className="micro-label">{t("footer.navigation")}</p>
+            <a href="#overview">{t("hr.overview")}</a>
+            <a href="#recruitment-intelligence">{t("hr.pillars.recruitment-intelligence.title")}</a>
+            <a href="#digital-operations">{t("hr.pillars.digital-operations.title")}</a>
+            <a href="#business-discovery">{t("hr.pillars.business-discovery.title")}</a>
           </div>
           <div>
-            <p className="micro-label">Social Media</p>
-            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>YouTube</a>
-            <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>Behance</a>
-            <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
+            <p className="micro-label">{t("footer.social")}</p>
+            <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>{t("footer.youtube")}</a>
+            <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>{t("footer.linkedin")}</a>
+            <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>{t("footer.behance")}</a>
+            <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>{t("footer.github")}</a>
           </div>
         </div>
       </div>
-      <div className="site-container footer-bottom"><span>Recruitment intelligence, with human control.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top {"\u2191"}</a></div>
+      <div className="site-container footer-bottom"><span>{t("hr.footerBottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")} {"\u2191"}</a></div>
     </footer>
   );
 }
@@ -170,22 +140,22 @@ export default function HumanResourcesPage() {
           <div className="site-container">
             <div className="hr-section-head">
               <p className="eyebrow">{pillar.number}</p>
-              <h2 id={`${pillar.id}-title`}>{t(`hr.pillars.${pillar.id}.title`, pillar.title)}</h2>
-              <p className="section-intro">{t(`hr.pillars.${pillar.id}.intro`, pillar.intro)}</p>
+              <h2 id={`${pillar.id}-title`}>{t(`hr.pillars.${pillar.id}.title`)}</h2>
+              <p className="section-intro">{t(`hr.pillars.${pillar.id}.intro`)}</p>
             </div>
             <div className="hr-benefits-grid">
-              {pillar.items.map((item, itemIndex) => (
-                <article className="hr-benefits-card" key={item} tabIndex={0}>
+              {pillar.itemIds.map((itemId) => (
+                <article className="hr-benefits-card" key={itemId} tabIndex={0}>
                   <div className="hr-benefits-card-body">
                     <i aria-hidden="true" />
-                    <p>{t(`hr.pillars.${pillar.id}.items.${itemIndex}`, item)}</p>
+                    <p>{t(`hr.pillars.${pillar.id}.items.${itemId}`)}</p>
                   </div>
                   <div className="hr-benefits-card-actions">
-                    <EditableCta welcomeKey={`human-resources/${pillar.id}/${benefitCardIds[item]}/ask-my-agents`}>
-                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "ask-my-agents")}>{t("chat.askAgents")}</button>
+                    <EditableCta welcomeKey={`human-resources/${pillar.id}/${itemId}/ask-my-agents`}>
+                      <button type="button" onClick={() => openBenefitCardChat(pillar, itemId, "ask-my-agents")}>{t("chat.askAgents")}</button>
                     </EditableCta>
-                    <EditableCta welcomeKey={`human-resources/${pillar.id}/${benefitCardIds[item]}/i-want-it`}>
-                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "i-want-it")}>{t("services.iWantIt")}</button>
+                    <EditableCta welcomeKey={`human-resources/${pillar.id}/${itemId}/i-want-it`}>
+                      <button type="button" onClick={() => openBenefitCardChat(pillar, itemId, "i-want-it")}>{t("services.iWantIt")}</button>
                     </EditableCta>
                   </div>
                 </article>
@@ -224,10 +194,10 @@ export default function HumanResourcesPage() {
             {t("hr.finalLead")}
           </p>
           <div className="hero-actions">
-            <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
+            <a className="button button--accent" href={`mailto:hello@criativai.com?subject=${encodeURIComponent(t("hr.demoEmailSubject"))}`}>
               {t("hr.requestDemo")} <span aria-hidden="true">{"\u2197"}</span>
             </a>
-            <a className="hr-text-link" href="mailto:hello@criativai.com?subject=Talk%20about%20AI%20for%20Recruitment">
+            <a className="hr-text-link" href={`mailto:hello@criativai.com?subject=${encodeURIComponent(t("hr.useCaseEmailSubject"))}`}>
               {t("hr.talkUseCase")} <span aria-hidden="true">{"\u2197"}</span>
             </a>
           </div>

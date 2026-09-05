@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { CHAT_OPEN_EVENT, getChatWelcomeKey } from "../lib/chatContext";
-import { createWelcomeConversation, fetchCurrentConversation, sendChatMessage, type PendingWelcomeContext } from "../lib/chatStream";
+import { ChatClientError, createWelcomeConversation, fetchCurrentConversation, sendChatMessage, type PendingWelcomeContext } from "../lib/chatStream";
 import { MarkdownText } from "./MarkdownText";
 import { useTranslation } from "react-i18next";
 import { getCurrentLanguage } from "../i18n/getCurrentLanguage";
@@ -23,7 +23,7 @@ type ChatMultiWindowStatus = {
 };
 
 type IceBreaker = {
-  message: string;
+  id: string;
   icon: "idea" | "growth" | "automation" | "calendar" | "support" | "training";
 };
 
@@ -35,12 +35,12 @@ type ChatPanelSize = {
 type ResizeDirection = "left" | "top" | "top-left";
 
 const iceBreakers: IceBreaker[] = [
-  { message: "I want to discuss my project idea.", icon: "idea" },
-  { message: "I want to increase my lead capture and conversion.", icon: "growth" },
-  { message: "I want to automate my business operations.", icon: "automation" },
-  { message: "I want to book a call with Bruno.", icon: "calendar" },
-  { message: "I want to build a customer support agent.", icon: "support" },
-  { message: "I want to hire consulting or personalized training.", icon: "training" },
+  { id: "0", icon: "idea" },
+  { id: "1", icon: "growth" },
+  { id: "2", icon: "automation" },
+  { id: "3", icon: "calendar" },
+  { id: "4", icon: "support" },
+  { id: "5", icon: "training" },
 ];
 
 const CHAT_PANEL_DEFAULT_SIZE: ChatPanelSize = { width: 840, height: 540 };
@@ -52,6 +52,12 @@ const WELCOME_STREAM_CHUNK_SIZE = 4;
 
 export function ChatWidget() {
   const { t } = useTranslation();
+  const getErrorMessage = (error: unknown, fallbackKey: string) =>
+    error instanceof ChatClientError
+      ? t(`chat.errors.${error.code}`)
+      : error instanceof Error
+        ? error.message
+        : t(fallbackKey);
   const initialMessages: Message[] = [{ id: "assistant-intro", role: "assistant", text: t("chat.intro") }];
   const [open, setOpen] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
@@ -114,7 +120,7 @@ export function ChatWidget() {
 
     fetch("/api/admin/chat-multi-window", { signal: controller.signal, headers: { accept: "application/json" } })
       .then((response) => {
-        if (!response.ok) throw new Error("Unable to load chat multi-window status.");
+        if (!response.ok) throw new Error(t("chat.errors.multiWindowStatus"));
         return response.json() as Promise<ChatMultiWindowStatus>;
       })
       .then((payload) => setNewChatEnabled(payload.enabled))
@@ -169,7 +175,7 @@ export function ChatWidget() {
       })
       .catch((restoreError: unknown) => {
         if (controller.signal.aborted) return;
-        setError(restoreError instanceof Error ? restoreError.message : "Unable to restore the conversation.");
+        setError(getErrorMessage(restoreError, "chat.errors.restore"));
       })
       .finally(() => {
         if (!controller.signal.aborted) setRestoring(false);
@@ -260,7 +266,7 @@ export function ChatWidget() {
       }
     } catch (welcomeError: unknown) {
       if (controller.signal.aborted || welcomeRunRef.current !== runId) return;
-      setError(welcomeError instanceof Error ? welcomeError.message : "Unable to prepare the chat welcome message.");
+      setError(getErrorMessage(welcomeError, "chat.errors.welcome"));
       setMessages(initialMessages);
       setWelcomeLoading(false);
       setWelcomeRequesting(false);
@@ -371,7 +377,7 @@ export function ChatWidget() {
       });
     } catch (sendError: unknown) {
       if (!controller.signal.aborted) {
-        setError(sendError instanceof Error ? sendError.message : "Unable to reach the assistant.");
+        setError(getErrorMessage(sendError, "chat.errors.send"));
         setMessages((current) => current.filter((item) => item.id !== assistantMessageId));
       }
     } finally {
@@ -493,7 +499,7 @@ export function ChatWidget() {
           <header className="chat-panel__header">
             <div className="chat-panel__identity">
               <div className="chat-panel__identity-copy">
-                <p className="chat-panel__eyebrow">BRUNO CESAR ASSISTANT</p>
+                <p className="chat-panel__eyebrow">{t("chat.assistantName")}</p>
                 <h2>{t("chat.title")}</h2>
               </div>
             </div>
@@ -532,10 +538,10 @@ export function ChatWidget() {
             {showIceBreakers ? (
               <div className="chat-panel__ice-breakers-wrap">
                 <div className="chat-panel__ice-breakers" aria-label={t("chat.starters")}>
-                  {iceBreakers.map((iceBreaker, index) => (
-                    <button key={iceBreaker.message} type="button" onClick={() => startWithIceBreaker(t(`chat.iceBreakers.${index}`))}>
+                  {iceBreakers.map((iceBreaker) => (
+                    <button key={iceBreaker.id} type="button" onClick={() => startWithIceBreaker(t(`chat.iceBreakers.${iceBreaker.id}`))}>
                       <IceBreakerIcon type={iceBreaker.icon} />
-                      <span className="chat-panel__ice-breaker-label">{t(`chat.iceBreakers.${index}`)}</span>
+                      <span className="chat-panel__ice-breaker-label">{t(`chat.iceBreakers.${iceBreaker.id}`)}</span>
                     </button>
                   ))}
                 </div>

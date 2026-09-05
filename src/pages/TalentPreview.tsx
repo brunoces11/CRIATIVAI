@@ -5,6 +5,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { submitTalentPreview } from "../lib/forms";
 import { buildMailtoHref, isSitesFrontendOnly } from "../lib/sitesRuntime";
 import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 type TalentPreviewState = {
   requester_name: string;
@@ -30,11 +31,7 @@ function createInitialState(): TalentPreviewState {
   };
 }
 
-const benefits = [
-  ["Up to 20 aligned profiles", "A shortlist that helps you evaluate search quality quickly before committing to a broader rollout."],
-  ["Delivered within 24 hours", "A fast first signal for live roles that need structured research, prioritization, and initial fit analysis."],
-  ["Built around your criteria", "We translate your brief into search requirements, exclusion rules, and one differentiating signal."],
-] as const;
+const benefitIds = ["01", "02", "03"] as const;
 
 function Brand() {
   return (
@@ -46,6 +43,7 @@ function Brand() {
 
 export default function TalentPreviewPage() {
   const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const [form, setForm] = useState<TalentPreviewState>(() => createInitialState());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -77,17 +75,17 @@ export default function TalentPreviewPage() {
 
     if (isSitesFrontendOnly) {
       window.location.href = buildMailtoHref({
-        subject: `Talent Preview Request${form.job_title.trim() ? ` - ${form.job_title.trim()}` : ""}`,
+        subject: `${t("talent.mailtoSubject")}${form.job_title.trim() ? ` - ${form.job_title.trim()}` : ""}`,
         lines: [
-          `Requester: ${form.requester_name.trim() || "-"}`,
-          `Email: ${form.requester_email.trim() || "-"}`,
-          `Role: ${form.job_title.trim() || "-"}`,
+          `${t("talent.mailtoRequester")}: ${form.requester_name.trim() || "-"}`,
+          `${t("forms.email")}: ${form.requester_email.trim() || "-"}`,
+          `${t("talent.mailtoRole")}: ${form.job_title.trim() || "-"}`,
           "",
-          "Primary search criterion:",
+          `${t("talent.mailtoPrimaryCriterion")}:`,
           form.search_criteria_1.trim() || "-",
           "",
-          `Exclusion characteristic: ${form.exclusion_criteria.trim() || "-"}`,
-          `Differentiator: ${form.differentiator.trim() || "-"}`,
+          `${t("talent.exclusion")}: ${form.exclusion_criteria.trim() || "-"}`,
+          `${t("talent.differentiator")}: ${form.differentiator.trim() || "-"}`,
         ],
       });
       return;
@@ -101,7 +99,7 @@ export default function TalentPreviewPage() {
       setForm(createInitialState());
       setSuccessOpen(true);
     } catch (submissionError) {
-      setError(submissionError instanceof Error ? submissionError.message : "Unable to send your request right now.");
+      setError(submissionError instanceof Error ? submissionError.message : t("talent.sendError"));
     } finally {
       setSubmitting(false);
     }
@@ -156,10 +154,10 @@ export default function TalentPreviewPage() {
           </div>
 
           <div className="form-benefits-grid">
-            {benefits.map(([title, text]) => (
-              <article className="form-benefit-card" key={title}>
-                <h3>{t(`talent.benefits.${title}.title`, title)}</h3>
-                <p>{t(`talent.benefits.${title}.text`, text)}</p>
+            {benefitIds.map((benefitId) => (
+              <article className="form-benefit-card" key={benefitId}>
+                <h3>{t(`talent.benefits.${benefitId}.title`)}</h3>
+                <p>{t(`talent.benefits.${benefitId}.text`)}</p>
               </article>
             ))}
           </div>
@@ -189,13 +187,13 @@ export default function TalentPreviewPage() {
               </label>
               <label className="form-field">
                 <span>{t("forms.email")}</span>
-                <input name="requester_email" type="email" value={form.requester_email} onChange={onChange} placeholder="name@company.com" required />
+                <input name="requester_email" type="email" value={form.requester_email} onChange={onChange} placeholder={t("contact.emailPlaceholder")} required />
               </label>
             </div>
 
             <label className="form-field">
               <span>{t("talent.roleTitle")}</span>
-              <input name="job_title" value={form.job_title} onChange={onChange} placeholder="Example: VP of AI Product" required />
+              <input name="job_title" value={form.job_title} onChange={onChange} placeholder={t("talent.rolePlaceholder")} required />
             </label>
 
             <label className="form-field">
@@ -247,26 +245,26 @@ export default function TalentPreviewPage() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="/" aria-label="CriativAI home"><Brand /></a>
+            <a href={localizedPath("/")} aria-label={t("header.home")}><Brand /></a>
             <p>{t("talent.footerLead")}</p>
-            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
               <p className="micro-label">{t("header.navigation")}</p>
-              <a href="/#services">Services</a>
-              <a href="/#projects">Projects</a>
-              {isAudienceEnabled("recruiters") ? <a href="/for-recrutiers">For Recrutiers</a> : null}
-              <a href="/contact">Contact</a>
+              <a href={localizedPath("/#services")}>{t("header.services")}</a>
+              <a href={localizedPath("/#projects")}>{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
+              <a href={localizedPath("/contact")}>{t("header.contact")}</a>
             </div>
             <div>
               <p className="micro-label">{t("talent.quickLinks")}</p>
               <a href="#talent-preview-form">{t("talent.requestForm")}</a>
-              <a href="/style">Style</a>
+              <a href="/style">{t("header.style")}</a>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>{t("talent.footerBottom")}</span><a className="footer-legal-link" href="/privacy">{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")}</a></div>
+        <div className="site-container footer-bottom"><span>{t("talent.footerBottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")}</a></div>
       </footer>
 
       <FormSuccessModal

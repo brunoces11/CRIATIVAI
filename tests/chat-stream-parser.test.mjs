@@ -54,13 +54,17 @@ test("parses multiple lines in one chunk and preserves unicode", async () => {
   ]);
 });
 
-test("rejects unsupported stream events", async () => {
-  const { parseNdjsonStream } = await loadChatStreamModule();
+test("rejects unsupported stream events with a localizable error code", async () => {
+  const { ChatClientError, parseNdjsonStream } = await loadChatStreamModule();
   const stream = streamFromChunks(['{"event":"unknown"}\n']);
 
   await assert.rejects(async () => {
     for await (const _event of parseNdjsonStream(stream)) {
       // Consume the stream until the parser raises.
     }
-  }, /Unsupported stream event/);
+  }, (error) => {
+    assert.ok(error instanceof ChatClientError);
+    assert.equal(error.code, "unsupportedStream");
+    return true;
+  });
 });

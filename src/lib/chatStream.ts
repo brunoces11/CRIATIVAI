@@ -27,6 +27,15 @@ export type PendingWelcomeContext = {
 
 export type ChatLanguage = "pt" | "en";
 
+export type ChatClientErrorCode = "restore" | "send" | "welcome" | "network" | "invalidStream" | "unsupportedStream";
+
+export class ChatClientError extends Error {
+  constructor(public readonly code: ChatClientErrorCode) {
+    super(code);
+    this.name = "ChatClientError";
+  }
+}
+
 export async function* parseNdjsonStream(stream: ReadableStream<Uint8Array>): AsyncGenerator<ChatStreamEvent> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
@@ -68,7 +77,7 @@ export async function fetchCurrentConversation(sessionId: string, signal: AbortS
     return null;
   }
   if (!response.ok) {
-    throw new Error("Unable to restore the conversation.");
+    throw new ChatClientError("restore");
   }
 
   return response.json() as Promise<ConversationResponse>;
@@ -109,7 +118,7 @@ export async function sendChatMessage(
   });
 
   if (!response.ok || !response.body) {
-    throw new Error("Unable to reach the assistant.");
+    throw new ChatClientError("send");
   }
 
   for await (const event of parseNdjsonStream(response.body)) {
@@ -132,17 +141,16 @@ export async function createWelcomeConversation(welcomeKey: string, language: Ch
   });
 
   if (!response.ok) {
-    throw new Error("Unable to prepare the chat welcome message.");
+    throw new ChatClientError("welcome");
   }
 
   return response.json() as Promise<ChatWelcomeResponse>;
 }
 
 function buildNetworkError(endpoint: string, error: unknown) {
-  const detail = error instanceof Error ? error.message : "Unknown network failure";
-  return new Error(
-    `Network error while contacting ${endpoint}: ${detail}. Confirm that the backend is running and that you are opening the app from the Vite/FastAPI server, not directly from a file or inactive port.`,
-  );
+  void endpoint;
+  void error;
+  return new ChatClientError("network");
 }
 
 function parseEventLine(line: string): ChatStreamEvent | null {
@@ -151,7 +159,7 @@ function parseEventLine(line: string): ChatStreamEvent | null {
 
   const value: unknown = JSON.parse(trimmed);
   if (!value || typeof value !== "object") {
-    throw new Error("Invalid stream event.");
+    throw new ChatClientError("invalidStream");
   }
 
   const event = value as Record<string, unknown>;
@@ -171,5 +179,5 @@ function parseEventLine(line: string): ChatStreamEvent | null {
     return { event: "error", message: event.message };
   }
 
-  throw new Error("Unsupported stream event.");
+  throw new ChatClientError("unsupportedStream");
 }

@@ -1,25 +1,24 @@
-const recruitmentAiConsoleItems = [
-  { name: "Recruitment Intelligence", note: "Search, qualify, shortlist" },
-  { name: "Digital Operations", note: "Systems, dashboards, agents" },
-  { name: "Business Discovery", note: "Leads, outreach, meetings" },
-] as const;
+import { useTranslation } from "react-i18next";
+
+const recruitmentAiConsoleItemIds = ["01", "02", "03"] as const;
 
 export function RecruitmentAiConsole() {
+  const { t } = useTranslation();
   return (
-    <div className="hr-console" aria-label="Illustration of AI opportunities for recruitment companies">
-      <div className="hr-console-head"><span>AI / RECRUITMENT</span><i>CUSTOM</i></div>
-      <div className="hr-console-criteria"><span>Three strategic areas</span><strong>Talent · Operations · Business growth</strong></div>
-      {recruitmentAiConsoleItems.map((item) => (
-        <div className="hr-candidate" key={item.name}>
+    <div className="hr-console" aria-label={t("hr.console.aria")}>
+      <div className="hr-console-head"><span>{t("hr.console.heading")}</span><i>{t("hr.console.custom")}</i></div>
+      <div className="hr-console-criteria"><span>{t("hr.console.areas")}</span><strong>{t("hr.console.scope")}</strong></div>
+      {recruitmentAiConsoleItemIds.map((itemId) => (
+        <div className="hr-candidate" key={itemId}>
           <span className="hr-avatar" />
           <div>
-            <strong>{item.name}</strong>
-            <small>{item.note}</small>
+            <strong>{t(`hr.console.items.${itemId}.name`)}</strong>
+            <small>{t(`hr.console.items.${itemId}.note`)}</small>
           </div>
-          <b>AI</b>
+          <b>{t("hr.console.ai")}</b>
         </div>
       ))}
-      <div className="hr-console-footer"><span>MACRO VIEW</span><strong>Adapted to your process</strong></div>
+      <div className="hr-console-footer"><span>{t("hr.console.footerLabel")}</span><strong>{t("hr.console.footerText")}</strong></div>
     </div>
   );
 }

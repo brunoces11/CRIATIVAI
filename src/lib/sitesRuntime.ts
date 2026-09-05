@@ -26,18 +26,6 @@ export function openMailtoFallback(options: MailtoOptions) {
   window.location.href = buildMailtoHref(options);
 }
 
-export function openAssistantFallback() {
-  openMailtoFallback({
-    subject: "CriativAI project inquiry",
-    lines: [
-      "Hi Bruno,",
-      "",
-      "I came from the public CriativAI test site and would like to discuss a project.",
-      "",
-      "Project context:",
-      "-",
-      "",
-      "Best,",
-    ],
-  });
+export function openAssistantFallback(options: MailtoOptions) {
+  openMailtoFallback(options);
 }

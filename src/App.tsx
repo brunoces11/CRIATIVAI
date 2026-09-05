@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { isSitesFrontendOnly, openAssistantFallback } from "./lib/sitesRuntime";
 import Home from "./pages/Home";
 
@@ -36,6 +37,7 @@ function Page() {
 }
 
 export default function App() {
+  const { t } = useTranslation();
   const pathname = (window.location.pathname.replace(/^\/en(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
   const showChat = !isSitesFrontendOnly && pathname !== "/adm";
 
@@ -43,12 +45,24 @@ export default function App() {
     if (!isSitesFrontendOnly) return;
 
     const handleAssistantLaunch = () => {
-      openAssistantFallback();
+      openAssistantFallback({
+        subject: t("sitesFallback.subject"),
+        lines: [
+          t("sitesFallback.greeting"),
+          "",
+          t("sitesFallback.intro"),
+          "",
+          t("sitesFallback.context"),
+          "-",
+          "",
+          t("sitesFallback.signoff"),
+        ],
+      });
     };
 
     window.addEventListener("criativai:open-chat", handleAssistantLaunch);
     return () => window.removeEventListener("criativai:open-chat", handleAssistantLaunch);
-  }, []);
+  }, [t]);
 
   return (
     <Suspense fallback={null}>

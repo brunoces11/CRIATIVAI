@@ -4,6 +4,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { useTranslation } from "react-i18next";
 import { openAssistantChat } from "../lib/chatContext";
 import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
 const HERO_PIN_DISTANCE = 2500;
@@ -18,56 +19,7 @@ const HERO_TOPIC_REVEAL_START = 0.1;
 const HERO_TOPIC_REVEAL_STEP = 0.12;
 const HERO_TOPIC_REVEAL_SPAN = 0.12;
 
-const groundingTopics = [
-  {
-    title: "Custom RAG Setups | Knowledge Graphs | GraphRAG",
-    description:
-      "Connect private knowledge to AI answers with tailored retrieval while mapping relationships, entities, and dependencies so agents keep context grounded across the full knowledge layer.",
-  },
-  {
-    title: "Prompt Engineering Research | Context Engineering",
-    description:
-      "Design tested prompts and reasoning patterns while controlling the exact information your agents receive before they answer or act, keeping outputs clearer and more predictable.",
-  },
-  {
-    title: "Enterprise Knowledge Systems",
-    description:
-      "Turn scattered company information into a reliable intelligence layer for people and AI, giving your team a more structured and actionable source of truth.",
-  },
-  {
-    title: "Multi Agent Architecture",
-    description:
-      "Coordinate specialized agents that plan, retrieve, validate, and execute complex workflows with cleaner orchestration across the full system.",
-  },
-  {
-    title: "ETL, Data Processing | Context Enrichment",
-    description:
-      "Clean, transform, structure, and enrich multi-source data so it becomes useful AI-ready knowledge with better metadata, relationships, and meaning for retrieval.",
-  },
-  {
-    title: "Smart Chunk Processing",
-    description:
-      "Split knowledge into precise chunks that preserve meaning, reduce noisy retrieval, and keep your AI responses aligned with the most relevant source material.",
-  },
-  {
-    title: "Guard Rails | Observability",
-    description:
-      "Monitor, constrain, and improve agent behavior with clearer controls, better visibility, and more reliable operational feedback.",
-  },
-] as const;
-
-const customDevelopmentTopics = [
-  "Intelligence Hubs",
-  "Custom CRM Systems",
-  "Tailored ERP Operations",
-  "High-Conversion Landing Pages",
-  "AI-Powered Internal Tools",
-  "Custom Workflow Automations",
-  "Business-Critical Integrations",
-  "Operational Dashboards",
-  "Process-Specific UX",
-  "No Vendor Lock-In",
-];
+const groundingTopicIds = ["01", "02", "03", "04", "05", "06", "07"] as const;
 
 const services = [
   {
@@ -103,17 +55,6 @@ const services = [
     index: "08",
     icon: "consulting",
   },
-];
-
-const expertise = [
-  "Product Design",
-  "UI/UX Design",
-  "AI Engineering",
-  "Context Engineering",
-  "Prompt Engineering",
-  "Enterprise Automation",
-  "Knowledge Systems",
-  "Human-Centered AI",
 ];
 
 function clamp(value: number, min: number, max: number) {
@@ -239,6 +180,7 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 
 export default function VideoPage() {
   const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const heroRef = useRef<HTMLElement | null>(null);
   const heroStageRef = useRef<HTMLDivElement | null>(null);
   const heroCopyRef = useRef<HTMLDivElement | null>(null);
@@ -574,7 +516,7 @@ export default function VideoPage() {
                   {t("video.askBook")} <span aria-hidden="true">-&gt;</span>
                 </button>
               </EditableCta>
-              <a className="button button--ghost" href="/contact">
+              <a className="button button--ghost" href={localizedPath("/contact")}>
                 {t("about.dropMessage")} <span aria-hidden="true">-&gt;</span>
               </a>
             </div>
@@ -593,14 +535,14 @@ export default function VideoPage() {
               {t("home.customText")}
             </p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">{t("home.iWantBuild")}</a>
-              <a className="button button--ghost" href="/contact">{t("about.bookCall")}</a>
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
             <img
               src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
-              alt="Custom software development"
+              alt={t("home.customImageAlt")}
               className="grounding-panel-image"
               loading="lazy"
             />
@@ -618,8 +560,8 @@ export default function VideoPage() {
               {t("home.groundingText")}
             </p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">{t("home.iWantBuild")}</a>
-              <a className="button button--ghost" href="/contact">{t("about.bookCall")}</a>
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel">
@@ -629,8 +571,8 @@ export default function VideoPage() {
             </div>
             <div className="topic-list" role="list">
               <div className="topic-list-column">
-                {groundingTopics.map((topic, index) => {
-                  const isExpanded = expandedGroundingTopic?.title === topic.title;
+                {groundingTopicIds.map((topicId, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topicId;
                   const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
                   const detailId = `grounding-topic-${index}`;
 
@@ -638,20 +580,20 @@ export default function VideoPage() {
                     <div
                       role="listitem"
                       className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
-                      key={topic.title}
+                      key={topicId}
                     >
                       <button
                         type="button"
                         className="topic-list-button"
                         aria-expanded={isExpanded}
                         aria-controls={detailId}
-                        onClick={() => toggleGroundingTopic("single", topic.title)}
+                        onClick={() => toggleGroundingTopic("single", topicId)}
                       >
                         <span className="topic-list-toggle" aria-hidden="true" />
                         <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
-                        <span className="topic-list-title">{topic.title}</span>
+                        <span className="topic-list-title">{t(`video.groundingTopics.${topicId}.title`)}</span>
                         <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
-                          {topic.description}
+                          {t(`video.groundingTopics.${topicId}.description`)}
                         </span>
                       </button>
                     </div>
@@ -673,14 +615,14 @@ export default function VideoPage() {
               {t("video.leadText")}
             </p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">{t("services.iWantIt")}</a>
-              <a className="button button--ghost" href="/contact">{t("about.bookCall")}</a>
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("services.iWantIt")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
             <img
               src="/LEAD_FUNNEL.png"
-              alt="Lead generation funnel placeholder"
+              alt={t("home.leadImageAlt")}
               className="grounding-panel-image"
               loading="lazy"
             />
@@ -782,7 +724,7 @@ export default function VideoPage() {
           <p>
             {t("video.finalLead")}
           </p>
-          <a className="button button--accent" href="/contact">
+          <a className="button button--accent" href={localizedPath("/contact")}>
             {t("video.startProject")} <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
@@ -791,22 +733,22 @@ export default function VideoPage() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="#top" aria-label="CriativAI home">
+            <a href="#top" aria-label={t("header.home")}>
               <Brand />
             </a>
             <p>{t("footer.productLead")}</p>
-            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
               <p className="micro-label">{t("footer.navigation")}</p>
               <a href="#services">{t("header.services")}</a>
               <a href="#projects">{t("footer.projects")}</a>
-              {isAudienceEnabled("recruiters") ? <a href="/for-recrutiers">{t("footer.recruiters")}</a> : null}
-              <a href="/contact">{t("header.contact")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
+              <a href={localizedPath("/contact")}>{t("header.contact")}</a>
             </div>
             <div>
-              <p className="micro-label">Social Media</p>
+              <p className="micro-label">{t("footer.social")}</p>
               <a
                 className="footer-social-link"
                 href="https://www.youtube.com/@tutorialmasterbrasil"
@@ -816,7 +758,7 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   {"\u25B6"}
                 </span>
-                YouTube
+                {t("footer.youtube")}
               </a>
               <a
                 className="footer-social-link"
@@ -827,7 +769,7 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   in
                 </span>
-                LinkedIn
+                {t("footer.linkedin")}
               </a>
               <a
                 className="footer-social-link"
@@ -838,7 +780,7 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   BÄ“
                 </span>
-                Behance
+                {t("footer.behance")}
               </a>
               <a
                 className="footer-social-link"
@@ -849,14 +791,14 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   GH
                 </span>
-                GitHub
+                {t("footer.github")}
               </a>
             </div>
           </div>
         </div>
         <div className="site-container footer-bottom">
           <span>{t("footer.bottom")}</span>
-          <a className="footer-legal-link" href="/privacy">
+          <a className="footer-legal-link" href={localizedPath("/privacy")}>
             {t("legal.eyebrow")}
           </a>
           <a href="#top">{t("header.backToTop")} {"\u2191"}</a>
