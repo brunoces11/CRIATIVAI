@@ -88,6 +88,16 @@ test("localized route helper strips and restores only the en prefix", async () =
   assert.match(helper, /replace\(\/\^\\\/en\(\?=\\\/\|\$\)\//);
   assert.match(helper, /url\.search/);
   assert.match(helper, /url\.hash/);
+  assert.match(helper, /return getLanguageFromPathname\(window\.location\.pathname\)/);
+  assert.doesNotMatch(helper, /localStorage|LANGUAGE_STORAGE_KEY/);
+});
+
+test("route is the only language authority", async () => {
+  const constants = await read("src/i18n/constants.ts");
+  const header = await read("src/components/SiteHeader.tsx");
+
+  assert.doesNotMatch(constants, /LANGUAGE_STORAGE_KEY/);
+  assert.doesNotMatch(header, /LANGUAGE_STORAGE_KEY|localStorage/);
 });
 
 test("header and chat use the planned language contracts", async () => {

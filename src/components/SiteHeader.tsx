@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
-import { LANGUAGE_STORAGE_KEY, type Language } from "../i18n/constants";
+import { type Language } from "../i18n/constants";
 import { isAudienceEnabled, type Audience } from "../lib/audienceVisibility";
 
 type NavigationItem = { labelKey: string; href: string; adminOnly?: boolean; audience?: Audience };
@@ -43,7 +43,6 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
   const activeHref = pageToHref[page];
   const currentLanguage = getCurrentLanguage();
   const changeLanguage = (language: Language) => {
-    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     window.sessionStorage.removeItem("chat_session_id");
     window.sessionStorage.removeItem("chat_welcome_key");
     window.location.assign(getLocalizedPath(window.location.pathname + window.location.search + window.location.hash, language));

@@ -1,14 +1,11 @@
-import { DEFAULT_LANGUAGE, FALLBACK_LANGUAGE, LANGUAGE_STORAGE_KEY, type Language } from "./constants";
+import { DEFAULT_LANGUAGE, FALLBACK_LANGUAGE, type Language } from "./constants";
 
 export function getLanguageFromPathname(pathname: string): Language {
   return pathname === "/en" || pathname.startsWith("/en/") ? FALLBACK_LANGUAGE : DEFAULT_LANGUAGE;
 }
 
 export function getCurrentLanguage(): Language {
-  const routeLanguage = getLanguageFromPathname(window.location.pathname);
-  if (routeLanguage === FALLBACK_LANGUAGE) return routeLanguage;
-  const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return stored === "en" || stored === "pt" ? stored : DEFAULT_LANGUAGE;
+  return getLanguageFromPathname(window.location.pathname);
 }
 
 export function getLocalizedPath(pathname: string, language: Language): string {
