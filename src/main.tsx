@@ -23,7 +23,7 @@ async function bootstrap() {
   }
 
   const currentLanguage = getCurrentLanguage();
-  document.documentElement.lang = currentLanguage === "pt" ? "pt-BR" : "en";
+  document.documentElement.lang = currentLanguage === "pt" ? "pt-BR" : "en-US";
   const i18n = await initializeI18n(currentLanguage);
   const title = i18n.t("meta.title");
   const description = i18n.t("meta.description");

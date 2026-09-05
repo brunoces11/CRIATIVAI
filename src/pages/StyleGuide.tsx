@@ -117,7 +117,6 @@ export default function StyleGuide() {
             <p>A restrained study of an illuminated neon wordmark: a stable glow, occasional electrical discharges, and no page-wide flash.</p>
           </div>
           <div className="neon-specimen-grid">
-            <NeonSpecimen variant="light" label="Light / 300" />
             <NeonSpecimen variant="regular" label="Regular / 400" />
           </div>
         </div>
@@ -311,13 +310,21 @@ function NeonSpecimen({ variant, label }: { variant: "light" | "regular"; label:
           <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
           <g className="neon-arcs">
             <path className="neon-arc neon-arc--one" d="M101 95 L99 88 L95 82 L89 77 L117 69 L104 42" />
-            <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L181 51 L153 64 L171 79" />
-            <path className="neon-arc neon-arc--three" d="M286 45 L294 49 L298 52 L304 55 L277 70 L291 92" />
-            <path className="neon-arc neon-arc--four" d="M334 95 L331 90 L330 88 L322 80 L350 66 L337 42" />
+            <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L179 51 L151 64 L171 79" />
+            <path className="neon-arc neon-arc--three" d="M230 57 L235 48 L248 43 L262 49 L270 61 L264 73" />
+            <path className="neon-arc neon-arc--four" d="M268 95 L271 84 L278 75 L293 63 L287 42" />
+            <path className="neon-arc neon-arc--five" d="M238 73 L231 64 L236 55 L249 47 L262 52 L268 63" />
+            <path className="neon-arc neon-arc--six" d="M266 92 L272 82 L267 73 L281 66 L289 54 L286 43" />
+            <path className="neon-arc neon-arc--seven" d="M105 42 L110 51 L102 63 L108 77 L101 95" />
+            <path className="neon-arc neon-arc--eight" d="M170 79 L164 71 L177 63 L166 55 L162 43" />
+            <path className="neon-arc neon-arc--nine" d="M270 73 L273 62 L265 52 L252 45 L240 50" />
+            <path className="neon-arc neon-arc--ten" d="M288 42 L295 53 L283 67 L293 82 L297 95" />
+            <path className="neon-arc neon-arc--eleven" d="M108 92 L104 84 L111 73 L105 61 L112 47" />
+            <path className="neon-arc neon-arc--twelve" d="M242 47 L251 44 L261 51 L268 62 L263 72" />
           </g>
         </svg>
       </div>
-      <p className="style-spec">Four anchored discharges · each segment leaves and returns to the letter outline</p>
+      <p className="style-spec">Twelve anchored discharges · each segment leaves and returns to the letter outline</p>
     </article>
   );
 }

@@ -79,6 +79,7 @@ test("i18n configuration exposes the required languages and fallback", async () 
   assert.match(config, /export async function initializeI18n\(language: Language\)/);
   assert.match(config, /lng:\s*language/);
   assert.match(main, /await initializeI18n\(currentLanguage\)/);
+  assert.match(main, /currentLanguage === "pt" \? "pt-BR" : "en-US"/);
   assert.doesNotMatch(main, /void i18n\.changeLanguage/);
 });
 
