@@ -1,4 +1,5 @@
 import { type ReactNode, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { EditableCta } from "./CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
@@ -103,7 +104,10 @@ function ServiceIcon({ type }: { type: string }) {
 }
 
 export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem }) {
+  const { t } = useTranslation();
   const [active, setActive] = useState(false);
+  const title = t(`services.catalog.${service.id}.title`, { defaultValue: service.title });
+  const description = t(`services.catalog.${service.id}.text`, { defaultValue: service.text });
 
   return (
     <article
@@ -121,16 +125,16 @@ export function ServiceCatalogCard({ service }: { service: ServiceCatalogItem })
       <div className="services-page-card-body">
         <div className="services-page-title-row">
           <ServiceIcon type={service.icon} />
-          <h3 className={service.title === "Enterprise Knowledge Systems" ? "services-page-title--compact" : undefined}>{service.title}</h3>
+          <h3 className={title === "Enterprise Knowledge Systems" || service.id === "enterprise-knowledge-systems" ? "services-page-title--compact" : undefined}>{title}</h3>
         </div>
-        <p>{service.text}</p>
+        <p>{description}</p>
       </div>
       <div className="services-page-card-actions">
         <EditableCta welcomeKey={`services/service-catalog/${service.id}/ask-my-ai-assistant`}>
-          <button type="button" onClick={() => openServiceCardChat(service, "ask-my-ai-assistant")}>Ask my Ai Assistant</button>
+          <button type="button" onClick={() => openServiceCardChat(service, "ask-my-ai-assistant")}>{t("services.askAssistant")}</button>
         </EditableCta>
         <EditableCta welcomeKey={`services/service-catalog/${service.id}/i-want-it`}>
-          <button type="button" onClick={() => openServiceCardChat(service, "i-want-it")}>I want It</button>
+          <button type="button" onClick={() => openServiceCardChat(service, "i-want-it")}>{t("services.iWantIt")}</button>
         </EditableCta>
       </div>
     </article>

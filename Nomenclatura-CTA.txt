@@ -8,7 +8,7 @@ Regras:
 - Cada segmento descreve a localizacao sem depender do texto exibido ao visitante.
 - O identificador e estavel: mudar o texto visivel do card ou botao nao deve mudar a chave.
 - "global" e permitido para CTAs de uma pagina que nao pertencem a um card.
-- Estes identificadores serao as chaves de Chat-Welcome-Messages.json, na raiz do projeto.
+- Estes identificadores serao as chaves de Chat-Welcome-Messages-en.json, na raiz do projeto.
 
 ESCOPO INICIAL DE IMPLEMENTACAO
 

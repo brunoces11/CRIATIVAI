@@ -1,34 +1,66 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
+import { LANGUAGE_STORAGE_KEY, type Language } from "../i18n/constants";
+import { isAudienceEnabled, type Audience } from "../lib/audienceVisibility";
 
-const navigation = [
+type NavigationItem = { label: string; href: string; adminOnly?: boolean; audience?: Audience };
+
+const navigation: NavigationItem[] = [
   { label: "Hire me", href: "/hire-me", adminOnly: true },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "#projects", adminOnly: true },
+  { label: "For Recruiters", href: "/for-recrutiers", audience: "recruiters" },
   { label: "About", href: "/about-me" },
   { label: "Video", href: "/", adminOnly: true },
   { label: "Contact", href: "/contact" },
   { label: "Style", href: "/style", adminOnly: true },
 ];
 
-const solutionsNavigation = [{ label: "For Recruiters", href: "/for-recrutiers" }] as const;
+const solutionsNavigation = [
+  { label: "For Recruiters", href: "/for-recrutiers", page: "human-resources" },
+  { label: "For Founders SDR", href: "/founding-sdr", page: "founding-sdr" },
+] as const;
 
-const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm", string>> = {
+const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm", string>> = {
   style: "/style",
   "human-resources": "/for-recrutiers",
+  "founding-sdr": "/founding-sdr",
   contact: "/contact",
   "about-me": "/about-me",
   services: "/services",
   "hire-me": "/hire-me",
 };
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm" }) {
+  const { t } = useTranslation();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
   const activeHref = pageToHref[page];
+  const currentLanguage = getCurrentLanguage();
+  const changeLanguage = (language: Language) => {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    window.sessionStorage.removeItem("chat_session_id");
+    window.sessionStorage.removeItem("chat_welcome_key");
+    window.location.assign(getLocalizedPath(window.location.pathname + window.location.search + window.location.hash, language));
+  };
+  const labels: Record<string, string> = { "Hire me": t("header.hireMe"), Services: t("header.services"), Projects: t("header.projects"), "For Recruiters": t("header.recruiters"), About: t("header.about"), Video: t("header.video"), Contact: t("header.contact"), Style: t("header.style") };
+  const languageSelector = (variant: "desktop" | "mobile") => (
+    <div className={`language-selector language-selector--${variant}`} aria-label={t("header.languageSelector")}>
+      <button type="button" className={`language-option${currentLanguage === "pt" ? " language-option--active" : ""}`} aria-current={currentLanguage === "pt" ? "true" : undefined} title={t("header.portuguese")} onClick={() => changeLanguage("pt")}>
+        <img className="language-option__icon" src="/icons/flag-brazil.svg" alt="" aria-hidden="true" width="18" height="18" />
+        <span className="sr-only">{t("header.portuguese")}</span>
+      </button>
+      <button type="button" className={`language-option${currentLanguage === "en" ? " language-option--active" : ""}`} aria-current={currentLanguage === "en" ? "true" : undefined} title={t("header.english")} onClick={() => changeLanguage("en")}>
+        <img className="language-option__icon" src="/icons/flag-usa.svg" alt="" aria-hidden="true" width="18" height="18" />
+        <span className="sr-only">{t("header.english")}</span>
+      </button>
+    </div>
+  );
 
   useEffect(() => {
     let frameId = 0;
@@ -99,65 +131,61 @@ export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: 
   return (
     <header ref={headerRef} className={`site-header${menuOpen ? " site-header--open" : ""}`} style={headerStyle}>
       <div className="site-container header-inner">
-        <a href={page === "home" ? "#top" : "/"} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
+        <a href={page === "home" ? "#top" : getLocalizedPath("/", currentLanguage)} className="header-brand" onClick={() => setMenuOpen(false)}>{brand}</a>
+
+        {languageSelector("mobile")}
 
         <button
           className="menu-toggle"
           type="button"
           aria-expanded={menuOpen}
           aria-controls="primary-navigation"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-label={menuOpen ? t("header.closeMenu") : t("header.openMenu")}
           onClick={() => setMenuOpen((open) => !open)}
         >
           <span /><span />
         </button>
 
         <div className="header-right" id="primary-navigation">
-          <nav className="primary-nav" aria-label="Primary navigation">
-            {navigation.filter((item) => !item.adminOnly || page === "adm").map((item) => {
+          <nav className="primary-nav" aria-label={t("header.primaryNavigation")}>
+            {navigation.filter((item) => (!item.adminOnly || page === "adm") && (!item.audience || isAudienceEnabled(item.audience))).map((item) => {
               const href = page !== "home" && item.href.startsWith("#") ? `/${item.href}` : item.href;
+              const localizedHref = href.startsWith("#") ? href : getLocalizedPath(href, currentLanguage);
               const isActive = activeHref === href;
-              return <a key={item.href} href={href} aria-current={isActive ? "page" : undefined} onClick={() => setMenuOpen(false)}>{item.label}</a>;
+              return <a key={item.href} href={localizedHref} aria-current={isActive ? "page" : undefined} onClick={() => setMenuOpen(false)}>{labels[item.label] ?? item.label}</a>;
             })}
-            <div className={`solutions-menu${solutionsOpen ? " solutions-menu--open" : ""}`}>
-              <button
-                type="button"
-                className={`solutions-menu__toggle${page === "human-resources" ? " is-active" : ""}`}
-                aria-haspopup="menu"
-                aria-expanded={solutionsOpen}
-                onClick={() => setSolutionsOpen((open) => !open)}
-              >
-                <span>Solutions</span>
-                <span className="solutions-menu__chevron" aria-hidden="true">v</span>
-              </button>
-              <div className="solutions-menu__panel" role="menu" aria-label="Solutions submenu">
-                {solutionsNavigation.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    role="menuitem"
-                    aria-current={page === "human-resources" ? "page" : undefined}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setSolutionsOpen(false);
-                    }}
-                  >
-                    {item.label}
-                  </a>
-                ))}
+            {page === "adm" ? (
+              <div className={`solutions-menu${solutionsOpen ? " solutions-menu--open" : ""}`}>
+                <button
+                  type="button"
+                  className="solutions-menu__toggle"
+                  aria-haspopup="menu"
+                  aria-expanded={solutionsOpen}
+                  onClick={() => setSolutionsOpen((open) => !open)}
+                >
+                  <span>{t("header.solutions")}</span>
+                  <span className="solutions-menu__chevron" aria-hidden="true">v</span>
+                </button>
+                <div className="solutions-menu__panel" role="menu" aria-label="Solutions submenu">
+                  {solutionsNavigation.map((item) => (
+                    <a
+                      key={item.href}
+                      href={getLocalizedPath(item.href, currentLanguage)}
+                      role="menuitem"
+                      aria-current={undefined}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setSolutionsOpen(false);
+                      }}
+                    >
+                      {item.page === "human-resources" ? t("header.recruiters") : t("header.founders")}
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
           </nav>
-          <div className="language-selector" aria-label="Language selector">
-            <button type="button" className="language-option language-option--active" aria-current="true" title="English">
-              <img className="language-option__icon" src="/icons/flag-uk.svg" alt="" aria-hidden="true" width="18" height="18" />
-              <span className="sr-only">English</span>
-            </button>
-            <button type="button" className="language-option" disabled title="Portuguese - coming soon">
-              <img className="language-option__icon" src="/icons/flag-brazil.svg" alt="" aria-hidden="true" width="18" height="18" />
-              <span className="sr-only">Portuguese - coming soon</span>
-            </button>
-          </div>
+          {languageSelector("desktop")}
         </div>
       </div>
     </header>

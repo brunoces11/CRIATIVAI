@@ -14,12 +14,15 @@ const PrivacyTermsPage = lazy(() => import("./pages/PrivacyTerms"));
 const VideoPageLazy = lazy(() => import("./pages/Video"));
 const AboutMePageLazy = lazy(() => import("./pages/AboutMe"));
 const HireMePageLazy = lazy(() => import("./pages/HireMe"));
+const FoundingSdrPageLazy = lazy(() => import("./pages/FoundingSdr"));
 
 function Page() {
-  const pathname = window.location.pathname.replace(/\/$/, "") || "/";
+  const pathname = (window.location.pathname.replace(/^\/en(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
 
   if (isSitesFrontendOnly && pathname === "/adm") return <VideoPageLazy />;
   if (pathname === "/for-recrutiers" || pathname === "/human-resources") return <HumanResourcesPage />;
+  if (pathname === "/founding-sdr") return <FoundingSdrPageLazy />;
+  if (pathname === "/") return <VideoPageLazy />;
   if (pathname === "/services") return <ServicesPageLazy />;
   if (pathname === "/style") return <StyleGuide />;
   if (pathname === "/talent-preview") return <TalentPreviewPageLazy />;
@@ -33,7 +36,7 @@ function Page() {
 }
 
 export default function App() {
-  const pathname = window.location.pathname.replace(/\/$/, "") || "/";
+  const pathname = (window.location.pathname.replace(/^\/en(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
   const showChat = !isSitesFrontendOnly && pathname !== "/adm";
 
   useEffect(() => {

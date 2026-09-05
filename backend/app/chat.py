@@ -12,6 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from backend.app.chat_context import get_context_message
+from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
 from backend.app.chat_tracing import ChatTraceContext, create_chat_trace_sink
 from backend.app.models import Conversation, Message
@@ -28,13 +29,13 @@ _rate_limit_hits: dict[str, deque[float]] = defaultdict(deque)
 _state_lock = threading.Lock()
 
 
-def get_or_create_conversation(session: Session, session_id: str | None) -> Conversation:
+def get_or_create_conversation(session: Session, session_id: str | None, language: str = "en") -> Conversation:
     if session_id:
         conversation = session.scalar(select(Conversation).where(Conversation.session_id == session_id))
         if conversation:
             return conversation
 
-    conversation = Conversation(session_id=secrets.token_urlsafe(32))
+    conversation = Conversation(session_id=secrets.token_urlsafe(32), language=language)
     session.add(conversation)
     session.commit()
     session.refresh(conversation)
@@ -45,7 +46,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     request_id = secrets.token_hex(8)
     started_at = monotonic()
     error_category = "none"
-    conversation = get_or_create_conversation_with_messages(session, request.session_id)
+    conversation = get_or_create_conversation_with_messages(session, request.session_id, request.language)
     persist_client_temporal_context(conversation, request)
     history = list(conversation.messages)
     masked_session = _mask_session_id(conversation.session_id)
@@ -172,8 +173,8 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     _log_chat_turn(request_id, masked_session, started_at, "completed")
 
 
-def get_or_create_conversation_with_messages(session: Session, session_id: str | None) -> Conversation:
-    conversation = get_or_create_conversation(session, session_id)
+def get_or_create_conversation_with_messages(session: Session, session_id: str | None, language: str = "en") -> Conversation:
+    conversation = get_or_create_conversation(session, session_id, language)
     loaded = session.scalar(
         select(Conversation)
         .where(Conversation.id == conversation.id)
@@ -246,17 +247,22 @@ def _ensure_cta_welcome_message(
     history: list[Message],
     request: ChatRequest,
 ) -> Message | None:
-    if request.session_id or not request.welcome_message:
+    if request.session_id or not request.welcome_key:
+        return None
+    if "language" not in request.model_fields_set and not request.welcome_message:
         return None
 
     existing = _first_turn_cta_welcome_message(history)
     if existing is not None:
         return existing
 
+    canonical_welcome = create_welcome_conversation(request.welcome_key, request.language).message
+    if not canonical_welcome:
+        return None
     welcome_record = Message(
         conversation_id=conversation.id,
         role="assistant",
-        content=request.welcome_message,
+        content=canonical_welcome,
         status="completed",
         turn_id=f"welcome_{secrets.token_urlsafe(18)}",
         metadata_json=json.dumps(

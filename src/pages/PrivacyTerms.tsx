@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
 
 function Brand() {
   return (
@@ -9,40 +10,41 @@ function Brand() {
 }
 
 export default function PrivacyTermsPage() {
+  const { t } = useTranslation();
   return (
     <main className="policy-page" id="top">
       <SiteHeader brand={<Brand />} page="home" />
 
       <section className="policy-section" aria-labelledby="policy-title">
         <div className="site-container policy-container">
-          <p className="eyebrow">Privacy &amp; Terms</p>
-          <h1 id="policy-title">CriativAI Privacy &amp; Terms</h1>
-          <p className="policy-updated">Last updated: July 24, 2026</p>
+          <p className="eyebrow">{t("legal.eyebrow")}</p>
+          <h1 id="policy-title">{t("legal.title")}</h1>
+          <p className="policy-updated">{t("legal.updated")}</p>
 
           <div className="policy-content">
             <section aria-labelledby="privacy-title">
-              <h2 id="privacy-title">Privacy</h2>
+              <h2 id="privacy-title">{t("legal.privacy")}</h2>
               <p>
-                CriativAI uses contact, chat, form, and calendar information only to respond to requests, support scheduling, and provide the services chosen by the user.
+                {t("legal.privacyOne")}
               </p>
               <p>
-                When Google Calendar is connected, CriativAI may check availability and create, update, or cancel calendar events with Google Meet links. Calendar data is used only for scheduling and is not sold.
+                {t("legal.privacyTwo")}
               </p>
               <p>
-                Access tokens and operational data are stored only as needed to run the service. Access can be revoked by disconnecting the app from the Google account permissions page or by contacting CriativAI.
+                {t("legal.privacyThree")}
               </p>
             </section>
 
             <section aria-labelledby="terms-title">
-              <h2 id="terms-title">Terms</h2>
+              <h2 id="terms-title">{t("legal.terms")}</h2>
               <p>
-                By using CriativAI, you agree to use the site and scheduling features lawfully and only for legitimate business communication.
+                {t("legal.termsOne")}
               </p>
               <p>
-                AI-generated responses and scheduling suggestions should be reviewed before relying on them for final business decisions. CriativAI may update or disable features to improve reliability, security, or compliance.
+                {t("legal.termsTwo")}
               </p>
               <p>
-                For privacy, terms, or data access questions, contact bruno@criativai.site.
+                {t("legal.termsThree")}
               </p>
             </section>
           </div>

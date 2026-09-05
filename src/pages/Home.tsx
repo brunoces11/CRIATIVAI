@@ -1,6 +1,8 @@
 ﻿import { SiteHeader } from "../components/SiteHeader";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { isAudienceEnabled } from "../lib/audienceVisibility";
 
 import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
 import { serviceCatalog } from "../data/serviceCatalog";
@@ -118,6 +120,7 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
   const [expandedGroundingTopic, setExpandedGroundingTopic] = useState<{ columnId: string; title: string } | null>(null);
 
   const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
@@ -134,18 +137,19 @@ export default function Home() {
         <div className="hero-atmosphere" aria-hidden="true" />
         <div className="site-container hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow hero-eyebrow"><span /> Design {"\u00D7"} Engineering {"\u00D7"} Strategy</p>
+            <span className="sr-only">Product Design + Enterprise Knowledge Systems</span>
+            <span className="sr-only">Increase Lead Generation + Conversion Rate with AI</span>
+            <p className="eyebrow hero-eyebrow"><span /> {t("home.heroEyebrow")}</p>
             <h1 id="hero-title" className="hero-title">
               <span className="hero-line hero-line--one">CREATIVE</span>
               <span className="hero-line hero-line--two">AI SOLUTIONS</span>
             </h1>
             <div className="hero-intro">
               <p>
-                Building AI-powered products, intelligent automations, and custom software that combine design,
-                engineering, and business strategy to solve real-world challenges.
+                {t("home.heroLead")}
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">{"\u2197"}</span></a>
+                    <a className="button button--light" href="/contact">{t("home.talk")} <span aria-hidden="true">{"\u2197"}</span></a>
               </div>
             </div>
           </div>
@@ -164,7 +168,7 @@ export default function Home() {
           </div>
         </div>
         <a className="scroll-cue" href="#projects" aria-label="Scroll to featured projects">
-          <span>Scroll to explore</span><i aria-hidden="true" />
+          <span>{t("home.scroll")}</span><i aria-hidden="true" />
         </a>
       </section>
 
@@ -173,7 +177,7 @@ export default function Home() {
         <div className="grounding-orbit" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <h2 id="custom-development-title">Custom Development</h2>
+            <h2 id="custom-development-title">{t("home.customDevelopment")}</h2>
             <h3>Accessible custom software built around the way your business actually operates.</h3>
             <p>
               Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
@@ -200,7 +204,7 @@ export default function Home() {
         <div className="grounding-orbit" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <h2 id="grounding-title">Knowledge Grounding</h2>
+            <h2 id="grounding-title">{t("home.knowledgeGrounding")}</h2>
             <h3>Building AI systems that truly understand your business.</h3>
             <p>
               With the mission of transforming business information into actionable business knowledge, this layer helps
@@ -284,7 +288,7 @@ export default function Home() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <h2 id="projects-title">Featured Projects</h2>
+              <h2 id="projects-title">{t("home.projects")}</h2>
             </div>
           </div>
 
@@ -336,7 +340,7 @@ export default function Home() {
           <div className="section-heading section-heading--split">
             <div>
               <p className="eyebrow">What we build</p>
-              <h2 id="services-title">Services</h2>
+              <h2 id="services-title">{t("home.services")}</h2>
             </div>
             <p className="section-intro">
               From the first interface decision to the intelligence layer behind it, every engagement connects
@@ -356,7 +360,7 @@ export default function Home() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">Start a conversation</p>
+          <p className="eyebrow">{t("home.startConversation")}</p>
           <h2 id="contact-title">
             <span>Ready to Build Your</span>
             <span>Next AI Product?</span>
@@ -366,7 +370,7 @@ export default function Home() {
             business challenges.
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">{"\u2197"}</span>
+            {t("home.startProject")} <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -383,7 +387,7 @@ export default function Home() {
               <p className="micro-label">Navigation</p>
               <a href="#services">Services</a>
               <a href="#projects">Projects</a>
-              <a href="/for-recrutiers">For Recrutiers</a>
+              {isAudienceEnabled("recruiters") ? <a href="/for-recrutiers">For Recrutiers</a> : null}
               <a href="/contact">Contact</a>
             </div>
             <div>

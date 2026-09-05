@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { RecruitmentAiConsole } from "../components/RecruitmentAiConsole";
 import { SiteHeader } from "../components/SiteHeader";
+import { isAudienceEnabled } from "../lib/audienceVisibility";
 
 const colors = [
   ["Graphite", "--graphite", "#181D23"],
@@ -218,11 +219,13 @@ export default function StyleGuide() {
             <p>Live routes that apply this system in practice, including the new recruitment intake landing page.</p>
           </div>
           <div className="style-page-links">
-            <a className="style-page-link" href="/for-recrutiers">
-              <span className="micro-label">Recruitment offer</span>
-              <strong>For Recrutiers</strong>
-              <em>Open the service page {ARROW_NE}</em>
-            </a>
+            {isAudienceEnabled("recruiters") ? (
+              <a className="style-page-link" href="/for-recrutiers">
+                <span className="micro-label">Recruitment offer</span>
+                <strong>For Recrutiers</strong>
+                <em>Open the service page {ARROW_NE}</em>
+              </a>
+            ) : null}
             <a className="style-page-link style-page-link--featured" href="/talent-preview">
               <span className="micro-label">Free shortlist request</span>
               <strong>Talent Preview</strong>

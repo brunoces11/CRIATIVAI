@@ -335,7 +335,7 @@ def test_cta_editor_is_disabled_by_default_and_issues_token(tmp_path: Path) -> N
 
 def test_cta_editor_messages_require_token_and_update_both_catalogs(monkeypatch, tmp_path: Path) -> None:
     state_path = tmp_path / "cta-editor-enabled.txt"
-    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path = tmp_path / "Chat-Welcome-Messages-en.json"
     context_path = tmp_path / "Chat-Context-Messages.json"
     welcome_key = "services/process/planning-call/book-a-call"
     welcome_path.write_text('{"services/process/planning-call/book-a-call":"Old welcome","other/key/value":"Keep"}', encoding="utf-8")

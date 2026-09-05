@@ -25,6 +25,8 @@ export type PendingWelcomeContext = {
   message: string | null;
 };
 
+export type ChatLanguage = "pt" | "en";
+
 export async function* parseNdjsonStream(stream: ReadableStream<Uint8Array>): AsyncGenerator<ChatStreamEvent> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
@@ -79,6 +81,7 @@ export async function sendChatMessage(
   signal: AbortSignal,
   welcomeKey: string | null,
   pendingWelcome: PendingWelcomeContext | null,
+  language: ChatLanguage,
   onEvent: (event: ChatStreamEvent) => void,
 ): Promise<void> {
   const clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
@@ -99,6 +102,7 @@ export async function sendChatMessage(
       welcome_message: sessionId || !pendingWelcome?.message?.trim() ? null : pendingWelcome.message,
       client_timezone: clientTimezone,
       client_locale: clientLocale,
+      language,
     }),
   }).catch((error: unknown) => {
     throw buildNetworkError(endpoint, error);
@@ -113,7 +117,7 @@ export async function sendChatMessage(
   }
 }
 
-export async function createWelcomeConversation(welcomeKey: string, signal: AbortSignal): Promise<ChatWelcomeResponse> {
+export async function createWelcomeConversation(welcomeKey: string, language: ChatLanguage, signal: AbortSignal): Promise<ChatWelcomeResponse> {
   const endpoint = "/api/chat/welcome";
   const response = await fetch(endpoint, {
     method: "POST",
@@ -122,7 +126,7 @@ export async function createWelcomeConversation(welcomeKey: string, signal: Abor
       accept: "application/json",
       "content-type": "application/json",
     },
-    body: JSON.stringify({ welcome_key: welcomeKey }),
+    body: JSON.stringify({ welcome_key: welcomeKey, language }),
   }).catch((error: unknown) => {
     throw buildNetworkError(endpoint, error);
   });

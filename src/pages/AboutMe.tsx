@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { EditableCta } from "../components/CtaEditorButton";
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
 import { openAssistantChat } from "../lib/chatContext";
 
 type Award = {
@@ -310,6 +311,7 @@ function Brand() {
 }
 
 export default function AboutMePage() {
+  const { t } = useTranslation();
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
 
   const toggleAccordion = (accordionId: string) => {
@@ -324,26 +326,24 @@ export default function AboutMePage() {
         <div className="site-container about-me-hero-grid">
           <div className="about-me-hero-copy">
             <h1 id="about-me-title">
-              GenAI Architect <span className="about-me-title-subline">Context Prompt Engineer</span>
+              {t("about.heroTitle")} <span className="about-me-title-subline">{t("about.heroSubtitle")}</span>
             </h1>
-            <p className="about-me-hero-role">with Creative Design Background</p>
+            <p className="about-me-hero-role">{t("about.heroRole")}</p>
             <p className="about-me-hero-lead">
-              Bruno works at the intersection of product design, artificial intelligence, and business strategy.
-              His practice combines two decades of creative experience with a systems mindset to turn complex ideas
-              into useful, understandable, and carefully crafted digital products.
+              {t("about.heroLead")}
             </p>
             <div className="hero-actions about-me-actions">
               <a className="button button--ghost" href="/contact">
-                Drop Me a Message <span aria-hidden="true">-&gt;</span>
+                {t("about.dropMessage")} <span aria-hidden="true">-&gt;</span>
               </a>
               <EditableCta welcomeKey="about-me/hero/bruno-profile/ask-my-assistant">
                 <button className="button button--light" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-assistant" })}>
-                  Ask my Assistant <span aria-hidden="true">-&gt;</span>
+                  {t("chat.askAssistant")} <span aria-hidden="true">-&gt;</span>
                 </button>
               </EditableCta>
               <EditableCta welcomeKey="about-me/hero/bruno-profile/book-a-call">
                 <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/book-a-call" })}>
-                  Book a Call <span aria-hidden="true">-&gt;</span>
+                  {t("about.bookCall")} <span aria-hidden="true">-&gt;</span>
                 </button>
               </EditableCta>
             </div>
@@ -358,7 +358,7 @@ export default function AboutMePage() {
               />
               <span className="about-me-portrait-name">BRUNO CESAR</span>
               <div className="about-me-portrait-meta">
-                <strong>AI Architecture / Design / Strategy</strong>
+                <strong>{t("about.portraitMeta")}</strong>
               </div>
             </div>
             <nav className="about-me-social-links" aria-label="Bruno Cesar social links">
@@ -376,7 +376,7 @@ export default function AboutMePage() {
           {stats.map((stat) => (
             <article className="stat" key={stat.value}>
               <strong className="stat-value">{stat.value}</strong>
-              <p>{stat.label}</p>
+            <p>{t(`about.stats.${stat.value}`, stat.label)}</p>
             </article>
           ))}
         </div>
@@ -385,20 +385,20 @@ export default function AboutMePage() {
       <section className="section about-me-product-cycle-section" aria-labelledby="about-me-product-cycle-title">
         <div className="site-container">
           <div className="about-me-product-cycle-heading">
-            <p className="eyebrow">Full Product Cycle</p>
+            <p className="eyebrow">{t("about.fullCycle")}</p>
             <h2 id="about-me-product-cycle-title">
-              <span className="about-me-product-cycle-line about-me-product-cycle-line--primary">One Professional,</span>
-              <span className="about-me-product-cycle-line about-me-product-cycle-line--secondary">Full Product Cycle</span>
+              <span className="about-me-product-cycle-line about-me-product-cycle-line--primary">{t("about.oneProfessional")}</span>
+              <span className="about-me-product-cycle-line about-me-product-cycle-line--secondary">{t("about.fullProductCycle")}</span>
             </h2>
-            <p>AI, design, and engineering combined into one brain.</p>
+            <p>{t("about.cycleLead")}</p>
           </div>
 
           <div className="about-me-product-cycle-grid">
             {productCycle.map((item) => (
               <article className="about-me-product-cycle-card" key={item.title}>
                 <span>{item.index}</span>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
+                <h3>{t(`about.productCycle.${item.index}.title`, item.title)}</h3>
+                <p>{t(`about.productCycle.${item.index}.text`, item.text)}</p>
               </article>
             ))}
           </div>
@@ -409,7 +409,7 @@ export default function AboutMePage() {
         <div className="site-container">
           <div className="about-me-awards-accordion">
             <article className={`about-me-awards-accordion-item${openAccordionId === "features" ? " is-open" : ""}`}>
-              <h2 className="sr-only" id="about-me-features-title">Capabilities What Bruno Builds</h2>
+              <h2 className="sr-only" id="about-me-features-title">{t("about.capabilitiesTitle")}</h2>
               <button
                 type="button"
                 className="section-heading section-heading--split about-me-awards-heading"
@@ -418,16 +418,16 @@ export default function AboutMePage() {
                 onClick={() => toggleAccordion("features")}
               >
                 <div className="about-me-awards-heading-copy">
-                  <p className="eyebrow">Tech Stack</p>
-                  <h3 className="about-me-awards-heading-title">Capabilities</h3>
+                  <p className="eyebrow">{t("about.techStack")}</p>
+                  <h3 className="about-me-awards-heading-title">{t("about.capabilities")}</h3>
                 </div>
                 <div className="about-me-awards-heading-side">
                   <p className="section-intro about-me-awards-intro">
-                    From deep creative AI background to solid technical knowledge of GenAI and related technologies.
+                    {t("about.capabilitiesLead")}
                   </p>
                 </div>
                 <span className="about-me-awards-chevron-wrap" aria-hidden="true">
-                  <span className="about-me-awards-hover-label">Click to view details</span>
+                  <span className="about-me-awards-hover-label">{t("about.clickDetails")}</span>
                   <span className="about-me-awards-chevron">
                     <span />
                     <span />
@@ -441,11 +441,11 @@ export default function AboutMePage() {
                 hidden={openAccordionId !== "features"}
               >
                 <div className="about-me-feature-grid">
-                  {featureColumns.map((column) => (
+                  {featureColumns.map((column, columnIndex) => (
                     <article className="about-me-feature-card" key={column.title}>
-                      <h3>{column.title}</h3>
+                      <h3>{t(`about.features.${columnIndex}.title`, column.title)}</h3>
                       <ul>
-                        {column.items.map((item) => <li key={item}>{item}</li>)}
+                        {column.items.map((item, itemIndex) => <li key={item}>{t(`about.features.${columnIndex}.items.${itemIndex}`, item)}</li>)}
                       </ul>
                     </article>
                   ))}
@@ -460,7 +460,7 @@ export default function AboutMePage() {
         <div className="site-container">
           <div className="about-me-awards-accordion">
             <article className={`about-me-awards-accordion-item${openAccordionId === "awards" ? " is-open" : ""}`}>
-              <h2 className="sr-only" id="about-me-awards-title">Awards Prompt Engineering</h2>
+              <h2 className="sr-only" id="about-me-awards-title">{t("about.awardsTitle")}</h2>
               <button
                 type="button"
                 className="section-heading section-heading--split about-me-awards-heading"
@@ -469,17 +469,16 @@ export default function AboutMePage() {
                 onClick={() => toggleAccordion("awards")}
               >
                 <div className="about-me-awards-heading-copy">
-                  <p className="eyebrow">Awards</p>
-                  <h3 className="about-me-awards-heading-title">Prompt Engineering</h3>
+                  <p className="eyebrow">{t("about.awards")}</p>
+                  <h3 className="about-me-awards-heading-title">{t("about.promptEngineering")}</h3>
                 </div>
                 <div className="about-me-awards-heading-side">
                   <p className="section-intro about-me-awards-intro">
-                    International recognition in prompt engineering, agent design, prompt-app concepts, and built-in
-                    ChatGPT games.
+                    {t("about.awardsLead")}
                   </p>
                 </div>
                 <span className="about-me-awards-chevron-wrap" aria-hidden="true">
-                  <span className="about-me-awards-hover-label">Click to view details</span>
+                  <span className="about-me-awards-hover-label">{t("about.clickDetails")}</span>
                   <span className="about-me-awards-chevron">
                     <span />
                     <span />
@@ -493,25 +492,25 @@ export default function AboutMePage() {
                 hidden={openAccordionId !== "awards"}
               >
                 <div className="about-me-awards-grid">
-                  {awards.map((award) => (
+                  {awards.map((award, awardIndex) => (
                     <article className="about-me-award-card" key={`${award.result}-${award.title}`}>
                       <div className="about-me-award-image-wrap">
                         <img src={award.grayscaleImage} alt="" className="about-me-award-image about-me-award-image--gray" loading="lazy" />
                         <img src={award.image} alt="" className="about-me-award-image about-me-award-image--color" loading="lazy" />
                       </div>
                       <div className="about-me-award-content">
-                        <p className="about-me-award-result">{award.result}</p>
-                        <p className="about-me-award-category">{award.category}</p>
-                        <h3>{award.title}</h3>
-                        <p>{award.description}</p>
+                        <p className="about-me-award-result">{t(`about.awards.${awardIndex}.result`, award.result)}</p>
+                        <p className="about-me-award-category">{t(`about.awards.${awardIndex}.category`, award.category)}</p>
+                        <h3>{t(`about.awards.${awardIndex}.title`, award.title)}</h3>
+                        <p>{t(`about.awards.${awardIndex}.description`, award.description)}</p>
                         <div className="about-me-award-links">
                           {award.resultsUrl ? (
                             <a href={award.resultsUrl} target="_blank" rel="noreferrer noopener">
-                              Results Page <span aria-hidden="true">-&gt;</span>
+                              {t("about.resultsPage")} <span aria-hidden="true">-&gt;</span>
                             </a>
                           ) : null}
                           <a href={award.projectUrl} target="_blank" rel="noreferrer noopener">
-                            Open Project <span aria-hidden="true">-&gt;</span>
+                            {t("about.openProject")} <span aria-hidden="true">-&gt;</span>
                           </a>
                         </div>
                       </div>
@@ -528,7 +527,7 @@ export default function AboutMePage() {
         <div className="site-container">
           <div className="about-me-awards-accordion">
             <article className={`about-me-awards-accordion-item${openAccordionId === "experience" ? " is-open" : ""}`}>
-              <h2 className="sr-only" id="about-me-experience-title">Professional Experience</h2>
+              <h2 className="sr-only" id="about-me-experience-title">{t("about.experienceTitle")}</h2>
               <button
                 type="button"
                 className="section-heading section-heading--split about-me-awards-heading"
@@ -537,17 +536,16 @@ export default function AboutMePage() {
                 onClick={() => toggleAccordion("experience")}
               >
                 <div className="about-me-awards-heading-copy">
-                  <p className="eyebrow">Professional</p>
-                  <h3 className="about-me-awards-heading-title">Experience</h3>
+                  <p className="eyebrow">{t("about.professional")}</p>
+                  <h3 className="about-me-awards-heading-title">{t("about.experience")}</h3>
                 </div>
                 <div className="about-me-awards-heading-side">
                   <p className="section-intro about-me-awards-intro">
-                    20+ years building interactive systems, from a deep creative design background to modern AI
-                    development.
+                    {t("about.experienceLead")}
                   </p>
                 </div>
                 <span className="about-me-awards-chevron-wrap" aria-hidden="true">
-                  <span className="about-me-awards-hover-label">Click to view details</span>
+                  <span className="about-me-awards-hover-label">{t("about.clickDetails")}</span>
                   <span className="about-me-awards-chevron">
                     <span />
                     <span />
@@ -561,7 +559,7 @@ export default function AboutMePage() {
                 hidden={openAccordionId !== "experience"}
               >
                 <div className="about-me-timeline">
-                  {professionalExperience.map((experience) => (
+                  {professionalExperience.map((experience, experienceIndex) => (
                     <article
                       className="about-me-timeline-item"
                       key={`${experience.company}-${experience.role}-${experience.period}`}
@@ -573,16 +571,16 @@ export default function AboutMePage() {
                           </span>
                           <div>
                             <p className="about-me-timeline-company">{experience.company}</p>
-                            <h3>{experience.role}</h3>
+                            <h3>{t(`about.experience.${experienceIndex}.role`, experience.role)}</h3>
                           </div>
                         </div>
                         <p className="about-me-timeline-period">{experience.period}</p>
                         <p className="about-me-timeline-location">
                           {experience.location}{experience.workMode ? ` | ${experience.workMode}` : ""}
                         </p>
-                        {experience.description ? <p className="about-me-timeline-description">{experience.description}</p> : null}
+                        {experience.description ? <p className="about-me-timeline-description">{t(`about.experience.${experienceIndex}.description`, experience.description)}</p> : null}
                         <ul className="about-me-timeline-skills" aria-label={`Key skills at ${experience.company}`}>
-                          {experience.skills.map((skill) => <li key={skill}>{skill}</li>)}
+                          {experience.skills.map((skill, skillIndex) => <li key={skill}>{t(`about.experience.${experienceIndex}.skills.${skillIndex}`, skill)}</li>)}
                         </ul>
                       </div>
                       <span className="about-me-timeline-marker" aria-hidden="true" />
@@ -599,7 +597,7 @@ export default function AboutMePage() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">BUILD WITH CONFIDENCE</p>
+          <p className="eyebrow">{t("about.buildConfidence")}</p>
           <h2 id="about-me-cta-title">
             Technology is most valuable when it amplifies human capabilities
           </h2>
@@ -609,16 +607,16 @@ export default function AboutMePage() {
           </p>
           <div className="hero-actions about-me-cta-actions">
             <a className="button button--ghost" href="/contact">
-              Contact Bruno <span aria-hidden="true">-&gt;</span>
+              {t("about.contactBruno")} <span aria-hidden="true">-&gt;</span>
             </a>
             <EditableCta welcomeKey="about-me/final-cta/build-with-confidence/ask-my-assistant">
               <button className="button button--light" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/ask-my-assistant" })}>
-                Ask my Assistant <span aria-hidden="true">-&gt;</span>
+                {t("chat.askAssistant")} <span aria-hidden="true">-&gt;</span>
               </button>
             </EditableCta>
             <EditableCta welcomeKey="about-me/final-cta/build-with-confidence/book-a-call">
               <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/final-cta/build-with-confidence/book-a-call" })}>
-                Book a Call <span aria-hidden="true">-&gt;</span>
+                {t("about.bookCall")} <span aria-hidden="true">-&gt;</span>
               </button>
             </EditableCta>
           </div>
@@ -629,19 +627,19 @@ export default function AboutMePage() {
         <div className="site-container footer-grid">
           <div className="footer-brand">
             <a href="#top" aria-label="CriativAI About Me home"><Brand /></a>
-            <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
+            <p>{t("footer.productLead")}</p>
             <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
-              <p className="micro-label">Navigation</p>
-              <a href="/#services">Services</a>
-              <a href="/#projects">Projects</a>
-              <a href="/about-me">About Me</a>
-              <a href="/contact">Contact</a>
+              <p className="micro-label">{t("header.navigation")}</p>
+              <a href="/#services">{t("header.services")}</a>
+              <a href="/#projects">{t("header.projects")}</a>
+              <a href="/about-me">{t("header.about")}</a>
+              <a href="/contact">{t("header.contact")}</a>
             </div>
             <div>
-              <p className="micro-label">Social Media</p>
+              <p className="micro-label">{t("footer.social")}</p>
               <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">YT</span>YouTube</a>
               <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
               <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>Behance</a>
@@ -649,7 +647,7 @@ export default function AboutMePage() {
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top</a></div>
+        <div className="site-container footer-bottom"><span>{t("footer.bottom")}</span><a className="footer-legal-link" href="/privacy">{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")}</a></div>
       </footer>
     </main>
   );

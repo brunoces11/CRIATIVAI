@@ -1,0 +1,112 @@
+Senior Product Designer | AI Systems Architect | AI-Native
+Design
+📍  Rio de Janeiro, Brazil
+📧  alecrim.bruno@gmail.com
+📱  +55 (21) 99997-3045
+🔗  LinkedIn
+🔗  Website
+🧠  PROFESSIONAL SUMMARY
+Senior Product Designer and AI Systems Architect with 20+ years of experience designing
+complex digital products, interactive systems, and data-driven interfaces since the CD-ROM
+era. Strong expertise in UX strategy, real-time workflows, information architecture, and AI-
+native product design.
+Experienced in combining advanced AI/LLM workflows with product design processes, using
+tools such as Claude, OpenAI, Gemini, and AI-assisted design-to-code workflows as part of
+daily practice. Focused on accelerating ideation, prototyping, research synthesis, structured
+reasoning, and complex UX problem-solving through AI-native methodologies.
+Strong systems-thinking mindset with experience designing reliable AI systems, custom
+RAG architectures, and multi-source information workflows capable of supporting scalable
+decision-making and complex operational environments.
+Hands-on experience with trading platforms and trading workflows, operating both spot and
+derivatives markets directly. Strong understanding of trading environments, execution flows,
+portfolio management, market analysis, and AI-first approaches for simplifying complex
+trading operations and professional workflows.
+🚀  CORE SKILLS
+Product Design & UX
+End-to-end product design for complex and data-rich systems
+Advanced UX strategy, interaction design, and information architecture
+Design systems and scalable UI component thinking
+Real-time workflows and high-density interface organization
+Systems thinking and workflow optimization
+
+AI-Native Design & AI Systems
+Technical & Infrastructure
+Creative & Communication Background
+💼  PROFESSIONAL EXPERIENCE
+DERIV
+AI Systems Architect | AI-First Trading Experience Concept
+📍  Remote | Independent Project
+User-centered problem-solving and strategic design decision-making
+Strong visual communication and storytelling capabilities
+Figma, AI-assisted prototyping, and design-to-code workflows
+Daily use of AI/LLM tools (Claude, OpenAI, Gemini, Codex)
+AI-native workflows integrated into product design processes
+Prompt Engineering and AI-assisted UX workflows
+Custom RAG Systems (GraphRAG, AGC, vector stores)
+Enterprise Knowledge Systems (EKS)
+AI evaluation, validation, and reasoning analysis
+AI-driven automation systems (N8N, Make, LangFlow, LangChain)
+AI-driven development with Python, React, Next.js, and TypeScript
+Docker, VPS, SSH environments, and automation pipelines
+API integrations and structured workflow systems
+Data processing, structured outputs, and semantic organization
+20+ years of creative direction, UX design, and interactive media experience
+Strong design thinking and problem-solving capabilities
+Experience creating communication systems, branding, and digital experiences
+High autonomy, proactive execution, and fast adaptation in complex environments
+
+DANTE AI
+🔗  www.dante-ia.com.br
+AI Architect | Context Prompt Engineer
+📍  Blumenau, Brazil | Apr 2025 – Present
+PROMPT MASTER
+🔗  www.prompt-master.org
+AI Architect | Creative Prompt Engineer
+📍  Remote | Jan 2023 – Present
+Designed an AI-first trading system for crypto and traditional assets focused on replacing
+complex dashboards and manual order flows with natural language interaction
+Conceptualized and structured the entire agentic workflow architecture, enabling users to
+coordinate trading operations through intuitive conversational instructions
+Designed AI-driven workflows for market research, portfolio management, order
+execution, and trading automation
+Created concepts for AI-assisted bot configuration and autonomous strategy
+orchestration
+Focused on simplifying high-complexity trading environments through UX-driven AI
+interaction models and intelligent workflow abstraction
+Explored AI-native approaches for trader experience, operational efficiency, and real-time
+decision support
+Designed and deployed multi-step RAG systems for complex legal reasoning workflows
+Implemented GraphRAG + AGC architectures to improve factual accuracy and reduce
+hallucinations
+Structured scalable AI workflows integrating multiple data sources and retrieval systems
+Designed long-context reasoning systems focused on traceability and decision support
+Collaborated on UX and workflow strategies for AI-driven knowledge interfaces
+Developed the Concatenated Prompt Technique for multi-step AI workflows within a
+single interaction
+Built AI-native workflows combining reasoning systems, structured outputs, and
+interactive UX concepts
+
+ECOFACTOR
+Team Lead | Prompt Engineer | AI Workflow Developer
+📍  Remote | Mar 2024 – Mar 2025
+EARLY CAREER (SUMMARY)
+UI/UX Design & Interactive Digital Systems (2000 – 2013)
+Used AI tools daily to accelerate ideation, prototyping, workflow design, and structured
+content generation
+Designed prompt-based systems behaving like full applications with internal navigation
+and logic
+Conducted advanced experiments in AI-assisted workflows, reasoning systems, and
+design interaction models
+Led development of AI systems for industrial analysis and operational optimization
+Built workflows combining structured data ingestion, AI reasoning layers, and automation
+systems
+Coordinated multi-step workflows integrating external systems and operational data
+Structured AI outputs and decision-support systems focused on usability and business
+efficiency
+20+ years designing interactive systems, digital products, multimedia experiences, and
+communication platforms
+Strong foundation in usability, visual communication, and complex interface organization
+Experience working with creative teams, branding systems, and large-scale digital
+projects
+Background that supports current work in AI-native product design and complex workflow
+systems

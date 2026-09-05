@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
 import { EditableCta } from "../components/CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
 
@@ -74,6 +75,7 @@ function Brand() {
 }
 
 export default function HireMePage() {
+  const { t } = useTranslation();
   return (
     <main className="hire-page" id="top">
       <SiteHeader brand={<Brand />} page="hire-me" />
@@ -81,12 +83,11 @@ export default function HireMePage() {
       <section className="hire-hero" aria-labelledby="hire-title">
         <div className="site-container hire-hero-grid">
           <div>
-            <p className="eyebrow">Hire Bruno</p>
-            <h1 id="hire-title">Open positions, choose the best for you.</h1>
+            <p className="eyebrow">{t("hire.eyebrow")}</p>
+            <h1 id="hire-title">{t("hire.title")}</h1>
           </div>
           <p>
-            Flexible hiring formats for companies and founders who need senior AI architecture, product design,
-            implementation strategy, and hands-on delivery without forcing the work into a generic engagement model.
+            {t("hire.lead")}
           </p>
         </div>
       </section>
@@ -95,12 +96,11 @@ export default function HireMePage() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">Open positions</p>
-              <h2 id="hire-positions-title">Choose the right working model</h2>
+              <p className="eyebrow">{t("hire.openPositions")}</p>
+              <h2 id="hire-positions-title">{t("hire.chooseModel")}</h2>
             </div>
             <p className="section-intro">
-              Each option is designed around a different level of commitment, from full-time leadership to strategic
-              consulting, training, and focused custom builds.
+              {t("hire.modelLead")}
             </p>
           </div>
 

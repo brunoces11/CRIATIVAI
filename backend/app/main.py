@@ -75,7 +75,7 @@ def chat(request: ChatRequest, session: Session = Depends(get_session)) -> Strea
 
 @app.post("/api/chat/welcome", response_model=ChatWelcomeResponse)
 def chat_welcome(request: ChatWelcomeRequest) -> ChatWelcomeResponse:
-    return create_welcome_conversation(request.welcome_key)
+    return create_welcome_conversation(request.welcome_key, request.language)
 
 
 @app.get("/api/conversations/current", response_model=ConversationResponse)

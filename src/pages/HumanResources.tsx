@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
 import { EditableCta } from "../components/CtaEditorButton";
 import { openAssistantChat } from "../lib/chatContext";
 
@@ -121,6 +122,7 @@ function HrFooter() {
 }
 
 export default function HumanResourcesPage() {
+  const { t } = useTranslation();
   return (
     <main className="hr-page" id="top">
       <SiteHeader brand={<Brand />} page="human-resources" />
@@ -129,24 +131,24 @@ export default function HumanResourcesPage() {
         <div className="hr-hero-glow" aria-hidden="true" />
         <div className="site-container hr-hero-grid hr-hero-grid--solo">
           <div className="hr-hero-copy">
-            <p className="eyebrow"><span /> AI for recruitment companies</p>
+            <p className="eyebrow"><span /> {t("hr.eyebrow")}</p>
             <h1 id="hr-hero-title">
               <span className="hr-hero-title-topline">
-                <span className="hr-hero-title-line hr-hero-title-line--streamline">STREAMLINE</span>
-                <span className="hr-hero-title-line hr-hero-title-line--your">YOUR</span>
+            <span className="hr-hero-title-line hr-hero-title-line--streamline">{t("hr.streamline")}</span>
+                <span className="hr-hero-title-line hr-hero-title-line--your">{t("hr.your")}</span>
               </span>
-              <span className="hr-hero-title-line hr-hero-title-line--recruitment">RECRUITMENT</span>
-              <span className="hr-hero-title-line hr-hero-title-line--operations">OPERATIONS</span>
+              <span className="hr-hero-title-line hr-hero-title-line--recruitment">{t("hr.recruitment")}</span>
+              <span className="hr-hero-title-line hr-hero-title-line--operations">{t("hr.operations")}</span>
               <span className="hr-hero-title-line hr-hero-title-line--ai">
-                <span className="hr-hero-title-with">WITH </span>
-                <span className="hr-hero-title-ai">AI</span>
+                <span className="hr-hero-title-with">{t("hr.with")}</span>
+                <span className="hr-hero-title-ai">{t("hr.ai")}</span>
               </span>
             </h1>
             <p className="hr-hero-lead">
-              Your methods. Your criteria. Your tools.
+              {t("hr.heroLead")}
             </p>
             <p className="hr-hero-detail">
-              We design AI workflows, assessments, dashboards, and management systems around the way your recruitment company already works.
+              {t("hr.heroDetail")}
             </p>
             <div className="hero-actions">
               <EditableCta welcomeKey="human-resources/hero/book-a-call">
@@ -155,7 +157,7 @@ export default function HumanResourcesPage() {
                   type="button"
                   onClick={() => openAssistantChat({ welcomeKey: "human-resources/hero/book-a-call" })}
                 >
-                  Book a call <span aria-hidden="true">{"\u2197"}</span>
+                  {t("about.bookCall")} <span aria-hidden="true">{"\u2197"}</span>
                 </button>
               </EditableCta>
             </div>
@@ -168,22 +170,22 @@ export default function HumanResourcesPage() {
           <div className="site-container">
             <div className="hr-section-head">
               <p className="eyebrow">{pillar.number}</p>
-              <h2 id={`${pillar.id}-title`}>{pillar.title}</h2>
-              <p className="section-intro">{pillar.intro}</p>
+              <h2 id={`${pillar.id}-title`}>{t(`hr.pillars.${pillar.id}.title`, pillar.title)}</h2>
+              <p className="section-intro">{t(`hr.pillars.${pillar.id}.intro`, pillar.intro)}</p>
             </div>
             <div className="hr-benefits-grid">
-              {pillar.items.map((item) => (
+              {pillar.items.map((item, itemIndex) => (
                 <article className="hr-benefits-card" key={item} tabIndex={0}>
                   <div className="hr-benefits-card-body">
                     <i aria-hidden="true" />
-                    <p>{item}</p>
+                    <p>{t(`hr.pillars.${pillar.id}.items.${itemIndex}`, item)}</p>
                   </div>
                   <div className="hr-benefits-card-actions">
                     <EditableCta welcomeKey={`human-resources/${pillar.id}/${benefitCardIds[item]}/ask-my-agents`}>
-                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "ask-my-agents")}>Ask my Agents</button>
+                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "ask-my-agents")}>{t("chat.askAgents")}</button>
                     </EditableCta>
                     <EditableCta welcomeKey={`human-resources/${pillar.id}/${benefitCardIds[item]}/i-want-it`}>
-                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "i-want-it")}>I want It</button>
+                      <button type="button" onClick={() => openBenefitCardChat(pillar, item, "i-want-it")}>{t("services.iWantIt")}</button>
                     </EditableCta>
                   </div>
                 </article>
@@ -196,15 +198,14 @@ export default function HumanResourcesPage() {
       <section className="section hr-value-section" id="overview" aria-labelledby="value-title">
         <div className="site-container hr-value-grid">
           <div>
-            <p className="eyebrow">The era of hyper-personalization</p>
-            <h2 id="value-title">Design fully customized recruitment workflows</h2>
+              <p className="eyebrow">{t("hr.era")}</p>
+              <h2 id="value-title">{t("hr.valueTitle")}</h2>
           </div>
           <div className="hr-value-copy">
             <p>
-              This is no longer about a one-size-fits-all tool. It is about building precise systems around your methodology,
-              business rules, and operating reality.
+              {t("hr.valueLead")}
             </p>
-            <strong>What matters is not generic automation. What matters is a stack that fits your company.</strong>
+            <strong>{t("hr.valueStrong")}</strong>
           </div>
         </div>
       </section>
@@ -213,21 +214,21 @@ export default function HumanResourcesPage() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">A broader, more strategic view</p>
+          <p className="eyebrow">{t("hr.broader")}</p>
           <h2 id="demo-title">
-            <span className="hr-demo-title-line hr-demo-title-line--light">Build the</span>
-            <span className="hr-demo-title-line hr-demo-title-line--semi-bold">recruitment company</span>
-            <span className="hr-demo-title-line">you want to run.</span>
+            <span className="hr-demo-title-line hr-demo-title-line--light">{t("hr.buildThe")}</span>
+            <span className="hr-demo-title-line hr-demo-title-line--semi-bold">{t("hr.recruitmentCompany")}</span>
+            <span className="hr-demo-title-line">{t("hr.youRun")}</span>
           </h2>
           <p>
-            From talent intelligence to operations and outbound growth, we can shape AI around the way your team actually works.
+            {t("hr.finalLead")}
           </p>
           <div className="hero-actions">
             <a className="button button--accent" href="mailto:hello@criativai.com?subject=Request%20a%20Recruitment%20Demo">
-              Request a Demo <span aria-hidden="true">{"\u2197"}</span>
+              {t("hr.requestDemo")} <span aria-hidden="true">{"\u2197"}</span>
             </a>
             <a className="hr-text-link" href="mailto:hello@criativai.com?subject=Talk%20about%20AI%20for%20Recruitment">
-              Talk about your use case <span aria-hidden="true">{"\u2197"}</span>
+              {t("hr.talkUseCase")} <span aria-hidden="true">{"\u2197"}</span>
             </a>
           </div>
         </div>

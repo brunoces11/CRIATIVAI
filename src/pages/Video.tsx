@@ -1,7 +1,9 @@
 ﻿import { type ReactNode, useEffect, useRef, useState } from "react";
 import { EditableCta } from "../components/CtaEditorButton";
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
 import { openAssistantChat } from "../lib/chatContext";
+import { isAudienceEnabled } from "../lib/audienceVisibility";
 
 const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
 const HERO_PIN_DISTANCE = 2500;
@@ -70,51 +72,35 @@ const customDevelopmentTopics = [
 const services = [
   {
     index: "01",
-    title: "Product Design",
-    text: "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences.",
     icon: "product",
     featured: true,
   },
   {
     index: "02",
-    title: "Enterprise Knowledge System",
-    text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
     icon: "knowledge",
   },
   {
     index: "03",
-    title: "System Design",
-    text: "Technical architecture and system planning for scalable digital products and AI-powered applications.",
     icon: "system",
   },
   {
     index: "04",
-    title: "AI Automations",
-    text: "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence.",
     icon: "automation",
   },
   {
     index: "05",
-    title: "Smart Agents",
-    text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
     icon: "agents",
   },
   {
     index: "06",
-    title: "Refined Websites",
-    text: "Refined design for large-scale corporate websites and simple landing pages built to convert with clarity, elegance, and performance.",
     icon: "websites",
   },
   {
     index: "07",
-    title: "Custom AI Training",
-    text: "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities.",
     icon: "training",
   },
   {
     index: "08",
-    title: "Enterprise AI Consulting",
-    text: "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization.",
     icon: "consulting",
   },
 ];
@@ -252,6 +238,7 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function VideoPage() {
+  const { t } = useTranslation();
   const heroRef = useRef<HTMLElement | null>(null);
   const heroStageRef = useRef<HTMLDivElement | null>(null);
   const heroCopyRef = useRef<HTMLDivElement | null>(null);
@@ -524,33 +511,32 @@ export default function VideoPage() {
         <div className="site-container video-hero-inner">
           <div className="hero-copy video-hero-copy" ref={heroCopyRef}>
             <p className="eyebrow hero-eyebrow">
-              <span /> Product Design &mdash; AI Engineering &mdash; Strategy
+              <span /> {t("video.heroEyebrow")}
             </p>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">CREATIVE</span>
-              <span className="hero-line hero-line--two">AI SOLUTIONS</span>
+              <span className="hero-line hero-line--one">{t("video.creative")}</span>
+              <span className="hero-line hero-line--two">{t("video.aiSolutions")}</span>
             </h1>
             <div className="hero-intro">
               <p>
-                Building AI-powered products, intelligent automations, and custom software that combine design,
-                engineering, and business strategy to solve real-world challenges.
+                {t("home.heroLead")}
               </p>
               <div className="hero-actions">
                 <span className="button button--light">
-                  Let&apos;s Talk <span aria-hidden="true">{"\u2197"}</span>
+                  {t("home.talk")} <span aria-hidden="true">{"\u2197"}</span>
                 </span>
               </div>
             </div>
-            <ul className="video-hero-topics" ref={heroTopicsRef} aria-label="Featured AI solution topics">
+            <ul className="video-hero-topics" ref={heroTopicsRef} aria-label={t("video.topicsAria")}>
               {[
-                "AI-Powered Client Acquisition",
-                "AI-Powered Customer Service",
-                "Refined Websites",
-                "High Conversion Landing Pages",
-                "Custom System Development",
-                "Corporate Knowledge Systems",
-                "Prompt Engineering Research",
-                "Business Automation",
+                t("video.topic1"),
+                t("video.topic2"),
+                t("video.topic3"),
+                t("video.topic4"),
+                t("video.topic5"),
+                t("video.topic6"),
+                t("video.topic7"),
+                t("video.topic8"),
               ].map((topic) => (
                 <li key={topic}>
                   <span className="video-hero-topic-cube" aria-hidden="true" />
@@ -561,8 +547,8 @@ export default function VideoPage() {
           </div>
         </div>
 
-          <a className="scroll-cue video-scroll-cue" href="#projects" aria-label="Scroll to featured projects">
-            <span>Scroll to explore</span>
+          <a className="scroll-cue video-scroll-cue" href="#projects" aria-label={t("video.scrollProjects")}>
+              <span>{t("home.scroll")}</span>
             <i aria-hidden="true" />
           </a>
         </div>
@@ -574,23 +560,22 @@ export default function VideoPage() {
             <h2 id="video-next-title" className="hero-title video-hero-next-title">
             </h2>
             <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome video-hero-next-welcome--top">
-              WELCOME TO
+              {t("video.welcome")}
             </p>
             <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome">
-              THE <span className="video-hero-next-white">HYPER-PERSONALIZATION</span> ERA
+              {t("video.hyper")} <span className="video-hero-next-white">{t("video.personalization")}</span> {t("video.era")}
             </p>
             <p className="video-hero-next-description">
-              Now it&apos;s your turn to leverage AI and build digital solutions tailored precisely to your business...
-              unlocking new opportunities, accelerating your initiatives, and driving better results.
+              {t("video.nextLead")}
             </p>
             <div className="hero-actions video-hero-next-actions">
               <EditableCta welcomeKey="video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call">
                 <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call" })}>
-                  Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
+                  {t("video.askBook")} <span aria-hidden="true">-&gt;</span>
                 </button>
               </EditableCta>
               <a className="button button--ghost" href="/contact">
-                Drop Me a Message <span aria-hidden="true">-&gt;</span>
+                {t("about.dropMessage")} <span aria-hidden="true">-&gt;</span>
               </a>
             </div>
           </div>
@@ -602,16 +587,14 @@ export default function VideoPage() {
         <div className="grounding-orbit" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <h2 id="custom-development-title">Custom Development</h2>
-            <h3>Accessible custom software built around the way your business actually operates.</h3>
+            <h2 id="custom-development-title">{t("home.customDevelopment")}</h2>
+            <h3>{t("home.customLead")}</h3>
             <p>
-              Stop paying for rigid third-party tools, forced workarounds, and vendor lock-in. Build exactly what your
-              operation needs, whether that means an intelligence hub, CRM, ERP, or internal platform, designed to fit
-              your workflow, your goals, and the way your business actually runs.
+              {t("home.customText")}
             </p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">I WANT BUILD</a>
-              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+              <a className="button button--accent" href="/contact">{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href="/contact">{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
@@ -629,23 +612,20 @@ export default function VideoPage() {
         <div className="grounding-orbit" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <h2 id="grounding-title">Knowledge Grounding</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
+            <h2 id="grounding-title">{t("home.knowledgeGrounding")}</h2>
+            <h3>{t("home.groundingLead")}</h3>
             <p>
-              With the mission of transforming business information into actionable business knowledge, this layer helps
-              AI agents answer with precision and predictability inside your project constraints, processing multi-source
-              data into a reliable context retrieval system that gives you clear control over what your agents consume
-              and consistently improves the quality of their responses.
+              {t("home.groundingText")}
             </p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">I WANT BUILD</a>
-              <a className="button button--ghost" href="/contact">BOOK A CALL</a>
+              <a className="button button--accent" href="/contact">{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href="/contact">{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel">
             <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
+                <span>{t("video.enterpriseLayer")}</span>
+              <span>{t("video.capabilitiesCount")}</span>
             </div>
             <div className="topic-list" role="list">
               <div className="topic-list-column">
@@ -687,15 +667,14 @@ export default function VideoPage() {
         <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <h2 id="lead-generation-title">AI Lead Generation and Convertion Agents</h2>
-            <h3>Increase revenue with better qualified leads and smarter conversion.</h3>
+            <h2 id="lead-generation-title">{t("video.leadTitle")}</h2>
+            <h3>{t("video.leadSubtitle")}</h3>
             <p>
-              Capture relevant leads, qualify them automatically, discover exactly who to connect with, and automate
-              outbound actions that expand your conversion potential and drive more revenue.
+              {t("video.leadText")}
             </p>
             <div className="grounding-actions">
-              <a className="button button--accent" href="/contact">I want it</a>
-              <a className="button button--ghost" href="/contact">Book a call</a>
+              <a className="button button--accent" href="/contact">{t("services.iWantIt")}</a>
+              <a className="button button--ghost" href="/contact">{t("about.bookCall")}</a>
             </div>
           </div>
           <div className="grounding-panel grounding-panel--image">
@@ -713,7 +692,7 @@ export default function VideoPage() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <h2 id="projects-title">Featured Projects</h2>
+              <h2 id="projects-title">{t("home.projects")}</h2>
             </div>
           </div>
 
@@ -722,11 +701,10 @@ export default function VideoPage() {
               <ProjectVisual type="hr" />
               <div className="project-overlay" />
               <div className="project-content">
-                <p className="project-index">01 / Automation</p>
-                <h3>Inteliggence Dashboard</h3>
+                <p className="project-index">01 / {t("video.automation")}</p>
+                <h3>{t("video.projectDashboard")}</h3>
                 <p>
-                  Gain a clearer view of your business with personalized smart dashboards, fully connected to your
-                  business knowledge and focused exactly on your precise operational needs.
+                  {t("video.projectDashboardText")}
                 </p>
               </div>
             </article>
@@ -735,11 +713,10 @@ export default function VideoPage() {
               <ProjectVisual type="trading" />
               <div className="project-overlay" />
               <div className="project-content">
-                <p className="project-index">02 / Fintech</p>
-                <h3>AI-First Trading Platform</h3>
+                <p className="project-index">02 / {t("video.fintech")}</p>
+                <h3>{t("video.projectTrading")}</h3>
                 <p>
-                  An AI-native trading platform designed around intelligent agents, predictive analytics,
-                  automation, and decision support.
+                  {t("video.projectTradingText")}
                 </p>
               </div>
             </article>
@@ -748,13 +725,12 @@ export default function VideoPage() {
               <ProjectVisual type="dante" />
               <div className="project-overlay" />
               <div className="project-content">
-                <p className="project-index">03 / Legal AI</p>
+                <p className="project-index">03 / {t("video.legalAi")}</p>
                 <h3>
-                  Dante <span>Legal AI Platform</span>
+                  Dante <span>{t("video.legalAiPlatform")}</span>
                 </h3>
                 <p>
-                  An AI solution for the legal industry built with intelligent agents, RAG, GraphRAG, contextual
-                  reasoning, and enterprise knowledge systems.
+                  {t("video.projectDanteText")}
                 </p>
               </div>
             </article>
@@ -766,18 +742,17 @@ export default function VideoPage() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">What we build</p>
-              <h2 id="services-title">Services</h2>
+              <p className="eyebrow">{t("video.whatWeBuild")}</p>
+              <h2 id="services-title">{t("home.services")}</h2>
             </div>
             <p className="section-intro">
-              From the first interface decision to the intelligence layer behind it, every engagement connects
-              design quality with technical depth.
+              {t("video.servicesLead")}
             </p>
           </div>
 
           <div className="services-grid">
             {services.map((service) => (
-              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.title}>
+              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.index}>
                 <div className="service-topline">
                   <span>{service.index}</span>
                   <i aria-hidden="true">
@@ -786,9 +761,9 @@ export default function VideoPage() {
                 </div>
                 <div className="service-title-row">
                   <ServiceIcon type={service.icon} />
-                  <h3>{service.title}</h3>
+                  <h3>{t(`videoServices.${service.index}.title`)}</h3>
                 </div>
-                <p>{service.text}</p>
+                <p>{t(`videoServices.${service.index}.text`)}</p>
               </article>
             ))}
           </div>
@@ -799,17 +774,16 @@ export default function VideoPage() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">Start a conversation</p>
+          <p className="eyebrow">{t("home.startConversation")}</p>
           <h2 id="contact-title">
-            <span>Ready to Build Your</span>
-            <span>Next AI Product?</span>
+            <span>{t("video.readyToBuild")}</span>
+            <span>{t("video.nextAiProduct")}</span>
           </h2>
           <p>
-            Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
-            business challenges.
+            {t("video.finalLead")}
           </p>
           <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">{"\u2197"}</span>
+            {t("video.startProject")} <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -820,16 +794,16 @@ export default function VideoPage() {
             <a href="#top" aria-label="CriativAI home">
               <Brand />
             </a>
-            <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
+            <p>{t("footer.productLead")}</p>
             <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. All rights reserved.</span>
           </div>
           <div className="footer-links-grid">
             <div>
-              <p className="micro-label">Navigation</p>
-              <a href="#services">Services</a>
-              <a href="#projects">Projects</a>
-              <a href="/for-recrutiers">For Recrutiers</a>
-              <a href="/contact">Contact</a>
+              <p className="micro-label">{t("footer.navigation")}</p>
+              <a href="#services">{t("header.services")}</a>
+              <a href="#projects">{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href="/for-recrutiers">{t("footer.recruiters")}</a> : null}
+              <a href="/contact">{t("header.contact")}</a>
             </div>
             <div>
               <p className="micro-label">Social Media</p>
@@ -881,11 +855,11 @@ export default function VideoPage() {
           </div>
         </div>
         <div className="site-container footer-bottom">
-          <span>Creative intelligence, grounded in reality.</span>
+          <span>{t("footer.bottom")}</span>
           <a className="footer-legal-link" href="/privacy">
-            Privacy &amp; Terms
+            {t("legal.eyebrow")}
           </a>
-          <a href="#top">Back to top {"\u2191"}</a>
+          <a href="#top">{t("header.backToTop")} {"\u2191"}</a>
         </div>
       </footer>
     </main>

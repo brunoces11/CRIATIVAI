@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
 import { type ReactNode } from "react";
 
 import { EditableCta } from "../components/CtaEditorButton";
@@ -138,6 +139,7 @@ function openProcessCardChat(step: Step) {
 }
 
 export default function ServicesPage() {
+  const { t } = useTranslation();
   return (
     <main className="services-page" id="top">
       <SiteHeader brand={<Brand />} page="services" />
@@ -145,14 +147,14 @@ export default function ServicesPage() {
       <section className="services-page-hero" aria-labelledby="services-page-title">
         <div className="site-container services-page-hero-grid">
           <div>
-            <p className="eyebrow">What we build</p>
+            <p className="eyebrow">{t("services.whatWeBuild")}</p>
             <h1 id="services-page-title">
-              AI services for products, operations, and growth.
+              {t("services.heroTitle")}
             </h1>
             <p>
-              A unified service portfolio connecting refined product design, custom software, enterprise knowledge,
-              AI agents, automation, and customer-facing AI experiences.
+              {t("services.heroLead")}
             </p>
+            <span className="sr-only">{t("services.whatWeBuild")}</span>
           </div>
           <div className="services-page-hero-visual" aria-hidden="true">
             <img
@@ -168,12 +170,11 @@ export default function ServicesPage() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">Services</p>
-              <h2 id="services-list-title">A single AI delivery stack</h2>
+              <p className="eyebrow">{t("home.services")}</p>
+              <h2 id="services-list-title">{t("services.stackTitle")}</h2>
             </div>
             <p className="section-intro">
-              Each service can stand alone, but the strongest projects combine strategy, interface quality,
-              automation, and grounded intelligence into one coherent system.
+              {t("services.stackLead")}
             </p>
           </div>
 
@@ -189,11 +190,11 @@ export default function ServicesPage() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">From idea to delivery</p>
-              <h2 id="services-process-title">Three practical steps</h2>
+              <p className="eyebrow">{t("services.fromIdea")}</p>
+              <h2 id="services-process-title">{t("services.stepsTitle")}</h2>
             </div>
             <p className="section-intro">
-              A lean process to move from initial idea to a scoped, reviewable, and deliverable project.
+              {t("services.stepsLead")}
             </p>
           </div>
 
@@ -201,9 +202,9 @@ export default function ServicesPage() {
             {steps.map((step) => (
               <article className="services-process-card" key={step.title}>
                 <span>{step.index}</span>
-                <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{step.title}</h3>
-                <p>{step.text}</p>
-                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{step.ctaLabel}</button>
+                <h3 className={step.compactTitle ? "services-process-card__title--compact" : undefined}>{t(`services.steps.${step.index}.title`, step.title)}</h3>
+                <p>{t(`services.steps.${step.index}.text`, step.text)}</p>
+                <button className="button services-process-card__cta" type="button" onClick={() => openProcessCardChat(step)}>{t(`services.steps.${step.index}.cta`, step.ctaLabel)}</button>
               </article>
             ))}
           </div>
@@ -215,7 +216,7 @@ export default function ServicesPage() {
           <div className="section-heading section-heading--split">
             <div>
               <p className="eyebrow">FAQ</p>
-              <h2 id="services-faq-title">Frequently Asked Questions</h2>
+              <h2 id="services-faq-title">{t("services.faqTitle")}</h2>
             </div>
           </div>
 
@@ -237,22 +238,21 @@ export default function ServicesPage() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">Start building</p>
+          <p className="eyebrow">{t("services.startBuilding")}</p>
           <h2 id="services-cta-title">
             <span className="services-cta-title-strong">
-              <span>What idea</span>
-              <span className="services-cta-title-strong-line2">do you want</span>
+              <span>{t("services.ctaWhatIdea")}</span>
+              <span className="services-cta-title-strong-line2">{t("services.ctaDoYouWant")}</span>
             </span>
-            <span className="services-cta-title-accent">to bring to life?</span>
-            <span className="services-cta-title-strong">Let&apos;s make it real.</span>
+            <span className="services-cta-title-accent">{t("services.ctaBringToLife")}</span>
+            <span className="services-cta-title-strong">{t("services.ctaMakeReal")}</span>
           </h2>
           <p>
-            Bring the rough idea, the messy process, or the opportunity you keep postponing. We turn it into a scoped
-            plan, a buildable system, and a real delivery path.
+            {t("services.ctaLead")}
           </p>
           <EditableCta welcomeKey="services/global/project-conversation/start-project-conversation">
             <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "services/global/project-conversation/start-project-conversation" })}>
-              Start the Project Conversation <span aria-hidden="true">-&gt;</span>
+              {t("services.startConversation")} <span aria-hidden="true">-&gt;</span>
             </button>
           </EditableCta>
         </div>

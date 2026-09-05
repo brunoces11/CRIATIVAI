@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type P
 import { CHAT_OPEN_EVENT, getChatWelcomeKey } from "../lib/chatContext";
 import { createWelcomeConversation, fetchCurrentConversation, sendChatMessage, type PendingWelcomeContext } from "../lib/chatStream";
 import { MarkdownText } from "./MarkdownText";
+import { useTranslation } from "react-i18next";
+import { getCurrentLanguage } from "../i18n/getCurrentLanguage";
 import "./ChatWidget.css";
 
 type Message = {
@@ -48,15 +50,9 @@ const WELCOME_LOADING_DURATION_MS = 2000;
 const WELCOME_STREAM_INTERVAL_MS = 18;
 const WELCOME_STREAM_CHUNK_SIZE = 4;
 
-const initialMessages: Message[] = [
-  {
-    id: "assistant-intro",
-    role: "assistant",
-    text: "Hi. I can help you think through AI opportunities and next steps.",
-  },
-];
-
 export function ChatWidget() {
+  const { t } = useTranslation();
+  const initialMessages: Message[] = [{ id: "assistant-intro", role: "assistant", text: t("chat.intro") }];
   const [open, setOpen] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
   const [messages, setMessages] = useState(initialMessages);
@@ -238,7 +234,7 @@ export function ChatWidget() {
 
     try {
       const startedAt = Date.now();
-      const welcome = await createWelcomeConversation(welcomeKey, controller.signal);
+      const welcome = await createWelcomeConversation(welcomeKey, getCurrentLanguage(), controller.signal);
       if (welcomeRunRef.current !== runId) return;
 
       const elapsed = Date.now() - startedAt;
@@ -333,7 +329,7 @@ export function ChatWidget() {
 
     try {
       let assistantText = "";
-      await sendChatMessage(message, sessionId, turnId, controller.signal, activeWelcomeKey ?? pendingWelcome?.key ?? null, pendingWelcome, (streamEvent) => {
+      await sendChatMessage(message, sessionId, turnId, controller.signal, activeWelcomeKey ?? pendingWelcome?.key ?? null, pendingWelcome, getCurrentLanguage(), (streamEvent) => {
         if (streamEvent.event === "session_start") {
           setSessionId(streamEvent.session_id);
           storeSessionId(streamEvent.session_id);
@@ -488,9 +484,9 @@ export function ChatWidget() {
   } as CSSProperties;
 
   return (
-    <aside className={`chat-widget${open ? " chat-widget--open" : ""}`} aria-label="AI chat assistant">
+    <aside className={`chat-widget${open ? " chat-widget--open" : ""}`} aria-label={t("chat.aria")}>
       {renderPanel ? (
-        <section className="chat-panel" style={panelStyle} aria-label="Chat conversation">
+        <section className="chat-panel" style={panelStyle} aria-label={t("chat.conversation")}>
           <div className="chat-panel__resize-handle chat-panel__resize-handle--left" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "left")} />
           <div className="chat-panel__resize-handle chat-panel__resize-handle--top" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "top")} />
           <div className="chat-panel__resize-handle chat-panel__resize-handle--top-left" aria-hidden="true" onPointerDown={(event) => startPanelResize(event, "top-left")} />
@@ -498,7 +494,7 @@ export function ChatWidget() {
             <div className="chat-panel__identity">
               <div className="chat-panel__identity-copy">
                 <p className="chat-panel__eyebrow">BRUNO CESAR ASSISTANT</p>
-                <h2>Ask your questions and book a call</h2>
+                <h2>{t("chat.title")}</h2>
               </div>
             </div>
             <div className="chat-panel__header-actions">
@@ -506,21 +502,21 @@ export function ChatWidget() {
                 <button
                   className="chat-panel__new-chat"
                   type="button"
-                  aria-label="Open a new chat window"
-                  title="Open a new chat window"
+                  aria-label={t("chat.newChat")}
+                  title={t("chat.newChat")}
                   onClick={openNewChatWindow}
                 >
                   <NewChatIcon />
                 </button>
               ) : null}
-              <button className="chat-panel__collapse" type="button" aria-label="Collapse chat" title="Collapse chat" onClick={closeChat}>
+              <button className="chat-panel__collapse" type="button" aria-label={t("chat.collapse")} title={t("chat.collapse")} onClick={closeChat}>
                 <img className="chat-panel__collapse-icon" src="/icons/chat-collapse.svg" alt="" aria-hidden="true" />
               </button>
             </div>
           </header>
 
           <div className="chat-panel__messages" ref={transcriptRef} aria-live="polite">
-            {restoring ? <p className="chat-panel__status">Restoring conversation...</p> : null}
+            {restoring ? <p className="chat-panel__status">{t("chat.restoring")}</p> : null}
             {messages.map((message) => (
               <article key={message.id} className={`chat-message chat-message--${message.role}`}>
                 {message.role === "assistant" ? (
@@ -534,26 +530,29 @@ export function ChatWidget() {
               </article>
             ))}
             {showIceBreakers ? (
-              <div className="chat-panel__ice-breakers" aria-label="Conversation starters">
-                {iceBreakers.map((iceBreaker) => (
-                  <button key={iceBreaker.message} type="button" onClick={() => startWithIceBreaker(iceBreaker.message)}>
-                    <IceBreakerIcon type={iceBreaker.icon} />
-                    <span className="chat-panel__ice-breaker-label">{iceBreaker.message}</span>
-                  </button>
-                ))}
+              <div className="chat-panel__ice-breakers-wrap">
+                <div className="chat-panel__ice-breakers" aria-label={t("chat.starters")}>
+                  {iceBreakers.map((iceBreaker, index) => (
+                    <button key={iceBreaker.message} type="button" onClick={() => startWithIceBreaker(t(`chat.iceBreakers.${index}`))}>
+                      <IceBreakerIcon type={iceBreaker.icon} />
+                      <span className="chat-panel__ice-breaker-label">{t(`chat.iceBreakers.${index}`)}</span>
+                    </button>
+                  ))}
+                </div>
+                <h4 className="chat-panel__ice-breakers-heading">{t("chat.askBelow")}</h4>
               </div>
             ) : null}
             {welcomeLoading ? (
-              <div className="chat-message chat-message--assistant chat-message--welcome-loading" aria-label="Contacting Agent...">
+              <div className="chat-message chat-message--assistant chat-message--welcome-loading" aria-label={t("chat.contacting")}>
                 <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
                 <div className="chat-message__welcome-loader">
                   <span className="chat-message__spinner" aria-hidden="true" />
-                  <p>Contacting Agent...</p>
+                  <p>{t("chat.contacting")}</p>
                 </div>
               </div>
             ) : null}
             {loading && !assistantStarted ? (
-              <div className="chat-message chat-message--assistant chat-message--loading" aria-label="Assistant is preparing a response">
+              <div className="chat-message chat-message--assistant chat-message--loading" aria-label={t("chat.preparing")}>
                 <img className="chat-message__avatar" src="/bruno-portrait.png" alt="" aria-hidden="true" />
                 <div className="chat-message__loading-dots">
                 <span />
@@ -572,14 +571,14 @@ export function ChatWidget() {
           ) : null}
 
           <form className="chat-panel__form" onSubmit={submitMessage}>
-            <label className="sr-only" htmlFor="chat-message">Message</label>
+            <label className="sr-only" htmlFor="chat-message">{t("chat.message")}</label>
             <textarea
               id="chat-message"
               ref={inputRef}
               value={draft}
               rows={2}
               maxLength={2000}
-              placeholder="Type your message"
+              placeholder={t("chat.placeholder")}
               disabled={loading || restoring}
               onChange={(event) => {
                 setDraft(event.target.value);
@@ -592,13 +591,13 @@ export function ChatWidget() {
                 }
               }}
             />
-            <button type="submit" disabled={!draft.trim() || loading || restoring || welcomeRequesting} aria-label="Send message" title="Send message">
+            <button type="submit" disabled={!draft.trim() || loading || restoring || welcomeRequesting} aria-label={t("chat.send")} title={t("chat.send")}>
               <img className="chat-panel__form-icon" src="/icons/chat-send.svg" alt="" aria-hidden="true" />
             </button>
           </form>
         </section>
       ) : (
-        <button className="chat-launcher" type="button" aria-label="Open AI chat" title="Open AI chat" onClick={() => openChat()}>
+        <button className="chat-launcher" type="button" aria-label={t("chat.open")} title={t("chat.open")} onClick={() => openChat()}>
           <img className="chat-launcher__icon" src="/icons/chat-launcher.svg" alt="" aria-hidden="true" />
         </button>
       )}

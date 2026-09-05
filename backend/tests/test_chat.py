@@ -220,7 +220,7 @@ def test_create_welcome_conversation_returns_message_without_persisting(monkeypa
     session = make_session()
     welcome_key = "services/service-catalog/product-design/ask-my-ai-assistant"
     welcome_text = "Ola **Product Design**"
-    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path = tmp_path / "Chat-Welcome-Messages-en.json"
     welcome_path.write_text(json.dumps({welcome_key: welcome_text}), encoding="utf-8")
     monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
 
@@ -236,7 +236,7 @@ def test_create_welcome_conversation_returns_message_without_persisting(monkeypa
 
 
 def test_create_welcome_conversation_returns_null_when_key_is_missing(monkeypatch, tmp_path) -> None:
-    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path = tmp_path / "Chat-Welcome-Messages-en.json"
     welcome_path.write_text(json.dumps({}), encoding="utf-8")
     monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
 
@@ -249,7 +249,7 @@ def test_first_user_message_after_cta_welcome_sends_welcome_context_to_model(mon
     session = make_session()
     welcome_key = "services/service-catalog/product-design/ask-my-ai-assistant"
     welcome_text = "Ola, notei que vc clicou em **Product Design**."
-    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path = tmp_path / "Chat-Welcome-Messages-en.json"
     welcome_path.write_text(json.dumps({welcome_key: welcome_text}), encoding="utf-8")
     monkeypatch.setattr(welcome_module, "WELCOME_MESSAGES_PATH", welcome_path)
     monkeypatch.setattr(chat_module, "get_settings", lambda: Settings(openai_mock_response="unused", _env_file=None))
@@ -353,7 +353,7 @@ def test_first_user_message_after_cta_adds_hidden_context_to_model_instructions(
 
 def test_first_user_message_after_cta_works_without_welcome_or_context(monkeypatch, tmp_path) -> None:
     session = make_session()
-    welcome_path = tmp_path / "Chat-Welcome-Messages.json"
+    welcome_path = tmp_path / "Chat-Welcome-Messages-en.json"
     context_path = tmp_path / "Chat-Context-Messages.json"
     welcome_path.write_text(json.dumps({}), encoding="utf-8")
     context_path.write_text(json.dumps({}), encoding="utf-8")
