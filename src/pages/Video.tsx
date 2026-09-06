@@ -516,9 +516,6 @@ export default function VideoPage() {
                   {t("video.askBook")} <span aria-hidden="true">-&gt;</span>
                 </button>
               </EditableCta>
-              <a className="button button--ghost" href={localizedPath("/contact")}>
-                {t("about.dropMessage")} <span aria-hidden="true">-&gt;</span>
-              </a>
             </div>
           </div>
         </div>

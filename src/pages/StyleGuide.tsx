@@ -117,7 +117,25 @@ export default function StyleGuide() {
             <p>A restrained study of an illuminated neon wordmark: a stable glow, occasional electrical discharges, and no page-wide flash.</p>
           </div>
           <div className="neon-specimen-grid">
-            <NeonSpecimen variant="regular" label="Regular / 400" />
+            <NeonSpecimen variant="regular" label="Rajdhani / 400" font="rajdhani" />
+            <NeonSpecimen variant="regular" label="Roboto / 200 ExtraLight" font="roboto" />
+            <NeonSpecimen variant="regular" label="Inter / 200 ExtraLight" font="inter" />
+          </div>
+        </div>
+      </section>
+
+      <section className="style-section style-section--cta" aria-labelledby="actions-title">
+        <div className="site-container">
+          <div className="style-section-head">
+            <div><p className="eyebrow">01 / Actions</p><h2 id="actions-title">Links & buttons</h2></div>
+            <p>Interactions are quiet by default and respond with the accent color, movement, and clear keyboard focus.</p>
+          </div>
+          <div className="action-grid">
+            <article className="specimen-card"><p className="micro-label">Primary button</p><a className="button button--light" href="#actions-title">Let&apos;s Talk <span>{ARROW_NE}</span></a><Spec>46px min-height {MIDDOT} 22px horizontal padding {MIDDOT} 2px radius</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Blue hover variant</p><a className="button button--light button--light-blue" href="#actions-title">Let&apos;s Talk <span>{ARROW_NE}</span></a><Spec>Original light state {MIDDOT} blue neon hover</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Accent button</p><a className="button button--accent" href="#actions-title">Start a Project <span>{ARROW_NE}</span></a><Spec>Accent gradient {MIDDOT} hover lift -2px</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Neon outline</p><a className="button button--neon" href="#actions-title">Short Circuit <span>{ARROW_NE}</span><i aria-hidden="true" /></a><Spec>Transparent fill {MIDDOT} neon outline {MIDDOT} rays on hover</Spec></article>
+            <article className="specimen-card"><p className="micro-label">Text link</p><a className="style-text-link" href="#actions-title">Explore the system <span>{ARROW_NE}</span></a><Spec>0.75rem {MIDDOT} 0.08em tracking {MIDDOT} accent on hover</Spec></article>
           </div>
         </div>
       </section>
@@ -195,20 +213,6 @@ export default function StyleGuide() {
                 </div>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="style-section" aria-labelledby="actions-title">
-        <div className="site-container">
-          <div className="style-section-head">
-            <div><p className="eyebrow">04 / Actions</p><h2 id="actions-title">Links & buttons</h2></div>
-            <p>Interactions are quiet by default and respond with the accent color, movement, and clear keyboard focus.</p>
-          </div>
-          <div className="action-grid">
-            <article className="specimen-card"><p className="micro-label">Primary button</p><a className="button button--light" href="#actions-title">Let&apos;s Talk <span>{ARROW_NE}</span></a><Spec>46px min-height {MIDDOT} 22px horizontal padding {MIDDOT} 2px radius</Spec></article>
-            <article className="specimen-card"><p className="micro-label">Accent button</p><a className="button button--accent" href="#actions-title">Start a Project <span>{ARROW_NE}</span></a><Spec>Accent gradient {MIDDOT} hover lift -2px</Spec></article>
-            <article className="specimen-card"><p className="micro-label">Text link</p><a className="style-text-link" href="#actions-title">Explore the system <span>{ARROW_NE}</span></a><Spec>0.75rem {MIDDOT} 0.08em tracking {MIDDOT} accent on hover</Spec></article>
           </div>
         </div>
       </section>
@@ -300,11 +304,11 @@ function HeadingSample({ tag, text, font, size }: HeadingSampleProps) {
   );
 }
 
-function NeonSpecimen({ variant, label }: { variant: "light" | "regular"; label: string }) {
+function NeonSpecimen({ variant, label, font }: { variant: "light" | "regular"; label: string; font: "rajdhani" | "roboto" | "inter" }) {
   return (
-    <article className={`neon-specimen neon-specimen--${variant}`}>
+    <article className={`neon-specimen neon-specimen--${variant} neon-font-${font}`}>
       <p className="micro-label">{label}</p>
-      <div className="neon-wordmark" role="img" aria-label={`Neon short-circuit, ${label}`}>
+      <div className="neon-wordmark neon-ativo" role="img" aria-label={`Neon short-circuit, ${label}`}>
         <svg viewBox="0 0 440 140" aria-hidden="true">
           <text className="neon-glow" x="220" y="96" textAnchor="middle">NEON</text>
           <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
@@ -315,16 +319,20 @@ function NeonSpecimen({ variant, label }: { variant: "light" | "regular"; label:
             <path className="neon-arc neon-arc--four" d="M268 95 L271 84 L278 75 L293 63 L287 42" />
             <path className="neon-arc neon-arc--five" d="M238 73 L231 64 L236 55 L249 47 L262 52 L268 63" />
             <path className="neon-arc neon-arc--six" d="M266 92 L272 82 L267 73 L281 66 L289 54 L286 43" />
-            <path className="neon-arc neon-arc--seven" d="M105 42 L110 51 L102 63 L108 77 L101 95" />
-            <path className="neon-arc neon-arc--eight" d="M170 79 L164 71 L177 63 L166 55 L162 43" />
-            <path className="neon-arc neon-arc--nine" d="M270 73 L273 62 L265 52 L252 45 L240 50" />
-            <path className="neon-arc neon-arc--ten" d="M288 42 L295 53 L283 67 L293 82 L297 95" />
+            <path className="neon-arc neon-arc--seven" d="M139 43 L132 55 L137 67 L128 80 L141 95" />
+            <path className="neon-arc neon-arc--eight" d="M164 79 L178 82 L192 77 L180 88 L164 92" />
+            <path className="neon-arc neon-arc--nine" d="M270 73 L263 82 L251 91 L239 87 L232 78" />
+            <path className="neon-arc neon-arc--ten" d="M326 42 L319 53 L327 66 L316 80 L326 95" />
             <path className="neon-arc neon-arc--eleven" d="M108 92 L104 84 L111 73 L105 61 L112 47" />
             <path className="neon-arc neon-arc--twelve" d="M242 47 L251 44 L261 51 L268 62 L263 72" />
+            <path className="neon-arc neon-arc--thirteen" d="M117 42 L121 53 L113 64 L125 78 L115 94" />
+            <path className="neon-arc neon-arc--fourteen" d="M194 43 L188 53 L198 62 L184 73 L193 79" />
+            <path className="neon-arc neon-arc--fifteen" d="M255 91 L264 85 L270 75 L258 66 L269 55" />
+            <path className="neon-arc neon-arc--sixteen" d="M305 95 L310 84 L303 73 L314 61 L307 43" />
           </g>
         </svg>
       </div>
-      <p className="style-spec">Twelve anchored discharges · each segment leaves and returns to the letter outline</p>
+      <p className="style-spec">Sixteen anchored discharges · each segment leaves and returns to the letter outline</p>
     </article>
   );
 }
