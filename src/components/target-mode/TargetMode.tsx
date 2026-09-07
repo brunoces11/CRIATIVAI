@@ -5,12 +5,15 @@ import "./target-mode.css";
 
 type TargetItem = {
   targetPath: string;
-  exactTarget: string;
   technicalElement: string;
   activeLanguage?: string;
   visibleText?: string;
   semanticDescription?: string;
-  overrideInstruction?: string;
+  uid?: string;
+  scope?: string;
+  instance?: string;
+  locator?: string;
+  fingerprint?: string;
 };
 
 type OverlayBox = {
@@ -32,10 +35,6 @@ const DATA_INSPECT_LABEL = "data-inspect-label";
 const DATA_INSPECT_ELEMENT = "data-inspect-element";
 const DATA_INSPECT_DESCRIPTION = "data-inspect-description";
 const DATA_INSPECT_ASSOCIATED_TEXT = "data-inspect-associated-text";
-const DATA_DESIGN_SYSTEM = "data-design-system";
-const DATA_WEB_CONTAINER = "data-web-container";
-const DATA_UI_CONTAINER = "data-ui-container";
-const DATA_DS = "data-ds";
 const MIN_USEFUL_RECT_SIZE = 4;
 const MAX_LABEL_WIDTH = 320;
 const INTERACTIVE_SELECTOR = [
@@ -182,6 +181,12 @@ function getReadableText(element: Element): string {
   return text;
 }
 
+function getVisibleText(element: Element): string {
+  const text = normalizeText(element.textContent);
+  if (!text) return "";
+  return text.length > 140 ? `${text.slice(0, 137)}...` : text;
+}
+
 function getElementLabel(element: Element): string {
   const inputElement = element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement ? element : null;
   const imageElement = element instanceof HTMLImageElement ? element : null;
@@ -198,18 +203,18 @@ function getElementLabel(element: Element): string {
   return normalizeText(label);
 }
 
-function getExplicitElementId(element: Element): string {
-  const explicit =
-    element.getAttribute(DATA_INSPECT_ELEMENT) ||
-    element.getAttribute("data-target-mode-id") ||
-    element.getAttribute("data-dev-element-id") ||
-    element.getAttribute("data-dev-element") ||
-    element.getAttribute("data-testid") ||
-    element.getAttribute("data-test-id") ||
-    element.getAttribute("data-cy") ||
-    element.id;
+const STABLE_ID_ATTRIBUTES = ["data-target-mode-id", DATA_INSPECT_ELEMENT, "data-testid", "data-test-id", "data-cy", "id", "data-dev-element-id", "data-dev-element"];
 
-  return slugifyLabel(explicit || "");
+function getExplicitIdentity(element: Element): { attribute: string; value: string } | null {
+  for (const attribute of STABLE_ID_ATTRIBUTES) {
+    const value = normalizeText(attribute === "id" ? element.id : element.getAttribute(attribute));
+    if (value) return { attribute, value };
+  }
+  return null;
+}
+
+function getExplicitElementId(element: Element): string {
+  return slugifyLabel(getExplicitIdentity(element)?.value ?? "");
 }
 
 function getElementKind(element: Element): string {
@@ -244,6 +249,68 @@ function getSemanticScope(element: Element): Element | null {
   return element.closest(`[${TARGET_MODE_SCOPE_ATTR}], [data-dev-inspectable="true"]`);
 }
 
+function getOwnerScope(element: Element): Element {
+  return element.closest(`[${TARGET_MODE_SCOPE_ATTR}], [data-target-mode-component], [${DATA_INSPECT_PATH}], [data-target-mode-section], [data-target-mode-page], [data-dev-inspectable="true"]`) ?? document.body;
+}
+
+function getScopeName(scope: Element): string {
+  return normalizeText(
+    scope.getAttribute(TARGET_MODE_SCOPE_ATTR) || scope.getAttribute("data-target-mode-component") || scope.getAttribute(DATA_INSPECT_PATH) ||
+      scope.getAttribute("data-target-mode-section") || scope.getAttribute("data-target-mode-page") || getElementName(scope),
+  );
+}
+
+function isUniqueIdentity(identity: { attribute: string; value: string }, scope: Element): boolean {
+  const candidates = [scope, ...Array.from(scope.querySelectorAll(`[${identity.attribute}]`))];
+  const matches = candidates.filter((entry) =>
+    normalizeText(identity.attribute === "id" ? entry.id : entry.getAttribute(identity.attribute)) === identity.value,
+  );
+  return matches.length === 1;
+}
+
+function getStableClasses(element: Element): string[] {
+  const className = typeof element.className === "string" ? element.className : element.getAttribute("class") || "";
+  return className.split(/\s+/).filter((part) => part && !/^(active|selected|disabled|loading|open|closed)$/i.test(part) && !/^(css|sc)-[\w-]+$/i.test(part)).slice(0, 2);
+}
+
+function getEquivalenceSignature(element: Element): string {
+  return [getDomTarget(element), normalizeText(element.getAttribute("role")), getElementKind(element), getExplicitElementId(element), getStableClasses(element).join("."), slugifyLabel(getElementLabel(element))].join("|");
+}
+
+function getEquivalentElements(element: Element, scope: Element): Element[] {
+  const signature = getEquivalenceSignature(element);
+  return Array.from(scope.querySelectorAll("*")).filter((entry) => getPrimaryInspectTarget(entry) === entry && getEquivalenceSignature(entry) === signature);
+}
+
+function escapeAttributeValue(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function getLocatorSegment(element: Element): string {
+  const identity = getExplicitIdentity(element);
+  if (identity && isUniqueIdentity(identity, document)) return identity.attribute === "id" ? `#${identity.value}` : `[${identity.attribute}="${escapeAttributeValue(identity.value)}"]`;
+  const classes = getStableClasses(element).map((part) => `.${part}`).join("");
+  const base = `${getDomTarget(element)}${classes}`;
+  const siblings = element.parentElement ? Array.from(element.parentElement.children).filter((entry) => getDomTarget(entry) === getDomTarget(element)) : [];
+  return siblings.length > 1 ? `${base}:nth-of-type(${siblings.indexOf(element) + 1})` : base;
+}
+
+function getStructuralLocator(element: Element, scope: Element): string {
+  const segments: string[] = [];
+  let current: Element | null = element;
+  while (current && current !== scope && current !== document.body) {
+    segments.unshift(getLocatorSegment(current));
+    current = current.parentElement;
+  }
+  return segments.join(" > ");
+}
+
+function shortFingerprint(value: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) hash = Math.imul(hash ^ value.charCodeAt(index), 16777619);
+  return (hash >>> 0).toString(16).slice(0, 6);
+}
+
 function getSemanticElementId(target: Element): string {
   const semanticScope = getSemanticScope(target);
   let current: Element | null = target;
@@ -269,12 +336,6 @@ function getTargetPathSegment(target: Element): string {
   const finalTarget = kind ? `${kind}:${elementId}` : elementId;
 
   return `final-target:'${finalTarget}'`;
-}
-
-function getFinalTarget(target: Element): string {
-  const kind = getElementKind(target);
-  const elementId = getSemanticElementId(target);
-  return kind ? `${kind}:${elementId}` : elementId;
 }
 
 function getStructuredTargetPath(target: Element): string {
@@ -343,6 +404,15 @@ function getAssociatedVisibleText(target: Element): string {
   const ownText = getReadableText(target);
   if (ownText) return ownText;
 
+  const semanticScope = getSemanticScope(target);
+  let current = target.parentElement;
+
+  while (current && current !== semanticScope && current !== document.body) {
+    const text = getVisibleText(current);
+    if (text && text.length <= 140) return text;
+    current = current.parentElement;
+  }
+
   return "";
 }
 
@@ -355,18 +425,6 @@ function getSemanticDescription(target: Element): string {
   if (!label || label === associatedText) return "";
 
   return label;
-}
-
-function getOverrideInstruction(target: Element): string {
-  const designSystem =
-    getClosestOptionalAttribute(target, DATA_DESIGN_SYSTEM) ||
-    getClosestOptionalAttribute(target, DATA_WEB_CONTAINER) ||
-    getClosestOptionalAttribute(target, DATA_UI_CONTAINER) ||
-    getClosestOptionalAttribute(target, DATA_DS);
-
-  if (!designSystem) return "";
-
-  return `When the pointed target is clearly within a design system or web container, use OVERRIDE/OVERHIDE instructions so only the UNICA E EXCLUSIVAMENTE selected exact target is modified, and nothing else. Context: ${designSystem}`;
 }
 
 function getTechnicalElement(element: Element): string {
@@ -401,16 +459,27 @@ function createTargetItem(element: Element): TargetItem {
   const activeLanguage = getActiveDomLanguage();
   const visibleText = getAssociatedVisibleText(element);
   const semanticDescription = getSemanticDescription(element);
-  const overrideInstruction = getOverrideInstruction(element);
+  const scope = getOwnerScope(element);
+  const scopeName = getScopeName(scope);
+  const identity = getExplicitIdentity(element);
+  const uniqueIdentity = identity && isUniqueIdentity(identity, scope);
+  const equivalents = getEquivalentElements(element, scope);
+  const instanceIndex = equivalents.indexOf(element);
+  const instance = equivalents.length > 1 && instanceIndex >= 0 ? `${instanceIndex + 1}/${equivalents.length}` : "";
+  const locator = uniqueIdentity ? "" : getStructuralLocator(element, scope);
+  const fingerprint = uniqueIdentity ? "" : shortFingerprint(`${scopeName}>${locator}`);
 
   return {
     targetPath: getTargetPath(element, activeLanguage),
-    exactTarget: getFinalTarget(element),
     technicalElement: getTechnicalElement(element),
     ...(activeLanguage ? { activeLanguage } : {}),
     ...(visibleText ? { visibleText } : {}),
     ...(semanticDescription ? { semanticDescription } : {}),
-    ...(overrideInstruction ? { overrideInstruction } : {}),
+    ...(uniqueIdentity && identity ? { uid: identity.value } : {}),
+    ...(scopeName ? { scope: scopeName } : {}),
+    ...(instance ? { instance } : {}),
+    ...(locator ? { locator } : {}),
+    ...(fingerprint ? { fingerprint } : {}),
   };
 }
 
@@ -420,13 +489,11 @@ function createOverlayBox(element: Element): OverlayBox | null {
 
   if (rect.width < MIN_USEFUL_RECT_SIZE || rect.height < MIN_USEFUL_RECT_SIZE) return null;
 
-  const targetPath = getTargetPath(element);
-  const visibleText = getAssociatedVisibleText(element);
   const labelTop = rect.top > 31 ? rect.top - 29 : rect.bottom + 7;
   const labelLeft = Math.min(Math.max(rect.left, 8), Math.max(8, window.innerWidth - MAX_LABEL_WIDTH - 8));
 
   return {
-    key: `${targetPath}::${visibleText}::${Math.round(rect.top)}::${Math.round(rect.left)}`,
+    key: getStructuralLocator(element, getOwnerScope(element)) || getTargetPath(element),
     top: rect.top,
     left: rect.left,
     width: rect.width,
@@ -438,41 +505,22 @@ function createOverlayBox(element: Element): OverlayBox | null {
 }
 
 function formatClipboard(items: TargetItem[]): string {
-  const body =
-    items.length === 1
-      ? formatSingleItem(items[0], 1)
-      : [
-          "The user pointed to multiple objects. Each item has its own hierarchical targetPath and exact final target; edit UNICA E EXCLUSIVAMENTE the exact final target of each item.",
-          ...items.map((item, index) => formatSingleItem(item, index + 1)),
-        ].join("\n\n");
-
-  return `"""${body}""".`;
+  return items.length === 1 ? formatSingleItem(items[0], 1) : `Targets[\n${items.map((item, index) => formatSingleItem(item, index + 1)).join("\n")}\n]`;
 }
 
 function formatSingleItem(item: TargetItem, index: number): string {
+  const field = (name: string, value: string) => `${name}:"${quoteClipboardValue(value)}"`;
   const fields = [
-    `The Item ${index} pointed to by the user uses exactly the hierarchical targetPath: "${quoteClipboardValue(item.targetPath)}"`,
-    `the exact final target to modify UNICA E EXCLUSIVAMENTE is "${quoteClipboardValue(item.exactTarget)}"`,
-    `the actual technical element clicked is "${quoteClipboardValue(item.technicalElement)}"`,
+    `i:${index}`,
+    ...(item.activeLanguage ? [field("lang", item.activeLanguage)] : []),
+    field("path", item.targetPath), field("node", item.technicalElement),
+    ...(item.visibleText ? [field("text", item.visibleText)] : []),
+    ...(item.semanticDescription ? [field("description", item.semanticDescription)] : []),
+    ...(item.uid ? [field("uid", item.uid)] : []), ...(item.scope ? [field("scope", item.scope)] : []),
+    ...(item.instance ? [`instance:${item.instance}`] : []), ...(item.locator ? [field("locator", item.locator)] : []),
+    ...(item.fingerprint ? [field("fingerprint", item.fingerprint)] : []), 'rule:"edit only this exact target"',
   ];
-
-  if (item.visibleText) {
-    fields.push(`the visible text associated with the exact target is "${quoteClipboardValue(item.visibleText)}"`);
-  }
-
-  if (item.semanticDescription) {
-    fields.push(`the semantic description of the target is "${quoteClipboardValue(item.semanticDescription)}"`);
-  }
-
-  if (item.overrideInstruction) {
-    fields.push(`the override instruction is "${quoteClipboardValue(item.overrideInstruction)}"`);
-  }
-
-  if (item.activeLanguage) {
-    fields.push(`the selected element belongs to the CSS for the active language "${quoteClipboardValue(item.activeLanguage)}"`);
-  }
-
-  return `${fields.join("; ")}.`;
+  return `{${fields.join("; ")};}`;
 }
 
 async function copyTargets(items: TargetItem[]) {
@@ -569,7 +617,6 @@ export default function TargetMode() {
             setSelectedBoxes([]);
             setCopiedCount(0);
             setCopyFailed(false);
-            setLastCopiedAt(null);
             setHoverBox(null);
           }
 

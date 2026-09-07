@@ -6,13 +6,6 @@ import { useTranslation } from "react-i18next";
 import { openAssistantChat } from "../lib/chatContext";
 import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
-type Award = {
-  image: string;
-  grayscaleImage: string;
-  resultsUrl?: string;
-  projectUrl: string;
-};
-
 type Experience = {
   companyMark: string;
   hasWorkMode: boolean;
@@ -41,6 +34,39 @@ const productCycle = [
   { index: "05" },
 ] as const;
 
+const careerStory = [
+  {
+    title: "Where it all began",
+    era: "Web 1.0",
+    text: "In 1997, I was a young guy (although I still feel that way, haha), curious and fascinated by technology and interactivity. Floppy disks held only 1.44 MB, monitors commonly displayed 256 colors, and a 100 MB Zip disk felt enormous. I began creating AutoRun multimedia experiences with Macromedia Director and experimenting with HTML 2 websites in Notepad. During that period, I learned the fundamentals of usability that remain solid foundations in my work today.",
+    stack: ["Interactive multimedia", "Macromedia Director", "Notepad for HTML", "Floppy disks and Zip disks", "8-bit displays, 256 colors"],
+  },
+  {
+    title: "A broader creative practice",
+    era: "Web 2.0 / Motion Design",
+    text: "As technology and the web evolved, my work expanded into Web Design, Art Direction, and Motion Design. I created websites, microsites, interactive projects, and campaigns for brands such as TIM, Chevrolet, Coca-Cola, and Petrobras. At that time, Flash brought an impressive level of interaction to the web, while I also dedicated significant time to motion design and advanced 3D, entering a fascinating world of animation and storytelling.",
+    stack: ["Macromedia Flash, After Effects, Apple Motion", "Blender, Cinema 4D, DaVinci Resolve", "CD-ROM, DVD, digital video"],
+  },
+  {
+    title: "From screens to products",
+    era: "Smartphones / Product Design",
+    text: "Then smartphones changed how people interacted with technology. I moved naturally into UI/UX and Product Design, working with information architecture, digital products, and online platforms. I also created Tutorial Master, sharing design and technology content with a community that grew to more than 150,000 followers and students.",
+    stack: ["Digital Product Design", "UI/UX, Product Design", "Information Architecture", "Smartphones, responsive web", "Online platforms and video"],
+  },
+  {
+    title: "From products to systems",
+    era: "Web 3.0 / System Architecture",
+    text: "As I began leading multidisciplinary projects, I moved closer to the technical teams behind the products I was designing. At Ecofactor, I combined product thinking with team leadership and system architecture, expanding my work into software development, databases, APIs, and full-stack applications.",
+    stack: ["System architecture", "Systems development", "Product ownership", "Relational databases", "API integration", "Python, React, Next.js"],
+  },
+  {
+    title: "Entering the AI frontier",
+    era: "AI Era / AI Architecture",
+    text: "From the early days of ChatGPT, I immersed myself in Prompt Engineering and AI research, winning multiple international hackathons along the way. This evolved into Context Engineering, AI agents, RAG, and knowledge systems. Today, at Dante AI and CriativAI, I bring together Product Design, software, infrastructure, and AI Architecture to build reliable systems from concept to production.",
+    stack: ["AI-native systems", "Prompt and Context Engineering", "RAG, GraphRAG, AGC", "ETL, ontologies, vector databases", "Neo4j, PGVector, LangFlow", "Docker, DevOps, LLMOps"],
+  },
+] as const;
+
 const professionalExperience: Experience[] = [
   { companyMark: "DI", hasWorkMode: true, hasDescription: false, skillCount: 4 },
   { companyMark: "DI", hasWorkMode: true, hasDescription: false, skillCount: 4 },
@@ -55,56 +81,6 @@ const professionalExperience: Experience[] = [
   { companyMark: "IDS", hasWorkMode: false, hasDescription: true, skillCount: 4 },
 ];
 
-const awards: Award[] = [
-  {
-    image: "/CPT_TUB_AGENTOS.jpg",
-    grayscaleImage: "/PB_CPT_TUB_AGENTOS.jpg",
-    resultsUrl: "https://chipp.substack.com/p/chipp-hackathon-winners-showcase",
-    projectUrl: "https://agentos-12981.chipp.ai/",
-  },
-  {
-    image: "/CPT_TUB.jpg",
-    grayscaleImage: "/PB_CPT_TUB.jpg",
-    resultsUrl: "https://flowgpt.com/bounty/s3-original-prompt-techniques",
-    projectUrl: "https://flowgpt.com/p/cpt-concatenated-prompt-technique-4",
-  },
-  {
-    image: "/TUB_JUDGEN.jpg",
-    grayscaleImage: "/PB_TUB_JUDGEN.jpg",
-    resultsUrl: "https://flowgpt.com/bounty/s3-chatgpt-judge",
-    projectUrl: "https://flowgpt.com/p/judgen-ai-1",
-  },
-  {
-    image: "/TIME_TUB2.jpg",
-    grayscaleImage: "/PB_TIME_TUB2.jpg",
-    resultsUrl: "https://flowgpt.com/bounty/past-and-future",
-    projectUrl: "https://flowgpt.com/p/track-to-the-future-game-1",
-  },
-  {
-    image: "/GPTINDER_Brazil.jpg",
-    grayscaleImage: "/PB_GPTINDER_Brazil.jpg",
-    resultsUrl: "https://flowgpt.com/bounty/hMydz_Vg7yIIoRQ8wK1y-",
-    projectUrl: "https://flowgpt.com/p/gptinder-your-turbocharged-dating-advisor-16",
-  },
-  {
-    image: "/TUB_ICON_v2.jpg",
-    grayscaleImage: "/PB_TUB_ICON_v2.jpg",
-    resultsUrl: "https://flowgpt.com/bounty/xa_9CI5A41wMta9FTyTET",
-    projectUrl: "https://flowgpt.com/p/icon-machine-is-everything-you-need-to-deal-with-icons-4-any-application-2",
-  },
-  {
-    image: "/MINECRAFT_MASHUP_CHATGPT_GAME.jpg",
-    grayscaleImage: "/PB_MINECRAFT_MASHUP_CHATGPT_GAME.jpg",
-    resultsUrl: "https://flowgpt.com/bounty/promptBattle0724",
-    projectUrl: "https://flowgpt.com/p/nM8rkh83STfc2UIE4E9xj",
-  },
-  {
-    image: "/SHERLOCK_TUB.jpg",
-    grayscaleImage: "/PB_SHERLOCK_TUB.jpg",
-    projectUrl: "https://flowgpt.com/p/sherlock-hoax-game",
-  },
-];
-
 function Brand() {
   return (
     <span className="brand-lockup" aria-label="CriativAI">
@@ -117,6 +93,7 @@ export default function AboutMePage() {
   const { t } = useTranslation();
   const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
+  const [heroBioExpanded, setHeroBioExpanded] = useState(false);
 
   const toggleAccordion = (accordionId: string) => {
     setOpenAccordionId((currentId) => currentId === accordionId ? null : accordionId);
@@ -133,24 +110,16 @@ export default function AboutMePage() {
               {t("about.heroTitle")} <span className="about-me-title-subline">{t("about.heroSubtitle")}</span>
             </h1>
             <p className="about-me-hero-role">{t("about.heroRole")}</p>
-            <p className="about-me-hero-lead">
-              {t("about.heroLead")}
-            </p>
-            <div className="hero-actions about-me-actions">
-              <a className="button button--ghost" href={localizedPath("/contact")}>
-                {t("about.dropMessage")} <span aria-hidden="true">-&gt;</span>
-              </a>
-              <EditableCta welcomeKey="about-me/hero/bruno-profile/ask-my-assistant">
-                <button className="button button--light" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-assistant" })}>
-                  {t("chat.askAssistant")} <span aria-hidden="true">-&gt;</span>
-                </button>
-              </EditableCta>
-              <EditableCta welcomeKey="about-me/hero/bruno-profile/book-a-call">
-                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/book-a-call" })}>
-                  {t("about.bookCall")} <span aria-hidden="true">-&gt;</span>
-                </button>
-              </EditableCta>
-            </div>
+            <p className="about-me-hero-lead">Bruno Cesar is an <strong>AI Architect</strong> and <strong>Prompt Engineer</strong> whose career has evolved alongside digital technology itself. He began in 1997 as a <strong>Multimedia Designer</strong>, exploring interactive media in the early CD-ROM era...</p>
+            <button className="about-me-hero-more" type="button" aria-expanded={heroBioExpanded} onClick={() => setHeroBioExpanded((expanded) => !expanded)}>{heroBioExpanded ? "See less" : "See more"}</button>
+            {heroBioExpanded ? (
+              <div className="about-me-hero-bio-more">
+                <p>He went on to work across <strong>Art Direction, Motion Design, UI/UX, and Product Design</strong>, while gradually moving closer to the technology behind the experiences he created.</p>
+                <p>Over more than two decades, he has led digital projects, collaborated with multidisciplinary teams, and developed a growing understanding of <strong>software, systems, and technology</strong>.</p>
+                <p>When AI emerged as a new creative and technological frontier, he immersed himself in <strong>Prompt Engineering and AI research</strong>, later expanding into agents, RAG, context engineering, DevOps, and AI architecture.</p>
+                <p>Today, he brings this entire trajectory together in the way he approaches AI: with the <strong>curiosity of a creator</strong>, the perspective of a designer, and the mindset of someone who understands how systems are built.</p>
+              </div>
+            ) : null}
           </div>
 
           <div className="about-me-portrait-column">
@@ -183,6 +152,42 @@ export default function AboutMePage() {
             <p>{t(`about.stats.${stat.id}`)}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="section about-me-career-section" aria-labelledby="about-me-career-title">
+        <div className="site-container">
+          <h2 className="sr-only" id="about-me-career-title">Professional history</h2>
+          <div id="about-me-career-panel" className="about-me-awards-panel about-me-career-panel">
+            <h3 className="about-me-career-summary-title">From Floppy Disks to AI</h3>
+            <div className="about-me-career-copy">
+                  {careerStory.map((chapter) => (
+                    <article className="about-me-career-story" key={chapter.title}>
+                      <div className="about-me-career-story-copy">
+                        <h4>{chapter.title}</h4>
+                        <p>{chapter.text}</p>
+                      </div>
+                      <table className="about-me-career-stack">
+                        <tbody>
+                          <tr>
+                            <th scope="row">Era</th>
+                            <td>{chapter.era}</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Stack</th>
+                            <td><ul>{chapter.stack.map((item) => <li key={item}>{item}</li>)}</ul></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </article>
+                  ))}
+                </div>
+                <div className="hero-actions about-me-actions about-me-career-actions">
+                  <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.dropMessage")} <span aria-hidden="true">-&gt;</span></a>
+                  <EditableCta welcomeKey="about-me/hero/bruno-profile/ask-my-assistant"><button className="button button--light" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/ask-my-assistant" })}>{t("chat.askAssistant")} <span aria-hidden="true">-&gt;</span></button></EditableCta>
+                  <EditableCta welcomeKey="about-me/hero/bruno-profile/book-a-call"><button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "about-me/hero/bruno-profile/book-a-call" })}>{t("about.bookCall")} <span aria-hidden="true">-&gt;</span></button></EditableCta>
+                </div>
+          </div>
         </div>
       </section>
 
@@ -253,73 +258,6 @@ export default function AboutMePage() {
                           <li key={itemIndex}>{t(`about.features.${column.id}.items.${String(itemIndex + 1).padStart(2, "0")}`)}</li>
                         ))}
                       </ul>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="section about-me-awards-section" aria-labelledby="about-me-awards-title">
-        <div className="site-container">
-          <div className="about-me-awards-accordion">
-            <article className={`about-me-awards-accordion-item${openAccordionId === "awards" ? " is-open" : ""}`}>
-              <h2 className="sr-only" id="about-me-awards-title">{t("about.awardsTitle")}</h2>
-              <button
-                type="button"
-                className="section-heading section-heading--split about-me-awards-heading"
-                aria-expanded={openAccordionId === "awards"}
-                aria-controls="about-me-awards-panel"
-                onClick={() => toggleAccordion("awards")}
-              >
-                <div className="about-me-awards-heading-copy">
-                  <p className="eyebrow">{t("about.awards")}</p>
-                  <h3 className="about-me-awards-heading-title">{t("about.promptEngineering")}</h3>
-                </div>
-                <div className="about-me-awards-heading-side">
-                  <p className="section-intro about-me-awards-intro">
-                    {t("about.awardsLead")}
-                  </p>
-                </div>
-                <span className="about-me-awards-chevron-wrap" aria-hidden="true">
-                  <span className="about-me-awards-hover-label">{t("about.clickDetails")}</span>
-                  <span className="about-me-awards-chevron">
-                    <span />
-                    <span />
-                  </span>
-                </span>
-              </button>
-
-              <div
-                id="about-me-awards-panel"
-                className="about-me-awards-panel"
-                hidden={openAccordionId !== "awards"}
-              >
-                <div className="about-me-awards-grid">
-                  {awards.map((award, awardIndex) => (
-                    <article className="about-me-award-card" key={award.projectUrl}>
-                      <div className="about-me-award-image-wrap">
-                        <img src={award.grayscaleImage} alt="" className="about-me-award-image about-me-award-image--gray" loading="lazy" />
-                        <img src={award.image} alt="" className="about-me-award-image about-me-award-image--color" loading="lazy" />
-                      </div>
-                      <div className="about-me-award-content">
-                        <p className="about-me-award-result">{t(`about.awardItems.${awardIndex}.result`)}</p>
-                        <p className="about-me-award-category">{t(`about.awardItems.${awardIndex}.category`)}</p>
-                        <h3>{t(`about.awardItems.${awardIndex}.title`)}</h3>
-                        <p>{t(`about.awardItems.${awardIndex}.description`)}</p>
-                        <div className="about-me-award-links">
-                          {award.resultsUrl ? (
-                            <a href={award.resultsUrl} target="_blank" rel="noreferrer noopener">
-                              {t("about.resultsPage")} <span aria-hidden="true">-&gt;</span>
-                            </a>
-                          ) : null}
-                          <a href={award.projectUrl} target="_blank" rel="noreferrer noopener">
-                            {t("about.openProject")} <span aria-hidden="true">-&gt;</span>
-                          </a>
-                        </div>
-                      </div>
                     </article>
                   ))}
                 </div>

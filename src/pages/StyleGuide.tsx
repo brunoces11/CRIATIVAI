@@ -247,7 +247,7 @@ export default function StyleGuide() {
             {isAudienceEnabled("recruiters") ? (
               <a className="style-page-link" href="/for-recrutiers">
                 <span className="micro-label">Recruitment offer</span>
-                <strong>For Recrutiers</strong>
+                <strong>For Recruiters</strong>
                 <em>Open the service page {ARROW_NE}</em>
               </a>
             ) : null}

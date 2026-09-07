@@ -77,9 +77,25 @@ export default function Home() {
             <span className="sr-only">{t("home.servicesCoverage")}</span>
             <span className="sr-only">{t("home.leadCoverage")}</span>
             <p className="eyebrow hero-eyebrow"><span /> {t("home.heroEyebrow")}</p>
+            <div className="home-neon-probe">
+              <div className="neon-wordmark neon-ativo" role="img" aria-label="Neon short-circuit preview">
+                <svg viewBox="0 0 440 140" aria-hidden="true">
+                  <text className="neon-glow" x="220" y="96" textAnchor="middle">NEON</text>
+                  <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
+                  <g className="neon-arcs">
+                    <path className="neon-arc neon-arc--one" d="M101 95 L99 88 L95 82 L89 77 L117 69 L104 42" />
+                    <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L179 51 L151 64 L171 79" />
+                    <path className="neon-arc neon-arc--three" d="M230 57 L235 48 L248 43 L262 49 L270 61 L264 73" />
+                    <path className="neon-arc neon-arc--four" d="M268 95 L271 84 L278 75 L293 63 L287 42" />
+                    <path className="neon-arc neon-arc--five" d="M238 73 L231 64 L236 55 L249 47 L262 52 L268 63" />
+                    <path className="neon-arc neon-arc--six" d="M266 92 L272 82 L267 73 L281 66 L289 54 L286 43" />
+                  </g>
+                </svg>
+              </div>
+            </div>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">{t("video.creative")}</span>
-              <span className="hero-line hero-line--two">{t("video.aiSolutions")}</span>
+              <NeonHeroLine className="hero-line--one" text={t("video.creative")} />
+              <NeonHeroLine className="hero-line--two" text={t("video.aiSolutions")} />
             </h1>
             <div className="hero-intro">
               <p>
@@ -312,5 +328,21 @@ export default function Home() {
         <div className="site-container footer-bottom"><span>{t("footer.bottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")} {"\u2191"}</a></div>
       </footer>
     </main>
+  );
+}
+
+function NeonHeroLine({ className, text }: { className: string; text: string }) {
+  return (
+    <span className={`hero-line ${className} neon-hero-line neon-wordmark neon-ativo`}>
+      <span className="neon-hero-line__text neon-core">{text}</span>
+      <svg className="neon-hero-line__rays" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path className="neon-arc neon-arc--one" d="M2 70 L8 62 L5 52 L14 43 L10 28" />
+        <path className="neon-arc neon-arc--two" d="M20 4 L25 15 L21 25 L29 35 L24 48" />
+        <path className="neon-arc neon-arc--three" d="M39 96 L44 84 L41 73 L49 63 L46 51" />
+        <path className="neon-arc neon-arc--four" d="M61 5 L57 18 L64 28 L59 39 L68 50" />
+        <path className="neon-arc neon-arc--five" d="M78 95 L73 83 L80 72 L75 60 L84 48" />
+        <path className="neon-arc neon-arc--six" d="M98 30 L91 39 L95 50 L87 61 L92 75" />
+      </svg>
+    </span>
   );
 }

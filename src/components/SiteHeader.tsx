@@ -11,6 +11,9 @@ type NavigationItem = { labelKey: string; href: string; adminOnly?: boolean; aud
 const navigation: NavigationItem[] = [
   { labelKey: "hireMe", href: "/hire-me", adminOnly: true },
   { labelKey: "services", href: "/services" },
+  { labelKey: "research", href: "/research" },
+  { labelKey: "lab", href: "/lab" },
+  { labelKey: "awards", href: "/awards-prompt-engineering" },
   { labelKey: "projects", href: "#projects", adminOnly: true },
   { labelKey: "recruiters", href: "/for-recrutiers", audience: "recruiters" },
   { labelKey: "about", href: "/about-me" },
@@ -24,17 +27,20 @@ const solutionsNavigation = [
   { href: "/founding-sdr", page: "founding-sdr" },
 ] as const;
 
-const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm", string>> = {
+const pageToHref: Partial<Record<"home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "research" | "lab" | "awards" | "hire-me" | "adm", string>> = {
   style: "/style",
   "human-resources": "/for-recrutiers",
   "founding-sdr": "/founding-sdr",
   contact: "/contact",
   "about-me": "/about-me",
   services: "/services",
+  research: "/research",
+  lab: "/lab",
+  awards: "/awards-prompt-engineering",
   "hire-me": "/hire-me",
 };
 
-export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "hire-me" | "adm" }) {
+export function SiteHeader({ brand, page = "home" }: { brand: ReactNode; page?: "home" | "style" | "human-resources" | "founding-sdr" | "talent-preview" | "contact" | "video" | "about-me" | "services" | "research" | "lab" | "awards" | "hire-me" | "adm" }) {
   const { t } = useTranslation();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);

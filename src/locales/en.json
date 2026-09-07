@@ -1,12 +1,15 @@
 {
   "meta": {
-    "title": "CriativAI — Creative Artificial Intelligence",
+    "title": "CriativAI - Creative Artificial Intelligence",
     "description": "AI-powered products, intelligent automations, and custom software shaped by design, engineering, and business strategy.",
     "ogLocale": "en_US"
   },
   "header": {
     "hireMe": "Hire me",
     "services": "Services",
+    "research": "Research",
+    "lab": "Lab",
+    "awards": "Awards",
     "projects": "Projects",
     "about": "About",
     "video": "Video",
@@ -26,6 +29,7 @@
     "backToTop": "Back to top",
     "solutionsSubmenu": "Solutions submenu"
   },
+  "lab": { "subtitle": "Here you can check out some projects I have been building,\n            some related to AI visuals, day-by-day tools", "repository": "View repository", "contact": "Contact me" },
   "chat": {
     "aria": "AI chat assistant",
     "conversation": "Chat conversation",
@@ -519,7 +523,7 @@
     "buildConfidence": "BUILD WITH CONFIDENCE",
     "heroTitle": "GenAI Architect",
     "heroSubtitle": "Context Prompt Engineer",
-    "heroRole": "with Creative Design Background",
+    "heroRole": "Senior UI/UX Product Designer",
     "heroLead": "Bruno works at the intersection of product design, artificial intelligence, and business strategy. His practice combines two decades of creative experience with a systems mindset to turn complex ideas into useful, understandable, and carefully crafted digital products.",
     "dropMessage": "Drop Me a Message",
     "bookCall": "Book a Call",

@@ -1,10 +1,13 @@
-﻿import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EditableCta } from "../components/CtaEditorButton";
 import { SiteHeader } from "../components/SiteHeader";
 import { useTranslation } from "react-i18next";
 import { openAssistantChat } from "../lib/chatContext";
 import { isAudienceEnabled } from "../lib/audienceVisibility";
 import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
+import creativeOutline from "../data/creative-neon-outline.json";
+import criativasOutline from "../data/criativas-neon-outline.json";
+import hyperOutline from "../data/hyper-personalization-neon-outline.json";
 
 const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
 const HERO_PIN_DISTANCE = 2500;
@@ -455,10 +458,37 @@ export default function VideoPage() {
             <p className="eyebrow hero-eyebrow">
               <span /> {t("video.heroEyebrow")}
             </p>
+            <div className="home-neon-probe">
+              <div className="neon-wordmark neon-ativo" role="img" aria-label="Neon short-circuit preview">
+                <svg viewBox="0 0 440 140" aria-hidden="true">
+                  <text className="neon-glow" x="220" y="96" textAnchor="middle">NEON</text>
+                  <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
+                  <g className="neon-arcs">
+                    <path className="neon-arc neon-arc--one" d="M101 95 L99 88 L95 82 L89 77 L117 69 L104 42" />
+                    <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L179 51 L151 64 L171 79" />
+                    <path className="neon-arc neon-arc--three" d="M230 57 L235 48 L248 43 L262 49 L270 61 L264 73" />
+                    <path className="neon-arc neon-arc--four" d="M268 95 L271 84 L278 75 L293 63 L287 42" />
+                    <path className="neon-arc neon-arc--five" d="M238 73 L231 64 L236 55 L249 47 L262 52 L268 63" />
+                    <path className="neon-arc neon-arc--six" d="M266 92 L272 82 L267 73 L281 66 L289 54 L286 43" />
+                    <path className="neon-arc neon-arc--seven" d="M139 43 L132 55 L137 67 L128 80 L141 95" />
+                    <path className="neon-arc neon-arc--eight" d="M164 79 L178 82 L192 77 L180 88 L164 92" />
+                    <path className="neon-arc neon-arc--nine" d="M270 73 L263 82 L251 91 L239 87 L232 78" />
+                    <path className="neon-arc neon-arc--ten" d="M326 42 L319 53 L327 66 L316 80 L326 95" />
+                    <path className="neon-arc neon-arc--eleven" d="M108 92 L104 84 L111 73 L105 61 L112 47" />
+                    <path className="neon-arc neon-arc--twelve" d="M242 47 L251 44 L261 51 L268 62 L263 72" />
+                    <path className="neon-arc neon-arc--thirteen" d="M117 42 L121 53 L113 64 L125 78 L115 94" />
+                    <path className="neon-arc neon-arc--fourteen" d="M194 43 L188 53 L198 62 L184 73 L193 79" />
+                    <path className="neon-arc neon-arc--fifteen" d="M255 91 L264 85 L270 75 L258 66 L269 55" />
+                    <path className="neon-arc neon-arc--sixteen" d="M305 95 L310 84 L303 73 L314 61 L307 43" />
+                  </g>
+                </svg>
+              </div>
+            </div>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">{t("video.creative")}</span>
+              <CreativeCircuitTitle text={t("video.creative")} />
               <span className="hero-line hero-line--two">{t("video.aiSolutions")}</span>
             </h1>
+            <CriativasInterNeonTitle />
             <div className="hero-intro">
               <p>
                 {t("home.heroLead")}
@@ -505,7 +535,7 @@ export default function VideoPage() {
               {t("video.welcome")}
             </p>
             <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome">
-              {t("video.hyper")} <span className="video-hero-next-white">{t("video.personalization")}</span> {t("video.era")}
+              {t("video.hyper")} <HyperPersonalizationNeon text={t("video.personalization")} /> {t("video.era")}
             </p>
             <p className="video-hero-next-description">
               {t("video.nextLead")}
@@ -775,7 +805,7 @@ export default function VideoPage() {
                 rel="noreferrer noopener"
               >
                 <span className="footer-social-icon" aria-hidden="true">
-                  BÄ“
+                  Bē
                 </span>
                 {t("footer.behance")}
               </a>
@@ -802,5 +832,80 @@ export default function VideoPage() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function CreativeCircuitTitle({ text }: { text: string }) {
+  return (
+    <span id="creative-label" className="hero-line hero-line--one neon-wordmark neon-ativo neon-ativo--always creative-circuit">
+      <span className="creative-circuit__text">{text}</span>
+      <svg className="creative-circuit__rays" viewBox="0 0 500 150" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        {creativeOutline.paths.map((path, index) => (
+          <path key={path.slice(0, 24)} className={`neon-arc neon-arc--outline neon-arc--outline-${index + 1}`} d={path} />
+        ))}
+      </svg>
+      {/* generated outline replaces the former decorative paths */}
+      {false && <svg viewBox="0 0 1000 150" aria-hidden="true">
+        <path className="neon-arc neon-arc--one" d="M24 117 L18 101 L29 84 L20 66 L34 45" />
+        <path className="neon-arc neon-arc--two" d="M77 39 L90 53 L83 70 L99 81 L91 102" />
+        <path className="neon-arc neon-arc--three" d="M159 118 L150 101 L164 84 L154 66 L168 48" />
+        <path className="neon-arc neon-arc--four" d="M241 44 L252 58 L243 73 L259 87 L250 106" />
+        <path className="neon-arc neon-arc--five" d="M335 119 L326 102 L339 85 L330 68 L345 49" />
+        <path className="neon-arc neon-arc--six" d="M429 42 L442 56 L434 72 L449 87 L440 108" />
+        <path className="neon-arc neon-arc--seven" d="M525 117 L516 100 L530 84 L521 66 L535 47" />
+        <path className="neon-arc neon-arc--eight" d="M620 41 L632 55 L623 71 L639 85 L630 106" />
+        <path className="neon-arc neon-arc--nine" d="M716 118 L706 101 L720 83 L710 65 L725 46" />
+        <path className="neon-arc neon-arc--ten" d="M811 43 L823 57 L814 74 L830 88 L821 108" />
+        <path className="neon-arc neon-arc--eleven" d="M906 117 L896 101 L910 83 L900 65 L915 46" />
+        <path className="neon-arc neon-arc--twelve" d="M976 42 L987 57 L978 73 L991 88 L983 106" />
+      </svg>}
+    </span>
+  );
+}
+
+function HyperPersonalizationNeon({ text }: { text: string }) {
+  return (
+    <span className="video-hero-next-white hyper-neon-text neon-wordmark neon-ativo">
+      <span className="hyper-neon-text__label">{text}</span>
+      <svg className="hyper-neon-text__rays" viewBox="0 0 1400 145" preserveAspectRatio="none" aria-hidden="true">
+        {hyperOutline.paths.map((path, index) => <path key={index} className="neon-arc" d={path} />)}
+      </svg>
+    </span>
+  );
+}
+
+function CriativasInterNeonTitle() {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const [geometry, setGeometry] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+
+  useLayoutEffect(() => {
+    let frame = 0;
+    let cancelled = false;
+    const measure = () => {
+      const title = titleRef.current;
+      const text = textRef.current;
+      if (!title || !text) return;
+      const titleBox = title.getBoundingClientRect();
+      const textBox = text.getBoundingClientRect();
+      const fontSize = Number.parseFloat(window.getComputedStyle(text).fontSize);
+      if (!fontSize || !textBox.width || !textBox.height) return;
+      const sourceScale = fontSize / 112;
+      if (!cancelled) setGeometry({ left: textBox.left - titleBox.left, top: textBox.top - titleBox.top, width: 590 * sourceScale * 0.98918316, height: 145 * sourceScale });
+    };
+    void document.fonts.ready.then(() => { frame = window.requestAnimationFrame(measure); });
+    window.addEventListener("resize", measure);
+    return () => { cancelled = true; window.cancelAnimationFrame(frame); window.removeEventListener("resize", measure); };
+  }, []);
+
+  const outlineStyle: CSSProperties = geometry ? { left: geometry.left, top: geometry.top, width: geometry.width, height: geometry.height, visibility: "visible" } : { visibility: "hidden" };
+
+  return (
+    <h1 ref={titleRef} className="criativas-inter-neon-title" aria-label="CRIATIVAS">
+      <span ref={textRef} className="criativas-inter-neon-title__text">CRIATIVAS</span>
+      <svg className="criativas-inter-neon-title__rays" style={outlineStyle} viewBox="0 0 590 145" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        {criativasOutline.paths.map((path, index) => <path key={path.slice(0, 24)} className={`neon-arc neon-arc--outline-${index + 1}`} d={path} />)}
+      </svg>
+    </h1>
   );
 }
