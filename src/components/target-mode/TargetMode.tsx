@@ -288,7 +288,7 @@ function escapeAttributeValue(value: string): string {
 
 function getLocatorSegment(element: Element): string {
   const identity = getExplicitIdentity(element);
-  if (identity && isUniqueIdentity(identity, document)) return identity.attribute === "id" ? `#${identity.value}` : `[${identity.attribute}="${escapeAttributeValue(identity.value)}"]`;
+  if (identity && isUniqueIdentity(identity, document.documentElement)) return identity.attribute === "id" ? `#${identity.value}` : `[${identity.attribute}="${escapeAttributeValue(identity.value)}"]`;
   const classes = getStableClasses(element).map((part) => `.${part}`).join("");
   const base = `${getDomTarget(element)}${classes}`;
   const siblings = element.parentElement ? Array.from(element.parentElement.children).filter((entry) => getDomTarget(entry) === getDomTarget(element)) : [];
