@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import secrets
 import threading
 from collections import defaultdict, deque
@@ -10,6 +11,8 @@ from time import monotonic
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from backend.app.chat_context import get_context_message
+from backend.app.chat_welcome import create_welcome_conversation
 from backend.app.config import get_settings
 from backend.app.chat_tracing import ChatTraceContext, create_chat_trace_sink
 from backend.app.models import Conversation, Message
@@ -19,19 +22,20 @@ from backend.app.schemas import ChatRequest
 logger = logging.getLogger(__name__)
 PUBLIC_BUSY_ERROR = "This conversation already has a response in progress. Please wait a moment."
 PUBLIC_RATE_LIMIT_ERROR = "Too many messages in a short period. Please wait a moment and try again."
+SECRET_PATTERN = re.compile(r"(sk-[A-Za-z0-9_-]{8,}|Bearer\s+[A-Za-z0-9._-]+)", re.IGNORECASE)
 
 _active_sessions: set[str] = set()
 _rate_limit_hits: dict[str, deque[float]] = defaultdict(deque)
 _state_lock = threading.Lock()
 
 
-def get_or_create_conversation(session: Session, session_id: str | None) -> Conversation:
+def get_or_create_conversation(session: Session, session_id: str | None, language: str = "en") -> Conversation:
     if session_id:
         conversation = session.scalar(select(Conversation).where(Conversation.session_id == session_id))
         if conversation:
             return conversation
 
-    conversation = Conversation(session_id=secrets.token_urlsafe(32))
+    conversation = Conversation(session_id=secrets.token_urlsafe(32), language=language)
     session.add(conversation)
     session.commit()
     session.refresh(conversation)
@@ -42,7 +46,7 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     request_id = secrets.token_hex(8)
     started_at = monotonic()
     error_category = "none"
-    conversation = get_or_create_conversation_with_messages(session, request.session_id)
+    conversation = get_or_create_conversation_with_messages(session, request.session_id, request.language)
     persist_client_temporal_context(conversation, request)
     history = list(conversation.messages)
     masked_session = _mask_session_id(conversation.session_id)
@@ -96,6 +100,10 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         return
 
     response = ""
+    welcome_record = _ensure_cta_welcome_message(session, conversation, history, request)
+    if welcome_record is not None:
+        history = [*history, welcome_record]
+
     user_record = _find_turn_message(history, turn_id, "user")
     if user_record is None:
         user_record = Message(conversation_id=conversation.id, role="user", content=request.message, status="completed", turn_id=turn_id)
@@ -108,13 +116,17 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
         trace.log("user_message_persisted", message=request.message)
     try:
         recent_history = _recent_completed_messages(history, settings.chat_context_recent_messages)
+        model_history, model_user_message = _build_model_context_for_request(recent_history, request.message)
+        cta_context = get_context_message(request.welcome_key)
         for delta in _stream_openai_text(
             settings,
-            recent_history,
-            request.message,
+            model_history,
+            model_user_message,
             conversation.summary,
+            cta_context=cta_context,
             session=session,
             conversation=conversation,
+            turn_id=turn_id,
             trace=trace,
         ):
             if not delta:
@@ -129,13 +141,13 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     except OpenAIChatUnavailable as exc:
         error_category = "openai_unavailable"
         trace.log("turn_error", category=error_category, message=str(exc))
-        yield _event("error", {"message": "The assistant is temporarily unavailable. Please try again in a moment."})
+        yield _event("error", {"message": str(exc)})
         return
     except Exception as exc:
         error_category = "unexpected"
         logger.exception("Chat turn failed unexpectedly")
         trace.log("turn_error", category=error_category, message=str(exc))
-        yield _event("error", {"message": "The assistant is temporarily unavailable. Please try again in a moment."})
+        yield _event("error", {"message": _public_unexpected_error(exc)})
         return
     finally:
         _finish_turn(conversation.session_id)
@@ -161,8 +173,8 @@ def stream_chat(session: Session, request: ChatRequest) -> Iterator[str]:
     _log_chat_turn(request_id, masked_session, started_at, "completed")
 
 
-def get_or_create_conversation_with_messages(session: Session, session_id: str | None) -> Conversation:
-    conversation = get_or_create_conversation(session, session_id)
+def get_or_create_conversation_with_messages(session: Session, session_id: str | None, language: str = "en") -> Conversation:
+    conversation = get_or_create_conversation(session, session_id, language)
     loaded = session.scalar(
         select(Conversation)
         .where(Conversation.id == conversation.id)
@@ -190,6 +202,84 @@ def _find_turn_message(messages: list[Message], turn_id: str, role: str) -> Mess
 def _recent_completed_messages(messages: list[Message], limit: int) -> list[Message]:
     completed = [message for message in messages if message.status == "completed"]
     return completed[-limit:]
+
+
+def _build_model_context_for_request(history: list[Message], user_message: str) -> tuple[list[Message], str]:
+    welcome_message = _first_turn_cta_welcome_message(history)
+    model_history = [message for message in history if not _is_cta_welcome_message(message)]
+    if welcome_message is None:
+        return model_history, user_message
+
+    return (
+        model_history,
+        "\n\n".join(
+            [
+                "CTA welcome context shown to the visitor before this first message:",
+                welcome_message.content,
+                "Visitor's first message:",
+                user_message,
+            ]
+        ),
+    )
+
+
+def _first_turn_cta_welcome_message(history: list[Message]) -> Message | None:
+    user_messages = [message for message in history if message.role == "user"]
+    if user_messages:
+        return None
+    welcome_messages = [message for message in history if _is_cta_welcome_message(message)]
+    return welcome_messages[0] if len(welcome_messages) == 1 else None
+
+
+def _is_cta_welcome_message(message: Message) -> bool:
+    if message.role != "assistant" or not message.metadata_json:
+        return False
+    try:
+        metadata = json.loads(message.metadata_json)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(metadata, dict) and metadata.get("source") == "cta_welcome"
+
+
+def _ensure_cta_welcome_message(
+    session: Session,
+    conversation: Conversation,
+    history: list[Message],
+    request: ChatRequest,
+) -> Message | None:
+    if request.session_id or not request.welcome_key:
+        return None
+    if "language" not in request.model_fields_set and not request.welcome_message:
+        return None
+
+    existing = _first_turn_cta_welcome_message(history)
+    if existing is not None:
+        return existing
+
+    canonical_welcome = create_welcome_conversation(request.welcome_key, request.language).message
+    if not canonical_welcome:
+        return None
+    welcome_record = Message(
+        conversation_id=conversation.id,
+        role="assistant",
+        content=canonical_welcome,
+        status="completed",
+        turn_id=f"welcome_{secrets.token_urlsafe(18)}",
+        metadata_json=json.dumps(
+            {
+                "source": "cta_welcome",
+                "welcome_key": request.welcome_key,
+            },
+            ensure_ascii=False,
+        ),
+    )
+    session.add(welcome_record)
+    now = datetime.now(UTC)
+    conversation.last_activity_at = now
+    conversation.updated_at = now
+    session.commit()
+    session.refresh(welcome_record)
+    return welcome_record
 
 
 def _try_start_turn(session_id: str) -> bool:
@@ -260,24 +350,58 @@ def _log_chat_turn(request_id: str, masked_session: str, started_at: float, cate
     )
 
 
+def _public_unexpected_error(exc: BaseException) -> str:
+    detail = SECRET_PATTERN.sub("<redacted>", " ".join(str(exc).split()))
+    if len(detail) > 500:
+        detail = f"{detail[:500].rstrip()}..."
+    suffix = f": {detail}" if detail else ""
+    return f"The assistant is temporarily unavailable. Please try again in a moment.\n\nBackend error: {exc.__class__.__name__}{suffix}"
+
+
 def _stream_openai_text(
     settings,
     history,
     user_message,
     summary,
+    cta_context,
     *,
     session: Session,
     conversation: Conversation,
+    turn_id: str | None = None,
     trace=None,
 ):
     try:
-        return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation, trace=trace)
+        return stream_openai_text(
+            settings,
+            history,
+            user_message,
+            summary,
+            cta_context=cta_context,
+            session=session,
+            conversation=conversation,
+            turn_id=turn_id,
+            trace=trace,
+        )
     except TypeError as exc:
         if "unexpected keyword argument" not in str(exc):
             raise
         try:
-            return stream_openai_text(settings, history, user_message, summary, session=session, conversation=conversation)
+            return stream_openai_text(
+                settings,
+                history,
+                user_message,
+                summary,
+                cta_context=cta_context,
+                session=session,
+                conversation=conversation,
+                trace=trace,
+            )
         except TypeError as inner_exc:
             if "unexpected keyword argument" not in str(inner_exc):
                 raise
-            return stream_openai_text(settings, history, user_message, summary)
+            try:
+                return stream_openai_text(settings, history, user_message, summary, cta_context)
+            except TypeError as positional_exc:
+                if "positional argument" not in str(positional_exc) and "were given" not in str(positional_exc):
+                    raise
+                return stream_openai_text(settings, history, user_message, summary)

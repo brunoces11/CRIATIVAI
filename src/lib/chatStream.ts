@@ -15,6 +15,27 @@ export type ConversationResponse = {
   messages: ChatMessage[];
 };
 
+export type ChatWelcomeResponse = {
+  session_id?: string | null;
+  message: string | null;
+};
+
+export type PendingWelcomeContext = {
+  key: string;
+  message: string | null;
+};
+
+export type ChatLanguage = "pt" | "en";
+
+export type ChatClientErrorCode = "restore" | "send" | "welcome" | "network" | "invalidStream" | "unsupportedStream";
+
+export class ChatClientError extends Error {
+  constructor(public readonly code: ChatClientErrorCode) {
+    super(code);
+    this.name = "ChatClientError";
+  }
+}
+
 export async function* parseNdjsonStream(stream: ReadableStream<Uint8Array>): AsyncGenerator<ChatStreamEvent> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
@@ -44,16 +65,19 @@ export async function* parseNdjsonStream(stream: ReadableStream<Uint8Array>): As
 }
 
 export async function fetchCurrentConversation(sessionId: string, signal: AbortSignal): Promise<ConversationResponse | null> {
-  const response = await fetch(`/api/conversations/current?session_id=${encodeURIComponent(sessionId)}`, {
+  const endpoint = `/api/conversations/current?session_id=${encodeURIComponent(sessionId)}`;
+  const response = await fetch(endpoint, {
     signal,
     headers: { accept: "application/json" },
+  }).catch((error: unknown) => {
+    throw buildNetworkError(endpoint, error);
   });
 
   if (response.status === 404 || response.status === 422) {
     return null;
   }
   if (!response.ok) {
-    throw new Error("Unable to restore the conversation.");
+    throw new ChatClientError("restore");
   }
 
   return response.json() as Promise<ConversationResponse>;
@@ -64,11 +88,15 @@ export async function sendChatMessage(
   sessionId: string | null,
   turnId: string,
   signal: AbortSignal,
+  welcomeKey: string | null,
+  pendingWelcome: PendingWelcomeContext | null,
+  language: ChatLanguage,
   onEvent: (event: ChatStreamEvent) => void,
 ): Promise<void> {
   const clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
   const clientLocale = Intl.DateTimeFormat().resolvedOptions().locale || null;
-  const response = await fetch("/api/chat", {
+  const endpoint = "/api/chat";
+  const response = await fetch(endpoint, {
     method: "POST",
     signal,
     headers: {
@@ -79,18 +107,50 @@ export async function sendChatMessage(
       message,
       session_id: sessionId,
       turn_id: turnId,
+      welcome_key: welcomeKey,
+      welcome_message: sessionId || !pendingWelcome?.message?.trim() ? null : pendingWelcome.message,
       client_timezone: clientTimezone,
       client_locale: clientLocale,
+      language,
     }),
+  }).catch((error: unknown) => {
+    throw buildNetworkError(endpoint, error);
   });
 
   if (!response.ok || !response.body) {
-    throw new Error("Unable to reach the assistant.");
+    throw new ChatClientError("send");
   }
 
   for await (const event of parseNdjsonStream(response.body)) {
     onEvent(event);
   }
+}
+
+export async function createWelcomeConversation(welcomeKey: string, language: ChatLanguage, signal: AbortSignal): Promise<ChatWelcomeResponse> {
+  const endpoint = "/api/chat/welcome";
+  const response = await fetch(endpoint, {
+    method: "POST",
+    signal,
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ welcome_key: welcomeKey, language }),
+  }).catch((error: unknown) => {
+    throw buildNetworkError(endpoint, error);
+  });
+
+  if (!response.ok) {
+    throw new ChatClientError("welcome");
+  }
+
+  return response.json() as Promise<ChatWelcomeResponse>;
+}
+
+function buildNetworkError(endpoint: string, error: unknown) {
+  void endpoint;
+  void error;
+  return new ChatClientError("network");
 }
 
 function parseEventLine(line: string): ChatStreamEvent | null {
@@ -99,7 +159,7 @@ function parseEventLine(line: string): ChatStreamEvent | null {
 
   const value: unknown = JSON.parse(trimmed);
   if (!value || typeof value !== "object") {
-    throw new Error("Invalid stream event.");
+    throw new ChatClientError("invalidStream");
   }
 
   const event = value as Record<string, unknown>;
@@ -119,5 +179,5 @@ function parseEventLine(line: string): ChatStreamEvent | null {
     return { event: "error", message: event.message };
   }
 
-  throw new Error("Unsupported stream event.");
+  throw new ChatClientError("unsupportedStream");
 }

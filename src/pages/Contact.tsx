@@ -1,7 +1,11 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { FormSuccessModal } from "../components/FormSuccessModal";
 import { SiteHeader } from "../components/SiteHeader";
 import { submitContact } from "../lib/forms";
+import { buildMailtoHref, isSitesFrontendOnly } from "../lib/sitesRuntime";
+import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 type ContactState = {
   name: string;
@@ -32,6 +36,8 @@ function Brand() {
 }
 
 export default function ContactPage() {
+  const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const [form, setForm] = useState<ContactState>(() => createInitialState());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -56,6 +62,19 @@ export default function ContactPage() {
     event.preventDefault();
     if (!isValid || submitting) return;
 
+    if (isSitesFrontendOnly) {
+      window.location.href = buildMailtoHref({
+        subject: form.subject.trim() || t("contact.mailtoSubject"),
+        lines: [
+          `${t("contact.mailtoName")}: ${form.name.trim() || "-"}`,
+          `${t("contact.mailtoEmail")}: ${form.email.trim() || "-"}`,
+          "",
+          form.message.trim() || t("contact.mailtoFallback"),
+        ],
+      });
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
@@ -64,7 +83,7 @@ export default function ContactPage() {
       setForm(createInitialState());
       setSuccessOpen(true);
     } catch (submissionError) {
-      setError(submissionError instanceof Error ? submissionError.message : "Unable to send your message right now.");
+      setError(submissionError instanceof Error ? submissionError.message : t("forms.sendError"));
     } finally {
       setSubmitting(false);
     }
@@ -78,50 +97,57 @@ export default function ContactPage() {
         <div className="form-hero-glow" aria-hidden="true" />
         <div className="site-container form-hero-grid contact-hero-grid">
           <div className="form-hero-copy contact-hero-copy">
-            <h1 id="contact-page-title">Start a <span>conversation.</span></h1>
+            <h1 id="contact-page-title">{t("contact.title")} <span>{t("contact.titleAccent")}</span></h1>
             <p className="form-hero-lead">
-              Tell us what you are building, automating, or exploring—and we will get back to you directly.
+              {t("contact.lead")}
             </p>
             <p className="form-hero-detail">
-              This form sends your message to Bruno at CriativAI and stores the submission for reliable follow-up inside the project database.
+              {isSitesFrontendOnly
+                ? t("contact.publicDetail")
+                : t("contact.backendDetail")}
             </p>
           </div>
 
           <form className="form-panel contact-form-panel" onSubmit={onSubmit} onReset={onReset} noValidate>
             <div className="form-grid form-grid--two">
               <label className="form-field">
-                <span>Name</span>
-                <input name="name" value={form.name} onChange={onChange} placeholder="Your name" required />
+                <span>{t("forms.name")}</span>
+                <input name="name" value={form.name} onChange={onChange} placeholder={t("forms.yourName")} required />
               </label>
               <label className="form-field">
-                <span>Email</span>
-                <input name="email" type="email" value={form.email} onChange={onChange} placeholder="name@company.com" required />
+                <span>{t("forms.email")}</span>
+                <input name="email" type="email" value={form.email} onChange={onChange} placeholder={t("contact.emailPlaceholder")} required />
               </label>
             </div>
 
             <label className="form-field">
-              <span>Subject</span>
-              <input name="subject" value={form.subject} onChange={onChange} placeholder="What would you like to discuss?" required />
+              <span>{t("forms.subject")}</span>
+              <input name="subject" value={form.subject} onChange={onChange} placeholder={t("forms.subjectPlaceholder")} required />
             </label>
 
             <label className="form-field">
-              <span>Message</span>
-              <textarea name="message" value={form.message} onChange={onChange} placeholder="Share the context, goal, or challenge." rows={7} required />
+              <span>{t("forms.message")}</span>
+              <textarea name="message" value={form.message} onChange={onChange} placeholder={t("forms.messagePlaceholder")} rows={7} required />
             </label>
 
             <label className="form-honeypot" aria-hidden="true">
-              <span>Leave this field empty</span>
+              <span>{t("forms.leaveEmpty")}</span>
               <input name="honeypot" value={form.honeypot} onChange={onChange} tabIndex={-1} autoComplete="off" />
             </label>
 
             <input type="hidden" name="started_at_ms" value={form.started_at_ms} />
 
+            {isSitesFrontendOnly ? (
+              <p className="form-feedback form-feedback--notice">
+                {t("forms.publicNotice")}
+              </p>
+            ) : null}
             {error ? <p className="form-feedback form-feedback--error">{error}</p> : null}
 
             <div className="form-actions">
-              <button type="reset" className="button button--ghost">Clean Form</button>
+              <button type="reset" className="button button--ghost">{t("forms.clean")}</button>
               <button type="submit" className="button button--accent" disabled={!isValid || submitting}>
-                {submitting ? "Sending..." : "Send"} <span aria-hidden="true">↗</span>
+                {isSitesFrontendOnly ? t("forms.continueEmail") : submitting ? t("forms.sending") : t("forms.send")} <span aria-hidden="true">-&gt;</span>
               </button>
             </div>
           </form>
@@ -131,32 +157,31 @@ export default function ContactPage() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="/" aria-label="CriativAI home"><Brand /></a>
-            <p>AI-powered products, automations, and grounded systems designed for real business work.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <a href={localizedPath("/")} aria-label={t("header.home")}><Brand /></a>
+            <p>{t("contact.footerLead")}</p>
+            <span className="copyright">&copy; {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
-              <p className="micro-label">Navigation</p>
-              <a href="/#services">Services</a>
-              <a href="/#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
-              <a href="/style">Style</a>
+              <p className="micro-label">{t("footer.navigation")}</p>
+              <a href={localizedPath("/#services")}>{t("header.services")}</a>
+              <a href={localizedPath("/#projects")}>{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
             </div>
             <div>
-              <p className="micro-label">Destination</p>
+              <p className="micro-label">{t("contact.destination")}</p>
               <span className="footer-social-link">bruno@criativai.site</span>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Direct contact, with context preserved.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>{t("contact.footerBottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")}</a></div>
       </footer>
 
       <FormSuccessModal
         open={successOpen}
         onClose={() => setSuccessOpen(false)}
-        title="Message sent successfully."
-        message="Thanks for reaching out. Your message has been received and will be reviewed as soon as possible."
+        title={t("forms.successTitle")}
+        message={t("forms.successMessage")}
       />
     </main>
   );

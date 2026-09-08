@@ -1,57 +1,14 @@
-import { SiteHeader } from "../components/SiteHeader";
+﻿import { SiteHeader } from "../components/SiteHeader";
 
-const groundingTopics = [
-  "Retrieval-Augmented Generation (RAG)",
-  "GraphRAG",
-  "Knowledge Graphs",
-  "Context Engineering",
-  "Business Intelligence",
-  "Enterprise Knowledge Bases",
-  "Long-Term Memory",
-  "Multi-Agent Architectures",
-  "Private Knowledge Integration",
-  "Structured Data Integration",
-];
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
-const services = [
-  {
-    index: "01",
-    title: "UI/UX Design",
-    text: "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences.",
-    featured: true,
-  },
-  {
-    index: "02",
-    title: "Enterprise Knowledge System",
-    text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
-  },
-  {
-    index: "03",
-    title: "System Design",
-    text: "Technical architecture and system planning for scalable digital products and AI-powered applications.",
-  },
-  {
-    index: "04",
-    title: "AI Automations",
-    text: "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence.",
-  },
-  {
-    index: "05",
-    title: "Smart Agents",
-    text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
-  },
-];
+import { ServiceCatalogCard } from "../components/ServiceCatalogCard";
+import { serviceCatalog } from "../data/serviceCatalog";
 
-const expertise = [
-  "Product Design",
-  "UI/UX Design",
-  "AI Engineering",
-  "Context Engineering",
-  "Prompt Engineering",
-  "Enterprise Automation",
-  "Knowledge Systems",
-  "Human-Centered AI",
-];
+const groundingTopicIds = Array.from({ length: 10 }, (_, index) => String(index + 1).padStart(2, "0"));
 
 function Brand() {
   return (
@@ -64,10 +21,10 @@ function Brand() {
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
   const src =
     type === "hr"
-      ? "/project-visuals/project-human-resources.svg"
+      ? "/tub_dashboard_inteligence.png"
       : type === "trading"
-        ? "/project-visuals/project-trading.svg"
-        : "/project-visuals/project-dante.svg";
+        ? "/tub_ai-first-trading-plataform.png"
+        : "/tub_dante_ai_legal_system.png";
 
   if (type === "hr") {
     return (
@@ -99,6 +56,16 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
+  const [expandedGroundingTopic, setExpandedGroundingTopic] = useState<{ columnId: string; title: string } | null>(null);
+
+  const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
+    setExpandedGroundingTopic((currentTopic) =>
+      currentTopic?.columnId === columnId && currentTopic.title === topicTitle ? null : { columnId, title: topicTitle },
+    );
+  };
+
   return (
     <main id="top">
       <SiteHeader brand={<Brand />} />
@@ -107,18 +74,35 @@ export default function Home() {
         <div className="hero-atmosphere" aria-hidden="true" />
         <div className="site-container hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow hero-eyebrow"><span /> Design × Engineering × Strategy</p>
+            <span className="sr-only">{t("home.servicesCoverage")}</span>
+            <span className="sr-only">{t("home.leadCoverage")}</span>
+            <p className="eyebrow hero-eyebrow"><span /> {t("home.heroEyebrow")}</p>
+            <div className="home-neon-probe">
+              <div className="neon-wordmark neon-ativo" role="img" aria-label="Neon short-circuit preview">
+                <svg viewBox="0 0 440 140" aria-hidden="true">
+                  <text className="neon-glow" x="220" y="96" textAnchor="middle">NEON</text>
+                  <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
+                  <g className="neon-arcs">
+                    <path className="neon-arc neon-arc--one" d="M101 95 L99 88 L95 82 L89 77 L117 69 L104 42" />
+                    <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L179 51 L151 64 L171 79" />
+                    <path className="neon-arc neon-arc--three" d="M230 57 L235 48 L248 43 L262 49 L270 61 L264 73" />
+                    <path className="neon-arc neon-arc--four" d="M268 95 L271 84 L278 75 L293 63 L287 42" />
+                    <path className="neon-arc neon-arc--five" d="M238 73 L231 64 L236 55 L249 47 L262 52 L268 63" />
+                    <path className="neon-arc neon-arc--six" d="M266 92 L272 82 L267 73 L281 66 L289 54 L286 43" />
+                  </g>
+                </svg>
+              </div>
+            </div>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">CREATIVE</span>
-              <span className="hero-line hero-line--two">AI SOLUTIONS</span>
+              <NeonHeroLine className="hero-line--one" text={t("video.creative")} />
+              <NeonHeroLine className="hero-line--two" text={t("video.aiSolutions")} />
             </h1>
             <div className="hero-intro">
               <p>
-                Building AI-powered products, intelligent automations, and custom software that combine design,
-                engineering, and business strategy to solve real-world challenges.
+                {t("home.heroLead")}
               </p>
               <div className="hero-actions">
-                <a className="button button--light" href="/contact">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
+                    <a className="button button--light" href={localizedPath("/contact")}>{t("home.talk")} <span aria-hidden="true">{"\u2197"}</span></a>
               </div>
             </div>
           </div>
@@ -129,68 +113,38 @@ export default function Home() {
             <div className="hero-portrait-frame">
               <img
                 src="/bruno-portrait.png"
-                alt="Portrait of Bruno wearing round orange-tinted glasses"
+                alt={t("home.portraitAlt")}
                 className="hero-portrait"
               />
               <div className="hero-portrait-shade" aria-hidden="true" />
             </div>
           </div>
         </div>
-        <a className="scroll-cue" href="#projects" aria-label="Scroll to featured projects">
-          <span>Scroll to explore</span><i aria-hidden="true" />
+        <a className="scroll-cue" href="#projects" aria-label={t("video.scrollProjects")}>
+          <span>{t("home.scroll")}</span><i aria-hidden="true" />
         </a>
       </section>
 
-      <section className="section projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="site-container">
-          <div className="section-heading section-heading--split">
-            <div>
-              <h2 id="projects-title">Featured Projects</h2>
+
+      <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="custom-development-title">{t("home.customDevelopment")}</h2>
+            <h3>{t("home.customLead")}</h3>
+            <p>{t("home.customText")}</p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
-
-          <div className="projects-grid">
-            <article className="project-card" id="human-resources">
-              <ProjectVisual type="hr" />
-              <div className="project-overlay" />
-              <div className="project-content">
-                <p className="project-index">01 / Automation</p>
-                <h3>Human Resources Automations</h3>
-                <p>
-                  End-to-end recruitment automation, including candidate sourcing, qualification, ranking, workflow
-                  automation, report generation, and AI-assisted hiring.
-                </p>
-              </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
-            </article>
-
-            <article className="project-card">
-              <ProjectVisual type="trading" />
-              <div className="project-overlay" />
-              <div className="project-content">
-                <p className="project-index">02 / Fintech</p>
-                <h3>AI-First Trading Platform</h3>
-                <p>
-                  An AI-native trading platform designed around intelligent agents, predictive analytics,
-                  automation, and decision support.
-                </p>
-              </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
-            </article>
-
-            <article className="project-card">
-              <ProjectVisual type="dante" />
-              <div className="project-overlay" />
-              <div className="project-content">
-                <p className="project-index">03 / Legal AI</p>
-                <h3>Dante <span>Legal AI Platform</span></h3>
-                <p>
-                  An AI solution for the legal industry built with intelligent agents, RAG, GraphRAG, contextual
-                  reasoning, and enterprise knowledge systems.
-                </p>
-              </div>
-              <span className="project-arrow" aria-hidden="true">↗</span>
-            </article>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
+              alt={t("home.customImageAlt")}
+              className="grounding-panel-image"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
@@ -199,29 +153,116 @@ export default function Home() {
         <div className="grounding-orbit" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <p className="eyebrow">Technical foundation</p>
-            <h2 id="grounding-title">Knowledge Grounding</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
-            <p>
-              Foundation models are powerful, but generic knowledge is not enough for business-critical work.
-              Grounding connects AI to your organization&apos;s verified data, context, processes, and relationships—so
-              every answer is more relevant, traceable, and reliable.
-            </p>
+            <h2 id="grounding-title">{t("home.knowledgeGrounding")}</h2>
+            <h3>{t("home.groundingLead")}</h3>
+            <p>{t("home.groundingText")}</p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
+            </div>
           </div>
           <div className="grounding-panel">
             <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
+              <span>{t("video.enterpriseLayer")}</span>
+              <span>{t("video.capabilitiesCount")}</span>
             </div>
-            <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}><span>{String(index + 1).padStart(2, "0")}</span>{topic}</li>
-              ))}
-            </ul>
-            <p className="grounding-note">
-              Proprietary knowledge turns a general-purpose model into a system aligned with how your business
-              actually operates.
-            </p>
+            <div className="topic-list" role="list">
+              <div className="topic-list-column">
+                {groundingTopicIds.map((topicId, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topicId;
+                  const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
+                  const detailId = `grounding-topic-${index}`;
+
+                  return (
+                    <div
+                      role="listitem"
+                      className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                      key={topicId}
+                    >
+                      <button
+                        type="button"
+                        className="topic-list-button"
+                        aria-expanded={isExpanded}
+                        aria-controls={detailId}
+                        onClick={() => toggleGroundingTopic("single", topicId)}
+                      >
+                        <span className="topic-list-toggle" aria-hidden="true" />
+                        <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="topic-list-title">{t(`home.groundingTopics.${topicId}.title`)}</span>
+                        <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                          {t(`home.groundingTopics.${topicId}.description`)}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section grounding-section--lead-gen" id="lead-generation" aria-labelledby="lead-generation-title">
+        <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="lead-generation-title">{t("video.leadTitle")}</h2>
+            <h3>{t("video.leadSubtitle")}</h3>
+            <p>{t("video.leadText")}</p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("services.iWantIt")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
+            </div>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/LEAD_FUNNEL.png"
+              alt={t("home.leadImageAlt")}
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="section projects-section" id="projects" aria-labelledby="projects-title">
+        <div className="site-container">
+          <div className="section-heading section-heading--split">
+            <div>
+              <h2 id="projects-title">{t("home.projects")}</h2>
+            </div>
+          </div>
+
+          <div className="projects-grid">
+            <article className="project-card" id="human-resources">
+              <ProjectVisual type="hr" />
+              <div className="project-overlay" />
+              <div className="project-content">
+                <p className="project-index">01 / {t("video.automation")}</p>
+                <h3>{t("video.projectDashboard")}</h3>
+                <p>{t("video.projectDashboardText")}</p>
+              </div>
+            </article>
+
+            <article className="project-card">
+              <ProjectVisual type="trading" />
+              <div className="project-overlay" />
+              <div className="project-content">
+                <p className="project-index">02 / {t("video.fintech")}</p>
+                <h3>{t("video.projectTrading")}</h3>
+                <p>{t("video.projectTradingText")}</p>
+              </div>
+            </article>
+
+            <article className="project-card">
+              <ProjectVisual type="dante" />
+              <div className="project-overlay" />
+              <div className="project-content">
+                <p className="project-index">03 / {t("video.legalAi")}</p>
+                <h3>Dante <span>{t("video.legalAiPlatform")}</span></h3>
+                <p>{t("video.projectDanteText")}</p>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -230,56 +271,16 @@ export default function Home() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">What we build</p>
-              <h2 id="services-title">Services</h2>
+              <p className="eyebrow">{t("video.whatWeBuild")}</p>
+              <h2 id="services-title">{t("home.services")}</h2>
             </div>
-            <p className="section-intro">
-              From the first interface decision to the intelligence layer behind it, every engagement connects
-              design quality with technical depth.
-            </p>
+            <p className="section-intro">{t("video.servicesLead")}</p>
           </div>
 
-          <div className="services-grid">
-            {services.map((service) => (
-              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.title}>
-                <div className="service-topline">
-                  <span>{service.index}</span>
-                  <i aria-hidden="true"><b /></i>
-                </div>
-                <h3>{service.title}</h3>
-                <p>{service.text}</p>
-              </article>
+          <div className="services-grid services-page-grid">
+            {serviceCatalog.map((service) => (
+              <ServiceCatalogCard key={service.id} service={service} />
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section about-section" id="about" aria-labelledby="about-title">
-        <div className="site-container about-grid">
-          <div className="about-image-wrap">
-            <img src="/bruno-portrait.png" alt="Bruno, founder of CriativAI" className="about-image" />
-            <div className="about-image-meta">
-              <span>Bruno</span>
-              <span>Founder / Designer / AI Engineer</span>
-            </div>
-          </div>
-          <div className="about-copy">
-            <p className="eyebrow">The human behind the systems</p>
-            <h2 id="about-title">About</h2>
-            <p className="about-lead">
-              Technology is most valuable when it amplifies human judgment—not when it gets in the way.
-            </p>
-            <p>
-              Bruno works at the intersection of product design, artificial intelligence, and business strategy.
-              His practice combines two decades of creative experience with a systems mindset to turn complex ideas
-              into useful, understandable, and carefully crafted digital products.
-            </p>
-            <div className="expertise-block">
-              <p className="micro-label">Areas of expertise</p>
-              <ul className="expertise-list">
-                {expertise.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -288,14 +289,14 @@ export default function Home() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">Start a conversation</p>
-          <h2 id="contact-title">Ready to Build Your Next <span>AI Product?</span></h2>
-          <p>
-            Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
-            business challenges.
-          </p>
-          <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">↗</span>
+          <p className="eyebrow">{t("home.startConversation")}</p>
+          <h2 id="contact-title">
+            <span>{t("video.readyToBuild")}</span>
+            <span>{t("video.nextAiProduct")}</span>
+          </h2>
+          <p>{t("video.finalLead")}</p>
+          <a className="button button--accent" href={localizedPath("/contact")}>
+            {t("home.startProject")} <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -303,29 +304,45 @@ export default function Home() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="#top" aria-label="CriativAI home"><Brand /></a>
-            <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <a href="#top" aria-label={t("header.home")}><Brand /></a>
+            <p>{t("footer.productLead")}</p>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
-              <p className="micro-label">Navigation</p>
-              <a href="#services">Services</a>
-              <a href="#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
-              <a href="/contact">Contact</a>
+              <p className="micro-label">{t("footer.navigation")}</p>
+              <a href="#services">{t("header.services")}</a>
+              <a href="#projects">{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
+              <a href={localizedPath("/contact")}>{t("header.contact")}</a>
             </div>
             <div>
-              <p className="micro-label">Social Media</p>
-              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">▶</span>YouTube</a>
-              <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>LinkedIn</a>
-              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Bē</span>Behance</a>
-              <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>GitHub</a>
+              <p className="micro-label">{t("footer.social")}</p>
+              <a className="footer-social-link" href="https://www.youtube.com/@tutorialmasterbrasil" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">{"\u25B6"}</span>{t("footer.youtube")}</a>
+              <a className="footer-social-link" href="https://www.linkedin.com/in/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">in</span>{t("footer.linkedin")}</a>
+              <a className="footer-social-link" href="https://www.behance.net/brunoalecrim" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">Be</span>{t("footer.behance")}</a>
+              <a className="footer-social-link" href="https://github.com/brunoces11" target="_blank" rel="noreferrer noopener"><span className="footer-social-icon" aria-hidden="true">GH</span>{t("footer.github")}</a>
             </div>
           </div>
         </div>
-        <div className="site-container footer-bottom"><span>Creative intelligence, grounded in reality.</span><a className="footer-legal-link" href="/privacy">Privacy &amp; Terms</a><a href="#top">Back to top ↑</a></div>
+        <div className="site-container footer-bottom"><span>{t("footer.bottom")}</span><a className="footer-legal-link" href={localizedPath("/privacy")}>{t("legal.eyebrow")}</a><a href="#top">{t("header.backToTop")} {"\u2191"}</a></div>
       </footer>
     </main>
+  );
+}
+
+function NeonHeroLine({ className, text }: { className: string; text: string }) {
+  return (
+    <span className={`hero-line ${className} neon-hero-line neon-wordmark neon-ativo`}>
+      <span className="neon-hero-line__text neon-core">{text}</span>
+      <svg className="neon-hero-line__rays" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path className="neon-arc neon-arc--one" d="M2 70 L8 62 L5 52 L14 43 L10 28" />
+        <path className="neon-arc neon-arc--two" d="M20 4 L25 15 L21 25 L29 35 L24 48" />
+        <path className="neon-arc neon-arc--three" d="M39 96 L44 84 L41 73 L49 63 L46 51" />
+        <path className="neon-arc neon-arc--four" d="M61 5 L57 18 L64 28 L59 39 L68 50" />
+        <path className="neon-arc neon-arc--five" d="M78 95 L73 83 L80 72 L75 60 L84 48" />
+        <path className="neon-arc neon-arc--six" d="M98 30 L91 39 L95 50 L87 61 L92 75" />
+      </svg>
+    </span>
   );
 }

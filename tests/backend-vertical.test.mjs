@@ -10,6 +10,7 @@ const python = process.env.PYTHON ?? findVenvPython();
 const port = 8010;
 const baseUrl = `http://127.0.0.1:${port}`;
 const databasePath = join(root, "data", "vertical-test.db");
+const googleTokenPath = join(root, "data", "vertical-test-google-token.json");
 const databaseUrl = `sqlite:///${databasePath.replaceAll("\\", "/")}`;
 
 function findVenvPython() {
@@ -40,6 +41,7 @@ function backendEnv() {
     OPENAI_MOCK_RESPONSE: "Vertical test online. The backend received your message, stored it in SQLite, and streamed this response from FastAPI.",
     DATABASE_URL: databaseUrl,
     FRONTEND_DIST_DIR: join(root, "dist"),
+    GOOGLE_TOKEN_PATH: googleTokenPath,
   };
 }
 
@@ -71,6 +73,7 @@ test("FastAPI serves the Vite build, API routes, streaming, and SQLite persisten
   for (const suffix of ["", "-wal", "-shm"]) {
     rmSync(`${databasePath}${suffix}`, { force: true });
   }
+  rmSync(googleTokenPath, { force: true });
 
   runPython(["-m", "alembic", "-c", "backend/alembic.ini", "upgrade", "head"]);
 

@@ -1,0 +1,231 @@
+BRUNO  CESAR  
+AI  Systems  Architect  |  Context  Prompt  Engineer  |  Ai  driven  development  
+📍  Rio  de  Janeiro,  Brazil  
+📧
+ 
+alecrim.bruno@gmail.com
+ 
+📱
+ 
++55
+ 
+(21)
+ 
+99997-3045
+ 🔗  LinkedIn:  www.linkedin.com/in/brunoalecrim/ 🔗  website:  www.prompt-master.org 
+ 
+🧠  PROFESSIONAL  SUMMARY  
+AI  Systems  Architect  with  strong  expertise  in  Prompt  Engineering,  custom  RAG  setups,  
+multi-agent
+ 
+orchestration,
+ 
+and
+ 
+AI
+ 
+driven
+ 
+development.
+ 
+Focused  on  building  and  validating  complex,  multi-step  reasoning  systems .  Experience  
+designing
+ 
+AI
+ 
+agents
+ 
+with
+ 
+long-context
+ 
+workflows
+,
+ 
+integrating
+ 
+data
+ 
+processing
+ 
+pipelines,
+ 
+automation
+ 
+scripts,
+ 
+and
+ 
+research-driven
+ 
+decision-making.
+ 
+Creator  of  proprietary  methodologies  such  as  Concatenated  Prompt  Engineering  and  
+Agentic
+ 
+Graph
+ 
+Chunking
+ 
+(AGC)
+,
+ 
+applied
+ 
+in
+ 
+real-world
+ 
+AI
+ 
+systems
+ 
+to
+ 
+improve
+ 
+reasoning
+ 
+depth
+ 
+and
+ 
+reduce
+ 
+hallucinations.
+ 
+Proven  ability  to  design,  execute,  and  document  multi-tool  workflows ,  combining  LLMs,  
+Python,
+ 
+and
+ 
+external
+ 
+systems
+ 
+to
+ 
+solve
+ 
+complex
+ 
+problems
+ 
+with
+ 
+high
+ 
+reliability.
+ 
+ 
+🚀  CORE  SKILLS  
+AI  Systems,  Ai  automation  &  LLM  Engineering  
+●  Prompt  Engineering  (multi-role,  structured,  reasoning-driven)  ●  Advanced  RAG  Systems  (GraphRAG,  AGC,  hybrid  search,  reranking)  ●  Multi-Agent  Orchestration  (Langflow,  LangChain,  LangGraph)  ●  OpenClaw-style  trajectory  design  (reasoning  +  action  chains)  ●  Claude  Code  suite  ●  AI  evaluation,  validation,  and  reasoning  analysis  
+ 
+ 
+ 
+
+AI  Infrastructure  &  Tools  
+●  N8N,  Make.com  (workflow  automation)  ●  Docker,  VPS,  SSH  environments,  Bash  ●  Supabase,  PGVector  (vector  databases  and  custom  Rag  setups)  ●  Ai  driven  development  with  (Python,  React,  Nextjs,  typescript)  ●  ETL  pipelines  with  semantic  enrichment  ●  Web  research,  scraping  workflows,  and  data  extraction  
+Reasoning  &  Research  
+●  Multi-step  problem  solving  under  ambiguity  ●  Decision  justification  and  structured  reasoning  ●  Long-context  workflow  execution  ●  Documentation  of  reasoning  paths  and  actions  
+ 
+💼  PROFESSIONAL  EXPERIENCE  
+DANTE  AI  
+CTO  |  AI  Architect  |  Context  Prompt  Egnineer  
+📍
+ 
+Blumenau,
+ 
+Brazil
+ 
+|
+ 
+Apr
+ 
+2025
+ 
+–
+ 
+Present
+ 
+●  Designed  and  deployed  a  multi-step  RAG  system  for  legal  reasoning  tasks  ●  Implemented  GraphRAG  +  AGC  to  improve  factual  accuracy  and  reduce  
+hallucinations
+ ●  Built  long-context  workflows  combining  multiple  reasoning  steps  and  tools  ●  Structured  AI  pipelines  for  document  analysis,  retrieval,  and  synthesis  ●  Led  development  of  AI  systems  requiring  decision  traceability  and  reasoning  
+validation
+ 
+Prompt  Engineer  |  AI  Systems  Designer  
+Oct
+ 
+2024
+ 
+–
+ 
+Apr
+ 
+2025
+ 
+●  Designed  structured  prompts  for  complex  task  execution  and  reasoning  chains  ●  Built  workflows  integrating  multiple  tools  and  data  sources  ●  Developed  AI  systems  capable  of  handling  underspecified  inputs  and  ambiguous  
+goals
+ 
+ 
+ 
+ 
+ 
+
+PROMPT-MASTER.ORG  
+Ai  Architect  |  Creative  Prompt  Engineer  
+📍
+ 
+Remote
+ 
+|
+ 
+Jan
+ 
+2023
+ 
+–
+ 
+Present
+ 
+●  Developed  Concatenated  Prompt  Technique ,  enabling  multi-step  workflows  in  a  
+single
+ 
+input
+ ●  Built  AI  systems  capable  of  simulating  multi-role  reasoning  and  decision  trees  ●  Designed  prompt-based  systems  behaving  like  full  applications  with  internal  logic  
+and
+ 
+navigation
+ ●  Conducted  experiments  on  reasoning  depth,  task  decomposition,  and  structured  
+outputs
+ ●  Created  workflows  combining  LLMs,  APIs,  and  automation  tools  for  complex  task  
+execution
+ 
+ 
+ECOFACTOR  
+Team  Lead  |  Prompt  Engineer  |  AI  Workflow  Developer  
+📍
+ 
+Remote
+ 
+|
+ 
+Mar
+ 
+2024
+ 
+–
+ 
+Mar
+ 
+2025
+ 
+●  Led  development  of  AI  agents  for  industrial  data  analysis  and  optimization  ●  Built  pipelines  combining  data  ingestion,  processing,  and  AI  reasoning  layers  ●  Developed  automation  workflows  integrating  multiple  tools  and  external  data  sources  ●  Structured  AI  outputs  with  clear  reasoning  paths  for  decision  support  
+ 
+EARLY  CAREER  (SUMMARY)  
+UI/UX,  Design  &  Digital  Systems  (1998  –  2013)  
+●  Background  in  interactive  systems  and  digital  product  development  ●  Experience  in  usability,  system  thinking,  and  interface  design  ●  Foundation  that  supports  current  work  in  AI  system  architecture  and  human-AI  
+interaction
+ 
+ 

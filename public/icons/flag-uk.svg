@@ -1,19 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" role="img" aria-hidden="true">
-  <rect width="24" height="16" rx="2.25" fill="#012169"/>
-  <g clip-path="url(#uk-clip)">
-    <path d="M0 0h24v16H0Z" fill="#012169"/>
-    <path d="M0 0h8l16 10v6h-8L0 6Z" fill="#fff"/>
-    <path d="M24 0v6L8 16H0v-6L16 0Z" fill="#fff"/>
-    <path d="M0 1 1 0 24 15 23 16Z" fill="#C8102E"/>
-    <path d="M23 0 24 1 1 16 0 15Z" fill="#C8102E"/>
-    <rect x="10" y="0" width="4" height="16" fill="#fff"/>
-    <rect x="0" y="6" width="24" height="4" fill="#fff"/>
-    <rect x="11" y="0" width="2" height="16" fill="#C8102E"/>
-    <rect x="0" y="7" width="24" height="2" fill="#C8102E"/>
-  </g>
-  <defs>
-    <clipPath id="uk-clip">
-      <rect width="24" height="16" rx="2.25"/>
-    </clipPath>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 30" role="img" aria-hidden="true">
+  <clipPath id="uk-flag-cross">
+    <path d="M25,15h25v15zv15h-25zh-25v-15zv-15h25z" />
+  </clipPath>
+  <path d="M0,0v30h50v-30z" fill="#012169" />
+  <path d="M0,0 50,30M50,0 0,30" stroke="#fff" stroke-width="6" />
+  <path d="M0,0 50,30M50,0 0,30" clip-path="url(#uk-flag-cross)" stroke="#C8102E" stroke-width="4" />
+  <path d="M-1 11h22v-12h8v12h22v8h-22v12h-8v-12h-22z" fill="#C8102E" stroke="#FFF" stroke-width="2" />
 </svg>

@@ -1,0 +1,115 @@
+With over 20 years working as a UI/UX Designer and creating interactive systems since the CD-ROM 
+era, I have collaborated with multidisciplinary teams and managed projects with high levels of 
+requirements. Today, I see that this mature vision is a decisive factor in building AI agents focused on 
+great user experience and results.
+Winner of international prompt engineering hackathons.
+Hands-on experience with advanced prompt engineering solutions and custom RAG systems using 
+modern orchestration frameworks. I stand out for my creativity and determination to solve problems, 
+and I'm now seeking to join a forward-thinking team pushing the boundaries of AI.
+If you’re looking for someone capable of building prompts beyond the AI manuals... 
+you’ve just found the right profile.
+CREATIVE DESIGN BACKGROUND
+PROMPT ENGINEERING EXPERIENCE
+INTRODUCTION
+Unique knowledge in prompt engineering, having developed an innovative technique 
+(Concatenated Prompt) that enables the aggregation of multiple prompt instructions into a 
+single input, leveraging LLM capabilities with the potential to simplify the development process 
+and reduce API calls.
+Precise output control using structured content such as JSON, XML, and advanced Markdown.
+Business automation workflows using platforms like LangFlow, LangChain, N8N, and Make.
+Data processing and preparation using Python, DocTR, Tesseract, and Docling.
+Custom RAG pipelines, including hybrid search, rerankers, and fine-tuning.
+Multi-modal and multi-agent systems integrated with external platforms.
+Experience validating AI systems with monitoring tools.
+Comprehensive project ownership (LLM DevOps): From concept, design, build, test, to 
+deployment, I manage the entire lifecycle of your AI agent, including VPS management.
+If you’re looking for a true prompt engineering specialist, capable of instructing AI 
+systems to operate with great user experience, reliability, and precision, let’s talk.
++55 (21) 99997-3045
+bruno@prompt-master.org
+www.prompt-master.org
+Bruno Cesar
+Prompt Engineer Specialist
+Senior UI/UX Designer
+AI Agent Creation from A to Z
+Native Very good Lite
+
+
+AI PROJECTs
+PROFESSIONAL BACKGROUND (COMPILATION)
+AI STACK DESIGN TOOLS
+ROBLOGGER: A one-prompt blog engine for practical minds or lazy creators like me. It lets u publish 
+ideas with an amazing level of customization — with just a single click and no long forms in the way.
+DANTE AI: AI agent powered by layered logic and a multi-step RAG system to query Brazil’s intricate legal 
+system, consolidating precise legal information from different sources to ensure reliable outputs.
+1998/2001
+IDS - INTERACTIVE My starting point in UI/UX Design. I learned core usability principles and worked 
+alongside top professionals, developing a mindset of continuous learning and adaptation.
+2003/2005
+COMUNIQUE-SE.COM.BR
+UI/UX and Web Designer. I planned user experience strategies and participated in 
+developing digital products, press rooms, email marketing campains, and 
+advertising materials for a large portal.
+2004/2006
+INFNET .COM.BR Professor of computer graphics and design. Gained deep knowledge of Adobe 
+software, teaching methodologies, and improved communication skills in a 
+tech-education environment.
+2004/2007
+COPACABANA BRASIL
+Art Director responsible for managing strategic accounts, delivering remote 
+support, leading creative development, and coordinating internal production. This 
+role strengthened my expertise in leadership and workflow optimization within 
+fast-paced advertising environments.
+2013/today
+TUTORIALMASTER.ORG Entrepreneurial designer and YouTuber. Founded an e-learning platform focused on 
+UI/UX, Branding, Creativity, and now starting with ChatGPT/AI prompt engineering.
+www.prompt-master.org
+ECOFACTOR: Leverages AI to help manufacturers build better products, optimize processes, and meet
+ESG goals through sustainable material innovation.
+2008/2012
+CACOMUNICACAO.COM.BR
+Senior Art Director in the agency’s creative department for clients like Chevrolet, 
+TIM, Unimed, Vale do Rio Doce, Sebrae, and the State Government. I also led 
+special projects focused on interactive media and promotional hotsites.
+2022/today
+PROMPT -MASTER.ORG Creative ChatGPT research, precise prompt engineering, custom RAG solutions, 
+and AI automations in a single flow.
+Langflow
+LangChain
+LangFuse
+LangWatch
+CrewAI
+N8N
+Make.com
+Custom RAG
+Fine-tunning
+Docker container
+DevOps / VPS
+SSH/SFTP
+GitHub
+Python
+Streamlit
+API / MCP 
+PGVector
+Supabase
+VsCode
+Cursor
+Lovable
+Image generation
+Video Generation
+Adobe Premiere
+Adobe Photoshop
+Adobe Illustrator
+Webdesign
+UI/UX Design
+Design system
+Design thinking
+Wordpress
+Webflow
+tailwindcss
+Figma
+Adobe XD
+Cinema 4D
+Blender 3D
+Rhinoceros 3D
+Fast learner who can adapt to your system stack as I go...

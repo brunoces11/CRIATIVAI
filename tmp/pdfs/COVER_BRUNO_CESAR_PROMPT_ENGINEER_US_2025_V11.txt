@@ -1,0 +1,40 @@
+Hi, I'm Bruno Cesar. I'm a prompt engineer with a senior UI/UX background who’ s been 
+building multimedia experiences since the CD-ROM era, using tools like Macromedia Flash.  
+When ChatGPT arrived, I was instantly hooked and driven by one question: 
+How far can a single prompt go?
+I wasn’t just aiming for better conversations. I envisioned prompts leading AI to behave like the 
+interactive systems I’ve always built. So I dove into hands-on experimentation and started my 
+own creative ChatGPT research. By exploring Markdown’s rendering capabilities, I began 
+transforming chat outputs into multi-page interfaces, each with distinct layouts, headers, 
+dynamic content blocks, menus, and footers — all controlled precisely by a single prompt input.
+At one point, I asked: “ GPT Can you execute multiple instructions and simulate multiple 
+roles from different prompts at once?” ; and it just replied: “ Yes, sure. ”
+That single answer led to tons of testing until I discovered a surprisingly simple way to execute 
+multiple instructions and simulate multiple roles using a single prompt input.
+But things got even more interesting when I started combining everything... layering roles, 
+output instructions, and multi-page structures. Suddenly, the simple chat began behaving like a 
+web app: with multiple pages and menus; able to switch between functions and roles; and even 
+trigger external functions... all running from a single prompt input.
+That’ s when the idea of the PromptApp was born... a prompt that behaves like a full 
+application, using structured natural language as source code and running directly inside the 
+chat environment itself. This process shaped what I now call the Concatenated Prompt 
+Technique ; a method for stacking modular behaviors into a single prompt input.
+To validate it, I joined international hackathons, testing these discoveries in real-world 
+challenges... and was fortunate to win a few. Just check more at prompt-master.org
+Since then, I’ve been building some interesting AIs like:
+• EcoFactor, an AI agent focused on helping manufacturers become more sustainable by 
+optimizing products and processes with AI and achieving ESG compliance.
+• DanteAI, a layered reasoning multi-step RAG system for navigating intricate Brazil’s laws and 
+legal system;
+• Roblogger, a one-prompt blog engine made for practical people or lazy creators like me.
+So if you're exploring AI prompt challenges, looking for a slim solution that navigates between 
+great user experience and precision, or just building powerful AI tools... 
+I’d love to connect.
+That’ s the journey I’m deeply committed to...
+Bruno CesarCreative ChatGPT Research
+Prompt Engineering Specialist
+Senior UI/UX Designer
++55 (21) 99997-3045
+bruno@prompt-master.org
+www.prompt-master.org
+Native Very good Lite

@@ -25,7 +25,7 @@ class FakeResponses:
         self.calls.append(kwargs)
         if len(self.calls) == 1:
             return SimpleNamespace(
-                output_text="",
+                output_text="Perfeito — vou verificar a agenda.",
                 output=[
                     SimpleNamespace(
                         type="function_call",
@@ -71,6 +71,7 @@ def test_openai_tool_loop_runs_tool_and_continues(monkeypatch, tmp_path) -> None
 
     assert any(isinstance(event, PublicToolStatus) for event in events)
     assert events[-1] == "Tenho 3 horários disponíveis."
+    assert "Perfeito — vou verificar a agenda." not in events
     assert client.responses.calls[0]["tools"]
     second_input = client.responses.calls[1]["input"]
     assert second_input[-2]["type"] == "function_call"

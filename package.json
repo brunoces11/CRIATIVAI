@@ -9,24 +9,34 @@
     "dev": "node scripts/dev.mjs",
     "dev:frontend": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:sites": "node scripts/build-sites.mjs",
     "backend": "node scripts/backend.mjs",
     "backend:migrate": "python -m alembic -c backend/alembic.ini upgrade head",
     "start": "npx serve@latest dist",
     "test:backend": "node tests/backend-tests.mjs",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs tests/chat-stream-parser.test.mjs",
+    "test": "npm run build && node --test tests/rendered-html.test.mjs tests/chat-stream-parser.test.mjs tests/i18n-contract.test.mjs",
     "test:vertical": "npm run build && node --test tests/backend-vertical.test.mjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "i18next": "^26.3.6",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "react-i18next": "^17.0.11",
+    "react-markdown": "^10.1.0",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@types/node": "^26.4.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
+    "opentype.js": "^2.0.0",
     "typescript": "5.9.3",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "wrangler": "4.92.0"
   },
   "type": "module"
 }

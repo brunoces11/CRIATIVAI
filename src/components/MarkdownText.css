@@ -15,7 +15,10 @@
 
 .markdown-text h1,
 .markdown-text h2,
-.markdown-text h3 {
+.markdown-text h3,
+.markdown-text h4,
+.markdown-text h5,
+.markdown-text h6 {
   color: #23272d;
   font-size: 0.95rem;
   font-weight: 700;
@@ -63,4 +66,33 @@
 .markdown-text pre code {
   padding: 0;
   background: transparent;
+}
+
+.markdown-text img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.markdown-text table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.markdown-text th,
+.markdown-text td {
+  padding: 6px 8px;
+  border: 1px solid rgba(21, 26, 32, 0.12);
+  text-align: left;
+}
+
+.markdown-text blockquote {
+  margin-left: 0;
+  padding-left: 12px;
+  border-left: 3px solid rgba(169, 128, 110, 0.45);
+  color: #555b62;
 }

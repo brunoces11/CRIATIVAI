@@ -9,7 +9,7 @@ from backend.app.calendar_availability import AvailabilitySlot
 from backend.app.calendar_booking import calendar_cancel_event, calendar_create_event, calendar_lookup_bookings, calendar_update_event, deterministic_google_event_id
 from backend.app.config import Settings
 from backend.app.emailer import EmailDeliveryResult
-from backend.app.models import Base, Booking, Conversation
+from backend.app.models import Base, AdminRecord, Booking, Conversation
 
 
 def make_session() -> Session:
@@ -153,6 +153,7 @@ def test_create_event_persists_booking_and_google_meet(monkeypatch: pytest.Monke
     assert booking.participant_email == "cliente@example.com"
     assert booking.conversation_summary is not None
     assert booking.google_event_id == deterministic_google_event_id("booking_1234567890abcdef")
+    assert session.query(AdminRecord).count() == 1
     assert result.meet_link == "https://meet.google.com/abc-defg-hij"
     assert conversation.visitor_name == "Bruno Cliente"
     assert conversation.visitor_email == "cliente@example.com"

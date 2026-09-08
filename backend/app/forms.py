@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_429_TOO_MANY_REQUESTS, HTTP_422_UNPROCESSABLE_CONTENT
 
 from backend.app.config import Settings, get_settings
+from backend.app.admin_records import sync_admin_record
 from backend.app.db import get_session
 from backend.app.emailer import send_email
 from backend.app.models import ContactSubmission, TalentPreviewRequest
@@ -45,6 +46,15 @@ def submit_talent_preview(
     session.add(submission)
     session.commit()
     session.refresh(submission)
+    sync_admin_record(
+        session,
+        user_from="talent_preview",
+        source_record_id=submission.id,
+        name=submission.requester_name,
+        email=submission.requester_email,
+        company=None,
+        timezone=None,
+    )
 
     notification_result = send_email(
         settings=settings,
@@ -97,6 +107,15 @@ def submit_contact(
     session.add(submission)
     session.commit()
     session.refresh(submission)
+    sync_admin_record(
+        session,
+        user_from="contact_form",
+        source_record_id=submission.id,
+        name=submission.name,
+        email=submission.email,
+        company=None,
+        timezone=None,
+    )
 
     notification_result = send_email(
         settings=settings,
@@ -283,13 +302,14 @@ User-Agent: {submission.user_agent or "n/a"}
 
 
 def _contact_internal_html(submission: ContactSubmission) -> str:
+    message_html = submission.message.replace("\n", "<br />")
     return f"""
     <h1>New contact message</h1>
     <p><strong>Reference:</strong> #{submission.id}</p>
     <p><strong>Name:</strong> {submission.name}<br />
     <strong>Email:</strong> {submission.email}<br />
     <strong>Subject:</strong> {submission.subject}</p>
-    <p><strong>Message:</strong><br />{submission.message.replace("\n", "<br />")}</p>
+    <p><strong>Message:</strong><br />{message_html}</p>
     <p><strong>Source IP:</strong> {submission.source_ip or "n/a"}<br />
     <strong>User-Agent:</strong> {submission.user_agent or "n/a"}</p>
     """

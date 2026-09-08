@@ -1,89 +1,63 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { EditableCta } from "../components/CtaEditorButton";
 import { SiteHeader } from "../components/SiteHeader";
+import { useTranslation } from "react-i18next";
+import { openAssistantChat } from "../lib/chatContext";
+import { isAudienceEnabled } from "../lib/audienceVisibility";
+import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
+import creativeOutline from "../data/creative-neon-outline.json";
+import criativasOutline from "../data/criativas-neon-outline.json";
+import hyperOutline from "../data/hyper-personalization-neon-outline.json";
 
 const HERO_VIDEO_SRC = "/SQ_1200_15FPS_1kf.mp4";
 const HERO_PIN_DISTANCE = 2500;
 const HERO_SCRUB_DISTANCE = 2200;
 const HERO_VIDEO_FPS = 15;
 const HERO_VIDEO_FRAME_DURATION = 1 / HERO_VIDEO_FPS;
+const HERO_VIDEO_SEEK_TIMEOUT_MS = 1200;
+const HERO_VIDEO_MAX_RECOVERY_ATTEMPTS = 2;
+const MEDIA_HAVE_METADATA = 1;
+const MEDIA_NETWORK_EMPTY = 0;
 const HERO_TOPIC_REVEAL_START = 0.1;
 const HERO_TOPIC_REVEAL_STEP = 0.12;
 const HERO_TOPIC_REVEAL_SPAN = 0.12;
 
-const groundingTopics = [
-  "Retrieval-Augmented Generation (RAG)",
-  "GraphRAG",
-  "Knowledge Graphs",
-  "Context Engineering",
-  "Business Intelligence",
-  "Enterprise Knowledge Bases",
-  "Long-Term Memory",
-  "Multi-Agent Architectures",
-  "Private Knowledge Integration",
-  "Structured Data Integration",
-];
+const groundingTopicIds = ["01", "02", "03", "04", "05", "06", "07"] as const;
 
 const services = [
   {
     index: "01",
-    title: "Product Design",
-    text: "Human-centered digital product design focused on usability, accessibility, and exceptional user experiences.",
     icon: "product",
     featured: true,
   },
   {
     index: "02",
-    title: "Enterprise Knowledge System",
-    text: "Centralized enterprise knowledge architecture that gives AI agents a single source of truth, improving answer quality, reducing hallucinations, and keeping business context consistent across systems.",
     icon: "knowledge",
   },
   {
     index: "03",
-    title: "System Design",
-    text: "Technical architecture and system planning for scalable digital products and AI-powered applications.",
     icon: "system",
   },
   {
     index: "04",
-    title: "AI Automations",
-    text: "Workflow automation that eliminates repetitive tasks and increases operational efficiency using artificial intelligence.",
     icon: "automation",
   },
   {
     index: "05",
-    title: "Smart Agents",
-    text: "Custom AI agents capable of reasoning, using multiple tools, retrieving knowledge, and executing complex business processes autonomously.",
     icon: "agents",
   },
   {
     index: "06",
-    title: "Refined Websites",
-    text: "Refined design for large-scale corporate websites and simple landing pages built to convert with clarity, elegance, and performance.",
     icon: "websites",
   },
   {
     index: "07",
-    title: "Custom AI Training",
-    text: "Tailored AI training programs designed around your team's tools, workflows, maturity level, and business priorities.",
     icon: "training",
   },
   {
     index: "08",
-    title: "Enterprise AI Consulting",
-    text: "Specialized AI consulting to identify opportunities, define implementation paths, and bring practical AI capabilities into the organization.",
     icon: "consulting",
   },
-];
-
-const expertise = [
-  "Product Design",
-  "UI/UX Design",
-  "AI Engineering",
-  "Context Engineering",
-  "Prompt Engineering",
-  "Enterprise Automation",
-  "Knowledge Systems",
-  "Human-Centered AI",
 ];
 
 function clamp(value: number, min: number, max: number) {
@@ -96,10 +70,6 @@ function Brand() {
       <img className="brand-logo" src="/logo.svg" alt="" aria-hidden="true" />
     </span>
   );
-}
-
-function openAssistantChat() {
-  window.dispatchEvent(new Event("criativai:open-chat"));
 }
 
 function ServiceIcon({ type }: { type: string }) {
@@ -177,10 +147,10 @@ function ServiceIcon({ type }: { type: string }) {
 function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
   const src =
     type === "hr"
-      ? "/project-visuals/project-human-resources.svg"
+      ? "/tub_dashboard_inteligence.png"
       : type === "trading"
-        ? "/project-visuals/project-trading.svg"
-        : "/project-visuals/project-dante.svg";
+        ? "/tub_ai-first-trading-plataform.png"
+        : "/tub_dante_ai_legal_system.png";
 
   if (type === "hr") {
     return (
@@ -212,6 +182,8 @@ function ProjectVisual({ type }: { type: "hr" | "trading" | "dante" }) {
 }
 
 export default function VideoPage() {
+  const { t } = useTranslation();
+  const localizedPath = (path: string) => getLocalizedPath(path, getCurrentLanguage());
   const heroRef = useRef<HTMLElement | null>(null);
   const heroStageRef = useRef<HTMLDivElement | null>(null);
   const heroCopyRef = useRef<HTMLDivElement | null>(null);
@@ -219,14 +191,22 @@ export default function VideoPage() {
   const heroTopicsRef = useRef<HTMLUListElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const durationRef = useRef(0);
-  const syncFrameRef = useRef(0);
-  const seekRetryFrameRef = useRef(0);
+  const loopFrameRef = useRef(0);
   const heroMetricsRef = useRef({ top: 0 });
   const pendingVideoTimeRef = useRef<number | null>(null);
   const readyRef = useRef(false);
   const lastVideoTimeRef = useRef<number | null>(null);
+  const seekStartedAtRef = useRef<number | null>(null);
+  const recoveryAttemptsRef = useRef(0);
+  const requestHeroSyncRef = useRef<() => void>(() => undefined);
   const [videoMissing, setVideoMissing] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
+  const [expandedGroundingTopic, setExpandedGroundingTopic] = useState<{ columnId: string; title: string } | null>(null);
+
+  const toggleGroundingTopic = (columnId: string, topicTitle: string) => {
+    setExpandedGroundingTopic((currentTopic) =>
+      currentTopic?.columnId === columnId && currentTopic.title === topicTitle ? null : { columnId, title: topicTitle },
+    );
+  };
 
   useEffect(() => {
     const measureHero = () => {
@@ -239,34 +219,61 @@ export default function VideoPage() {
       }
     };
 
+    const getVideoDuration = (video: HTMLVideoElement) => {
+      const duration = durationRef.current || video.duration;
+      return Number.isFinite(duration) && duration > 0 ? duration : 0;
+    };
+
     const applyPendingVideoTime = () => {
       const video = videoRef.current;
       const pendingTime = pendingVideoTimeRef.current;
       if (!video || pendingTime === null) return;
 
+      if (video.networkState === MEDIA_NETWORK_EMPTY) {
+        video.load();
+        return;
+      }
+
+      const duration = getVideoDuration(video);
+      if (duration <= 0) {
+        readyRef.current = false;
+        return;
+      }
+
+      if (video.readyState < MEDIA_HAVE_METADATA) {
+        return;
+      }
+
       if (video.seeking) {
-        if (!seekRetryFrameRef.current) {
-          seekRetryFrameRef.current = window.requestAnimationFrame(() => {
-            seekRetryFrameRef.current = 0;
-            applyPendingVideoTime();
-          });
+        const seekStartedAt = seekStartedAtRef.current ?? performance.now();
+        seekStartedAtRef.current = seekStartedAt;
+
+        if (performance.now() - seekStartedAt > HERO_VIDEO_SEEK_TIMEOUT_MS) {
+          lastVideoTimeRef.current = null;
+          seekStartedAtRef.current = null;
         }
+
         return;
       }
 
-      const timeDelta = Math.abs(video.currentTime - pendingTime);
-      if (timeDelta >= HERO_VIDEO_FRAME_DURATION * 0.5) {
-        lastVideoTimeRef.current = pendingTime;
-        video.currentTime = pendingTime;
-        return;
-      }
+      const nextTime = clamp(pendingTime, 0, Math.max(duration - 0.001, 0));
+      if (lastVideoTimeRef.current !== null && Math.abs(lastVideoTimeRef.current - nextTime) < HERO_VIDEO_FRAME_DURATION * 0.5) return;
+      lastVideoTimeRef.current = nextTime;
+      seekStartedAtRef.current = performance.now();
 
-      lastVideoTimeRef.current = pendingTime;
+      try {
+        if (typeof video.fastSeek === "function") {
+          video.fastSeek(nextTime);
+        } else {
+          video.currentTime = nextTime;
+        }
+      } catch {
+        seekStartedAtRef.current = null;
+        // If the browser is temporarily busy seeking, the next animation frame will retry.
+      }
     };
 
     const syncHero = () => {
-      syncFrameRef.current = 0;
-
       const hero = heroRef.current;
       if (!hero) return;
 
@@ -282,19 +289,27 @@ export default function VideoPage() {
       }
 
       const video = videoRef.current;
-      const duration =
-        durationRef.current || (video && Number.isFinite(video.duration) ? video.duration : 0);
+      const duration = video ? getVideoDuration(video) : 0;
+
+      if (video) {
+        video.preload = "auto";
+
+        if (duration <= 0) {
+          applyPendingVideoTime();
+        } else if (!readyRef.current) {
+          durationRef.current = duration;
+          readyRef.current = true;
+        }
+      }
 
       if (video && duration > 0) {
         if (!readyRef.current) {
           durationRef.current = duration;
           readyRef.current = true;
-          setVideoReady(true);
         }
 
         const rawTime = scrubProgress * Math.max(duration - 0.001, 0);
         const nextTime = Math.round(rawTime / HERO_VIDEO_FRAME_DURATION) * HERO_VIDEO_FRAME_DURATION;
-        video.pause();
         pendingVideoTimeRef.current = nextTime;
         applyPendingVideoTime();
       }
@@ -319,44 +334,52 @@ export default function VideoPage() {
       }
     };
 
-    const requestSync = () => {
-      if (syncFrameRef.current) return;
-      syncFrameRef.current = window.requestAnimationFrame(syncHero);
-    };
-
     const requestMeasuredSync = () => {
       measureHero();
-      requestSync();
+      syncHero();
     };
+
+    requestHeroSyncRef.current = requestMeasuredSync;
 
     const requestVisibleSync = () => {
       if (document.visibilityState === "hidden") return;
       requestMeasuredSync();
     };
 
-    const requestSeekSync = () => {
-      applyPendingVideoTime();
-    };
-
     const video = videoRef.current;
     measureHero();
-    requestSync();
-    window.addEventListener("scroll", requestSync, { passive: true });
+    syncHero();
     window.addEventListener("resize", requestMeasuredSync);
     window.addEventListener("focus", requestMeasuredSync);
     window.addEventListener("pageshow", requestMeasuredSync);
     document.addEventListener("visibilitychange", requestVisibleSync);
-    video?.addEventListener("seeked", requestSeekSync);
+    video?.addEventListener("loadedmetadata", requestMeasuredSync);
+    video?.addEventListener("loadeddata", requestMeasuredSync);
+    video?.addEventListener("canplay", requestMeasuredSync);
+    video?.addEventListener("durationchange", requestMeasuredSync);
+    video?.addEventListener("stalled", requestMeasuredSync);
+    video?.addEventListener("emptied", requestMeasuredSync);
+
+    const tick = () => {
+      syncHero();
+      loopFrameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    tick();
 
     return () => {
-      window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestMeasuredSync);
       window.removeEventListener("focus", requestMeasuredSync);
       window.removeEventListener("pageshow", requestMeasuredSync);
       document.removeEventListener("visibilitychange", requestVisibleSync);
-      video?.removeEventListener("seeked", requestSeekSync);
-      if (syncFrameRef.current) window.cancelAnimationFrame(syncFrameRef.current);
-      if (seekRetryFrameRef.current) window.cancelAnimationFrame(seekRetryFrameRef.current);
+      video?.removeEventListener("loadedmetadata", requestMeasuredSync);
+      video?.removeEventListener("loadeddata", requestMeasuredSync);
+      video?.removeEventListener("canplay", requestMeasuredSync);
+      video?.removeEventListener("durationchange", requestMeasuredSync);
+      video?.removeEventListener("stalled", requestMeasuredSync);
+      video?.removeEventListener("emptied", requestMeasuredSync);
+      requestHeroSyncRef.current = () => undefined;
+      if (loopFrameRef.current) window.cancelAnimationFrame(loopFrameRef.current);
     };
   }, []);
 
@@ -364,27 +387,45 @@ export default function VideoPage() {
     const video = videoRef.current;
     if (!video) return;
 
+    setVideoMissing(false);
+    recoveryAttemptsRef.current = 0;
+    seekStartedAtRef.current = null;
     durationRef.current = Number.isFinite(video.duration) ? video.duration : 0;
-    video.pause();
     if (durationRef.current > 0) {
-      video.currentTime = 0.001;
+      const pendingTime = pendingVideoTimeRef.current ?? 0.001;
+      video.currentTime = clamp(pendingTime, 0, Math.max(durationRef.current - 0.001, 0));
       readyRef.current = true;
-      setVideoReady(true);
-      void video.play().then(() => video.pause()).catch(() => undefined);
-      window.dispatchEvent(new Event("scroll"));
+      requestHeroSyncRef.current();
     }
   };
 
   const onCanPlay = () => {
+    setVideoMissing(false);
+    recoveryAttemptsRef.current = 0;
+    seekStartedAtRef.current = null;
     readyRef.current = durationRef.current > 0;
-    setVideoReady(readyRef.current);
-    window.dispatchEvent(new Event("scroll"));
+    requestHeroSyncRef.current();
   };
 
   const onVideoError = () => {
+    const video = videoRef.current;
+
     readyRef.current = false;
+    lastVideoTimeRef.current = null;
+    seekStartedAtRef.current = null;
+
+    if (video && recoveryAttemptsRef.current < HERO_VIDEO_MAX_RECOVERY_ATTEMPTS) {
+      recoveryAttemptsRef.current += 1;
+      setVideoMissing(false);
+      video.load();
+      requestHeroSyncRef.current();
+      return;
+    }
+
     setVideoMissing(true);
-    setVideoReady(false);
+    if (video) {
+      video.pause();
+    }
   };
 
   return (
@@ -396,53 +437,78 @@ export default function VideoPage() {
         <div className="hero-atmosphere video-hero-atmosphere" aria-hidden="true" />
 
         <div className="video-hero-media" ref={heroMediaRef} aria-hidden="true">
-          {!videoMissing ? (
-            <video
-              ref={videoRef}
-              className="video-hero-video"
-              src={HERO_VIDEO_SRC}
-              muted
-              playsInline
-              preload="auto"
-              onLoadedMetadata={onLoadedMetadata}
-              onLoadedData={onCanPlay}
-              onCanPlay={onCanPlay}
-              onError={onVideoError}
-            />
-          ) : (
-            <div className="video-hero-placeholder" />
-          )}
+          <video
+            ref={videoRef}
+            className={`video-hero-video${videoMissing ? " video-hero-video--hidden" : ""}`}
+            src={HERO_VIDEO_SRC}
+            muted
+            playsInline
+            preload="auto"
+            onLoadedMetadata={onLoadedMetadata}
+            onLoadedData={onCanPlay}
+            onCanPlay={onCanPlay}
+            onError={onVideoError}
+          />
+          <div className={`video-hero-placeholder${videoMissing ? " is-visible" : ""}`} />
           <div className="video-hero-overlay" />
         </div>
 
         <div className="site-container video-hero-inner">
           <div className="hero-copy video-hero-copy" ref={heroCopyRef}>
             <p className="eyebrow hero-eyebrow">
-              <span /> Product Design &mdash; AI Engineering &mdash; Strategy
+              <span /> {t("video.heroEyebrow")}
             </p>
+            <div className="home-neon-probe">
+              <div className="neon-wordmark neon-ativo" role="img" aria-label="Neon short-circuit preview">
+                <svg viewBox="0 0 440 140" aria-hidden="true">
+                  <text className="neon-glow" x="220" y="96" textAnchor="middle">NEON</text>
+                  <text className="neon-core" x="220" y="96" textAnchor="middle">NEON</text>
+                  <g className="neon-arcs">
+                    <path className="neon-arc neon-arc--one" d="M101 95 L99 88 L95 82 L89 77 L117 69 L104 42" />
+                    <path className="neon-arc neon-arc--two" d="M162 43 L166 47 L164 53 L179 51 L151 64 L171 79" />
+                    <path className="neon-arc neon-arc--three" d="M230 57 L235 48 L248 43 L262 49 L270 61 L264 73" />
+                    <path className="neon-arc neon-arc--four" d="M268 95 L271 84 L278 75 L293 63 L287 42" />
+                    <path className="neon-arc neon-arc--five" d="M238 73 L231 64 L236 55 L249 47 L262 52 L268 63" />
+                    <path className="neon-arc neon-arc--six" d="M266 92 L272 82 L267 73 L281 66 L289 54 L286 43" />
+                    <path className="neon-arc neon-arc--seven" d="M139 43 L132 55 L137 67 L128 80 L141 95" />
+                    <path className="neon-arc neon-arc--eight" d="M164 79 L178 82 L192 77 L180 88 L164 92" />
+                    <path className="neon-arc neon-arc--nine" d="M270 73 L263 82 L251 91 L239 87 L232 78" />
+                    <path className="neon-arc neon-arc--ten" d="M326 42 L319 53 L327 66 L316 80 L326 95" />
+                    <path className="neon-arc neon-arc--eleven" d="M108 92 L104 84 L111 73 L105 61 L112 47" />
+                    <path className="neon-arc neon-arc--twelve" d="M242 47 L251 44 L261 51 L268 62 L263 72" />
+                    <path className="neon-arc neon-arc--thirteen" d="M117 42 L121 53 L113 64 L125 78 L115 94" />
+                    <path className="neon-arc neon-arc--fourteen" d="M194 43 L188 53 L198 62 L184 73 L193 79" />
+                    <path className="neon-arc neon-arc--fifteen" d="M255 91 L264 85 L270 75 L258 66 L269 55" />
+                    <path className="neon-arc neon-arc--sixteen" d="M305 95 L310 84 L303 73 L314 61 L307 43" />
+                  </g>
+                </svg>
+              </div>
+            </div>
             <h1 id="hero-title" className="hero-title">
-              <span className="hero-line hero-line--one">CREATIVE</span>
-              <span className="hero-line hero-line--two">AI SOLUTIONS</span>
+              <CreativeCircuitTitle text={t("video.creative")} />
+              <span className="hero-line hero-line--two">{t("video.aiSolutions")}</span>
             </h1>
+            <CriativasInterNeonTitle />
             <div className="hero-intro">
               <p>
-                Building AI-powered products, intelligent automations, and custom software that combine design,
-                engineering, and business strategy to solve real-world challenges.
+                {t("home.heroLead")}
               </p>
               <div className="hero-actions">
                 <span className="button button--light">
-                  Let&apos;s Talk <span aria-hidden="true">↗</span>
+                  {t("home.talk")} <span aria-hidden="true">{"\u2197"}</span>
                 </span>
               </div>
             </div>
-            <ul className="video-hero-topics" ref={heroTopicsRef} aria-label="Featured AI solution topics">
+            <ul className="video-hero-topics" ref={heroTopicsRef} aria-label={t("video.topicsAria")}>
               {[
-                "AI-Powered Client Acquisition",
-                "AI-Powered Customer Service",
-                "Refined Websites",
-                "Corporate Knowledge Systems",
-                "Custom Software",
-                "Business Process Automation",
+                t("video.topic1"),
+                t("video.topic2"),
+                t("video.topic3"),
+                t("video.topic4"),
+                t("video.topic5"),
+                t("video.topic6"),
+                t("video.topic7"),
+                t("video.topic8"),
               ].map((topic) => (
                 <li key={topic}>
                   <span className="video-hero-topic-cube" aria-hidden="true" />
@@ -453,8 +519,8 @@ export default function VideoPage() {
           </div>
         </div>
 
-          <a className="scroll-cue video-scroll-cue" href="#projects" aria-label="Scroll to featured projects">
-            <span>Scroll to explore</span>
+          <a className="scroll-cue video-scroll-cue" href="#projects" aria-label={t("video.scrollProjects")}>
+              <span>{t("home.scroll")}</span>
             <i aria-hidden="true" />
           </a>
         </div>
@@ -466,85 +532,47 @@ export default function VideoPage() {
             <h2 id="video-next-title" className="hero-title video-hero-next-title">
             </h2>
             <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome video-hero-next-welcome--top">
-              WELCOME TO
+              {t("video.welcome")}
             </p>
             <p className="hero-line video-hero-next-line video-hero-next-line--one video-hero-next-welcome">
-              THE <span className="video-hero-next-white">HYPER-PERSONALIZATION</span> ERA
+              {t("video.hyper")} <HyperPersonalizationNeon text={t("video.personalization")} /> {t("video.era")}
             </p>
             <p className="video-hero-next-description">
-              Now it&apos;s your turn to leverage AI and build digital solutions tailored precisely to your business...
-              unlocking new opportunities, accelerating your initiatives, and driving better results.
+              {t("video.nextLead")}
             </p>
             <div className="hero-actions video-hero-next-actions">
-              <button className="button button--accent" type="button" onClick={openAssistantChat}>
-                Ask My AI Assistant and Book a Call <span aria-hidden="true">-&gt;</span>
-              </button>
-              <a className="button button--ghost" href="/contact">
-                Drop Me a Message <span aria-hidden="true">-&gt;</span>
-              </a>
+              <EditableCta welcomeKey="video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call">
+                <button className="button button--accent" type="button" onClick={() => openAssistantChat({ welcomeKey: "video/hyper-personalization-era/next-step/ask-my-ai-assistant-and-book-a-call" })}>
+                  {t("video.askBook")} <span aria-hidden="true">-&gt;</span>
+                </button>
+              </EditableCta>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="site-container">
-          <div className="section-heading section-heading--split">
-            <div>
-              <h2 id="projects-title">Featured Projects</h2>
+
+      <section className="section grounding-section" id="custom-development" aria-labelledby="custom-development-title">
+        <div className="grounding-orbit" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="custom-development-title">{t("home.customDevelopment")}</h2>
+            <h3>{t("home.customLead")}</h3>
+            <p>
+              {t("home.customText")}
+            </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
             </div>
           </div>
-
-          <div className="projects-grid">
-            <article className="project-card" id="human-resources">
-              <ProjectVisual type="hr" />
-              <div className="project-overlay" />
-              <div className="project-content">
-                <p className="project-index">01 / Automation</p>
-                <h3>Human Resources Automations</h3>
-                <p>
-                  End-to-end recruitment automation, including candidate sourcing, qualification, ranking, workflow
-                  automation, report generation, and AI-assisted hiring.
-                </p>
-              </div>
-              <span className="project-arrow" aria-hidden="true">
-                ↗
-              </span>
-            </article>
-
-            <article className="project-card">
-              <ProjectVisual type="trading" />
-              <div className="project-overlay" />
-              <div className="project-content">
-                <p className="project-index">02 / Fintech</p>
-                <h3>AI-First Trading Platform</h3>
-                <p>
-                  An AI-native trading platform designed around intelligent agents, predictive analytics,
-                  automation, and decision support.
-                </p>
-              </div>
-              <span className="project-arrow" aria-hidden="true">
-                ↗
-              </span>
-            </article>
-
-            <article className="project-card">
-              <ProjectVisual type="dante" />
-              <div className="project-overlay" />
-              <div className="project-content">
-                <p className="project-index">03 / Legal AI</p>
-                <h3>
-                  Dante <span>Legal AI Platform</span>
-                </h3>
-                <p>
-                  An AI solution for the legal industry built with intelligent agents, RAG, GraphRAG, contextual
-                  reasoning, and enterprise knowledge systems.
-                </p>
-              </div>
-              <span className="project-arrow" aria-hidden="true">
-                ↗
-              </span>
-            </article>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/TUB_BRUNO_CESAR_CUSTOM_DEVELOPMENT.png"
+              alt={t("home.customImageAlt")}
+              className="grounding-panel-image"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
@@ -553,32 +581,128 @@ export default function VideoPage() {
         <div className="grounding-orbit" aria-hidden="true" />
         <div className="site-container grounding-grid">
           <div className="grounding-copy">
-            <p className="eyebrow">Technical foundation</p>
-            <h2 id="grounding-title">Knowledge Grounding</h2>
-            <h3>Building AI systems that truly understand your business.</h3>
+            <h2 id="grounding-title">{t("home.knowledgeGrounding")}</h2>
+            <h3>{t("home.groundingLead")}</h3>
             <p>
-              Foundation models are powerful, but generic knowledge is not enough for business-critical work.
-              Grounding connects AI to your organization&apos;s verified data, context, processes, and relationships so
-              every answer is more relevant, traceable, and reliable.
+              {t("home.groundingText")}
             </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("home.iWantBuild")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
+            </div>
           </div>
           <div className="grounding-panel">
             <div className="grounding-panel-head">
-              <span>Enterprise intelligence layer</span>
-              <span>10 capabilities</span>
+                <span>{t("video.enterpriseLayer")}</span>
+              <span>{t("video.capabilitiesCount")}</span>
             </div>
-            <ul className="topic-list">
-              {groundingTopics.map((topic, index) => (
-                <li key={topic}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {topic}
-                </li>
-              ))}
-            </ul>
-            <p className="grounding-note">
-              Proprietary knowledge turns a general-purpose model into a system aligned with how your business
-              actually operates.
+            <div className="topic-list" role="list">
+              <div className="topic-list-column">
+                {groundingTopicIds.map((topicId, index) => {
+                  const isExpanded = expandedGroundingTopic?.title === topicId;
+                  const isCompact = Boolean(expandedGroundingTopic) && !isExpanded;
+                  const detailId = `grounding-topic-${index}`;
+
+                  return (
+                    <div
+                      role="listitem"
+                      className={`topic-list-item${isExpanded ? " is-expanded" : ""}${isCompact ? " is-compact" : ""}`}
+                      key={topicId}
+                    >
+                      <button
+                        type="button"
+                        className="topic-list-button"
+                        aria-expanded={isExpanded}
+                        aria-controls={detailId}
+                        onClick={() => toggleGroundingTopic("single", topicId)}
+                      >
+                        <span className="topic-list-toggle" aria-hidden="true" />
+                        <span className="topic-list-index">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="topic-list-title">{t(`video.groundingTopics.${topicId}.title`)}</span>
+                        <span id={detailId} className="topic-list-detail" hidden={!isExpanded}>
+                          {t(`video.groundingTopics.${topicId}.description`)}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section grounding-section grounding-section--lead-gen" id="lead-generation" aria-labelledby="lead-generation-title">
+        <div className="grounding-orbit grounding-orbit--right" aria-hidden="true" />
+        <div className="site-container grounding-grid">
+          <div className="grounding-copy">
+            <h2 id="lead-generation-title">{t("video.leadTitle")}</h2>
+            <h3>{t("video.leadSubtitle")}</h3>
+            <p>
+              {t("video.leadText")}
             </p>
+            <div className="grounding-actions">
+              <a className="button button--accent" href={localizedPath("/contact")}>{t("services.iWantIt")}</a>
+              <a className="button button--ghost" href={localizedPath("/contact")}>{t("about.bookCall")}</a>
+            </div>
+          </div>
+          <div className="grounding-panel grounding-panel--image">
+            <img
+              src="/LEAD_FUNNEL.png"
+              alt={t("home.leadImageAlt")}
+              className="grounding-panel-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="section projects-section" id="projects" aria-labelledby="projects-title">
+        <div className="site-container">
+          <div className="section-heading section-heading--split">
+            <div>
+              <h2 id="projects-title">{t("home.projects")}</h2>
+            </div>
+          </div>
+
+          <div className="projects-grid">
+            <article className="project-card" id="human-resources">
+              <ProjectVisual type="hr" />
+              <div className="project-overlay" />
+              <div className="project-content">
+                <p className="project-index">01 / {t("video.automation")}</p>
+                <h3>{t("video.projectDashboard")}</h3>
+                <p>
+                  {t("video.projectDashboardText")}
+                </p>
+              </div>
+            </article>
+
+            <article className="project-card">
+              <ProjectVisual type="trading" />
+              <div className="project-overlay" />
+              <div className="project-content">
+                <p className="project-index">02 / {t("video.fintech")}</p>
+                <h3>{t("video.projectTrading")}</h3>
+                <p>
+                  {t("video.projectTradingText")}
+                </p>
+              </div>
+            </article>
+
+            <article className="project-card">
+              <ProjectVisual type="dante" />
+              <div className="project-overlay" />
+              <div className="project-content">
+                <p className="project-index">03 / {t("video.legalAi")}</p>
+                <h3>
+                  Dante <span>{t("video.legalAiPlatform")}</span>
+                </h3>
+                <p>
+                  {t("video.projectDanteText")}
+                </p>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -587,18 +711,17 @@ export default function VideoPage() {
         <div className="site-container">
           <div className="section-heading section-heading--split">
             <div>
-              <p className="eyebrow">What we build</p>
-              <h2 id="services-title">Services</h2>
+              <p className="eyebrow">{t("video.whatWeBuild")}</p>
+              <h2 id="services-title">{t("home.services")}</h2>
             </div>
             <p className="section-intro">
-              From the first interface decision to the intelligence layer behind it, every engagement connects
-              design quality with technical depth.
+              {t("video.servicesLead")}
             </p>
           </div>
 
           <div className="services-grid">
             {services.map((service) => (
-              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.title}>
+              <article className={`service-card${service.featured ? " service-card--featured" : ""}`} key={service.index}>
                 <div className="service-topline">
                   <span>{service.index}</span>
                   <i aria-hidden="true">
@@ -607,43 +730,11 @@ export default function VideoPage() {
                 </div>
                 <div className="service-title-row">
                   <ServiceIcon type={service.icon} />
-                  <h3>{service.title}</h3>
+                  <h3>{t(`videoServices.${service.index}.title`)}</h3>
                 </div>
-                <p>{service.text}</p>
+                <p>{t(`videoServices.${service.index}.text`)}</p>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section about-section" id="about" aria-labelledby="about-title">
-        <div className="site-container about-grid">
-          <div className="about-image-wrap">
-            <img src="/bruno-portrait.png" alt="Bruno, founder of CriativAI" className="about-image" />
-            <div className="about-image-meta">
-              <span>Bruno</span>
-              <span>Founder / Designer / AI Engineer</span>
-            </div>
-          </div>
-          <div className="about-copy">
-            <p className="eyebrow">The human behind the systems</p>
-            <h2 id="about-title">About</h2>
-            <p className="about-lead">
-              Technology is most valuable when it amplifies human judgment, not when it gets in the way.
-            </p>
-            <p>
-              Bruno works at the intersection of product design, artificial intelligence, and business strategy.
-              His practice combines two decades of creative experience with a systems mindset to turn complex ideas
-              into useful, understandable, and carefully crafted digital products.
-            </p>
-            <div className="expertise-block">
-              <p className="micro-label">Areas of expertise</p>
-              <ul className="expertise-list">
-                {expertise.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -652,16 +743,16 @@ export default function VideoPage() {
         <div className="cta-orbit cta-orbit--one" aria-hidden="true" />
         <div className="cta-orbit cta-orbit--two" aria-hidden="true" />
         <div className="site-container final-cta-inner">
-          <p className="eyebrow">Start a conversation</p>
+          <p className="eyebrow">{t("home.startConversation")}</p>
           <h2 id="contact-title">
-            Ready to Build Your Next <span>AI Product?</span>
+            <span>{t("video.readyToBuild")}</span>
+            <span>{t("video.nextAiProduct")}</span>
           </h2>
           <p>
-            Let&apos;s create intelligent software that combines design, automation, and business strategy to solve real
-            business challenges.
+            {t("video.finalLead")}
           </p>
-          <a className="button button--accent" href="/contact">
-            Start a Project <span aria-hidden="true">↗</span>
+          <a className="button button--accent" href={localizedPath("/contact")}>
+            {t("video.startProject")} <span aria-hidden="true">{"\u2197"}</span>
           </a>
         </div>
       </section>
@@ -669,22 +760,22 @@ export default function VideoPage() {
       <footer className="footer" id="footer">
         <div className="site-container footer-grid">
           <div className="footer-brand">
-            <a href="#top" aria-label="CriativAI home">
+            <a href="#top" aria-label={t("header.home")}>
               <Brand />
             </a>
-            <p>AI-powered products, intelligent automations, and human-centered digital experiences.</p>
-            <span className="copyright">© {new Date().getFullYear()} CriativAI. All rights reserved.</span>
+            <p>{t("footer.productLead")}</p>
+            <span className="copyright">{"\u00A9"} {new Date().getFullYear()} CriativAI. {t("footer.rights")}</span>
           </div>
           <div className="footer-links-grid">
             <div>
-              <p className="micro-label">Navigation</p>
-              <a href="#services">Services</a>
-              <a href="#projects">Projects</a>
-              <a href="/human-resources">Human Resources</a>
-              <a href="/contact">Contact</a>
+              <p className="micro-label">{t("footer.navigation")}</p>
+              <a href="#services">{t("header.services")}</a>
+              <a href="#projects">{t("footer.projects")}</a>
+              {isAudienceEnabled("recruiters") ? <a href={localizedPath("/for-recrutiers")}>{t("footer.recruiters")}</a> : null}
+              <a href={localizedPath("/contact")}>{t("header.contact")}</a>
             </div>
             <div>
-              <p className="micro-label">Social Media</p>
+              <p className="micro-label">{t("footer.social")}</p>
               <a
                 className="footer-social-link"
                 href="https://www.youtube.com/@tutorialmasterbrasil"
@@ -692,9 +783,9 @@ export default function VideoPage() {
                 rel="noreferrer noopener"
               >
                 <span className="footer-social-icon" aria-hidden="true">
-                  ▶
+                  {"\u25B6"}
                 </span>
-                YouTube
+                {t("footer.youtube")}
               </a>
               <a
                 className="footer-social-link"
@@ -705,7 +796,7 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   in
                 </span>
-                LinkedIn
+                {t("footer.linkedin")}
               </a>
               <a
                 className="footer-social-link"
@@ -716,7 +807,7 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   Bē
                 </span>
-                Behance
+                {t("footer.behance")}
               </a>
               <a
                 className="footer-social-link"
@@ -727,19 +818,94 @@ export default function VideoPage() {
                 <span className="footer-social-icon" aria-hidden="true">
                   GH
                 </span>
-                GitHub
+                {t("footer.github")}
               </a>
             </div>
           </div>
         </div>
         <div className="site-container footer-bottom">
-          <span>Creative intelligence, grounded in reality.</span>
-          <a className="footer-legal-link" href="/privacy">
-            Privacy &amp; Terms
+          <span>{t("footer.bottom")}</span>
+          <a className="footer-legal-link" href={localizedPath("/privacy")}>
+            {t("legal.eyebrow")}
           </a>
-          <a href="#top">Back to top ↑</a>
+          <a href="#top">{t("header.backToTop")} {"\u2191"}</a>
         </div>
       </footer>
     </main>
+  );
+}
+
+function CreativeCircuitTitle({ text }: { text: string }) {
+  return (
+    <span id="creative-label" className="hero-line hero-line--one neon-wordmark neon-ativo neon-ativo--always creative-circuit">
+      <span className="creative-circuit__text">{text}</span>
+      <svg className="creative-circuit__rays" viewBox="0 0 500 150" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        {creativeOutline.paths.map((path, index) => (
+          <path key={path.slice(0, 24)} className={`neon-arc neon-arc--outline neon-arc--outline-${index + 1}`} d={path} />
+        ))}
+      </svg>
+      {/* generated outline replaces the former decorative paths */}
+      {false && <svg viewBox="0 0 1000 150" aria-hidden="true">
+        <path className="neon-arc neon-arc--one" d="M24 117 L18 101 L29 84 L20 66 L34 45" />
+        <path className="neon-arc neon-arc--two" d="M77 39 L90 53 L83 70 L99 81 L91 102" />
+        <path className="neon-arc neon-arc--three" d="M159 118 L150 101 L164 84 L154 66 L168 48" />
+        <path className="neon-arc neon-arc--four" d="M241 44 L252 58 L243 73 L259 87 L250 106" />
+        <path className="neon-arc neon-arc--five" d="M335 119 L326 102 L339 85 L330 68 L345 49" />
+        <path className="neon-arc neon-arc--six" d="M429 42 L442 56 L434 72 L449 87 L440 108" />
+        <path className="neon-arc neon-arc--seven" d="M525 117 L516 100 L530 84 L521 66 L535 47" />
+        <path className="neon-arc neon-arc--eight" d="M620 41 L632 55 L623 71 L639 85 L630 106" />
+        <path className="neon-arc neon-arc--nine" d="M716 118 L706 101 L720 83 L710 65 L725 46" />
+        <path className="neon-arc neon-arc--ten" d="M811 43 L823 57 L814 74 L830 88 L821 108" />
+        <path className="neon-arc neon-arc--eleven" d="M906 117 L896 101 L910 83 L900 65 L915 46" />
+        <path className="neon-arc neon-arc--twelve" d="M976 42 L987 57 L978 73 L991 88 L983 106" />
+      </svg>}
+    </span>
+  );
+}
+
+function HyperPersonalizationNeon({ text }: { text: string }) {
+  return (
+    <span className="video-hero-next-white hyper-neon-text neon-wordmark neon-ativo">
+      <span className="hyper-neon-text__label">{text}</span>
+      <svg className="hyper-neon-text__rays" viewBox="0 0 1400 145" preserveAspectRatio="none" aria-hidden="true">
+        {hyperOutline.paths.map((path, index) => <path key={index} className="neon-arc" d={path} />)}
+      </svg>
+    </span>
+  );
+}
+
+function CriativasInterNeonTitle() {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const [geometry, setGeometry] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+
+  useLayoutEffect(() => {
+    let frame = 0;
+    let cancelled = false;
+    const measure = () => {
+      const title = titleRef.current;
+      const text = textRef.current;
+      if (!title || !text) return;
+      const titleBox = title.getBoundingClientRect();
+      const textBox = text.getBoundingClientRect();
+      const fontSize = Number.parseFloat(window.getComputedStyle(text).fontSize);
+      if (!fontSize || !textBox.width || !textBox.height) return;
+      const sourceScale = fontSize / 112;
+      if (!cancelled) setGeometry({ left: textBox.left - titleBox.left, top: textBox.top - titleBox.top, width: 590 * sourceScale * 0.98918316, height: 145 * sourceScale });
+    };
+    void document.fonts.ready.then(() => { frame = window.requestAnimationFrame(measure); });
+    window.addEventListener("resize", measure);
+    return () => { cancelled = true; window.cancelAnimationFrame(frame); window.removeEventListener("resize", measure); };
+  }, []);
+
+  const outlineStyle: CSSProperties = geometry ? { left: geometry.left, top: geometry.top, width: geometry.width, height: geometry.height, visibility: "visible" } : { visibility: "hidden" };
+
+  return (
+    <h1 ref={titleRef} className="criativas-inter-neon-title" aria-label="CRIATIVAS">
+      <span ref={textRef} className="criativas-inter-neon-title__text">CRIATIVAS</span>
+      <svg className="criativas-inter-neon-title__rays" style={outlineStyle} viewBox="0 0 590 145" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        {criativasOutline.paths.map((path, index) => <path key={path.slice(0, 24)} className={`neon-arc neon-arc--outline-${index + 1}`} d={path} />)}
+      </svg>
+    </h1>
   );
 }
