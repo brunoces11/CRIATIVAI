@@ -29,7 +29,26 @@
     "backToTop": "Voltar ao topo",
     "solutionsSubmenu": "Submenu de soluções"
   },
-  "lab": { "subtitle": "Confira alguns projetos que venho desenvolvendo,\n            alguns relacionados a visuais com IA e ferramentas para o dia a dia", "repository": "Ver repositório", "contact": "Entre em contato" },
+  "lab": {
+    "eyebrow": "LAB",
+    "heroTitle": "LAB | Builds",
+    "subtitle": "Confira alguns projetos que venho desenvolvendo,\n            alguns relacionados a visuais com IA e ferramentas para o dia a dia",
+    "repository": "Ver repositório",
+    "technologyStack": "stack tecnológico",
+    "contact": "Entre em contato",
+    "builds": {
+      "01": { "title": "Skill Full Deploy", "description": "Uma skill portátil para automatizar deploys de aplicações em sites estáticos e projetos com múltiplas dependências por meio de um fluxo determinístico e validado.", "stack": ["Docker", "Traefik", "Validação do candidato", "Verificações de saúde", "Fluxo de rollback"] },
+      "02": { "title": "Skill Target Mode", "description": "Um fluxo de edição de precisão que permite apontar diretamente para elementos da interface para que sistemas agênticos apliquem mudanças nos alvos pretendidos.", "stack": ["Skill compatível com IDE", "Seleção única", "Seleção múltipla", "Captura para área de transferência", "Dados precisos do alvo"] },
+      "03": { "title": "Offset Print AI", "description": "Uma plataforma gráfica assistida por IA para criar materiais editáveis e prontos para impressão, com dimensões físicas precisas e exportação em PDF.", "stack": ["Next.js", "React", "TypeScript", "OpenAI API", "SQLite", "Playwright", "Vitest"] },
+      "04": { "title": "TLDraw Turbo", "description": "Um ambiente personalizado de desenho e apresentação baseado em TLDraw, com controle de apresentação mais rico, gestão de múltiplas páginas e estilização avançada.", "stack": ["Base TLDraw", "Modo de apresentação", "Gestão de múltiplas páginas", "Estilo de texto e linhas", "UI/UX personalizada"] },
+      "05": { "title": "Viral Video Scraper", "description": "Um pipeline de inteligência de conteúdo com IA para extração de dados sociais, processamento de vídeo, transcrição, geração de roteiros e automação de TTS.", "stack": ["Next.js"] },
+      "06": { "title": "Batch AI Video Generator", "description": "Um fluxo controlado de produção de vídeo que transforma prompts e imagens de referência opcionais em gerações sequenciais e escaláveis.", "stack": ["React", "TypeScript", "Vite", "Tailwind CSS", "Supabase", "Gemini / Veo API"] },
+      "07": { "title": "News AI Replicator", "description": "Um sistema de automação que recebe notícias selecionadas por RSS e as transforma em posts seguindo um estilo de escrita personalizado.", "stack": [] },
+      "08": { "title": "Weavy Photo Studio", "description": "Um estúdio fotográfico com IA para criação precisa de personagens, com controle detalhado da imagem em um clique.", "stack": [] },
+      "09": { "title": "Roblogger", "description": "O Roblogger transforma uma ideia simples em um blog post completo em um clique, gerando o texto e as imagens de apoio antes de publicar automaticamente em um blog ou site.", "stack": [] },
+      "10": { "title": "MetaGraph Chunking", "description": "Uma técnica estruturada de pré-processamento semântico que cria fragmentos coerentes, enriquecidos e conscientes da hierarquia para uma recuperação RAG mais precisa.", "stack": ["Estruturação baseada em ontologia", "Relações inspiradas em GraphRAG", "Enriquecimento semântico", "Fragmentação sem sobreposição", "Suporte a LLMs de múltiplos provedores"] }
+    }
+  },
   "chat": {
     "aria": "assistente de chat com IA",
     "conversation": "Conversa do chat",
@@ -525,6 +544,15 @@
     "heroSubtitle": "ENGENHEIRO DE PROMPT E CONTEXTO",
     "heroRole": "Designer de Produto UI/UX Sênior",
     "heroLead": "Bruno atua na interseção entre design de produto, inteligência artificial e estratégia de negócios. Sua prática combina duas décadas de experiência criativa com pensamento sistêmico para transformar ideias complexas em produtos digitais úteis, compreensíveis e bem construídos.",
+    "heroBioLead": "Bruno Cesar é Arquiteto de IA e Engenheiro de Prompt, com uma carreira que evoluiu junto com a própria tecnologia digital. Começou em 1997 como Designer Multimídia, explorando mídia interativa na era inicial dos CD-ROMs...",
+    "heroBioMore": [
+      "Depois, trabalhou com Direção de Arte, Motion Design, UI/UX e Design de Produto, aproximando-se gradualmente da tecnologia por trás das experiências que criava.",
+      "Ao longo de mais de duas décadas, liderou projetos digitais, colaborou com equipes multidisciplinares e desenvolveu uma compreensão cada vez mais ampla de software, sistemas e tecnologia.",
+      "Quando a IA surgiu como uma nova fronteira criativa e tecnológica, mergulhou em Engenharia de Prompt e pesquisa em IA, expandindo depois para agentes, RAG, engenharia de contexto, DevOps e arquitetura de IA.",
+      "Hoje, reúne toda essa trajetória na forma como aborda a IA: com a curiosidade de um criador, a perspectiva de um designer e a mentalidade de quem entende como os sistemas são construídos."
+    ],
+    "seeMore": "Ver mais",
+    "seeLess": "Ver menos",
     "dropMessage": "Envie uma Mensagem",
     "bookCall": "Agende uma Conversa",
     "portraitMeta": "Arquitetura de IA / Design / Estratégia",
@@ -590,6 +618,17 @@
       { "company": "Visiva Comunicação Visual", "role": "Designer Gráfico", "period": "ago. de 2001 - abr. de 2003", "location": "Rio de Janeiro, Brasil", "description": "Criou identidades visuais, papelaria, relatórios anuais e sistemas gráficos institucionais para organizações como Petrobras, Vale e Fundação Getulio Vargas.", "skills": ["Design Gráfico", "Identidade Visual", "Design Editorial", "Produção Gráfica"] },
       { "company": "IDS - Interactive Design System", "role": "Designer Multimídia | Designer UI/UX", "period": "jan. de 1998 - dez. de 2000", "location": "Rio de Janeiro, Brasil", "description": "Iniciou a carreira em design interativo em uma das empresas pioneiras de multimídia do Brasil, aprendendo os princípios de usabilidade que continuam orientando cada produto.", "skills": ["Design de UX", "Design de GUI", "Multimídia", "Usabilidade"] }
     ],
+    "careerHistoryTitle": "Histórico profissional",
+    "careerSummaryTitle": "Dos disquetes à IA",
+    "careerTableEra": "Era",
+    "careerTableStack": "Stack",
+    "careerStory": {
+      "01": { "title": "Onde tudo começou", "era": "Web 1.0", "text": "Em 1997, eu era um jovem curioso e fascinado por tecnologia e interatividade. Disquetes armazenavam apenas 1,44 MB, monitores normalmente exibiam 256 cores e um Zip disk de 100 MB parecia enorme. Comecei a criar experiências multimídia em AutoRun com Macromedia Director e a experimentar sites em HTML 2 no Notepad. Naquele período, aprendi fundamentos de usabilidade que continuam sendo bases sólidas do meu trabalho.", "stack": ["Multimídia interativa", "Macromedia Director", "Notepad para HTML", "Disquetes e Zip disks", "Telas de 8 bits, 256 cores"] },
+      "02": { "title": "Uma prática criativa mais ampla", "era": "Web 2.0 / Motion Design", "text": "Com a evolução da tecnologia e da web, meu trabalho se expandiu para Web Design, Direção de Arte e Motion Design. Criei sites, microsites, projetos interativos e campanhas para marcas como TIM, Chevrolet, Coca-Cola e Petrobras. Na época, o Flash trouxe um nível impressionante de interação para a web, enquanto também dediquei bastante tempo a motion design e 3D avançado, entrando em um mundo fascinante de animação e storytelling.", "stack": ["Macromedia Flash, After Effects, Apple Motion", "Blender, Cinema 4D, DaVinci Resolve", "CD-ROM, DVD, vídeo digital"] },
+      "03": { "title": "Das telas aos produtos", "era": "Smartphones / Design de Produto", "text": "Então os smartphones mudaram a forma como as pessoas interagiam com a tecnologia. Migrei naturalmente para UI/UX e Design de Produto, trabalhando com arquitetura da informação, produtos digitais e plataformas online. Também criei o Tutorial Master, compartilhando conteúdo de design e tecnologia com uma comunidade que cresceu para mais de 150 mil seguidores e alunos.", "stack": ["Design de Produto Digital", "UI/UX, Design de Produto", "Arquitetura da Informação", "Smartphones, web responsiva", "Plataformas online e vídeo"] },
+      "04": { "title": "Dos produtos aos sistemas", "era": "Web 3.0 / Arquitetura de Sistemas", "text": "Ao começar a liderar projetos multidisciplinares, aproximei-me das equipes técnicas por trás dos produtos que eu desenhava. Na Ecofactor, combinei pensamento de produto com liderança de equipe e arquitetura de sistemas, ampliando meu trabalho para desenvolvimento de software, bancos de dados, APIs e aplicações full-stack.", "stack": ["Arquitetura de sistemas", "Desenvolvimento de sistemas", "Gestão de produto", "Bancos de dados relacionais", "Integração de APIs", "Python, React, Next.js"] },
+      "05": { "title": "Entrando na fronteira da IA", "era": "Era da IA / Arquitetura de IA", "text": "Desde os primeiros dias do ChatGPT, mergulhei em Engenharia de Prompt e pesquisa em IA, vencendo vários hackathons internacionais ao longo do caminho. Isso evoluiu para Engenharia de Contexto, agentes de IA, RAG e sistemas de conhecimento. Hoje, na Dante IA e na CriativAI, reúno Design de Produto, software, infraestrutura e Arquitetura de IA para construir sistemas confiáveis do conceito à produção.", "stack": ["Sistemas nativos de IA", "Engenharia de Prompt e Contexto", "RAG, GraphRAG, AGC", "ETL, ontologias, bancos vetoriais", "Neo4j, PGVector, LangFlow", "Docker, DevOps, LLMOps"] }
+    },
     "finalTitle": "A tecnologia é mais valiosa quando amplia as capacidades humanas",
     "finalLead": "Vamos construir coisas incríveis juntos. Envie uma mensagem pelo formulário ou pergunte ao assistente de IA sobre ideias, disponibilidade e o melhor próximo passo para o seu projeto.",
     "footerHomeAria": "Página Sobre Mim da CriativAI"
@@ -715,6 +754,151 @@
       "05": { "title": "ETL, Processamento de Dados | Enriquecimento de Contexto", "description": "Limpe, transforme, estruture e enriqueça dados de múltiplas fontes para criar conhecimento pronto para IA, com melhores metadados, relações e significado para recuperação." },
       "06": { "title": "Processamento Inteligente de Fragmentos", "description": "Divida o conhecimento em fragmentos precisos que preservam o significado, reduzem recuperações irrelevantes e mantêm as respostas alinhadas às fontes mais pertinentes." },
       "07": { "title": "Proteções | Observabilidade", "description": "Monitore, limite e aprimore o comportamento dos agentes com controles mais claros, melhor visibilidade e retorno operacional mais confiável." }
+    }
+  },
+  "research": {
+    "eyebrow": "Pesquisa",
+    "titlePrimary": "Engenharia de Prompt",
+    "titleAccent": "Pesquisa Criativa",
+    "dek1": "Tudo começa com pensamento criativo,",
+    "dek2": "muita experimentação,",
+    "dek3": "e grandes descobertas...",
+    "intro": "Com o objetivo de investigar o mais profundamente possível e descobrir o potencial e os recursos mais avançados do ChatGPT, iniciei minha própria pesquisa criativa sobre a ferramenta. Usando uma abordagem de design thinking, minhas habilidades criativas e muitas perguntas, mergulhei em um processo de testes e experimentações interessantes. Tive a oportunidade de descobrir novos conceitos, insights relevantes e até desenvolver uma nova técnica promissora de engenharia de prompt, com grande potencial para otimizar o processo de desenvolvimento e reduzir custos. A seguir, compartilho esses novos conceitos e técnicas.",
+    "details": "Ver detalhes",
+    "topics": {
+      "cpt": { "title": "[CPT] Técnica de Prompt Concatenado", "summary": "Uma nova e promissora técnica de engenharia de prompt que permite ao ChatGPT lidar e processar vários prompts com instruções diferentes simultaneamente, em uma única entrada. A CPT simplifica a interação com a IA ao combinar comandos complexos, aumentar a eficiência, reduzir chamadas à API e diminuir custos de desenvolvimento." },
+      "ux": { "title": "Design de Prompt UX", "summary": "Um conceito que transforma o ChatGPT de um ambiente simples e limitado de texto em uma experiência mais rica e imersiva. Markdown avançado com instruções precisas de saída permite que profissionais criativos criem experiências de chat refinadas." },
+      "promptApp": { "title": "Conceito de PromptApp", "summary": "Uma PromptApp é uma nova classe de aplicação criada exclusivamente por prompts para rodar no ambiente do ChatGPT, tratando o ChatGPT como plataforma e intérprete da aplicação." },
+      "metagraph": { "title": "Metagraph Chunk", "summary": "Metagraph Chunk é um método de enriquecimento semântico criado para tornar cada fragmento mais significativo antes de chegar à recuperação. Durante o pré-processamento, o conteúdo de origem é analisado em busca de informações estruturais e contextuais, como hierarquia, relações entre entidades, conceitos relacionados, escopo e instruções para agentes, que são incorporadas diretamente aos metadados do fragmento.", "detail1": "Assim, o fragmento carrega mais do que o texto original. Ele também carrega o contexto necessário para entender onde aquela informação pertence e como se relaciona com o restante da base de conhecimento, transformando cada fragmento em uma unidade de conhecimento autocontida.", "detail2": "Essa estrutura enriquecida dá ao fragmento maior valor semântico durante a recuperação e oferece à IA um contexto mais completo quando a informação retorna. Em vez de obrigar o modelo a reconstruir hierarquia, relações e aplicabilidade a partir de partes desconectadas no momento da inferência, esses elementos já estão disponíveis na unidade recuperada. O resultado é um grafo semântico implícito ao redor do conteúdo original, reduzindo a reconstrução contextual e melhorando a precisão da recuperação, o grounding e a exatidão das respostas." },
+      "selfContained": { "title": "Unidade de Conhecimento Autocontida", "summary": "Uma Unidade de Conhecimento Autocontida é um fragmento enriquecido com as informações contextuais necessárias para que um sistema de IA o interprete e use corretamente sem reconstruir significados essenciais a partir de várias recuperações desconectadas. Contextos relevantes, como hierarquia, escopo, dependências, aplicabilidade e relações semânticas, são incorporados diretamente aos metadados do fragmento.", "strong": "Isso transforma uma informação isolada em uma unidade de conhecimento autocontida que já carrega o contexto necessário para uma interpretação precisa.", "detail1": "Na Dante IA, por exemplo, recuperar apenas o texto de uma norma jurídica brasileira era insuficiente. O sistema também precisava entender onde aquela norma se encaixava na hierarquia jurídica e qual contexto governava sua aplicação.", "detail2": "Ao incorporar essas informações em cada unidade, um fragmento jurídico isolado se tornou conhecimento autocontido. O princípio é simples: mover o raciocínio contextual essencial do momento da inferência para o pré-processamento, reduzindo a carga cognitiva do modelo e tornando a recuperação e as respostas mais precisas, eficientes e confiáveis." },
+      "fullPrompt": { "title": "Conceito de Full Prompt", "summary": "Full Prompt descreve o estado ideal de um prompt: completo e preenchido com todas as informações de que a IA precisa para atender a uma solicitação com precisão, incluindo instruções detalhadas sobre o formato da saída." }
+    }
+  },
+  "cpt": {
+    "eyebrow": "Engenharia de Prompt | Pesquisa Criativa",
+    "title": "CPT | Técnica de Prompt Concatenado",
+    "introBefore": "É uma técnica nova e promissora de engenharia de prompt que criei, permitindo que",
+    "introStrongOne": "o ChatGPT execute vários prompts em uma única entrada",
+    "introMiddle": "Isso pode simplificar significativamente o desenvolvimento de qualquer sistema de IA, permitindo que o modelo gerencie interações mais complexas que funcionam como uma aplicação ou site comum,",
+    "introStrongTwo": "tudo dentro de um único prompt CPT",
+    "howTitle": "CPT | Como funciona?",
+    "howText": "Esta técnica entrega à IA um prompt que contém vários prompts diferentes, cada um com sua própria função. Orientamos a IA a ler o prompt maior como uma coleção de prompts individuais, e não como uma única instrução. Marcadores especiais, ou placeholders, mostram onde cada prompt começa e termina. Veja abaixo um exemplo real.",
+    "milestoneTitle": "CPT | Milestone",
+    "milestoneText": "Para esta apresentação, criei o CPT Milestone, o primeiro prompt concatenado, para demonstrar as capacidades da CPT. Imagine que queremos implementar um sistema de IA com as quatro funcionalidades principais abaixo:",
+    "milestoneItems": {
+      "01": "Prompt gerador de imagens, chamado IMAGEN.",
+      "02": "Prompt conversor de texto para emoji, chamado Text2Emoji.",
+      "03": "Prompt de descoberta de ícones Unicode, chamado ICON MACHINE, vencedor do terceiro lugar no Hackathon da FlowGPT.",
+      "04": "Prompt de resposta com contador automático, que conta todas as respostas para melhorar pesquisas."
+    },
+    "regularTitle": "Exemplo de implementação de um sistema de IA comum",
+    "regularText": "Em um cenário convencional, quando um sistema de IA possui muitos requisitos funcionais como esses, cada função normalmente é implementada de forma independente. Depois, os desenvolvedores reúnem todas as partes no sistema. Isso torna o desenvolvimento mais trabalhoso, demorado e caro. Quanto mais funções desejamos, mais código e configuração são necessários nos bastidores.",
+    "potentialTitle": "Exemplo do potencial da [CPT] Técnica de Prompt Concatenado",
+    "potentialText": "Como a CPT consegue consolidar vários prompts em uma única entrada de texto, as quatro funcionalidades acima podem ser executadas a partir de um único prompt CPT. Isso reduz significativamente o trabalho da equipe de desenvolvimento e torna o projeto mais simples e econômico.",
+    "functionalTitle": "CPT MILESTONE | Exemplo totalmente funcional",
+    "functionalText": "Este exemplo de CPT Prompt também usa formatação avançada de conteúdo, exibindo páginas precisas com cabeçalho, rodapé, tabelas, hyperlinks e imagens personalizados. Ele oferece uma experiência muito melhor, semelhante à de um site ou aplicação comum integrada ao ChatGPT.",
+    "checkTitle": "Então, como posso conferir?",
+    "checkFlowgpt": "Prompt concatenado rodando no ChatGPT4 pela plataforma FlowGPT:",
+    "checkOpenai": "Prompt concatenado rodando no ChatGPT3.5 no chat da OpenAI:",
+    "checkCustom": "Versão Custom GPT:",
+    "checkWork": "Em desenvolvimento (Em breve)",
+    "useCasesTitle": "CPT | Casos de uso interessantes e promissores",
+    "useCases": {
+      "01": { "title": "Storytelling Interativo", "text": "Escritores e desenvolvedores podem criar narrativas complexas e ramificadas nas quais a IA adapta a história conforme as decisões do usuário." },
+      "02": { "title": "Análise de Dados em Várias Etapas", "text": "A CPT pode conduzir a IA por etapas de análise, da limpeza dos dados à visualização." },
+      "03": { "title": "Criação Automatizada de Conteúdo", "text": "Criadores de conteúdo podem instruir a IA a pesquisar, redigir e refinar conteúdo em um único fluxo." },
+      "04": { "title": "Gameplay Dinâmico Integrado", "text": "Desenvolvedores de jogos podem transformar o ChatGPT em um jogo integrado, com narrativa imersiva e dinâmicas avançadas." },
+      "05": { "title": "Triagem de Pacientes na Saúde", "text": "A CPT pode capacitar sistemas de IA a realizar uma triagem mais precisa antes do atendimento por um profissional de saúde." },
+      "06": { "title": "Testes Automatizados de Software", "text": "Um único prompt concatenado pode instruir a IA a executar uma série de casos de teste." },
+      "07": { "title": "Plataformas de Aprendizado de Idiomas", "text": "A CPT pode criar sessões imersivas de aprendizado de idiomas com exercícios, conversas e testes." },
+      "08": { "title": "Gestão e Resposta a Crises em Tempo Real", "text": "A CPT pode ajudar sistemas de IA a compreender e agir sobre várias informações simultaneamente." },
+      "09": { "title": "Análise Aprofundada de Pesquisa de Mercado", "text": "A CPT pode interpretar fontes de dados, identificar tendências e gerar insights por meio de uma sequência de prompts concatenados." }
+    },
+    "conclusionTitle": "CPT | Técnica de Prompt Concatenado | Conclusão",
+    "conclusionText": "A Técnica de Prompt Concatenado abre possibilidades para projetos complexos, envolventes e eficientes orientados por IA. Ela torna as interações mais dinâmicas e imersivas, enquanto lida com tarefas mais sofisticadas.",
+    "ctaTitle": "Use esta técnica no seu projeto de IA...",
+    "ctaText": "Estou em busca de uma oportunidade para usar esta técnica em algo real. Se você tem um projeto de IA interessante ou desafiador, entre em contato e vamos descobrir como ela pode ajudar você a alcançar seus objetivos.",
+    "contact": "Fale comigo",
+    "images": {
+      "traditional": "Diagrama de implementação de um sistema de IA tradicional",
+      "cpt": "Diagrama da Técnica de Prompt Concatenado",
+      "functional": "Exemplo funcional do diagrama da Técnica de Prompt Concatenado"
+    }
+  },
+  "uxPrompt": {
+    "eyebrow": "Engenharia de Prompt | Pesquisa Criativa",
+    "title": "Design de Prompt UX",
+    "intro": "Leve as interações com o ChatGPT a um novo nível. Vá além de uma interface de chat limitada a texto simples. Com Markdown avançado e instruções precisas de saída, você pode criar experiências envolventes no ChatGPT. Designers e desenvolvedores podem adicionar cabeçalhos, rodapés, imagens, links e muito mais para criar uma jornada imersiva. Confira os exemplos abaixo:",
+    "requirementsTitle": "Requisitos aplicáveis",
+    "requirementsBefore": "Como o ChatGPT pode gerar respostas diferentes para a mesma entrada,",
+    "requirementsStrongOne": "alcançar controle preciso sobre as saídas é um desafio",
+    "requirementsMiddle": "Para isso, três requisitos precisam estar presentes:",
+    "requirementsStrongTwo": "Estado completo do prompt",
+    "requirementsStrongThree": "Instruções precisas de saída",
+    "requirementsStrongFour": "Markdown avançado",
+    "seeDiagram": "Veja o diagrama:",
+    "examplesTitle": "Exemplos de Prompts",
+    "examplesText": "Quando os prompts atendem aos três requisitos acima, eles permitem controlar precisamente o formato de saída das respostas do ChatGPT. Adicionar Design de UI pode transformar um simples chat de texto em uma experiência mais rica e completa, semelhante a um site ou aplicação. Veja os exemplos abaixo:",
+    "accessPrompt": "Para acessar este prompt",
+    "clickHere": "clique aqui",
+    "examples": {
+      "minecraft": { "title": "Minecraft Mashup | Jogo Inovador Integrado ao ChatGPT", "alt": "Jogo Minecraft Mashup integrado ao ChatGPT" },
+      "sherlock": { "title": "Sherlock Hoax 2025 | Prompt com tema Jailbreak", "alt": "Prompt Sherlock Hoax" },
+      "track": { "title": "Track to the Future 28 | Jogo Inovador Integrado ao ChatGPT", "alt": "Jogo Track to the Future 28" },
+      "gptinder": { "title": "GPTinder | Seu Consultor de Encontros Turbinado", "alt": "Consultor de encontros GPTinder" }
+    },
+    "conclusionTitle": "Em conclusão",
+    "conclusionText": "O Design de Prompt UX busca, acima de tudo, extrair a melhor experiência possível das interações com o ChatGPT.",
+    "supportTitle": "Precisa de ajuda com seus prompts?",
+    "supportText": "Entre em contato comigo, porque posso ajudar...",
+    "contact": "Fale comigo",
+    "images": { "requirements": "Diagrama de requisitos do Design de Prompt UX" }
+  },
+  "promptApp": {
+    "eyebrow": "Engenharia de Prompt | Pesquisa Criativa",
+    "title": "Conceito de PromptApp",
+    "introBefore": "Ao explorar os recursos do ChatGPT, descobri novos conceitos. As coisas ficaram especialmente interessantes quando comecei a combiná-los. Ao unir a",
+    "cptLink": "Técnica de Prompt Concatenado (CPT)",
+    "introMiddle": "ao controle aprimorado das saídas do ChatGPT por meio do",
+    "uxLink": "Design de Prompt UX",
+    "introAfter": ", surgiu um tipo intrigante de aplicação. Ela funciona como uma aplicação, mas opera a partir de um único documento de texto, o prompt, sem ambientes de desenvolvimento, linguagens de programação, compiladores ou outras ferramentas. Uma aplicação inteira pode ser codificada em um prompt usando linguagem natural estruturada e executada diretamente pelo ChatGPT, com conteúdo precisamente formatado para uma experiência muito melhor. Veja mais detalhes abaixo...",
+    "whyTitle": "Por que PromptApp?",
+    "whyText": "Prompt apps representam um novo conceito de aplicação entre um app tradicional e um prompt simples. São mais robustas que um prompt comum, oferecendo uma variedade maior de funcionalidades prontas, mas são mais simples e baratas de criar do que aplicações tradicionais que exigem conhecimentos de programação.",
+    "futureTitle": "PromptApps e o futuro da Engenharia de Prompt",
+    "futureText": "Vejo as prompt apps como uma alternativa mais simples, rápida e econômica para desenvolver soluções baseadas em IA. À medida que os modelos de linguagem avançam, os prompts lidarão com mais instruções, especialmente com a adição da CPT, permitindo executar inúmeras instruções simultaneamente e de forma instantânea. Pela simplicidade e pelo futuro promissor, as prompt apps terão um papel importante nesta nova era de aplicações orientadas por IA. Veja o diagrama abaixo:",
+    "advantagesTitle": "Vantagens da PromptApp",
+    "advantages": {
+      "01": { "title": "Acessibilidade", "text": "Reduzem a barreira de entrada para o desenvolvimento de aplicações." },
+      "02": { "title": "Desenvolvimento Rápido", "text": "Podem ser desenvolvidas, testadas e implantadas muito mais rapidamente que aplicações tradicionais." },
+      "03": { "title": "Redução do Custo de Desenvolvimento", "text": "Simplificar o desenvolvimento reduz significativamente os custos." },
+      "04": { "title": "Eficiência de Custo na Manutenção", "text": "Os custos contínuos de manutenção são consideravelmente menores." },
+      "05": { "title": "Flexibilidade", "text": "Os recursos podem se adaptar rapidamente com base no feedback dos usuários." },
+      "06": { "title": "Escalabilidade", "text": "Escalar não exige a expansão de uma infraestrutura backend tradicional." },
+      "07": { "title": "Engajamento", "text": "A IA conversacional oferece uma experiência mais envolvente e personalizada." }
+    },
+    "advantagesStrong": "PromptApp representa um novo tipo de aplicação executada dentro do ChatGPT, baseada exclusivamente em prompts com código estruturado e lógico em linguagem natural.",
+    "supportTitle": "Precisa de ajuda com seus prompts?",
+    "supportText": "Entre em contato comigo e vamos fazer acontecer. Estou buscando projetos de IA interessantes e desafios promissores de engenharia de prompt.",
+    "contact": "Fale comigo",
+    "images": { "concept": "Diagrama do conceito de PromptApp", "future": "Diagrama do futuro da engenharia de prompt com PromptApp" }
+  },
+  "awards": {
+    "eyebrow": "Engenharia de Prompt",
+    "title": "PRÊMIOS",
+    "intro": "Durante minha pesquisa, decidi colocar meus conhecimentos à prova participando de hackathons. Mergulhar em competições internacionais e enxergar cada uma como uma oportunidade de ampliar os limites da inovação em IA me levou a criar prompts sofisticados, avançados e precisos, com resultados marcantes. Aqui estão alguns prêmios e reconhecimentos de hackathons de engenharia de prompt:",
+    "supportTitle": "Precisa de ajuda com seus prompts?",
+    "supportText": "Entre em contato comigo e vamos fazer acontecer. Estou buscando projetos de IA interessantes e desafios promissores de engenharia de prompt.",
+    "contact": "Fale comigo",
+    "linkLabels": { "competition": "Página de resultados da competição", "direct": "Acesso direto ao prompt vencedor" },
+    "items": {
+      "01": { "award": "Técnica Original de Engenharia de Prompt", "title": "1º lugar na FlowGPT.com", "image": "CPT_TUB.jpg", "alt": "Técnica de Prompt Concatenado", "text": "Uma nova abordagem para criação de prompts que permite ao ChatGPT executar vários prompts em uma única entrada, ampliando as funcionalidades e permitindo interações complexas semelhantes às de uma aplicação ou site.", "links": [{ "kind": "competition", "url": "https://flowgpt.com/bounty/s3-original-prompt-techniques" }, { "kind": "direct", "url": "https://flowgpt.com/p/cpt-concatenated-prompt-technique-4" }] },
+      "02": { "award": "Engenheiro de Prompt - Hackathon", "title": "1º lugar no Hackathon da Chipp.ai", "image": "2024/09/CPT_TUB_AGENTOS.jpg", "alt": "AgentOS, agente de IA multitarefa", "text": "AgentOS é um agente de IA multitarefa personalizado, capaz de executar várias funções internas e externas simultaneamente a partir de uma única entrada de prompt.", "links": [{ "kind": "competition", "url": "https://chipp.substack.com/p/chipp-hackathon-winners-showcase" }, { "kind": "direct", "url": "https://agentos-12981.chipp.ai/" }] },
+      "03": { "award": "Categoria inovadora | Jogo integrado ao ChatGPT", "title": "1º lugar na Prompt Battle da FlowGPT", "image": "TIME_TUB.jpg", "alt": "Jogo Track to the Future", "text": "Track to the Future apresenta o Cybertruck Quantum SUV de Elon Musk, criado para explorar os segredos da vida e por que a humanidade é controlada. Com tecnologia quântica, ele viaja pelo tempo para explorar cenários em benefício da humanidade.", "links": [{ "kind": "competition", "url": "https://flowgpt.com/bounty/past-and-future" }, { "kind": "direct", "url": "https://flowgpt.com/p/track-to-the-future-game-1" }] },
+      "04": { "award": "Engenheiro de Prompt | Categoria Jurado", "title": "2º lugar no Hackathon da FlowGPT", "image": "TUB_JUDGEN.jpg", "alt": "Prompt AI Judgen para ChatGPT", "text": "JUDGEN é um avaliador de prompts que analisa e atribui notas a diferentes aspectos de um prompt, incluindo criatividade, clareza, precisão, originalidade, consistência sintática, estrutura lógica e oportunidades de melhoria.", "links": [{ "kind": "competition", "url": "https://flowgpt.com/bounty/s3-chatgpt-judge" }, { "kind": "direct", "url": "https://flowgpt.com/p/judgen-ai-1" }] },
+      "05": { "award": "Jogo inovador integrado ao ChatGPT", "title": "Finalista na Prompt Battle da FlowGPT", "image": "MINECRAFT_MASHUP_CHATGPT_GAME.jpg", "alt": "Jogo Minecraft Mashup", "text": "Uma jornada épica para descobrir o segredo final além do jogo Minecraft The End, encontrar mensagens ocultas, conversar com Herobrine, revelar o segredo por trás dessa entidade misteriosa e jogar com personagens icônicos.", "links": [{ "kind": "competition", "url": "https://flowgpt.com/bounty/promptBattle0724" }, { "kind": "direct", "url": "https://flowgpt.com/p/nM8rkh83STfc2UIE4E9xj" }] },
+      "06": { "award": "Jogo inovador integrado ao ChatGPT", "title": "Finalista na Prompt Battle da FlowGPT", "image": "SHERLOCK_TUB.jpg", "alt": "Jogo Sherlock Hoax", "text": "Um jogo temático de investigação em que você pode explorar teorias da conspiração. Conheça Sherlock Hoax, James Bomb e Dr. Straaange, cada um com uma habilidade específica para revelar diferentes aspectos do seu tema.", "links": [{ "kind": "direct", "url": "https://flowgpt.com/p/sherlock-hoax-game" }] },
+      "07": { "award": "Categoria Criativa", "title": "3º lugar no Hackathon S2 da FlowGPT", "image": "GPTINDER_Brazil.jpg", "alt": "Engenharia de prompt criativo GPTinder para ChatGPT", "text": "GPTinder ajuda a formular frases para abordar um interesse romântico em aplicativos de relacionamento. Ele solicita informações do usuário e da conexão e cria frases e assuntos personalizados.", "links": [{ "kind": "competition", "url": "https://flowgpt.com/bounty/hMydz_Vg7yIIoRQ8wK1y-" }, { "kind": "direct", "url": "https://flowgpt.com/p/gptinder-your-turbocharged-dating-advisor-16" }] },
+      "08": { "award": "Desenvolvimento de Software", "title": "3º lugar no Hackathon S2 da FlowGPT", "image": "TUB_ICON_v2.jpg", "alt": "Ferramenta de descoberta de ícones Unicode ICON Machine", "text": "O primeiro app de ícones para ChatGPT. Insira qualquer referência de ícone e ele encontra ícones relacionados, nomes oficiais e tudo o que é necessário para publicar ícones Unicode em uma tabela simples e funcional.", "links": [{ "kind": "competition", "url": "https://flowgpt.com/bounty/xa_9CI5A41wMta9FTyTET" }, { "kind": "direct", "url": "https://flowgpt.com/p/icon-machine-is-everything-you-need-to-deal-with-icons-4-any-application-2" }] }
     }
   },
   "videoServices": {

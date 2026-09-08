@@ -35,36 +35,11 @@ const productCycle = [
 ] as const;
 
 const careerStory = [
-  {
-    title: "Where it all began",
-    era: "Web 1.0",
-    text: "In 1997, I was a young guy (although I still feel that way, haha), curious and fascinated by technology and interactivity. Floppy disks held only 1.44 MB, monitors commonly displayed 256 colors, and a 100 MB Zip disk felt enormous. I began creating AutoRun multimedia experiences with Macromedia Director and experimenting with HTML 2 websites in Notepad. During that period, I learned the fundamentals of usability that remain solid foundations in my work today.",
-    stack: ["Interactive multimedia", "Macromedia Director", "Notepad for HTML", "Floppy disks and Zip disks", "8-bit displays, 256 colors"],
-  },
-  {
-    title: "A broader creative practice",
-    era: "Web 2.0 / Motion Design",
-    text: "As technology and the web evolved, my work expanded into Web Design, Art Direction, and Motion Design. I created websites, microsites, interactive projects, and campaigns for brands such as TIM, Chevrolet, Coca-Cola, and Petrobras. At that time, Flash brought an impressive level of interaction to the web, while I also dedicated significant time to motion design and advanced 3D, entering a fascinating world of animation and storytelling.",
-    stack: ["Macromedia Flash, After Effects, Apple Motion", "Blender, Cinema 4D, DaVinci Resolve", "CD-ROM, DVD, digital video"],
-  },
-  {
-    title: "From screens to products",
-    era: "Smartphones / Product Design",
-    text: "Then smartphones changed how people interacted with technology. I moved naturally into UI/UX and Product Design, working with information architecture, digital products, and online platforms. I also created Tutorial Master, sharing design and technology content with a community that grew to more than 150,000 followers and students.",
-    stack: ["Digital Product Design", "UI/UX, Product Design", "Information Architecture", "Smartphones, responsive web", "Online platforms and video"],
-  },
-  {
-    title: "From products to systems",
-    era: "Web 3.0 / System Architecture",
-    text: "As I began leading multidisciplinary projects, I moved closer to the technical teams behind the products I was designing. At Ecofactor, I combined product thinking with team leadership and system architecture, expanding my work into software development, databases, APIs, and full-stack applications.",
-    stack: ["System architecture", "Systems development", "Product ownership", "Relational databases", "API integration", "Python, React, Next.js"],
-  },
-  {
-    title: "Entering the AI frontier",
-    era: "AI Era / AI Architecture",
-    text: "From the early days of ChatGPT, I immersed myself in Prompt Engineering and AI research, winning multiple international hackathons along the way. This evolved into Context Engineering, AI agents, RAG, and knowledge systems. Today, at Dante AI and CriativAI, I bring together Product Design, software, infrastructure, and AI Architecture to build reliable systems from concept to production.",
-    stack: ["AI-native systems", "Prompt and Context Engineering", "RAG, GraphRAG, AGC", "ETL, ontologies, vector databases", "Neo4j, PGVector, LangFlow", "Docker, DevOps, LLMOps"],
-  },
+  { id: "01", stackCount: 5 },
+  { id: "02", stackCount: 3 },
+  { id: "03", stackCount: 5 },
+  { id: "04", stackCount: 6 },
+  { id: "05", stackCount: 6 },
 ] as const;
 
 const professionalExperience: Experience[] = [
@@ -110,14 +85,11 @@ export default function AboutMePage() {
               {t("about.heroTitle")} <span className="about-me-title-subline">{t("about.heroSubtitle")}</span>
             </h1>
             <p className="about-me-hero-role">{t("about.heroRole")}</p>
-            <p className="about-me-hero-lead">Bruno Cesar is an <strong>AI Architect</strong> and <strong>Prompt Engineer</strong> whose career has evolved alongside digital technology itself. He began in 1997 as a <strong>Multimedia Designer</strong>, exploring interactive media in the early CD-ROM era...</p>
-            <button className="about-me-hero-more" type="button" aria-expanded={heroBioExpanded} onClick={() => setHeroBioExpanded((expanded) => !expanded)}>{heroBioExpanded ? "See less" : "See more"}</button>
+            <p className="about-me-hero-lead">{t("about.heroBioLead")}</p>
+            <button className="about-me-hero-more" type="button" aria-expanded={heroBioExpanded} onClick={() => setHeroBioExpanded((expanded) => !expanded)}>{heroBioExpanded ? t("about.seeLess") : t("about.seeMore")}</button>
             {heroBioExpanded ? (
               <div className="about-me-hero-bio-more">
-                <p>He went on to work across <strong>Art Direction, Motion Design, UI/UX, and Product Design</strong>, while gradually moving closer to the technology behind the experiences he created.</p>
-                <p>Over more than two decades, he has led digital projects, collaborated with multidisciplinary teams, and developed a growing understanding of <strong>software, systems, and technology</strong>.</p>
-                <p>When AI emerged as a new creative and technological frontier, he immersed himself in <strong>Prompt Engineering and AI research</strong>, later expanding into agents, RAG, context engineering, DevOps, and AI architecture.</p>
-                <p>Today, he brings this entire trajectory together in the way he approaches AI: with the <strong>curiosity of a creator</strong>, the perspective of a designer, and the mindset of someone who understands how systems are built.</p>
+                {Array.from({ length: 4 }, (_, index) => <p key={index}>{t(`about.heroBioMore.${index}`)}</p>)}
               </div>
             ) : null}
           </div>
@@ -157,25 +129,25 @@ export default function AboutMePage() {
 
       <section className="section about-me-career-section" aria-labelledby="about-me-career-title">
         <div className="site-container">
-          <h2 className="sr-only" id="about-me-career-title">Professional history</h2>
+          <h2 className="sr-only" id="about-me-career-title">{t("about.careerHistoryTitle")}</h2>
           <div id="about-me-career-panel" className="about-me-awards-panel about-me-career-panel">
-            <h3 className="about-me-career-summary-title">From Floppy Disks to AI</h3>
+            <h3 className="about-me-career-summary-title">{t("about.careerSummaryTitle")}</h3>
             <div className="about-me-career-copy">
                   {careerStory.map((chapter) => (
-                    <article className="about-me-career-story" key={chapter.title}>
+                    <article className="about-me-career-story" key={chapter.id}>
                       <div className="about-me-career-story-copy">
-                        <h4>{chapter.title}</h4>
-                        <p>{chapter.text}</p>
+                        <h4>{t(`about.careerStory.${chapter.id}.title`)}</h4>
+                        <p>{t(`about.careerStory.${chapter.id}.text`)}</p>
                       </div>
                       <table className="about-me-career-stack">
                         <tbody>
                           <tr>
-                            <th scope="row">Era</th>
-                            <td>{chapter.era}</td>
+                            <th scope="row">{t("about.careerTableEra")}</th>
+                            <td>{t(`about.careerStory.${chapter.id}.era`)}</td>
                           </tr>
                           <tr>
-                            <th scope="row">Stack</th>
-                            <td><ul>{chapter.stack.map((item) => <li key={item}>{item}</li>)}</ul></td>
+                            <th scope="row">{t("about.careerTableStack")}</th>
+                            <td><ul>{Array.from({ length: chapter.stackCount }, (_, index) => <li key={index}>{t(`about.careerStory.${chapter.id}.stack.${index}`)}</li>)}</ul></td>
                           </tr>
                         </tbody>
                       </table>

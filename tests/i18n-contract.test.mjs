@@ -17,6 +17,17 @@ function flattenCatalog(value, path = "", result = new Map()) {
   return result;
 }
 
+function assertNonEmptyText(value, path) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => assertNonEmptyText(item, `${path}[${index}]`));
+  } else if (value && typeof value === "object") {
+    for (const [key, item] of Object.entries(value)) assertNonEmptyText(item, `${path}.${key}`);
+  } else {
+    assert.equal(typeof value, "string", `${path} must be text`);
+    assert.ok(value.trim().length > 0, `${path} must not be empty`);
+  }
+}
+
 test("welcome catalogs have identical CTA keys", async () => {
   const pt = JSON.parse(await read("Chat-Welcome-Messages-br.json"));
   const en = JSON.parse(await read("Chat-Welcome-Messages-en.json"));
@@ -41,14 +52,20 @@ test("all literal translation keys used by public UI exist in both catalogs", as
     "src/components/ServiceCatalogCard.tsx",
     "src/components/SiteHeader.tsx",
     "src/pages/AboutMe.tsx",
+    "src/pages/Awards.tsx",
     "src/pages/Contact.tsx",
     "src/pages/FoundingSdr.tsx",
     "src/pages/HireMe.tsx",
     "src/pages/Home.tsx",
     "src/pages/HumanResources.tsx",
+    "src/pages/Lab.tsx",
     "src/pages/PrivacyTerms.tsx",
+    "src/pages/PromptApp.tsx",
+    "src/pages/Research.tsx",
     "src/pages/Services.tsx",
     "src/pages/TalentPreview.tsx",
+    "src/pages/ConcatenatedPromptTechnique.tsx",
+    "src/pages/UxPromptDesign.tsx",
     "src/pages/Video.tsx",
   ];
   const pt = flattenCatalog(JSON.parse(await read("src/locales/pt.json")));
@@ -64,6 +81,32 @@ test("all literal translation keys used by public UI exist in both catalogs", as
   }
 
   assert.deepEqual(missing, []);
+});
+
+test("research and lab routes have complete localized content sets", async () => {
+  const pt = JSON.parse(await read("src/locales/pt.json"));
+  const en = JSON.parse(await read("src/locales/en.json"));
+  for (const catalog of [pt, en]) {
+    assert.equal(Object.keys(catalog.lab.builds).length, 10);
+    assert.equal(Object.keys(catalog.research.topics).length, 6);
+    assert.equal(Object.keys(catalog.cpt.useCases).length, 9);
+    assert.equal(Object.keys(catalog.uxPrompt.examples).length, 4);
+    assert.equal(Object.keys(catalog.promptApp.advantages).length, 7);
+  }
+});
+
+test("about and awards routes have complete localized content sets", async () => {
+  const pt = JSON.parse(await read("src/locales/pt.json"));
+  const en = JSON.parse(await read("src/locales/en.json"));
+  for (const catalog of [pt, en]) {
+    assert.equal(catalog.about.heroBioMore.length, 4);
+    assert.equal(Object.keys(catalog.about.careerStory).length, 5);
+    assert.equal(Object.keys(catalog.awards.items).length, 8);
+    assertNonEmptyText(catalog.about.heroBioLead, "about.heroBioLead");
+    assertNonEmptyText(catalog.about.heroBioMore, "about.heroBioMore");
+    assertNonEmptyText(catalog.about.careerStory, "about.careerStory");
+    assertNonEmptyText(catalog.awards, "awards");
+  }
 });
 
 test("i18n configuration exposes the required languages and fallback", async () => {
