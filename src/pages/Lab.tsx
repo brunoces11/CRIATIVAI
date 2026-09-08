@@ -14,21 +14,21 @@ type Build = {
 const builds: Build[] = [
   {
     image: "criativai_skill_full_deploy_bruno_cesar_context_prompt_engineer.jpg",
-    title: "Full Deploy",
+    title: "Skill Full Deploy",
     description: "A portable skill for automating application deployments across static sites and multi-dependency projects through a deterministic, validated release flow.",
     stack: ["Docker", "Traefik", "Candidate validation", "Health checks", "Rollback flow"],
     repo: "https://github.com/brunoces11/Full-Deploy",
   },
   {
-    image: "criativai_social_media_viral_scraper_bruno_cesar_context_prompt_engineer.jpg",
-    title: "Target Mode",
+    image: "criativai_skill_target_mode_bruno_cesar_context_prompt_engineer.jpg",
+    title: "Skill Target Mode",
     description: "A precision editing workflow that lets users point directly at interface elements so agentic systems can apply changes to the intended targets.",
     stack: ["IDE-compatible skill", "Single selection", "Multi-selection", "Clipboard capture", "Precise target data"],
     repo: "https://github.com/brunoces11/Target-Mode",
   },
   {
     image: "criativai_pffset_print_ai__bruno_cesar_context_prompt_engineer.jpg",
-    title: "Print AI",
+    title: "Offset Print AI",
     description: "An AI-assisted graphics platform for creating editable, print-ready assets with precise physical dimensions and PDF export.",
     stack: ["Next.js", "React", "TypeScript", "OpenAI API", "SQLite", "Playwright", "Vitest"],
     repo: "https://github.com/brunoces11/print_ai/tree/master",
@@ -42,14 +42,14 @@ const builds: Build[] = [
   },
   {
     image: "criativai_social_media_viral_videos_scraper_bruno_cesar_context_prompt_engineer.jpg",
-    title: "Social Scraper",
+    title: "Viral Video Scraper",
     description: "An AI-powered content intelligence pipeline for social data extraction, video processing, transcription, script generation, and TTS automation.",
     stack: ["Next.js"],
     repo: "https://github.com/brunoces11/social_scraper",
   },
   {
     image: "criativai_batch_AI_video_generator_bruno_cesar_context_prompt_engineer.jpg",
-    title: "Batch Video Generator",
+    title: "Batch Ai Video Generator",
     description: "A controlled video production workflow that turns prompts and optional reference images into sequential, scalable video generations.",
     stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Supabase", "Gemini / Veo API"],
     repo: "https://github.com/brunoces11/batch_video_generator",
@@ -69,7 +69,7 @@ const builds: Build[] = [
   {
     image: "criativai_robloger_from_idea_to_post_in_one_click_bruno_cesar_context_prompt_engineer.jpg",
     title: "Roblogger",
-    description: "An automated publishing concept that generates posts in a chosen writing style, creates supporting images, and publishes content to a blog or website.",
+    description: "Roblogger turns a simple idea into a complete blog post in one click, generating the copy and supporting images before publishing it automatically to a blog or website.",
     stack: [],
   },
   {
