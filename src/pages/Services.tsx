@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { SiteFooter } from "../components/SiteFooter";
 import { useTranslation } from "react-i18next";
 
 import { EditableCta } from "../components/CtaEditorButton";
@@ -166,6 +167,7 @@ export default function ServicesPage() {
           </EditableCta>
         </div>
       </section>
+      <SiteFooter />
     </main>
   );
 }

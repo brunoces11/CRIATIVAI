@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { SiteHeader } from "../components/SiteHeader";
+import { SiteFooter } from "../components/SiteFooter";
 import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
 function Brand() {
@@ -48,6 +49,7 @@ export default function AwardsPage() {
         })}
         <section className="award-contact"><h2>{t("awards.supportTitle")}</h2><p>{t("awards.supportText")}</p><a className="button button--accent" href={contactPath}>{t("awards.contact")}</a></section>
       </article>
+      <SiteFooter />
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { SiteFooter } from "../components/SiteFooter";
 import { useTranslation } from "react-i18next";
 import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
 
@@ -60,6 +61,7 @@ export default function LabPage() {
           <a className="button button--accent" href={contactPath}>{t("lab.contact")}</a>
         </div>
       </article>
+      <SiteFooter />
     </main>
   );
 }

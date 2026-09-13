@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import { SiteFooter } from "../components/SiteFooter";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { getCurrentLanguage, getLocalizedPath } from "../i18n/getCurrentLanguage";
@@ -53,6 +54,7 @@ export default function ResearchPage() {
           </div>
         </div>
       </article>
+      <SiteFooter />
     </main>
   );
 }
