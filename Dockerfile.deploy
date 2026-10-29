@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY index.html tsconfig.json vite.config.ts ./
+COPY scripts/runtime.mjs ./scripts/runtime.mjs
 COPY public ./public
 COPY src ./src
 RUN npm run build
@@ -18,6 +19,9 @@ COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
 COPY backend ./backend
 COPY Chat-Welcome-Messages-en.json ./Chat-Welcome-Messages-en.json
+COPY Chat-Welcome-Messages-br.json ./Chat-Welcome-Messages-br.json
+COPY Chat-Context-Messages.json ./Chat-Context-Messages.json
+COPY chat-multi-window-enabled.txt ./chat-multi-window-enabled.txt
 COPY --from=frontend /app/dist ./dist
 RUN mkdir -p /app/data
 EXPOSE 8000
