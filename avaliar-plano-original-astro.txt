@@ -1,0 +1,362 @@
+Plano de Implementação: Blog & Social Publishing Pipeline
+Projeto: CriativAI | Domínio: criativai.site | Arquitetura: React + Astro + Python/FastAPI
+1. Visão geral e objetivos
+Implementar no criativai.site um sistema de blog técnico integrado à aplicação existente, acompanhado de um pipeline de distribuição automática de conteúdo para redes sociais.
+O primeiro caso de uso será documentar e divulgar a evolução de um projeto de customização do Arch Linux, com uma interface visual inspirada no Windows.
+O blog será a fonte oficial e permanente das publicações, enquanto as redes sociais funcionarão como canais de divulgação, descoberta e direcionamento de tráfego para o site.
+Objetivos principais
+1. Criar um blog integrado ao domínio criativai.site, preservando a aplicação React existente.
+2. Utilizar Astro para transformar arquivos Markdown em páginas HTML estáticas, otimizadas para SEO.
+3. Permitir publicar novos artigos simplesmente adicionando arquivos .md ao repositório.
+4. Automatizar a distribuição de novos artigos para LinkedIn, X, Threads, Reddit, Bluesky e Mastodon.
+5. Utilizar o FastAPI existente para executar e gerenciar o pipeline, sem n8n ou GitHub Actions como mecanismo de automação.
+6. Manter a arquitetura leve, modular, econômica e sem necessidade de um novo banco de dados.
+7. Garantir rastreabilidade, prevenção de duplicidades e recuperação de falhas nas publicações.
+Premissas definidas
+Componente	Decisão
+Frontend existente	React
+Backend existente	Python + FastAPI
+Blog	Astro + Markdown
+Armazenamento dos artigos	Arquivos .md no Git
+Banco adicional	Não necessário
+Orquestração	FastAPI + workers Python
+Publicação social	APIs oficiais
+GitHub Actions	Não utilizar
+n8n	Não utilizar
+Domínio	criativai.site
+O Astro será utilizado como gerador estático do blog, não como substituto do React.
+2. Arquitetura proposta
+criativai.site
+Aplicação principal React
+
+React
+Site e navegação
+
+
+Astro
+/blog e /blog/artigo
+
+
+
+Integração de publicação
+
+Backend FastAPI existente
+Detecta novos artigos, valida deploy, gerencia fila e executa scripts Python
+
+
+LinkedIn
+
+
+X
+
+
+Threads
+
+
+Reddit
+
+
+Bluesky
+
+
+Mastodon
+
+
+
+
+A aplicação principal permanece independente. O blog é compilado pelo Astro e servido como HTML estático, enquanto o FastAPI gerencia as operações de publicação.
+3. Implementação do blog Astro
+3.1. Estrutura de diretórios
+Estrutura lógica sugerida, adaptável ao repositório atual:
+criativai/
+├── frontend/                 # React existente
+├── backend/                  # FastAPI existente
+│   └── app/
+│       └── modules/
+│           └── social_publisher/
+│               ├── router.py
+│               ├── service.py
+│               ├── worker.py
+│               ├── storage.py
+│               └── platforms/
+│                   ├── linkedin.py
+│                   ├── x.py
+│                   ├── threads.py
+│                   ├── reddit.py
+│                   ├── bluesky.py
+│                   └── mastodon.py
+│
+├── blog/                     # Projeto Astro
+│   ├── astro.config.mjs
+│   ├── src/
+│   │   ├── content/
+│   │   │   └── blog/
+│   │   │       ├── arch-linux.md
+│   │   │       └── windows-taskbar.md
+│   │   ├── content.config.ts
+│   │   ├── layouts/
+│   │   │   └── BlogPost.astro
+│   │   └── pages/
+│   │       ├── index.astro
+│   │       ├── [...slug].astro
+│   │       └── rss.xml.ts
+│   └── public/
+│       └── images/
+│
+└── deploy/
+    └── deploy-blog.sh
+
+
+3.2. Configuração do Astro
+- Instalar Astro como projeto independente dentro do repositório.
+- Configurar o modo de geração estática (SSG).
+- Definir site: 'https://criativai.site' e base: '/blog'.
+- Criar uma coleção de conteúdo para artigos Markdown.
+- Criar uma rota dinâmica para gerar cada artigo.
+- Criar um layout reutilizável com cabeçalho, navegação, rodapé e estilos consistentes com a aplicação React.
+- Configurar links permanentes, paginação, tags e ordenação por data.
+- Gerar sitemap e RSS.
+Uma observação técnica: o Astro não transforma automaticamente cada Markdown de uma Content Collection em uma URL. É necessário configurar a rota que gera as páginas, utilizando getStaticPaths(). 
+
+Docs
++1
+
+
+
+3.3. Estrutura dos artigos
+Cada artigo terá um cabeçalho YAML com metadados:
+---
+title: "Arch Linux com taskbar estilo Windows"
+description: "Implementando uma taskbar no Arch Linux"
+date: 2026-10-23
+slug: "arch-linux-windows-taskbar"
+tags:
+  - arch-linux
+  - desktop
+  - customization
+cover: "/images/taskbar.webp"
+status: "published"
+social:
+  enabled: true
+  platforms:
+    - linkedin
+    - x
+    - threads
+    - reddit
+    - bluesky
+    - mastodon
+---
+
+
+Esses metadados deverão ser validados por um schema.
+O conteúdo poderá conter títulos, imagens, blocos de código, tutoriais, links, listas e changelogs.
+Regra: somente artigos com status: published e social.enabled: true poderão entrar no pipeline de divulgação.
+3.4. Integração com o domínio
+As URLs deverão seguir o padrão:
+- https://criativai.site/blog/
+- https://criativai.site/blog/arch-linux-windows-taskbar/
+- https://criativai.site/blog/rss.xml
+O roteamento do servidor deverá encaminhar /blog/* para os arquivos gerados pelo Astro, preservando o React nas demais rotas.
+Se o servidor utilizar Nginx, isso poderá ser feito por meio de uma configuração específica de localização e diretório estático.
+Não será necessário executar um servidor Astro em produção. Node.js será utilizado apenas no ambiente de desenvolvimento e durante o build.
+4. SEO e distribuição de conteúdo
+O blog deverá incluir:
+- HTML estático com o conteúdo completo dos artigos.
+- Title e meta description individuais.
+- URLs canônicas.
+- Open Graph e Twitter Cards para pré-visualizações sociais.
+- Dados estruturados BlogPosting em JSON-LD.
+- Sitemap XML e feed RSS.
+- Imagens otimizadas, textos alternativos e layout responsivo.
+- Links internos entre artigos relacionados.
+O objetivo é permitir que o Google indexe diretamente os artigos e que cada link compartilhado nas redes apresente título, descrição e imagem adequados.
+O RSS também poderá alimentar integrações futuras, mas não será o gatilho principal do pipeline, já que o FastAPI terá acesso ao evento de publicação.
+5. Pipeline de publicação automática
+5.1. Fluxo operacional
+1. Novo artigo no repositório
+   Arquivo .md adicionado ou marcado como publicado.
+2. Evento de publicação
+   O deploy atualiza o repositório, executa o build Astro e publica o HTML.
+3. Notificação ao FastAPI
+   O mecanismo de deploy informa o artigo publicado, com slug e identificação da versão.
+4. Validação
+   FastAPI verifica metadados, URL pública, redes habilitadas e duplicidade.
+5. Preparação dos posts
+   Python adapta texto, links, imagens e formatos para cada plataforma.
+6. Distribuição
+   Workers Python executam chamadas autenticadas às APIs oficiais.
+7. Persistência e auditoria
+   Registra sucesso, falha, ID remoto, URL social e tentativas.
+
+5.2. Como detectar novos artigos
+Recomendo aproveitar o processo de deploy já existente como mecanismo principal.
+Após publicar o blog, o script de deploy chama um endpoint interno do FastAPI:
+POST /api/internal/blog/published
+
+
+Payload ilustrativo:
+{
+  "slug": "arch-linux-windows-taskbar",
+  "commit": "abc123",
+  "url": "https://criativai.site/blog/arch-linux-windows-taskbar/"
+}
+
+
+O endpoint valida a origem da chamada, verifica o artigo e registra um job para execução.
+Caso o deploy seja acionado por GitHub, uma alternativa é utilizar um GitHub Webhook apontando para o FastAPI. O webhook deve ser autenticado por assinatura e tratado de forma assíncrona. 
+
+GitHub Docs
+
+
+
+Isso não utiliza GitHub Actions. O GitHub apenas notifica o evento; a execução ocorre na infraestrutura da aplicação.
+Importante: um push não significa necessariamente que o artigo já está publicado. A distribuição deve ocorrer somente após confirmação de deploy bem-sucedido.
+5.3. Processamento Python
+O módulo social_publisher terá cinco responsabilidades:
+1. Parser: ler Markdown e extrair metadados.
+2. Formatter: gerar textos adequados para cada rede.
+3. Dispatcher: selecionar plataformas e encaminhar jobs.
+4. Adapters: autenticar e publicar nas APIs oficiais.
+5. Tracker: registrar resultados e controlar tentativas.
+Cada plataforma será independente, para que uma falha no X não interrompa uma publicação bem-sucedida no LinkedIn.
+Para o MVP, os formatos podem ser produzidos deterministicamente, sem necessidade de IA ou chamadas a modelos pagos.
+6. Integrações sociais
+Plataforma	Implementação prevista	Observações
+LinkedIn	API oficial + OAuth	Posts profissionais, imagem e link
+X	API oficial	Cobrança por uso, limites e autenticação
+Threads	Threads API	Texto, mídia e autenticação Meta
+Reddit	API autorizada	Comunidade definida e aprovação manual
+Bluesky	AT Protocol	Posts com link e imagem
+Mastodon	API da instância	Publicação com autenticação própria
+A disponibilidade efetiva de cada integração dependerá das permissões concedidas às contas e aplicativos cadastrados.
+No Reddit, a política atual exige aprovação explícita para acesso à API e respeito às regras de automação. Por isso, a primeira implementação deve utilizar aprovação manual antes de enviar conteúdo a subreddits. 
+
+Reddit Help
++1
+
+
+
+Estratégia de adaptação
+O mesmo artigo não deve necessariamente gerar textos idênticos em todas as redes.
+Por exemplo, para uma atualização da taskbar:
+- LinkedIn: explicar o problema, a solução e o resultado técnico.
+- X: texto curto com screenshot e link.
+- Threads: atualização informal com imagem.
+- Reddit: contextualização técnica, perguntas à comunidade e respeito às regras do subreddit.
+- Bluesky: resumo conciso com link.
+- Mastodon: descrição técnica e hashtags relevantes.
+A publicação poderá ser configurada por rede no frontmatter do artigo.
+7. Persistência e controle de duplicidade
+Não será necessário criar um banco de dados exclusivo para o blog. Os artigos continuarão armazenados em Markdown.
+Entretanto, o pipeline social precisa manter um registro persistente de execução.
+Minha recomendação é reutilizar o banco já existente no FastAPI, caso a aplicação possua um. Se não houver, SQLite será suficiente para o volume inicialmente previsto.
+Uma estrutura mínima:
+Campo	Finalidade
+article_id	Identificador estável do artigo
+platform	Rede social
+content_hash	Versão do conteúdo
+status	Pending, processing, published, failed
+remote_post_id	ID retornado pela rede
+remote_url	Link da publicação
+attempts	Número de tentativas
+published_at	Data de publicação
+last_error	Detalhes da última falha
+A combinação de artigo, plataforma e versão permitirá controlar publicações repetidas.
+Por padrão, editar um artigo já publicado não deverá gerar uma nova postagem social. A republicação deverá ser solicitada explicitamente, evitando spam e duplicações.
+Para evitar que dois workers publiquem o mesmo artigo simultaneamente, o registro precisará de controle de concorrência e operações atômicas.
+8. Segurança e estabilidade
+O pipeline deverá implementar:
+- Credenciais e tokens OAuth armazenados em variáveis de ambiente ou armazenamento seguro, nunca no Git.
+- Endpoints internos autenticados, incluindo validação de assinatura para webhooks.
+- Execução de jobs fora do ciclo de requisição HTTP.
+- Timeout, retry com backoff e tratamento de limites das APIs.
+- Logs estruturados, sem expor credenciais.
+- Verificação de status remoto antes de repetir publicações cujo resultado seja incerto.
+- Validação de URLs e mídias antes do envio.
+- Controle de permissões para publicação e republicação manual.
+Execução assíncrona: para o MVP, um worker Python simples, com fila persistente no banco existente, é suficiente. Não recomendo introduzir Celery, Redis ou RabbitMQ inicialmente.
+O FastAPI receberá o evento e registrará o job. Um processo worker separado executará as publicações, permitindo reiniciar a aplicação sem perder tarefas pendentes.
+9. Etapas de implementação
+
+Fase 1. Auditoria da aplicação existente
+Identificar estrutura React/FastAPI, servidor web, roteamento, banco disponível, repositório e processo atual de deploy.
+Entrega: definição de integração sem alterar funcionalidades existentes.
+
+
+
+
+Fase 2. Blog Astro
+Instalar Astro, configurar Markdown, templates, rotas, listagem de artigos, imagens, sitemap, RSS e SEO.
+Entrega: blog funcional em criativai.site/blog.
+
+
+
+
+Fase 3. Deploy e gatilho
+Integrar o build Astro ao deploy existente, criar endpoint FastAPI e detectar artigos recém-publicados.
+Entrega: novo Markdown publicado gera automaticamente um job.
+
+
+
+
+Fase 4. Motor Python
+Implementar parser, formatter, dispatcher, fila, persistência, deduplicação e logs.
+Entrega: motor testável com simulação de publicação, sem chamar redes reais.
+
+
+
+
+Fase 5. Integrações sociais
+Implementar e testar os seis adaptadores, incluindo autenticação, permissões, limites e registro dos IDs remotos.
+Entrega: publicação real, validada individualmente em cada rede autorizada.
+
+
+
+
+Fase 6. Validação final
+Testar publicações simultâneas, duplicidade, indisponibilidade de APIs, expiração de tokens, reinício de workers e recuperação de falhas.
+Entrega: pipeline estável e pronto para operação contínua.
+
+
+
+10. Critérios de aceite
+A implementação será considerada concluída quando:
+- [ ] O blog estiver acessível em criativai.site/blog.
+- [ ] Novos arquivos .md gerarem páginas estáticas após o build.
+- [ ] Os artigos apresentarem metadados SEO, sitemap, RSS e pré-visualização social.
+- [ ] O React e o FastAPI existentes continuarem funcionando sem regressões.
+- [ ] O deploy detectar artigos novos ou recém-publicados.
+- [ ] O FastAPI criar jobs automaticamente após a publicação do blog.
+- [ ] Os seis adaptadores estiverem implementados e testados, com credenciais e permissões autorizadas.
+- [ ] O Reddit exigir aprovação antes de publicar.
+- [ ] Publicações repetidas forem bloqueadas.
+- [ ] Falhas individuais não interromperem as demais redes.
+- [ ] O histórico de execução permanecer disponível após reinícios.
+- [ ] Nenhuma credencial estiver exposta no repositório ou nos logs.
+11. Fora do escopo inicial
+Para preservar a simplicidade, não implementar nesta fase editor visual de artigos, painel administrativo avançado, agendamento de campanhas, geração de conteúdo por IA, analytics sociais ou gestão de comentários.
+Esses recursos poderão ser adicionados posteriormente, aproveitando o mesmo backend FastAPI.
+12. Resultado esperado
+Operação cotidiana
+
+Você cria um artigo Markdown, define status: published e envia ao repositório. O processo de deploy gera a página HTML e notifica o FastAPI, que distribui o conteúdo às redes autorizadas e registra os resultados.
+
+Banco adicional para o blog
+Nenhum
+
+Servidor Astro em produção
+Nenhum
+
+Orquestrador externo
+Nenhum
+
+Redes planejadas
+6 plataformas
+
+
+
+Recomendação arquitetural final
+Preservar integralmente a aplicação React + FastAPI, incorporar Astro exclusivamente para geração estática do blog e implementar a distribuição social como módulo Python independente dentro do backend existente.
+A publicação será orientada a eventos, com controle persistente, sem GitHub Actions, n8n ou infraestrutura adicional de mensageria.
+A única etapa que precisa ser validada antes da implementação é a infraestrutura real do criativai.site, especialmente a organização do repositório, o deploy atual e a configuração do servidor web. Esses componentes ainda não foram inspecionados, portanto os diretórios e endpoints apresentados são uma proposta arquitetural, não uma descrição da implementação existente.
+Essa abordagem entrega o objetivo central: escrever uma única vez no blog e transformar cada atualização técnica do projeto Arch Linux em uma publicação permanente, indexável e distribuída automaticamente para as redes sociais.

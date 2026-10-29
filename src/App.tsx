@@ -24,7 +24,7 @@ const HireMePageLazy = lazy(() => import("./pages/HireMe"));
 const FoundingSdrPageLazy = lazy(() => import("./pages/FoundingSdr"));
 
 function Page() {
-  const pathname = (window.location.pathname.replace(/^\/en(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
+  const pathname = (window.location.pathname.replace(/^\/(?:en|pt)(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
 
   if (isSitesFrontendOnly && pathname === "/adm") return <VideoPageLazy />;
   if (pathname === "/for-recrutiers" || pathname === "/human-resources") return <HumanResourcesPage />;
@@ -50,7 +50,7 @@ function Page() {
 
 export default function App() {
   const { t } = useTranslation();
-  const pathname = (window.location.pathname.replace(/^\/en(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
+  const pathname = (window.location.pathname.replace(/^\/(?:en|pt)(?=\/|$)/, "") || "/").replace(/\/$/, "") || "/";
   const showChat = !isSitesFrontendOnly && pathname !== "/adm";
 
   useEffect(() => {
